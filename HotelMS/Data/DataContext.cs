@@ -17,10 +17,7 @@ namespace HotelMS.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-       .Property(u => u.profilePicture)
-       .HasColumnType("varbinary(max)");
-
+         
             modelBuilder.Entity<User>()
                 .HasOne(u=>u.Role)
                 .WithMany(r=> r.Users)

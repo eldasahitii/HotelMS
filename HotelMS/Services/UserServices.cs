@@ -51,13 +51,15 @@ namespace HotelMS.Services
                 var user = _dbContext.Users.Find(id);
                 if (user != null)
                 {
+                    user.FirstName = request.FirstName;
+                    user.LastName = request.LastName;
                     user.Username = request.Username;
                     user.Email = request.Email;
                     user.Password = request.Password;
                     user.CreatedAt = request.CreatedAt;
                     user.Phone = request.Phone;
                     user.Address = request.Address;
-                    user.profilePicture = request.profilePicture;
+                   
 
                     _dbContext.SaveChanges();
                 }
