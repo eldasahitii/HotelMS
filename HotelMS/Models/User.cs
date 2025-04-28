@@ -6,7 +6,7 @@ namespace HotelMS.Models
 {
     public class User : IdentityUser
     {
-        public int UserID { get; set; }
+        //public int UserID { get; set; }
 
         [Required]
         [MaxLength(30)]
@@ -16,7 +16,7 @@ namespace HotelMS.Models
         public string LastName { get; set; }
         [Required]
         [MaxLength(50)]
-        public string Username { get; set; }
+        public string UserName { get; set; }
         [Required]
         [EmailAddress]
         public string Email { get; set; }

@@ -8,7 +8,7 @@
         public TimeSpan ShiftEnd { get; set; }
         public string RecepsionistType { get; set; }
         public decimal Salary { get; set; }
-        public int UserID { get; set; }
+        public string UserID { get; set; }
         public User User { get; set; }
     }
 }

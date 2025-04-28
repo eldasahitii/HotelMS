@@ -11,10 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
-builder.Services.AddIdentityCore<User>()
-    .AddEntityFrameworkStores<DataContext>()
-    .AddApiEndpoints();
+builder.Services.AddIdentityApiEndpoints<User>()
+    .AddEntityFrameworkStores<DataContext>();
+//builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+//builder.Services.AddIdentityCore<User>()
+//    .AddEntityFrameworkStores<DataContext>()
+//    .AddApiEndpoints();
 builder.Services.AddControllers();
 
 builder.Services.AddTransient<Seed>();
@@ -48,13 +50,15 @@ void SeedData(IHost app)
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapIdentityApi<User>();
+    //app.MapIdentityApi<User>();
 
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+
+app.MapIdentityApi<User>();
 
 app.UseAuthorization();
 

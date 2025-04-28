@@ -8,7 +8,7 @@
         public decimal Salary { get; set; }
         public string AssignedTasks { get; set; }
         public int CompletedTasks { get; set; }
-        public int UserID { get; set; }
+        public string UserID { get; set; }
         public User User { get; set; }
 
     }

@@ -53,9 +53,9 @@ namespace HotelMS.Services
                 {
                     user.FirstName = request.FirstName;
                     user.LastName = request.LastName;
-                    user.Username = request.Username;
+                    user.UserName = request.UserName;
                     user.Email = request.Email;
-                    user.PasswordHash = request.PasswordHash;
+                    //user.PasswordHash = request.PasswordHash;
                     user.CreatedAt = request.CreatedAt;
                     user.Phone = request.Phone;
                     user.Address = request.Address;
