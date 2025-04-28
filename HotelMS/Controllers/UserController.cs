@@ -50,5 +50,35 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpDelete("deleteUser")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var result = _service.DeleteUser(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut("updateUser")]
+        public async Task<IActionResult> Update(int id, [FromBody] UserDTO request)
+        {
+            try
+            {
+                var result = _service.UpdateUser(id, request);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

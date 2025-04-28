@@ -7,7 +7,9 @@ namespace HotelMS.Interfaces
     {
         Task<User> GetUser(int id);
         Task<IEnumerable<User>> GetAll();
-        //Task<User> UpdateUser(int id, UserDTO request);
-        //Task DeleteUser(int id);
+       
+        Task DeleteUser(int id);
+        Task<User> UpdateUser(int id, UserDTO request);
+
     }
 }

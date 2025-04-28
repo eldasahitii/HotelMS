@@ -3,6 +3,7 @@ using HotelMS.DTO;
 using HotelMS.Interfaces;
 using HotelMS.Models;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HotelMS.Services
 {
@@ -25,7 +26,7 @@ namespace HotelMS.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception("An error occurred");
+                throw new Exception("An error occurred.");
             }
         }
 
@@ -43,15 +44,51 @@ namespace HotelMS.Services
             }
 
         }
+        public async Task <User> UpdateUser(int id, UserDTO request)
+        {
+            try
+            {
+                var user = _dbContext.Users.Find(id);
+                if (user != null)
+                {
+                    user.Username = request.Username;
+                    user.Email = request.Email;
+                    user.Password = request.Password;
+                    user.CreatedAt = request.CreatedAt;
+                    user.Phone = request.Phone;
+                    user.Address = request.Address;
+                    user.profilePicture = request.profilePicture;
 
-        //public Task<User> UpdateUser(int id, UserDTO request)
-        //{
-        //    throw new NotImplementedException();
-        //}
+                    _dbContext.SaveChanges();
+                }
+                return user;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error ocurred while attempting to save the user record.");
+            }
+        }
+      
+        public async Task DeleteUser(int id)
+        {
+            try
+            {
+                var result = _dbContext.Users.Find(id);
+                if(result != null)
+                {
+                    _dbContext.Users.Remove(result);
+                    _dbContext.SaveChanges();
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error ocurred while attempting to save the user record.");
 
-        //public Task DeleteUser(int id)
-        //{
-        //    throw new NotImplementedException();
-        //}
+            }
+        }
+
+
     }
 }
