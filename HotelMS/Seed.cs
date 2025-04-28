@@ -42,10 +42,10 @@ namespace HotelMS
 
                 var users = new List<User>()
                 {
-                    new User() {FirstName="Ruvejda",LastName="Jaha", Username = "RuvejdaJaha", Email = "ruvejda@gmail.com", Password = "Ruvejda123", CreatedAt = DateTime.Now, RoleID = adminRoleID.Value },
-                    new User() {FirstName="Liranda",LastName="Ukaj", Username = "LirandaUkaj", Email = "liranda@gmail.com", Password = "Liranda123", CreatedAt = DateTime.Now, RoleID = recepsionistRoleID.Value },
-                    new User() {FirstName="Orgesa",LastName="Berisha", Username="OrgesaBerisha", Email = "orgesa@gmail.com", Password = "Orgesa123", CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID.Value },
-                    new User() { FirstName="Velsa",LastName="Zemaj",Username = "VelsaZemaj", Email = "velsa@gmail.com", Password = "Velsa123", CreatedAt = DateTime.Now, RoleID = customerRoleID.Value }
+                    new User() {FirstName="Ruvejda",LastName="Jaha", Username = "RuvejdaJaha", Email = "ruvejda@gmail.com", PasswordHash = "Ruvejda123", CreatedAt = DateTime.Now, RoleID = adminRoleID.Value },
+                    new User() {FirstName="Liranda",LastName="Ukaj", Username = "LirandaUkaj", Email = "liranda@gmail.com", PasswordHash = "Liranda123", CreatedAt = DateTime.Now, RoleID = recepsionistRoleID.Value },
+                    new User() {FirstName="Orgesa",LastName="Berisha", Username="OrgesaBerisha", Email = "orgesa@gmail.com", PasswordHash = "Orgesa123", CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID.Value },
+                    new User() { FirstName="Velsa",LastName="Zemaj",Username = "VelsaZemaj", Email = "velsa@gmail.com", PasswordHash = "Velsa123", CreatedAt = DateTime.Now, RoleID = customerRoleID.Value }
                 };
 
                 dataContext.Users.AddRange(users);

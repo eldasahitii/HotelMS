@@ -35,6 +35,7 @@ namespace HotelMS.Data
                 .WithOne(r => r.User)
                 .HasForeignKey<CleaningStaff>(cS => cS.UserID)
                 .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
     }

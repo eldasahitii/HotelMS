@@ -3,16 +3,26 @@ using HotelMS.Data;
 using Microsoft.EntityFrameworkCore;
 using HotelMS.Interfaces;
 using HotelMS.Services;
+using Microsoft.AspNetCore.Identity;
+using HotelMS.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+builder.Services.AddIdentityCore<User>()
+    .AddEntityFrameworkStores<DataContext>()
+    .AddApiEndpoints();
 builder.Services.AddControllers();
+
 builder.Services.AddTransient<Seed>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
 builder.Services.AddDbContext<DataContext>(options=>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -38,6 +48,8 @@ void SeedData(IHost app)
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.MapIdentityApi<User>();
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }

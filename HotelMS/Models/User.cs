@@ -4,7 +4,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace HotelMS.Models
 {
-    public class User
+    public class User : IdentityUser
     {
         public int UserID { get; set; }
 
@@ -22,7 +22,7 @@ namespace HotelMS.Models
         public string Email { get; set; }
         [Required]
         [MinLength(6)]
-        public string Password { get; set; }
+        public string PasswordHash { get; set; }
         public DateTime CreatedAt { get; set; }=DateTime.Now;
         public string? Phone {  get; set; }
         public string? Address { get; set; }

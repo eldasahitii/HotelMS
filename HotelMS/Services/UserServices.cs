@@ -3,7 +3,7 @@ using HotelMS.DTO;
 using HotelMS.Interfaces;
 using HotelMS.Models;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace HotelMS.Services
 {
@@ -55,7 +55,7 @@ namespace HotelMS.Services
                     user.LastName = request.LastName;
                     user.Username = request.Username;
                     user.Email = request.Email;
-                    user.Password = request.Password;
+                    user.PasswordHash = request.PasswordHash;
                     user.CreatedAt = request.CreatedAt;
                     user.Phone = request.Phone;
                     user.Address = request.Address;
