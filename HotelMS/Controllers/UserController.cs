@@ -15,12 +15,21 @@ namespace HotelMS.Controllers
             _service = service;
         }
 
-        [HttpGet]
 
+        //AUTHENTICATION
+
+
+        [HttpGet]
+        //[HttpPost("register")]
+
+
+        //public async Task<IActionResult> Register(UserRegistrationDTO request)
         public async Task<IActionResult> GetUser(int id)
         {
             try
             {
+                //var user = await _service.Register(request);
+                //return Ok(user);
                 var result = await _service.GetUser(id);
                 if (result == null)
                 {
@@ -38,10 +47,20 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAll")]
+        //[HttpPost("login")]
+
+        
+        //public async Task<IActionResult> Login(UserLoginDTO request)
         public async Task<IActionResult> GetAll()
         {
             try
             {
+                //var  = await _service.Login(request);
+                //if(token == null)
+                //{
+                //    return Unauthorized();
+                //}
+                //return Ok(new { token, isLoggedIn = true });
                 var result = await _service.GetAll();
                 return Ok(result);
             }
