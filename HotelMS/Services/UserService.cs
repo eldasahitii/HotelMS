@@ -1,30 +1,22 @@
 ﻿using HotelMS.Data;
-using HotelMS.DTO;
-using HotelMS.Interfaces;
+using HotelMS.Data.DTO;
+using HotelMS.Data.Interfaces;
 using HotelMS.Models;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-//using Microsoft.Extensions.Configuration;
-//using Microsoft.IdentityModel.Tokens;
-//using System.IdentityModel.Tokens.Jwt;
-//using System.Runtime.InteropServices;
-//using System.Security.Claims;
-//using System.Security.Cryptography;
-//using System.Text;
 
 
 namespace HotelMS.Services
 {
-    public class UserServices : IUserServices
+    public class UserService : IUserServices
     {
         private readonly DataContext _dbContext;
-        //private readonly IConfiguration _configuration;
+ 
 
-        public UserServices(DataContext dbContext, /*IConfiguration configuration*/)
+        public UserService(DataContext dbContext)
         {
             _dbContext = dbContext;
-            //_configuration = configuration;
         }
 
         public async Task<User> GetUser(int id)
@@ -44,7 +36,6 @@ namespace HotelMS.Services
 
         public async Task<IEnumerable<User>> GetAll()
         {
-            //    return await _dbContext
             try
             {
                 var result = await _dbContext.Users.ToListAsync();
@@ -62,14 +53,16 @@ namespace HotelMS.Services
             try
             {
               var user = _dbContext.Users.Find(id);
+
+                if (user == null) {
+                    return null;
+                }
+
               if (user != null)
               {
                     user.FirstName = request.FirstName;
                     user.LastName = request.LastName;
-                    user.UserName = request.UserName;
                     user.Email = request.Email;
-                    //user.PasswordHash = request.PasswordHash;
-                    user.CreatedAt = request.CreatedAt;
                     user.Phone = request.Phone;
                     user.Address = request.Address;
 

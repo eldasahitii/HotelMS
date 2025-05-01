@@ -1,57 +1,78 @@
-﻿using HotelMS.Models;
-using HotelMS.Data;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Linq;
+﻿using HotelMS.Data;
+using HotelMS.Models;
+using System.Security.Cryptography;
+using System.Text;
 
-namespace HotelMS
+public class Seed
 {
-    public class Seed
+    private readonly DataContext dataContext;
+
+    // Reuse your password hashing logic here
+    private void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
     {
-        private readonly DataContext dataContext;
-        public Seed(DataContext dataContext)
+        using (var hmac = new HMACSHA512())
         {
-            this.dataContext = dataContext;
+            salt = hmac.Key;
+            hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
-        public void SeedDataContext()
+    }
+
+    public Seed(DataContext dataContext)
+    {
+        this.dataContext = dataContext;
+    }
+
+    public void SeedDataContext()
+    {
+        // Seed Roles first
+        if (!dataContext.Roles.Any())
         {
-            // Seed Roles first
-            if (!dataContext.Roles.Any())
-            {
-                var adminRole = new Role() { Name = "Admin" };
-                var recepsionistRole = new Role() { Name = "Recepsionist" };
-                var cleaningStaffRole = new Role() { Name = "Cleaning Staff" };
-                var customerRole = new Role() { Name = "Customer" };
+            var adminRole = new Role() { RoleType = "Admin" };
+            var recepsionistRole = new Role() { RoleType = "Recepsionist" };
+            var cleaningStaffRole = new Role() { RoleType = "Cleaning Staff" };
+            var customerRole = new Role() { RoleType = "Customer" };
 
-                dataContext.Roles.AddRange(adminRole, recepsionistRole, cleaningStaffRole, customerRole);
-                dataContext.SaveChanges();
+            dataContext.Roles.AddRange(adminRole, recepsionistRole, cleaningStaffRole, customerRole);
+            dataContext.SaveChanges();
+        }
+
+        // Seed Users
+        if (!dataContext.Users.Any())
+        {
+            var adminRoleID = dataContext.Roles.FirstOrDefault(r => r.RoleType == "Admin")?.RoleID;
+            var recepsionistRoleID = dataContext.Roles.FirstOrDefault(r => r.RoleType == "Recepsionist")?.RoleID;
+            var cleaningStaffRoleID = dataContext.Roles.FirstOrDefault(r => r.RoleType == "Cleaning Staff")?.RoleID;
+            var customerRoleID = dataContext.Roles.FirstOrDefault(r => r.RoleType == "Customer")?.RoleID;
+
+            if (adminRoleID == null || recepsionistRoleID == null || cleaningStaffRoleID == null || customerRoleID == null)
+            {
+                // Log and handle missing roles in some way
+                return;
             }
 
-            // Seed Users
-            if (!dataContext.Users.Any())
+            // Use the password hashing function here
+            byte[] adminHash, adminSalt;
+            CreatePasswordHash("Ruvejda123", out adminHash, out adminSalt);
+
+            byte[] recepsionistHash, recepsionistSalt;
+            CreatePasswordHash("Liranda123", out recepsionistHash, out recepsionistSalt);
+
+            byte[] cleaningStaffHash, cleaningStaffSalt;
+            CreatePasswordHash("Orgesa123", out cleaningStaffHash, out cleaningStaffSalt);
+
+            byte[] customerHash, customerSalt;
+            CreatePasswordHash("Velsa123", out customerHash, out customerSalt);
+
+            var users = new List<User>()
             {
-                var adminRoleID = dataContext.Roles.FirstOrDefault(r => r.Name == "Admin")?.RoleID;
-                var recepsionistRoleID = dataContext.Roles.FirstOrDefault(r => r.Name == "Recepsionist")?.RoleID;
-                var cleaningStaffRoleID = dataContext.Roles.FirstOrDefault(r => r.Name == "Cleaning Staff")?.RoleID;
-                var customerRoleID = dataContext.Roles.FirstOrDefault(r => r.Name == "Customer")?.RoleID;
+                new User() {FirstName="Ruvejda", LastName="Jaha", Email = "ruvejda@gmail.com", PasswordHash = adminHash, PasswordSalt = adminSalt, Phone="044-111-222", CreatedAt = DateTime.Now, RoleID = adminRoleID.Value },
+                new User() {FirstName="Liranda", LastName="Ukaj",  Email = "liranda@gmail.com", PasswordHash = recepsionistHash, PasswordSalt = recepsionistSalt, Address="Prishtina", CreatedAt = DateTime.Now, RoleID = recepsionistRoleID.Value },
+                new User() {FirstName="Orgesa", LastName="Berisha",  Email = "orgesa@gmail.com", PasswordHash = cleaningStaffHash, PasswordSalt = cleaningStaffSalt, CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID.Value },
+                new User() {FirstName="Velsa", LastName="Zemaj", Email = "velsa@gmail.com", PasswordHash = customerHash, PasswordSalt = customerSalt, CreatedAt = DateTime.Now, RoleID = customerRoleID.Value }
+            };
 
-                if (adminRoleID == null || recepsionistRoleID == null || cleaningStaffRoleID == null || customerRoleID == null)
-                {
-                    // Log and handle missing roles in some way
-                    return;
-                }
-
-                var users = new List<User>()
-                {
-                    new User() {FirstName="Ruvejda",LastName="Jaha", UserName = "RuvejdaJaha", Email = "ruvejda@gmail.com", PasswordHash = "Ruvejda123", CreatedAt = DateTime.Now, RoleID = adminRoleID.Value },
-                    new User() {FirstName="Liranda",LastName="Ukaj", UserName = "LirandaUkaj", Email = "liranda@gmail.com", PasswordHash = "Liranda123", CreatedAt = DateTime.Now, RoleID = recepsionistRoleID.Value },
-                    new User() {FirstName="Orgesa",LastName="Berisha", UserName="OrgesaBerisha", Email = "orgesa@gmail.com", PasswordHash = "Orgesa123", CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID.Value },
-                    new User() { FirstName="Velsa",LastName="Zemaj",UserName = "VelsaZemaj", Email = "velsa@gmail.com", PasswordHash = "Velsa123", CreatedAt = DateTime.Now, RoleID = customerRoleID.Value }
-                };
-
-                dataContext.Users.AddRange(users);
-                dataContext.SaveChanges();
-            }
+            dataContext.Users.AddRange(users);
+            dataContext.SaveChanges();
         }
     }
 }
-

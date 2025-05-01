@@ -1,7 +1,7 @@
-﻿using HotelMS.DTO;
+﻿using HotelMS.Data.DTO;
 using HotelMS.Models;
 
-namespace HotelMS.Interfaces
+namespace HotelMS.Data.Interfaces
 {
     public interface IUserServices
     {

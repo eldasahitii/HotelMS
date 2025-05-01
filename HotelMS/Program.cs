@@ -1,81 +1,37 @@
 using HotelMS;
 using HotelMS.Data;
 using Microsoft.EntityFrameworkCore;
-using HotelMS.Interfaces;
 using HotelMS.Services;
 using Microsoft.AspNetCore.Identity;
 using HotelMS.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Razor.Language;
+using HotelMS.Data.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+}
+);
+
 // Add services to the container.
-
-//Liranda
-builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<User>()
-    .AddEntityFrameworkStores<DataContext>();
-    //L
-
-
-//builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
-//builder.Services.AddIdentityCore<User>()
-//    .AddEntityFrameworkStores<DataContext>()
-//    .AddApiEndpoints();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddControllers();
-
 builder.Services.AddTransient<Seed>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-builder.Services.AddDbContext<DataContext>(options=>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-}
-);
-
-//O
-//builder.Services.AddIdentity<User, IdentityRole>(options =>
-//{
- //   options.Password.RequireDigit = true;
-   // options.Password.RequireLowercase = true;
-    //options.Password.RequireUppercase = true;
-    //options.Password.RequireNonAlphanumeric = true;
-    //options.Password.RequiredLength = 8;
-//})
-  //  .AddEntityFrameworkStores<DataContext>();
-//builder.Services.AddAuthentication(options =>
-//{
-  //  options.DefaultAuthenticateScheme =
-   // options.DefaultChallengeScheme =
-    //options.DefaultForbidScheme =
-    //options.DefaultScheme =
-    //options.DefaultSignInScheme =
-    //options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme
-//}).AddJwtBearer(options =>
-//{
-  //  options.TokenValidationParameters = new TokenValidationParameters
-    //{
-      //  ValidateIssuer = true,
-       // ValidIssuer = builder.Configuration["JWT:Issure"],
-        //ValidateAudience = true,
-        //ValidAudience = builder.Configuration["JWT":Audience],
-        //ValidateIssuerSigningKey = true,
-        //IssuerSigningKey = new SymmetricSecurityKey(
-          //  System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
-            //)
-
-//    };
-//});
-//O
 
 
-builder.Services.AddScoped<IUserServices, UserServices>();
+
+builder.Services.AddScoped<IUserServices, UserService>();
 
 var app = builder.Build();
 
@@ -95,20 +51,11 @@ void SeedData(IHost app)
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    //app.MapIdentityApi<User>();
-
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
-//o
-//app.UseAuthentication();
-//app.UseAuthorization();
-//o
-
-app.MapIdentityApi<User>();
 
 app.UseAuthorization();
 
