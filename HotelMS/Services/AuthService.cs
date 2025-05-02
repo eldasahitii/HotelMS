@@ -25,6 +25,7 @@ namespace HotelMS.Services
         }
         public async Task<UserDTO> Register(UserRegistrationDTO request)
         {
+        
             try
             {
                 CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
