@@ -9,6 +9,8 @@ namespace HotelMS.Migrations
     public partial class Initial : Migration
     {
         /// <inheritdoc />
+    
+       
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
