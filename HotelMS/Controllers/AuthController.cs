@@ -30,7 +30,9 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
 
+      
         [HttpPost("login")]
 
         public async Task<IActionResult> Login(UserLoginDTO request)
@@ -70,5 +72,8 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+
     }
 }
