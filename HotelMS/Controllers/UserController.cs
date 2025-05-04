@@ -43,7 +43,7 @@ namespace HotelMS.Controllers
 
         [HttpGet("getAll")]
 
-        
+
         public async Task<IActionResult> GetAll()
         {
             try

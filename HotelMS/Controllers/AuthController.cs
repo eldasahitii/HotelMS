@@ -51,7 +51,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost("changePassword")]
-        public async Task<IActionResult> ChangePassword(int UserID,ChangePasswordDTO request)
+        public async Task<IActionResult> ChangePassword(int UserID, ChangePasswordDTO request)
         {
             try
             {

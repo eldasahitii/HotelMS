@@ -18,16 +18,24 @@ namespace HotelMS.Services
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
-        public AuthService(DataContext context, IConfiguration configuration) {
+        public AuthService(DataContext context, IConfiguration configuration)
+        {
             _context = context;
             _configuration = configuration;
 
         }
         public async Task<UserDTO> Register(UserRegistrationDTO request)
         {
-        
             try
             {
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+                if (existingUser != null)
+                {
+                    throw new Exception("User with this email already exists.");
+                }
+
                 CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
 
                 User user = new User
@@ -45,11 +53,10 @@ namespace HotelMS.Services
 
                 return user.Adapt<UserDTO>();
             }
-
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex.Message);
                 throw new Exception("An error occurred while attempting to save the user record.");
-
             }
         }
 
@@ -78,20 +85,21 @@ namespace HotelMS.Services
                 CreatePasswordHash(request.NewPassword, out byte[] hash, out byte[] salt);
 
                 var user = _context.Users.Find(UserID);
-                if (user != null) {
-                    if (!VerifyingPasswordHash(request.OldPassword, user.PasswordHash, user.PasswordSalt)) 
+                if (user != null)
+                {
+                    if (!VerifyingPasswordHash(request.OldPassword, user.PasswordHash, user.PasswordSalt))
                     {
                         return null;
                     }
 
-                        user.PasswordHash = hash;
-                        user.PasswordSalt = salt;
+                    user.PasswordHash = hash;
+                    user.PasswordSalt = salt;
 
-                        await _context.SaveChangesAsync();
-                    }
-                    return user.Adapt<UserDTO>();
+                    await _context.SaveChangesAsync();
                 }
-                catch (Exception ex)
+                return user.Adapt<UserDTO>();
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 throw new Exception("An error occurred while attempting to save the user record");
@@ -133,7 +141,8 @@ namespace HotelMS.Services
 
         private bool VerifyingPasswordHash(string password, byte[] hash, byte[] salt)
         {
-            using (var hmac = new HMACSHA512(salt)) {
+            using (var hmac = new HMACSHA512(salt))
+            {
                 var computeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return computeHash.SequenceEqual(hash);
             }
