@@ -1,9 +1,10 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import email_icon from '../Assets/emaill.png';
 import password_icon from '../Assets/password.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { jwtDecode } from 'jwt-decode';
 
 const Signup = () => {
     const [userRegistration, setUserRegistration] = useState({
@@ -52,7 +53,6 @@ const Signup = () => {
         if (Object.values(errors).some((value) => value)) {
             return;
         }
-
         try {
             const response = await axios.post('https://localhost:7117/api/Auth/register', {
                 FirstName: userRegistration.FirstName,
@@ -61,15 +61,24 @@ const Signup = () => {
                 Password: userRegistration.Password,
                 RoleID: userRegistration.RoleID
             });
-
+            const { token, isLoggedIn } = response.data;
+            if (token && isLoggedIn) {
+                localStorage.setItem('token', token);
+            }
+        
             console.log('Registration successful:', response.data);
             navigate('/login'); 
         } catch (error) {
-            console.error('Registration error:', error.response ? error.response.data : error.message);
-            setError('Registration failed. Please try again.');
+            const message = error.response?.data?.message || error.response?.data || error.message;
+            console.error("Registration error:", message);
+        
+            if (message.includes("already exists")) {
+                setError("An account with this email already exists.");
+            } else {
+                setError("Registration failed. Please try again.");
+            }
         }
     };
-
     const goToLogin = () => {
         navigate('/login');
     };
@@ -110,8 +119,11 @@ const Signup = () => {
                         value={userRegistration.Email}
                         onChange={handleInputChange}
                     />
+                    
                     {formErrors.Email && <div className="invalid-feedback">Email is required.</div>}
                 </div>
+
+                
                 <div className="mb-3">
                     <img src={password_icon} alt="password" width="30" className="me-3" />
                     <input

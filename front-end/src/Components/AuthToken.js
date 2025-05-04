@@ -15,6 +15,8 @@ const useAuthToken = () => {
         if (token) {
             try {
                 const decodedToken = jwt_decode(token);
+                console.log('Decoded token:', decodedToken);
+
                 const exp = decodedToken.exp;
                 const currentTime = Date.now() / 1000; 
 
@@ -24,8 +26,8 @@ const useAuthToken = () => {
                     setUserRole(null);
                     console.log('Token has expired');
                 } else {
-                    const id = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-                    const role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+                    const id = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']|| decodedToken.sub;
+                    const role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']|| decodedToken.role;
                     setUserId(id);
                     setUserRole(role);
                 }

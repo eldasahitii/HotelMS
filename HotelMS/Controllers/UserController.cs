@@ -16,8 +16,6 @@ namespace HotelMS.Controllers
         }
 
 
-
-
         [HttpGet]
 
 

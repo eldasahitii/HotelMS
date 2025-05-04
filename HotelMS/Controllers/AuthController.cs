@@ -1,7 +1,11 @@
-﻿using HotelMS.Data.DTO;
+﻿using HotelMS.Data;
+using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using HotelMS.Services;
+
 //using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace HotelMS.Controllers
@@ -11,11 +15,15 @@ namespace HotelMS.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _service;
+        private readonly DataContext _context;
 
-        public AuthController(IAuthService service)
+        public AuthController(IAuthService service, DataContext context)
         {
             _service = service;
+            _context = context;
+
         }
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegistrationDTO request)
@@ -23,16 +31,21 @@ namespace HotelMS.Controllers
             try
             {
                 var user = await _service.Register(request);
-                return Ok(user);
+
+                if (user == null)
+                {
+                    return BadRequest(new { message = "User registration failed" });
+                }
+                var token = await _service.CreateToken(user);
+
+                return Ok(new { token, isLoggedIn = true });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
-        
 
-      
         [HttpPost("login")]
 
         public async Task<IActionResult> Login(UserLoginDTO request)

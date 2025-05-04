@@ -36,10 +36,6 @@ builder.Services.AddTransient<Seed>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
-
-
 builder.Services.AddScoped<IUserServices, UserService>();
 
 var app = builder.Build();

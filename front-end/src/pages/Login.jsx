@@ -2,8 +2,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import email_icon from '../Assets/emaill.png'; 
-import password_icon from '../Assets/password.png';  
-
+import password_icon from '../Assets/password.png'; 
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -17,11 +17,24 @@ const Login = () => {
                 email,
                 password,
             });
+            const { token, isLoggedIn } = response.data;
+      
+            if (token && isLoggedIn) {
+              const decoded = jwtDecode(token);
+              console.log('Decoded token:', decoded);
+              localStorage.setItem('token', token);
+              localStorage.setItem('email', decoded.email);
+              localStorage.setItem('role', decoded.role);
+              localStorage.setItem('userID', decoded.nameid);
+
+            }
+            
             console.log('Login successful:', response.data);
         }
         catch (error)
         {
             console.error('Login error:', error.response ? error.response.data : error.message);
+            
         }
     };
 

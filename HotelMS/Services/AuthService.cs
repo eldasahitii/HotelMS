@@ -24,7 +24,7 @@ namespace HotelMS.Services
             _configuration = configuration;
 
         }
-        public async Task<UserDTO> Register(UserRegistrationDTO request)
+        public async Task<User> Register(UserRegistrationDTO request)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace HotelMS.Services
 
                 if (existingUser != null)
                 {
-                    throw new Exception("User with this email already exists.");
+                    throw new ArgumentException("User with this email already exists.");
                 }
 
                 CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
@@ -50,12 +50,12 @@ namespace HotelMS.Services
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
-
-                return user.Adapt<UserDTO>();
+                var token = CreateToken(user);
+                return user.Adapt<User>();
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Registration error: " + ex.Message);
                 throw new Exception("An error occurred while attempting to save the user record.");
             }
         }
@@ -74,8 +74,7 @@ namespace HotelMS.Services
                 return null;
             }
             Console.WriteLine($"User{request.Email} logged in successfully.");
-
-            return CreateToken(user);
+            return await CreateToken(user);
         }
 
         public async Task<UserDTO> ChangePassword(int UserID, ChangePasswordDTO request)
@@ -106,28 +105,7 @@ namespace HotelMS.Services
             }
         }
 
-
-        /*  // **Shtimi i metodës për kontrollimin e disponueshmërisë së email-it**
-        public async Task<User> GetUserByEmail(string email)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        }
-
-        // **Pjesa për krijimin e një endpoint për kontrollimin e email-it të disponueshëm**
-        [HttpGet("checkEmail/{email}")]
-        public async Task<IActionResult> CheckEmailAvailability(string email)
-        {
-            var existingUser = await _service.GetUserByEmail(email);  // **Këtu po përdorim metodën e re që kontrollon email-in**
-            if (existingUser != null)
-            {
-                return BadRequest("Email is already in use.");  // **Nëse ekziston, kthejmë mesazh gabimi**
-            }
-
-            return Ok("Email is available.");  // **Nëse email-i është i disponueshëm, kthejmë mesazh suksesi**
-        }*/
-
-
-        private String CreateToken(User user)
+        public Task <String> CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
             {
@@ -147,7 +125,8 @@ namespace HotelMS.Services
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return jwt;
+            return Task.FromResult(jwt);
+
         }
 
         public void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
