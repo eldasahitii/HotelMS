@@ -7,7 +7,7 @@ namespace HotelMS.Models
     {
 
         [Key]
-        public int CleaningStaffID { get; set; }
+        public int CleaningStaffId { get; set; }
 
         [ForeignKey("User")]
         public int UserID { get; set; }
