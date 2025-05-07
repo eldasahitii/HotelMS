@@ -5,6 +5,7 @@ namespace HotelMS.Data.Interfaces
 {
     public interface IRoomService
     {
+        Task<Room> AddRoom(RoomDTO request);
         Task<Room> GetRoom(int id);
         Task<IEnumerable<Room>> GetAll();
         Task DeleteRoom(int id);
