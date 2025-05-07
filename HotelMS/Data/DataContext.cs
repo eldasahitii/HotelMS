@@ -14,7 +14,11 @@ namespace HotelMS.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-       
+
+        public DbSet<Room> Rooms { get; set; }
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -24,8 +28,6 @@ namespace HotelMS.Data
                 .WithMany(r=> r.Users)
                 .HasForeignKey(u=>u.RoleID)
                 .OnDelete(DeleteBehavior.Cascade);
-
-
         }
     }
     }
