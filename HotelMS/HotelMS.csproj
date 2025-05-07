@@ -44,6 +44,7 @@
 
   <ItemGroup>
     <Folder Include="NewFolder\" />
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>
