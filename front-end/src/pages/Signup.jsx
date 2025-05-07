@@ -125,19 +125,19 @@ const Signup = () => {
                   
                     <div className="col-md-5 mb-4 mb-md-0 text-center text-md-start" >
                         <h1 className="fw-semibold">Welcome to Your Getaway</h1><br />
-                        <p className="fw-normal">
+                        {/* <p className="fw-normal">
                             Become a member and unlock exclusive deals, comfort, and personalized service.  
                             Luxury starts here.
-                        </p><br />
-                        <p>Why join?</p>
-                        <ul className="lsit-group list-group-flush">
+                        </p><br /> */}
+                        {/* <p>Why join?</p> */}
+                        {/* <ul className="lsit-group list-group-flush">
                             <li className="list-group-item">Exclusive member discounts on rooms & suites</li>
                             <li className="list-group-item">Early check-in & late check-out privileges</li>
                             <li className="list-group-item">Access to member-only offers and events</li>
                             <li className="list-group-item">Seamless bookings and stay history tracking</li>
-                        </ul><br/>
+                        </ul><br/> */}
                         <h5 className="fw-normal">Create your free account and make every stay unforgettable</h5>
-                        <h2 className="fw-semibold">Luxury is just a click away</h2>
+                        <h5 className="fw-semibold">Luxury is just a click away</h5>
                     </div>
         
                  
