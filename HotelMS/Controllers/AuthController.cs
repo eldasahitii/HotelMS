@@ -3,6 +3,7 @@ using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Services;
 
+
 //using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -90,3 +91,9 @@ namespace HotelMS.Controllers
 
     }
 }
+
+
+
+
+
+
