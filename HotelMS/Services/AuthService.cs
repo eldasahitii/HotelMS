@@ -36,6 +36,12 @@ namespace HotelMS.Services
                     throw new ArgumentException("User with this email already exists.");
                 }
 
+                var roleExists = await _context.Roles.AnyAsync(r => r.RoleID == request.RoleID);
+                if (roleExists)
+                {
+                    throw new ArgumentException("Invalid role ID.");
+                }
+
                 CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
 
                 User user = new User
@@ -105,13 +111,18 @@ namespace HotelMS.Services
             }
         }
 
-        public Task <String> CreateToken(User user)
+        public async Task <String> CreateToken(User user)
         {
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
+            if (role != null)
+            {
+                throw new Exception("User role not found");
+            }
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role,user.RoleID.ToString()),
-                new Claim(ClaimTypes.NameIdentifier,user.UserID.ToString()),
+               new Claim(ClaimTypes.Role, role.RoleType),
+               new Claim(ClaimTypes.NameIdentifier,user.UserID.ToString()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
@@ -124,8 +135,8 @@ namespace HotelMS.Services
                 signingCredentials: cred);
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return Task.FromResult(jwt);
+            return jwt;
+            //return Task.FromResult(jwt);
 
         }
 
