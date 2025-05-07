@@ -27,13 +27,15 @@ namespace HotelMS.Controllers
 
         // POST: api/reviews
         [HttpPost]
-        [Authorize] // Only logged-in users can post
+        //[Authorize] // Only logged-in users can post
         public async Task<ActionResult<Review>> PostReview(Review review)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Unauthorized();
+            // var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //if (userId == null) return Unauthorized();
 
-            review.UserID = int.Parse(userId);
+            //review.UserID = int.Parse(userId);
+            review.UserID = 1; // ose një ID që ekziston në tabelën Users
+
             review.Date = DateTime.Now;
 
             _context.Reviews.Add(review);
