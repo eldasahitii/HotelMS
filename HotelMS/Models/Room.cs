@@ -22,8 +22,10 @@ namespace HotelMS.Models
         [Required]
         public string ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public int? RoomTypeID { get; set; }
+        public RoomType? RoomType { get; set; }
+        public ICollection<RoomReservation> Reservations { get; set; }
+   
 
-        //public ICollection<RoomAmenity> RoomAmenities { get;set; }
-        //public ICollection<Reservation>Reservations { get; set; }
     }
 }
