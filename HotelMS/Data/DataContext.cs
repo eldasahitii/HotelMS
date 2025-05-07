@@ -28,7 +28,7 @@ namespace HotelMS.Data
 
     
 
-        }
+        } 
     }
     }
 
