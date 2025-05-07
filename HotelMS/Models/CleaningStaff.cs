@@ -11,9 +11,7 @@ namespace HotelMS.Models
 
         [ForeignKey("User")]
         public int UserID { get; set; }
-
-        public User User { get; set; }  
-
+        public User User { get; set; }
         public ICollection<CleaningStatus> CleaningStatuses { get; set; }
 
     }

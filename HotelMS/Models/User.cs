@@ -33,6 +33,9 @@ namespace HotelMS.Models
         public int RoleID { get; set; }
         public Role Role { get; set; }
 
+        public CleaningStaff CleaningStaff { get; set; }
+
+
 
 
     }
