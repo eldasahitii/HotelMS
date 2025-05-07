@@ -22,6 +22,8 @@ namespace HotelMS.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+           
+
             modelBuilder.Entity("HotelMS.Models.Role", b =>
                 {
                     b.Property<int>("RoleID")
@@ -130,6 +132,8 @@ namespace HotelMS.Migrations
                     b.ToTable("Users");
                 });
 
+        
+
             modelBuilder.Entity("HotelMS.Models.User", b =>
                 {
                     b.HasOne("HotelMS.Models.Role", "Role")
@@ -140,6 +144,8 @@ namespace HotelMS.Migrations
 
                     b.Navigation("Role");
                 });
+
+           
 
             modelBuilder.Entity("HotelMS.Models.Role", b =>
                 {

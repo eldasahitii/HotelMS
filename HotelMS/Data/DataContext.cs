@@ -16,7 +16,8 @@ namespace HotelMS.Data
         public DbSet<Role> Roles { get; set; }
 
         public DbSet<Room> Rooms { get; set; }
-
+        //public DbSet<CleaningStaff> CleaningStaff { get; set; }
+        //public DbSet<CleaningAssignment> CleaningAssignments { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,6 +29,47 @@ namespace HotelMS.Data
                 .WithMany(r=> r.Users)
                 .HasForeignKey(u=>u.RoleID)
                 .OnDelete(DeleteBehavior.Cascade);
+
+
+            //// CleaningStaff ↔ User (assigned user)
+            //modelBuilder.Entity<CleaningStaff>()
+            //    .HasOne(cs => cs.User)
+            //    .WithMany() // You can create navigation in User if needed
+            //    .HasForeignKey(cs => cs.UserID)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+            // CleaningStaff ↔ User (assigned by)
+            //modelBuilder.Entity<CleaningStaff>()
+            //    .HasOne(cs => cs.AssignedBy)
+            //    .WithMany()
+            //    .HasForeignKey(cs => cs.AssignedByUserID)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+            // CleaningAssignment ↔ CleaningStaff
+            //modelBuilder.Entity<CleaningAssignment>()
+            //    .HasOne(ca => ca.CleaningStaff)
+            //    .WithMany(cs => cs.CleaningAssignments)
+            //    .HasForeignKey(ca => ca.CleaningStaffID)
+            //    .OnDelete(DeleteBehavior.Cascade);
+
+            // CleaningAssignment ↔ Room
+            //modelBuilder.Entity<CleaningAssignment>()
+            //    .HasOne(ca => ca.Room)
+            //    .WithMany()
+            //    .HasForeignKey(ca => ca.RoomID)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+            // CleaningAssignment ↔ User (assigned by)
+            //modelBuilder.Entity<CleaningAssignment>()
+            //    .HasOne(ca => ca.AssignedBy)
+            //    .WithMany()
+            //    .HasForeignKey(ca => ca.AssignedByUserID)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+            //modelBuilder.Entity<CleaningStaff>()
+            // .Property(cs => cs.ShiftType)
+            //  .HasConversion<string>();
+ 
         }
     }
     }
