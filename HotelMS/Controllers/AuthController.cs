@@ -1,4 +1,4 @@
-﻿using HotelMS.Data;
+﻿ using HotelMS.Data;
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Services;
@@ -86,7 +86,6 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
 
 
     }
