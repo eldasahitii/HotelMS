@@ -1,15 +1,26 @@
-﻿namespace HotelMS.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace HotelMS.Models
 {
     public class Room
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int RoomID { get; set; }
-        public string Name { get; set; } = string.Empty;
+        [Required]
+        public string Name { get; set; }
+        [Required]
         public string Capacity { get; set; }
-        public string Size { get; set; }=string.Empty;
-        public string Description { get; set; } = string.Empty;
+        [Required]
+        public string Size { get; set; }
+        [Required]
+        public string Description { get; set; }
+        [Required]
         public decimal Price { get; set; }
         public bool IsAvailable { get; set; } = true;
-        public string ImageUrl { get; set; } = string.Empty;
+        [Required]
+        public string ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         //public ICollection<RoomAmenity> RoomAmenities { get;set; }
