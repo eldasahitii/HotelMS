@@ -70,7 +70,7 @@ public class Seed
                 new User() {FirstName="Orgesa", LastName="Berisha",  Email = "orgesa@gmail.com", PasswordHash = cleaningStaffHash, PasswordSalt = cleaningStaffSalt, CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID.Value },
                 new User() {FirstName="Velsa", LastName="Zemaj", Email = "velsa@gmail.com", PasswordHash = customerHash, PasswordSalt = customerSalt, CreatedAt = DateTime.Now, RoleID = customerRoleID.Value }
             };
-
+            //comment
             dataContext.Users.AddRange(users);
             dataContext.SaveChanges();
         }
