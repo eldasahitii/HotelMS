@@ -77,60 +77,6 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-        if (!dataContext.CleaningStaff.Any())
-        {
-            var cleaningUser = dataContext.Users.FirstOrDefault(u => u.RoleID == cleaningStaffRoleID);
-
-            if (cleaningUser != null)
-            {
-                var cleaningStaff = new CleaningStaff
-                {
-
-                    UserID = cleaningUser.UserID,
-                    FirstName = cleaningUser.FirstName,  
-                    LastName = cleaningUser.LastName,     
-                    Email = cleaningUser.Email,          
-                    Phone = cleaningUser.Phone,          
-                    Address = cleaningUser.Address
-                };
-                dataContext.CleaningStaff.Add(cleaningStaff);
-                dataContext.SaveChanges();
-            }
-        }
-
-        if (!dataContext.Rooms.Any())
-        {
-            var room = new Room
-            {
-                Name = "Room 101",
-                Capacity = "2 Adults",
-                Size = "25m²",
-                Description = "Standard double room",
-                Price = 75.00M,
-                IsAvailable = true,
-                ImageUrl = "room101.jpg"
-            };
-            dataContext.Rooms.Add(room);
-            dataContext.SaveChanges();
-        }
-        if (!dataContext.CleaningStatuses.Any())
-        {
-            var cleaningStaff = dataContext.CleaningStaff.FirstOrDefault();
-            var room = dataContext.Rooms.FirstOrDefault();
-
-            if (cleaningStaff != null && room != null)
-            {
-                var cleaningStatus = new CleaningStatus
-                {
-                    CleaningStaffID = cleaningStaff.CleaningStaffId,
-                    RoomID = room.RoomID,
-                    Comments = "Cleaned thoroughly, all good."
-                };
-
-                dataContext.CleaningStatuses.Add(cleaningStatus);
-                dataContext.SaveChanges();
-            }
-        }
     }
 
    
