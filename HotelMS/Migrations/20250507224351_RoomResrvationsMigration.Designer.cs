@@ -4,6 +4,7 @@ using HotelMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelMS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250507224351_RoomResrvationsMigration")]
+    partial class RoomResrvationsMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,8 +24,6 @@ namespace HotelMS.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-           
 
             modelBuilder.Entity("HotelMS.Models.Role", b =>
                 {
@@ -191,7 +192,6 @@ namespace HotelMS.Migrations
                     b.ToTable("Users");
                 });
 
-
             modelBuilder.Entity("HotelMS.Models.Room", b =>
                 {
                     b.HasOne("HotelMS.Models.RoomType", "RoomType")
@@ -221,7 +221,6 @@ namespace HotelMS.Migrations
                     b.Navigation("User");
                 });
 
-
             modelBuilder.Entity("HotelMS.Models.User", b =>
                 {
                     b.HasOne("HotelMS.Models.Role", "Role")
@@ -232,8 +231,6 @@ namespace HotelMS.Migrations
 
                     b.Navigation("Role");
                 });
-
-           
 
             modelBuilder.Entity("HotelMS.Models.Role", b =>
                 {

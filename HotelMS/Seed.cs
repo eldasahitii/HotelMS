@@ -2,6 +2,7 @@
 using HotelMS.Models;
 using System.Security.Cryptography;
 using System.Text;
+using System.Linq;
 
 public class Seed
 {
@@ -84,6 +85,7 @@ public class Seed
             dataContext.SaveChanges();
         }
 
+
         // Seed CleaningStaff
         //if (!dataContext.CleaningStaff.Any())
         //{
@@ -106,9 +108,28 @@ public class Seed
         //}
 
 
+        // Seed RoomTypes
+        if (!dataContext.RoomTypes.Any())
+        {
+            var roomTypes = new List<RoomType>
+            {
+                new RoomType() { Name = "Standard" },
+                new RoomType() { Name = "Deluxe" },
+                new RoomType() { Name = "Suite" }
+            };
+
+            dataContext.RoomTypes.AddRange(roomTypes);
+            dataContext.SaveChanges();
+        }
+
+
         // Seed Rooms
         if (!dataContext.Rooms.Any())
         {
+            var standardRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Standard").RoomTypeID;
+            var deluxeRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Deluxe").RoomTypeID;
+            var suiteRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Suite").RoomTypeID;
+
             var rooms = new List<Room>
             {
                 new Room()
@@ -116,21 +137,21 @@ public class Seed
                     Name = "Single Room", Capacity = "1-2 Persons", Size = "15m²",
                     Description = "A cozy single room with modern amenities.",
                     Price = 50.00m, IsAvailable = true, ImageUrl = "single-room.jpg",
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now, RoomTypeID = standardRoomTypeID
                 },
                 new Room()
                 {
                     Name = "Double Room", Capacity = "2 Adults", Size = "25m²",
                     Description = "A spacious double room with a comfortable bed.",
                     Price = 80.00m, IsAvailable = true, ImageUrl = "double-room.jpg",
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now, RoomTypeID = deluxeRoomTypeID
                 },
                 new Room()
                 {
                     Name = "Twin Room", Capacity = "2-3 Persons", Size = "23m²",
                     Description = "A twin bed room with two comfortable beds and modern amenities.",
                     Price = 70.00m, IsAvailable = true, ImageUrl = "twin-room.jpg",
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID
                 }
             };
 
