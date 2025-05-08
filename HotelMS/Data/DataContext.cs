@@ -17,11 +17,14 @@ namespace HotelMS.Data
 
         public DbSet<Room> Rooms { get; set; }
 
-        public DbSet<CleaningStaff> CleaningStaff { get; set; }
-        public DbSet<CleaningAssignment> CleaningAssignments { get; set; }
+        //public DbSet<CleaningStaff> CleaningStaff { get; set; }
+        //public DbSet<CleaningAssignment> CleaningAssignments { get; set; }
 
         public DbSet<RoomReservation> RoomReservations { get; set; }
         public DbSet<RoomType> RoomTypes { get; set; }
+        public DbSet<RoomStatus> RoomStatuses { get; set; }
+        public DbSet<ReservationStatus> ReservationStatuses { get; set; }
+
 
 
 
@@ -52,6 +55,22 @@ namespace HotelMS.Data
            .WithMany(r => r.Reservations)
            .HasForeignKey(rr => rr.RoomID)
            .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<Room>()
+            .HasOne(r => r.RoomStatus)           
+            .WithMany(rs => rs.Rooms)
+            .HasForeignKey(r => r.RoomStatusID)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RoomReservation>()
+           .HasOne(rr => rr.ReservationStatus)
+           .WithMany(rs => rs.RoomReservations)
+           .HasForeignKey(rr => rr.ReservationStatusID)
+            .OnDelete(DeleteBehavior.Restrict);
+
+
+
 
 
             // CleaningStaff ↔ User (assigned user)

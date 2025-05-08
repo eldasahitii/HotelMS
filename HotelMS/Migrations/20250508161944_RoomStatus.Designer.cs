@@ -4,6 +4,7 @@ using HotelMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelMS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250508161944_RoomStatus")]
+    partial class RoomStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,7 +41,6 @@ namespace HotelMS.Migrations
 
                     b.ToTable("ReservationStatuses");
                 });
-
 
             modelBuilder.Entity("HotelMS.Models.Role", b =>
                 {
@@ -227,7 +229,6 @@ namespace HotelMS.Migrations
                     b.ToTable("Users");
                 });
 
-
             modelBuilder.Entity("HotelMS.Models.Room", b =>
                 {
                     b.HasOne("HotelMS.Models.RoomStatus", "RoomStatus")
@@ -313,7 +314,6 @@ namespace HotelMS.Migrations
                 {
                     b.Navigation("RoomReservations");
                 });
-
 #pragma warning restore 612, 618
         }
     }
