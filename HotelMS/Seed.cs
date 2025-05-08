@@ -2,12 +2,17 @@
 using HotelMS.Models;
 using System.Security.Cryptography;
 using System.Text;
+using System.Linq;
 
 public class Seed
 {
     private readonly DataContext dataContext;
 
-    // Reuse your password hashing logic here
+    public Seed(DataContext dataContext)
+    {
+        this.dataContext = dataContext;
+    }
+
     private void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
     {
         using (var hmac = new HMACSHA512())
@@ -17,61 +22,113 @@ public class Seed
         }
     }
 
-    public Seed(DataContext dataContext)
-    {
-        this.dataContext = dataContext;
-    }
-
     public void SeedDataContext()
     {
-        // Seed Roles first
+        // Seed Roles
         if (!dataContext.Roles.Any())
         {
-            var adminRole = new Role() { RoleType = "Admin" };
-            var recepsionistRole = new Role() { RoleType = "Recepsionist" };
-            var cleaningStaffRole = new Role() { RoleType = "Cleaning Staff" };
-            var customerRole = new Role() { RoleType = "Customer" };
+            var roles = new List<Role>
+            {
+                new Role() { RoleType = "Admin" },
+                new Role() { RoleType = "Recepsionist" },
+                new Role() { RoleType = "Cleaning Staff" },
+                new Role() { RoleType = "Customer" }
+            };
 
-            dataContext.Roles.AddRange(adminRole, recepsionistRole, cleaningStaffRole, customerRole);
+            dataContext.Roles.AddRange(roles);
             dataContext.SaveChanges();
         }
 
         // Seed Users
         if (!dataContext.Users.Any())
         {
-            var adminRoleID = dataContext.Roles.FirstOrDefault(r => r.RoleType == "Admin")?.RoleID;
-            var recepsionistRoleID = dataContext.Roles.FirstOrDefault(r => r.RoleType == "Recepsionist")?.RoleID;
-            var cleaningStaffRoleID = dataContext.Roles.FirstOrDefault(r => r.RoleType == "Cleaning Staff")?.RoleID;
-            var customerRoleID = dataContext.Roles.FirstOrDefault(r => r.RoleType == "Customer")?.RoleID;
+            var adminRoleID = dataContext.Roles.First(r => r.RoleType == "Admin").RoleID;
+            var recepsionistRoleID = dataContext.Roles.First(r => r.RoleType == "Recepsionist").RoleID;
+            var cleaningStaffRoleID = dataContext.Roles.First(r => r.RoleType == "Cleaning Staff").RoleID;
+            var customerRoleID = dataContext.Roles.First(r => r.RoleType == "Customer").RoleID;
 
-            if (adminRoleID == null || recepsionistRoleID == null || cleaningStaffRoleID == null || customerRoleID == null)
+            CreatePasswordHash("Ruvejda123", out var adminHash, out var adminSalt);
+            CreatePasswordHash("Liranda123", out var recepsionistHash, out var recepsionistSalt);
+            CreatePasswordHash("Orgesa123", out var cleaningStaffHash, out var cleaningStaffSalt);
+            CreatePasswordHash("Velsa123", out var customerHash, out var customerSalt);
+
+            var users = new List<User>
             {
-                // Log and handle missing roles in some way
-                return;
-            }
-
-            // Use the password hashing function here
-            byte[] adminHash, adminSalt;
-            CreatePasswordHash("Ruvejda123", out adminHash, out adminSalt);
-
-            byte[] recepsionistHash, recepsionistSalt;
-            CreatePasswordHash("Liranda123", out recepsionistHash, out recepsionistSalt);
-
-            byte[] cleaningStaffHash, cleaningStaffSalt;
-            CreatePasswordHash("Orgesa123", out cleaningStaffHash, out cleaningStaffSalt);
-
-            byte[] customerHash, customerSalt;
-            CreatePasswordHash("Velsa123", out customerHash, out customerSalt);
-
-            var users = new List<User>()
-            {
-                new User() {FirstName="Ruvejda", LastName="Jaha", Email = "ruvejda@gmail.com", PasswordHash = adminHash, PasswordSalt = adminSalt, Phone="044-111-222", CreatedAt = DateTime.Now, RoleID = adminRoleID.Value },
-                new User() {FirstName="Liranda", LastName="Ukaj",  Email = "liranda@gmail.com", PasswordHash = recepsionistHash, PasswordSalt = recepsionistSalt, Address="Prishtina", CreatedAt = DateTime.Now, RoleID = recepsionistRoleID.Value },
-                new User() {FirstName="Orgesa", LastName="Berisha",  Email = "orgesa@gmail.com", PasswordHash = cleaningStaffHash, PasswordSalt = cleaningStaffSalt, CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID.Value },
-                new User() {FirstName="Velsa", LastName="Zemaj", Email = "velsa@gmail.com", PasswordHash = customerHash, PasswordSalt = customerSalt, CreatedAt = DateTime.Now, RoleID = customerRoleID.Value }
+                new User() {
+                    FirstName = "Ruvejda", LastName = "Jaha", Email = "ruvejda@gmail.com",
+                    PasswordHash = adminHash, PasswordSalt = adminSalt,
+                    Phone = "044-111-222", CreatedAt = DateTime.Now,
+                    RoleID = adminRoleID
+                },
+                new User() {
+                    FirstName = "Liranda", LastName = "Ukaj", Email = "liranda@gmail.com",
+                    PasswordHash = recepsionistHash, PasswordSalt = recepsionistSalt,
+                    Address = "Prishtina", CreatedAt = DateTime.Now,
+                    RoleID = recepsionistRoleID
+                },
+                new User() {
+                    FirstName = "Orgesa", LastName = "Berisha", Email = "orgesa@gmail.com",
+                    PasswordHash = cleaningStaffHash, PasswordSalt = cleaningStaffSalt,
+                    CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID
+                },
+                new User() {
+                    FirstName = "Velsa", LastName = "Zemaj", Email = "velsa@gmail.com",
+                    PasswordHash = customerHash, PasswordSalt = customerSalt,
+                    CreatedAt = DateTime.Now, RoleID = customerRoleID
+                }
             };
-            //comment
+
             dataContext.Users.AddRange(users);
+            dataContext.SaveChanges();
+        }
+
+        // Seed RoomTypes
+        if (!dataContext.RoomTypes.Any())
+        {
+            var roomTypes = new List<RoomType>
+            {
+                new RoomType() { Name = "Standard" },
+                new RoomType() { Name = "Deluxe" },
+                new RoomType() { Name = "Suite" }
+            };
+
+            dataContext.RoomTypes.AddRange(roomTypes);
+            dataContext.SaveChanges();
+        }
+
+        // Seed Rooms
+        if (!dataContext.Rooms.Any())
+        {
+            var standardRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Standard").RoomTypeID;
+            var deluxeRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Deluxe").RoomTypeID;
+            var suiteRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Suite").RoomTypeID;
+
+            var rooms = new List<Room>
+            {
+                new Room()
+                {
+                    Name = "Single Room", Capacity = "1-2 Persons", Size = "15m²",
+                    Description = "A cozy single room with modern amenities.",
+                    Price = 50.00m, IsAvailable = true, ImageUrl = "single-room.jpg",
+                    CreatedAt = DateTime.Now, RoomTypeID = standardRoomTypeID
+                },
+                new Room()
+                {
+                    Name = "Double Room", Capacity = "2 Adults", Size = "25m²",
+                    Description = "A spacious double room with a comfortable bed.",
+                    Price = 80.00m, IsAvailable = true, ImageUrl = "double-room.jpg",
+                    CreatedAt = DateTime.Now, RoomTypeID = deluxeRoomTypeID
+                },
+                new Room()
+                {
+                    Name = "Twin Room", Capacity = "2-3 Persons", Size = "23m²",
+                    Description = "A twin bed room with two comfortable beds and modern amenities.",
+                    Price = 70.00m, IsAvailable = true, ImageUrl = "twin-room.jpg",
+                    CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID
+                }
+            };
+
+            dataContext.Rooms.AddRange(rooms);
             dataContext.SaveChanges();
         }
     }
