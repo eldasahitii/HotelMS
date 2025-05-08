@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import email_icon from '../Assets/emaill.png';
@@ -104,13 +106,17 @@ const Signup = () => {
 
     <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul className="navbar-nav">
-        <li className="nav-item">
-          <a className="nav-link" href="/login">Login</a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link active" href="/signup">Sign Up</a>
-        </li>
-      </ul>
+  <li className="nav-item">
+    <Link className="nav-link" to="/login">Login</Link>
+  </li>
+  <li className="nav-item">
+    <Link className="nav-link" to="/signup">Sign Up</Link>
+  </li>
+  <li className="nav-item">
+    <Link className="nav-link" to="/reviews">Reviews</Link>
+  </li>
+</ul>
+
     </div>
   </div>
 </nav>

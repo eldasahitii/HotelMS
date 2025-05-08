@@ -1,0 +1,133 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+export default function ReviewsPage() {
+  const [reviews, setReviews] = useState([]);
+  const [formData, setFormData] = useState({ name: '', comment: '', rating: 0 });
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const fetchReviews = async () => {
+    try {
+      const res = await axios.get("https://localhost:50768/api/Reviews");
+      setReviews(res.data);
+    } catch (err) {
+      console.error("Error fetching reviews:", err);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("https://localhost:50768/api/Reviews", {
+        comment: formData.comment,
+        rating: formData.rating,
+        userID: 1
+      });
+      fetchReviews();
+      setFormData({ name: '', comment: '', rating: 0 });
+    } catch (err) {
+      console.error("Error submitting review:", err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`https://localhost:50768/api/Reviews/${id}`);
+      fetchReviews();
+    } catch (err) {
+      console.error("Error deleting review:", err);
+    }
+  };
+
+  return (
+    <div style={{ backgroundColor: '#fff7e6', minHeight: '100vh' }}>
+      {/* Navbar */}
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div className="container-fluid px-4">
+          <a className="navbar-brand fw-bold" href="#">Hotel Name</a>
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul className="navbar-nav">
+              <li className="nav-item">
+                <Link className="nav-link" to="/login">Login</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/signup">Sign Up</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/reviews">Reviews</Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      {/* Page Content */}
+      <div className="container" style={{ paddingTop: '100px' }}>
+        <div className="row justify-content-center">
+          <div className="col-md-8">
+            <div className="bg-white p-4 rounded shadow">
+              <h2 className="fw-bold mb-4 text-center">Leave a Review</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="comment" className="form-label">Comment</label>
+                  <textarea
+                    className="form-control"
+                    id="comment"
+                    rows="3"
+                    placeholder="Share your experience..."
+                    value={formData.comment}
+                    onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+                  ></textarea>
+                </div>
+                <div className="mb-4">
+                  <label className="form-label d-block">Rating</label>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <i
+                      key={star}
+                      className={`bi ${formData.rating >= star ? "bi-star-fill" : "bi-star"} text-warning me-1`}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setFormData({ ...formData, rating: star })}
+                    ></i>
+                  ))}
+                </div>
+                <button type="submit" className="btn btn-dark w-100">Submit Review</button>
+              </form>
+            </div>
+
+            <h3 className="my-4">All Reviews</h3>
+            {reviews.map((review) => (
+              <div className="card mb-3" key={review.reviewID}>
+                <div className="card-body">
+                  <div className="d-flex justify-content-between">
+                    <h5 className="card-title">User {review.userID}</h5>
+                    <div>
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <i
+                          key={s}
+                          className={`bi ${review.rating >= s ? "bi-star-fill" : "bi-star"} text-warning me-1`}
+                        ></i>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="card-text">{review.comment}</p>
+                  <p className="text-muted small mb-2">{new Date(review.date).toLocaleDateString()}</p>
+                  <button onClick={() => handleDelete(review.reviewID)} className="btn btn-sm btn-outline-danger">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
