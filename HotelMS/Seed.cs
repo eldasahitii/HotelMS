@@ -24,7 +24,7 @@ public class Seed
 
     public void SeedDataContext()
     {
-        // Seed Roles
+
         if (!dataContext.Roles.Any())
         {
             var roles = new List<Role>
@@ -39,7 +39,6 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-        // Seed Users
         if (!dataContext.Users.Any())
         {
             var adminRoleID = dataContext.Roles.First(r => r.RoleType == "Admin").RoleID;
@@ -82,7 +81,33 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-        // Seed RoomTypes
+        if (!dataContext.RoomStatuses.Any())
+        {
+            var roomStatuses = new List<RoomStatus>
+            {
+                new RoomStatus() { RoomStatusName = "Available" },
+                new RoomStatus() { RoomStatusName = "Occupied" },
+                new RoomStatus() { RoomStatusName = "Cleaning" }
+            };
+
+            dataContext.RoomStatuses.AddRange(roomStatuses);
+            dataContext.SaveChanges();
+        }
+
+        if (!dataContext.ReservationStatuses.Any())
+        {
+            var reservationStatuses = new List<ReservationStatus>
+            {
+                new ReservationStatus() { ReservationStatusName = "Pending" },
+                new ReservationStatus() { ReservationStatusName = "Confirmed" },
+                new ReservationStatus() { ReservationStatusName = "Cancelled" },
+                new ReservationStatus() { ReservationStatusName = "Completed" }
+            };
+
+            dataContext.ReservationStatuses.AddRange(reservationStatuses);
+            dataContext.SaveChanges();
+        }
+
         if (!dataContext.RoomTypes.Any())
         {
             var roomTypes = new List<RoomType>
@@ -96,12 +121,13 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-        // Seed Rooms
         if (!dataContext.Rooms.Any())
         {
             var standardRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Standard").RoomTypeID;
             var deluxeRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Deluxe").RoomTypeID;
             var suiteRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Suite").RoomTypeID;
+
+            var availableStatusID = dataContext.RoomStatuses.First(rs => rs.RoomStatusName == "Available").RoomStatusID;
 
             var rooms = new List<Room>
             {
@@ -109,26 +135,49 @@ public class Seed
                 {
                     Name = "Single Room", Capacity = "1-2 Persons", Size = "15m²",
                     Description = "A cozy single room with modern amenities.",
-                    Price = 50.00m, IsAvailable = true, ImageUrl = "single-room.jpg",
-                    CreatedAt = DateTime.Now, RoomTypeID = standardRoomTypeID
+                    Price = 50.00m, ImageUrl = "single-room.jpg",
+                    CreatedAt = DateTime.Now, RoomTypeID = standardRoomTypeID, RoomStatusID = availableStatusID
                 },
                 new Room()
                 {
                     Name = "Double Room", Capacity = "2 Adults", Size = "25m²",
                     Description = "A spacious double room with a comfortable bed.",
-                    Price = 80.00m, IsAvailable = true, ImageUrl = "double-room.jpg",
-                    CreatedAt = DateTime.Now, RoomTypeID = deluxeRoomTypeID
+                    Price = 80.00m, ImageUrl = "double-room.jpg",
+                    CreatedAt = DateTime.Now, RoomTypeID = deluxeRoomTypeID, RoomStatusID = availableStatusID
                 },
                 new Room()
                 {
                     Name = "Twin Room", Capacity = "2-3 Persons", Size = "23m²",
                     Description = "A twin bed room with two comfortable beds and modern amenities.",
-                    Price = 70.00m, IsAvailable = true, ImageUrl = "twin-room.jpg",
-                    CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID
+                    Price = 70.00m, ImageUrl = "twin-room.jpg",
+                    CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID, RoomStatusID = availableStatusID
                 }
             };
 
             dataContext.Rooms.AddRange(rooms);
+            dataContext.SaveChanges();
+        }
+
+        if (!dataContext.RoomReservations.Any())
+        {
+            var availableRoomID = dataContext.Rooms.First(r => r.Name == "Single Room").RoomID;
+            var customerID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
+            var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Pending").ReservationStatusID;
+
+            var reservations = new List<RoomReservation>
+            {
+                new RoomReservation()
+                {
+                    RoomID = availableRoomID,
+                    UserID = customerID,
+                    CheckInDate = DateTime.Now.AddDays(1),
+                    CheckOutDate = DateTime.Now.AddDays(5),
+                    ReservationStatusID = reservationStatusID, 
+                    CreatedAt = DateTime.Now
+                }
+            };
+
+            dataContext.RoomReservations.AddRange(reservations);
             dataContext.SaveChanges();
         }
     }

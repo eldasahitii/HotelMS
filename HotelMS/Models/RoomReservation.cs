@@ -17,7 +17,8 @@ namespace HotelMS.Models
         [Required]
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
-        public string Status { get; set; } = "Pending";
+        public int ReservationStatusID { get; set; }
+        public ReservationStatus ReservationStatus { get; set; }
 
         public DateTime CreatedAt { get; set; }=DateTime.Now;
 
