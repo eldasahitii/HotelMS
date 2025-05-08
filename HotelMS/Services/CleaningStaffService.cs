@@ -21,7 +21,8 @@ namespace HotelMS.Services
             {
                 bool alreadyExists = await _dbContext.CleaningStaff
             .AnyAsync(cs => cs.UserID == request.UserID);
-
+                var user = await _dbContext.Users.FindAsync(request.UserID);
+               
                 if (alreadyExists)
                     throw new Exception("This user is already assigned as cleaning staff.");
 
