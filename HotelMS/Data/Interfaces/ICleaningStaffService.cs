@@ -10,5 +10,10 @@ namespace HotelMS.Data.Interfaces
         Task<IEnumerable<CleaningStaffDTO>> GetAllCleaningStaff();
         Task DeleteCleaningStaff(int id);
         Task<CleaningStaff> UpdateCleaningStaff(int id, CleaningStaffDTO request);
+
+        Task<IEnumerable<CleaningStaffDTO>> GetByShift(string shift);
+        Task<IEnumerable<CleaningStaffDTO>> GetAllActive();
+        Task<bool> ChangeShift(int id, string newShift);
+       
     }
 }

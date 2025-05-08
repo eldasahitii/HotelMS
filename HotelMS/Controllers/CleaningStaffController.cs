@@ -91,6 +91,28 @@ namespace HotelMS.Controllers
             }
 
         }
-   
-    } 
+        [HttpGet("getAllActive")]
+        public async Task<IActionResult> GetAllActive()
+        {
+            var result = await _service.GetAllActive();
+            return Ok(result);
+        }
+        [HttpPut("changeShift")]
+        public async Task<IActionResult> ChangeShift(int id, [FromQuery] string newShift)
+        {
+            var result = await _service.ChangeShift(id, newShift);
+            if (!result)
+                return NotFound("Cleaning staff not found.");
+
+            return Ok("Shift updated successfully.");
+        }
+        [HttpGet("getByShift")]
+        public async Task<IActionResult> GetByShift([FromQuery] string shift)
+        {
+            var result = await _service.GetByShift(shift);
+            return Ok(result);
+        }
+
+
+    }
 }

@@ -14,6 +14,7 @@
         public DateTime AssignedAt { get; set; }
         public DateTime? StartedAt { get; set; }
         public DateTime? FinishedAt { get; set; }
+        public int? AssignedByUserID { get; set; }
 
     }
 }

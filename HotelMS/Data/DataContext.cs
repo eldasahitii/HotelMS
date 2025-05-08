@@ -61,6 +61,10 @@ namespace HotelMS.Data
                 .HasForeignKey(cs => cs.UserID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+                modelBuilder.Entity<CleaningStaff>()
+                .HasIndex(cs => cs.UserID)
+                 .IsUnique();  
+
             //CleaningStaff ↔ User(assigned by)
             modelBuilder.Entity<CleaningStaff>()
                 .HasOne(cs => cs.AssignedBy)

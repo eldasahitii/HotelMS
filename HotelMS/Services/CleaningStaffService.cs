@@ -19,7 +19,12 @@ namespace HotelMS.Services
         {
             try
             {
-                
+                bool alreadyExists = await _dbContext.CleaningStaff
+            .AnyAsync(cs => cs.UserID == request.UserID);
+
+                if (alreadyExists)
+                    throw new Exception("This user is already assigned as cleaning staff.");
+
                 var staff = new CleaningStaff
                 {
                     UserID = request.UserID,
@@ -41,7 +46,7 @@ namespace HotelMS.Services
         }
 
         public async Task<CleaningStaffDTO> GetCleaningStaff(int id)
-        {
+        { 
             try
             {
                 var cs = await _dbContext.CleaningStaff
@@ -119,7 +124,7 @@ namespace HotelMS.Services
                 staff.Shift = request.Shift;
                 staff.AssignedByUserID = request.AssignedByUserID;
 
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
                 return staff;
             }
             catch (Exception ex)
@@ -134,11 +139,12 @@ namespace HotelMS.Services
         {
             try
             {
-                var staff = _dbContext.CleaningStaff.Find(id);
+                var staff = await _dbContext.CleaningStaff.FindAsync(id);
+
                 if (staff != null)
                 {
                     _dbContext.CleaningStaff.Remove(staff);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                 }
             }
             catch (Exception ex)
@@ -147,5 +153,56 @@ namespace HotelMS.Services
                 throw new Exception("An error occurred while attempting to delete cleaning staff.");
             }
         }
+        public async Task<IEnumerable<CleaningStaffDTO>> GetAllActive()
+        {
+            var list = await _dbContext.CleaningStaff
+                .Where(cs => cs.IsActive)
+                .Include(cs => cs.User)
+                .ToListAsync();
+
+            return list.Select(cs => new CleaningStaffDTO
+            {
+                CleaningStaffID = cs.CleaningStaffID,
+                UserID = cs.UserID,
+                FirstName = cs.User.FirstName,
+                LastName = cs.User.LastName,
+                Email = cs.User.Email,
+                Shift = cs.Shift,
+                IsActive = cs.IsActive
+            });
+        }
+        public async Task<bool> ChangeShift(int id, string newShift)
+        {
+            var staff = await _dbContext.CleaningStaff.FindAsync(id);
+            if (staff == null) return false;
+
+            staff.Shift = newShift;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+        public async Task<IEnumerable<CleaningStaffDTO>> GetByShift(string shift)
+        {
+            var results = await _dbContext.CleaningStaff
+                .Include(cs => cs.User)
+                .Where(cs => cs.Shift == shift)
+                .ToListAsync();
+
+            return results.Select(cs => new CleaningStaffDTO
+            {
+                CleaningStaffID = cs.CleaningStaffID,
+                UserID = cs.UserID,
+                FirstName = cs.User.FirstName,
+                LastName = cs.User.LastName,
+                Email = cs.User.Email,
+                Shift = cs.Shift,
+                IsActive = cs.IsActive,
+                AssignedByUserID = cs.AssignedByUserID,
+                AssignedByName = cs.AssignedBy != null
+                    ? $"{cs.AssignedBy.FirstName} {cs.AssignedBy.LastName}"
+                    : null
+            });
+        }
+
+
     }
 }
