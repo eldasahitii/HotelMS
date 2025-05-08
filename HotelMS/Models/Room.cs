@@ -24,6 +24,8 @@ namespace HotelMS.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public int? RoomTypeID { get; set; }
         public RoomType? RoomType { get; set; }
+        public int RoomStatusID { get; set; }
+        public RoomStatus RoomStatus { get; set; }
         public ICollection<RoomReservation> Reservations { get; set; }
    
 

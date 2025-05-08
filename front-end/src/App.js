@@ -2,9 +2,10 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminDashboard from "./pages/dashboards/AdminDashboard"; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { jwtDecode } from 'jwt-decode';
+import CleaningManagerDashboard from './pages/dashboards/CleaningManagerDashboard';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
     const token = localStorage.getItem('token');
@@ -34,10 +35,14 @@ function App() {
                     element={
                         <ProtectedRoute allowedRoles={['Admin']}>
                             <AdminDashboard />
+                            <CleaningManagerDashboard/>
                         </ProtectedRoute>
                     }
                 />
-            </Routes>
+                <Route path="/test-dashboard" element={<CleaningManagerDashboard />} />  
+                {/* veq per testim */}
+                
+                            </Routes>
         </Router>
     );
 }

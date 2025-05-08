@@ -113,15 +113,11 @@ namespace HotelMS.Services
 
         public async Task <String> CreateToken(User user)
         {
-            var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
-            if (role != null)
-            {
-                throw new Exception("User role not found");
-            }
+          
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, user.Email),
-               new Claim(ClaimTypes.Role, role.RoleType),
+               new Claim(ClaimTypes.Role, user.RoleID.ToString()),
                new Claim(ClaimTypes.NameIdentifier,user.UserID.ToString()),
             };
 
@@ -135,6 +131,7 @@ namespace HotelMS.Services
                 signingCredentials: cred);
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
             return jwt;
             //return Task.FromResult(jwt);
 

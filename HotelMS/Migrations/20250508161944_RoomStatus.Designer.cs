@@ -4,6 +4,7 @@ using HotelMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelMS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250508161944_RoomStatus")]
+    partial class RoomStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,78 +24,6 @@ namespace HotelMS.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("HotelMS.Models.CleaningAssignment", b =>
-                {
-                    b.Property<int>("CleaningAssignmentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CleaningAssignmentID"));
-
-                    b.Property<DateTime>("AssignedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("AssignedByUserID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CleaningStaffID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("FinishedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RoomID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("StartedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CleaningAssignmentID");
-
-                    b.HasIndex("AssignedByUserID");
-
-                    b.HasIndex("CleaningStaffID");
-
-                    b.HasIndex("RoomID");
-
-                    b.ToTable("CleaningAssignments");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.CleaningStaff", b =>
-                {
-                    b.Property<int>("CleaningStaffID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CleaningStaffID"));
-
-                    b.Property<int?>("AssignedByUserID")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Shift")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.HasKey("CleaningStaffID");
-
-                    b.HasIndex("AssignedByUserID");
-
-                    b.HasIndex("UserID")
-                        .IsUnique();
-
-                    b.ToTable("CleaningStaff");
-                });
 
             modelBuilder.Entity("HotelMS.Models.ReservationStatus", b =>
                 {
@@ -249,107 +180,6 @@ namespace HotelMS.Migrations
                     b.ToTable("RoomTypes");
                 });
 
-            modelBuilder.Entity("HotelMS.Models.Room", b =>
-                {
-                    b.Property<int>("RoomID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomID"));
-
-                    b.Property<string>("Capacity")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("RoomTypeID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Size")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RoomID");
-
-                    b.HasIndex("RoomTypeID");
-
-                    b.ToTable("Rooms");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.RoomReservation", b =>
-                {
-                    b.Property<int>("ReservationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationID"));
-
-                    b.Property<DateTime>("CheckInDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CheckOutDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RoomID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ReservationID");
-
-                    b.HasIndex("RoomID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("RoomReservations");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.RoomType", b =>
-                {
-                    b.Property<int>("RoomTypeID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomTypeID"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("RoomTypeID");
-
-                    b.ToTable("RoomTypes");
-                });
-
             modelBuilder.Entity("HotelMS.Models.User", b =>
                 {
                     b.Property<int>("UserID")
@@ -399,50 +229,6 @@ namespace HotelMS.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("HotelMS.Models.CleaningAssignment", b =>
-                {
-                    b.HasOne("HotelMS.Models.User", "AssignedBy")
-                        .WithMany()
-                        .HasForeignKey("AssignedByUserID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("HotelMS.Models.CleaningStaff", "CleaningStaff")
-                        .WithMany("CleaningAssignments")
-                        .HasForeignKey("CleaningStaffID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HotelMS.Models.Room", "Room")
-                        .WithMany()
-                        .HasForeignKey("RoomID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("AssignedBy");
-
-                    b.Navigation("CleaningStaff");
-
-                    b.Navigation("Room");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.CleaningStaff", b =>
-                {
-                    b.HasOne("HotelMS.Models.User", "AssignedBy")
-                        .WithMany()
-                        .HasForeignKey("AssignedByUserID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("HotelMS.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("AssignedBy");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("HotelMS.Models.Room", b =>
                 {
                     b.HasOne("HotelMS.Models.RoomStatus", "RoomStatus")
@@ -488,35 +274,6 @@ namespace HotelMS.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HotelMS.Models.Room", b =>
-                {
-                    b.HasOne("HotelMS.Models.RoomType", "RoomType")
-                        .WithMany("Rooms")
-                        .HasForeignKey("RoomTypeID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("RoomType");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.RoomReservation", b =>
-                {
-                    b.HasOne("HotelMS.Models.Room", "Room")
-                        .WithMany("Reservations")
-                        .HasForeignKey("RoomID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HotelMS.Models.User", "User")
-                        .WithMany("RoomReservations")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Room");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("HotelMS.Models.User", b =>
                 {
                     b.HasOne("HotelMS.Models.Role", "Role")
@@ -526,11 +283,6 @@ namespace HotelMS.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.CleaningStaff", b =>
-                {
-                    b.Navigation("CleaningAssignments");
                 });
 
             modelBuilder.Entity("HotelMS.Models.ReservationStatus", b =>
@@ -551,21 +303,6 @@ namespace HotelMS.Migrations
             modelBuilder.Entity("HotelMS.Models.RoomStatus", b =>
                 {
                     b.Navigation("Rooms");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.RoomType", b =>
-                {
-                    b.Navigation("Rooms");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.User", b =>
-                {
-                    b.Navigation("RoomReservations");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.Room", b =>
-                {
-                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("HotelMS.Models.RoomType", b =>
