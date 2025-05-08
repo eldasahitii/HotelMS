@@ -58,6 +58,7 @@ namespace HotelMS.Controllers
             {
                 return BadRequest(ex.Message);
             }
+
         }
         [HttpPut("updateCleaningStaff")]
         public async Task<IActionResult> UpdateCleaningStaff(int id, [FromBody] CleaningStaffDTO request)
