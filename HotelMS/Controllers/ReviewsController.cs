@@ -43,6 +43,23 @@ namespace HotelMS.Controllers
 
             return CreatedAtAction(nameof(GetReviews), new { id = review.ReviewID }, review);
         }
+
+        // DELETE: api/reviews/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteReview(int id)
+        {
+            var review = await _context.Reviews.FindAsync(id);
+            if (review == null)
+            {
+                return NotFound(); // 404
+            }
+
+            _context.Reviews.Remove(review);
+            await _context.SaveChangesAsync();
+
+            return NoContent(); // 204
+        }
+
     }
 }
 
