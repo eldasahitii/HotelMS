@@ -19,6 +19,9 @@ builder.Services.AddCors(options =>
                .AllowAnyMethod()
                .AllowAnyHeader());
 });
+builder.Services.AddControllers()
+    .AddJsonOptions(x =>
+        x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
 
 builder.Services.AddDbContext<DataContext>(options =>
@@ -31,8 +34,11 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
-//builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
-//builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
+builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
+builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
+builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
+
+
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<Seed>();

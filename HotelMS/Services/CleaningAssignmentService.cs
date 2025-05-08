@@ -1,182 +1,197 @@
-﻿//using HotelMS.Data;
-//using HotelMS.Data.DTO;
-//using HotelMS.Data.Interfaces;
-//using HotelMS.Models;
-//using Microsoft.EntityFrameworkCore;
+﻿using HotelMS.Data;
+using HotelMS.Data.DTO;
+using HotelMS.Data.Interfaces;
+using HotelMS.Models;
+using Microsoft.EntityFrameworkCore;
 
-//namespace HotelMS.Services
-//{
-//    public class CleaningAssignmentService : ICleaningAssignmentService
-//    {
-//        private readonly DataContext _dbContext;
+namespace HotelMS.Services
+{
+    public class CleaningAssignmentService : ICleaningAssignmentService
+    {
+        private readonly DataContext _dbContext;
 
-//        public CleaningAssignmentService(DataContext dbContext)
-//        {
-//            _dbContext = dbContext;
-//        }
+        public CleaningAssignmentService(DataContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
-//        public async Task<CleaningAssignment> AddAssignment(CleaningAssignmentDTO request)
-//        {
-//            var assignment = new CleaningAssignment
-//            {
-//                RoomID = request.RoomID,
-//                CleaningStaffID = request.CleaningStaffID,
-//                Status = request.Status,
-//                AssignedByUserID = request.AssignedByUserID,
-//                AssignedAt = DateTime.Now
-//            };
-//            //var room = await _dbContext.Rooms.FindAsync(request.RoomID);
-//            //if (room != null)
-//            //{
-//            //    room.Status = "Cleaning";
-//            //}
+        public async Task<CleaningAssignment> AddAssignment(CleaningAssignmentDTO request)
+        {
+            var room = await _dbContext.Rooms
+                .Include(r => r.RoomStatus)
+                .FirstOrDefaultAsync(r => r.RoomID == request.RoomID);
+
+            if (room.RoomStatus?.RoomStatusName != "Available" && room.RoomStatus?.RoomStatusName != "Occupied")
+                throw new Exception("Cannot assign task unless room is Available or Occupied.");
+
+            var cleaningStatus = await _dbContext.RoomStatuses
+                .FirstOrDefaultAsync(rs => rs.RoomStatusName == "Cleaning");
+
+            if (cleaningStatus == null)
+                throw new Exception("Cleaning status not defined in RoomStatuses table.");
+
+            room.RoomStatusID = cleaningStatus.RoomStatusID;
+
+            var assignment = new CleaningAssignment
+            {
+                RoomID = request.RoomID,
+                CleaningStaffID = request.CleaningStaffID,
+                Status = request.Status,
+                AssignedByUserID = request.AssignedByUserID,
+                AssignedAt = DateTime.Now
+            };
+
+            _dbContext.CleaningAssignments.Add(assignment);
+            await _dbContext.SaveChangesAsync();
+
+            return assignment;
+        }
 
 
-//            _dbContext.CleaningAssignments.Add(assignment);
-//            await _dbContext.SaveChangesAsync();
+        public async Task<CleaningAssignmentDTO> GetAssignment(int id)
+        {
+            var assignment = await _dbContext.CleaningAssignments
+                .Include(a => a.Room)
+                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
+                .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
 
-//            return assignment;
-//        }
+            if (assignment == null) return null;
 
-//        public async Task<CleaningAssignmentDTO> GetAssignment(int id)
-//        {
-//            var assignment = await _dbContext.CleaningAssignments
-//                .Include(a => a.Room)
-//                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
-//                .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
+            return new CleaningAssignmentDTO
+            {
+                CleaningAssignmentID = assignment.CleaningAssignmentID,
+                RoomID = assignment.RoomID,
+                RoomName = assignment.Room.Name,
+                CleaningStaffID = assignment.CleaningStaffID,
+                StaffName = assignment.CleaningStaff.User.FirstName + " " + assignment.CleaningStaff.User.LastName,
+                Status = assignment.Status,
+                AssignedAt = assignment.AssignedAt,
+                StartedAt = assignment.StartedAt,
+                FinishedAt = assignment.FinishedAt
+            };
+        }
 
-//            if (assignment == null) return null;
+        public async Task<IEnumerable<CleaningAssignmentDTO>> GetAllAssignments()
+        {
+            var assignments = await _dbContext.CleaningAssignments
+                .Include(a => a.Room)
+                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
+                .ToListAsync();
 
-//            return new CleaningAssignmentDTO
-//            {
-//                CleaningAssignmentID = assignment.CleaningAssignmentID,
-//                RoomID = assignment.RoomID,
-//                RoomName = assignment.Room.Name,
-//                CleaningStaffID = assignment.CleaningStaffID,
-//                StaffName = assignment.CleaningStaff.User.FirstName + " " + assignment.CleaningStaff.User.LastName,
-//                Status = assignment.Status,
-//                AssignedAt = assignment.AssignedAt,
-//                StartedAt = assignment.StartedAt,
-//                FinishedAt = assignment.FinishedAt
-//            };
-//        }
+            return assignments.Select(a => new CleaningAssignmentDTO
+            {
+                CleaningAssignmentID = a.CleaningAssignmentID,
+                RoomID = a.RoomID,
+                RoomName = a.Room.Name,
+                CleaningStaffID = a.CleaningStaffID,
+                StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
+                Status = a.Status,
+                AssignedAt = a.AssignedAt,
+                StartedAt = a.StartedAt,
+                FinishedAt = a.FinishedAt
+            });
+        }
 
-//        public async Task<IEnumerable<CleaningAssignmentDTO>> GetAllAssignments()
-//        {
-//            var assignments = await _dbContext.CleaningAssignments
-//                .Include(a => a.Room)
-//                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
-//                .ToListAsync();
+        public async Task<CleaningAssignment> UpdateAssignment(int id, CleaningAssignmentDTO request)
+        {
+            var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
+            if (assignment == null) return null;
 
-//            return assignments.Select(a => new CleaningAssignmentDTO
-//            {
-//                CleaningAssignmentID = a.CleaningAssignmentID,
-//                RoomID = a.RoomID,
-//                RoomName = a.Room.Name,
-//                CleaningStaffID = a.CleaningStaffID,
-//                StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
-//                Status = a.Status,
-//                AssignedAt = a.AssignedAt,
-//                StartedAt = a.StartedAt,
-//                FinishedAt = a.FinishedAt
-//            });
-//        }
+            assignment.Status = request.Status;
+            assignment.StartedAt = request.StartedAt;
+            assignment.FinishedAt = request.FinishedAt;
 
-//        public async Task<CleaningAssignment> UpdateAssignment(int id, CleaningAssignmentDTO request)
-//        {
-//            var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
-//            if (assignment == null) return null;
+            await _dbContext.SaveChangesAsync();
+            return assignment;
+        }
 
-//            assignment.Status = request.Status;
-//            assignment.StartedAt = request.StartedAt;
-//            assignment.FinishedAt = request.FinishedAt;
+        public async Task DeleteAssignment(int id)
+        {
+            var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
+            if (assignment != null)
+            {
+                _dbContext.CleaningAssignments.Remove(assignment);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+        public async Task<IEnumerable<CleaningAssignmentDTO>> GetAssignmentsForStaff(int staffId)
+        {
+            var assignments = await _dbContext.CleaningAssignments
+                .Include(a => a.Room)
+                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
+                .Where(a => a.CleaningStaffID == staffId)
+                .ToListAsync();
 
-//            await _dbContext.SaveChangesAsync();
-//            return assignment;
-//        }
+            return assignments.Select(a => new CleaningAssignmentDTO
+            {
+                CleaningAssignmentID = a.CleaningAssignmentID,
+                RoomID = a.RoomID,
+                RoomName = a.Room.Name,
+                RoomStatus = a.Room.RoomStatus != null ? a.Room.RoomStatus.RoomStatusName : "Unknown",
+                CleaningStaffID = a.CleaningStaffID,
+                StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
+                Status = a.Status,
+                AssignedAt = a.AssignedAt,
+                StartedAt = a.StartedAt,
+                FinishedAt = a.FinishedAt
+            });
+        }
+        public async Task<bool> MarkAssignmentCompleted(int id)
+        {
+            var assignment = await _dbContext.CleaningAssignments
+                .Include(a => a.Room)
+                .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
 
-//        public async Task DeleteAssignment(int id)
-//        {
-//            var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
-//            if (assignment != null)
-//            {
-//                _dbContext.CleaningAssignments.Remove(assignment);
-//                await _dbContext.SaveChangesAsync();
-//            }
-//        }
-//        public async Task<IEnumerable<CleaningAssignmentDTO>> GetAssignmentsForStaff(int staffId)
-//        {
-//            var assignments = await _dbContext.CleaningAssignments
-//                .Include(a => a.Room)
-//                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
-//                .Where(a => a.CleaningStaffID == staffId)
-//                .ToListAsync();
+            if (assignment == null) return false;
 
-//            return assignments.Select(a => new CleaningAssignmentDTO
-//            {
-//                CleaningAssignmentID = a.CleaningAssignmentID,
-//                RoomID = a.RoomID,
-//                RoomName = a.Room.Name,
-//                //RoomStatus = a.Room.Status,
-//                CleaningStaffID = a.CleaningStaffID,
-//                StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
-//                Status = a.Status,
-//                AssignedAt = a.AssignedAt,
-//                StartedAt = a.StartedAt,
-//                FinishedAt = a.FinishedAt
-//            });
-//        }
-//        public async Task<bool> MarkAssignmentCompleted(int id)
-//        {
-//            var assignment = await _dbContext.CleaningAssignments
-//                .Include(a => a.Room)
-//                .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
+            assignment.Status = "Completed";
+            assignment.FinishedAt = DateTime.Now;
+            var availableStatus = await _dbContext.RoomStatuses
+                  .FirstOrDefaultAsync(rs => rs.RoomStatusName == "Available");
 
-//            if (assignment == null) return false;
+            if (assignment.Room != null && availableStatus != null)
+            {
+                assignment.Room.RoomStatusID = availableStatus.RoomStatusID;
+            }
 
-//            assignment.Status = "Completed";
-//            assignment.FinishedAt = DateTime.Now;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> StartAssignment(int id)
+        {
+            var assignment = await _dbContext.CleaningAssignments
+                .Include(a => a.Room)
+                .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
 
-//            //if (assignment.Room != null)
-//            //{
-//            //    assignment.Room.Status = "Available";
-//            //}
+            if (assignment == null) return false;
 
-//            await _dbContext.SaveChangesAsync();
-//            return true;
-//        }
-//        public async Task<bool> StartAssignment(int id)
-//        {
-//            var assignment = await _dbContext.CleaningAssignments
-//                .Include(a => a.Room)
-//                .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
+            assignment.StartedAt = DateTime.Now;
+            assignment.Status = "InProgress";
 
-//            if (assignment == null) return false;
+            var cleaningStatus = await _dbContext.RoomStatuses
+       .FirstOrDefaultAsync(rs => rs.RoomStatusName == "Cleaning");
 
-//            assignment.StartedAt = DateTime.Now;
-//            assignment.Status = "InProgress";
+            if (assignment.Room != null && cleaningStatus != null)
+            {
+                assignment.Room.RoomStatusID = cleaningStatus.RoomStatusID;
+            }
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> CancelAssignment(int id)
+        {
+            var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
+            if (assignment == null) return false;
 
-           
-//            //if (assignment.Room != null)
-//            //    assignment.Room.Status = "Cleaning";
+            if (assignment.Status == "Completed")
+                throw new InvalidOperationException("Cannot cancel a completed assignment.");
 
-//            await _dbContext.SaveChangesAsync();
-//            return true;
-//        }
-//        public async Task<bool> CancelAssignment(int id)
-//        {
-//            var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
-//            if (assignment == null) return false;
+            assignment.Status = "Cancelled";
+            assignment.StartedAt = null;
+            assignment.FinishedAt = null;
 
-//            if (assignment.Status == "Completed")
-//                throw new InvalidOperationException("Cannot cancel a completed assignment.");
-
-//            assignment.Status = "Cancelled";
-//            assignment.StartedAt = null;
-//            assignment.FinishedAt = null;
-
-//            await _dbContext.SaveChangesAsync();
-//            return true;
-//        }
-//    }
-//}
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+    }
+}
