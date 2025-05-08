@@ -39,8 +39,12 @@ public class Seed
             dataContext.SaveChanges();
         }
 
+
+        // Seed Users
+
         if (!dataContext.Users.Any())
         {
+
             var adminRoleID = dataContext.Roles.First(r => r.RoleType == "Admin").RoleID;
             var recepsionistRoleID = dataContext.Roles.First(r => r.RoleType == "Recepsionist").RoleID;
             var cleaningStaffRoleID = dataContext.Roles.First(r => r.RoleType == "Cleaning Staff").RoleID;
@@ -75,11 +79,38 @@ public class Seed
                     PasswordHash = customerHash, PasswordSalt = customerSalt,
                     CreatedAt = DateTime.Now, RoleID = customerRoleID
                 }
+
             };
 
             dataContext.Users.AddRange(users);
             dataContext.SaveChanges();
         }
+
+
+
+        //Seed CleaningStaff
+        if (!dataContext.CleaningStaff.Any())
+        {
+            var cleaningStaffUser = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
+            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com");//manager
+
+            if (cleaningStaffUser != null && assignedByUser != null)
+            {
+                var cleaningStaff = new CleaningStaff
+                {
+                    UserID = cleaningStaffUser.UserID,
+                    IsActive = true,
+                    Shift = "Morning",
+                    AssignedByUserID = assignedByUser.UserID
+                };
+
+                dataContext.CleaningStaff.AddRange(cleaningStaff);
+                dataContext.SaveChanges();
+            }
+        }
+
+
+        // Seed RoomTypes
 
         if (!dataContext.RoomStatuses.Any())
         {
@@ -120,6 +151,8 @@ public class Seed
             dataContext.RoomTypes.AddRange(roomTypes);
             dataContext.SaveChanges();
         }
+
+        // Seed Rooms
 
         if (!dataContext.Rooms.Any())
         {
@@ -181,4 +214,6 @@ public class Seed
             dataContext.SaveChanges();
         }
     }
+
+   
 }

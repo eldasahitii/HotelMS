@@ -35,6 +35,5 @@ namespace HotelMS.Models
         public ICollection<RoomReservation> RoomReservations { get; set; }
 
 
-
     }
 }
