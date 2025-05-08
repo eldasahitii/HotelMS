@@ -48,7 +48,7 @@ namespace HotelMS.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception("Ann error occured.");
+                throw new Exception("An error occured.");
 
             }
         }

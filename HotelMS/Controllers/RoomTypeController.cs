@@ -1,26 +1,24 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelMS.Controllers
 {
     [Microsoft.AspNetCore.Mvc.Route("api/[Controller]")]
     [ApiController]
-    public class RoomController : ControllerBase
+    public class RoomTypeController:ControllerBase
     {
-        private readonly IRoomService _service;
-        public RoomController(IRoomService service)
+        private readonly IRoomTypeService _service;
+        public RoomTypeController(IRoomTypeService service)
         {
             _service = service;
         }
-
-        [HttpPost("AddRoom")]
-        public async Task<IActionResult> AddRoom(RoomDTO request)
+        [HttpPost("AddRoomType")]
+        public async Task<IActionResult> AddRoomType(RoomTypeDTO request)
         {
             try
             {
-                var result = await _service.AddRoom(request);
+                var result = await _service.AddRoomType(request);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -29,12 +27,12 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpGet("GetRoom")]
-        public async Task<IActionResult> GetRoom(int id)
+        [HttpGet("GetRoomType")]
+        public async Task<IActionResult> GetRoomType(int id)
         {
             try
             {
-                var result = await _service.GetRoom(id);
+                var result = await _service.GetRoomType(id);
                 if (result == null)
                 {
                     return NotFound();
@@ -47,16 +45,15 @@ namespace HotelMS.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-
             }
         }
+        [HttpGet("GetAllRoomTypes")]
 
-        [HttpGet("GetAllRooms")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllRoomTypes()
         {
             try
             {
-                var result = await _service.GetAll();
+                var result = await _service.GetAllRoomTypes();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -65,13 +62,13 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpDelete("DeleteRoom")]
+        [HttpDelete("DeleteRoomType")]
 
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteRoomType(int id)
         {
             try
             {
-                var result = _service.DeleteRoom(id);
+                var result = _service.DeleteRoomType(id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -80,13 +77,12 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpPut("UpdateRoom")]
-
-        public async Task<IActionResult> Update(int id, [FromBody] RoomDTO request)
+        [HttpPut("UpdateRoomType")]
+        public async Task<IActionResult> UpdateRoomType(int id, [FromBody] RoomTypeDTO request)
         {
             try
             {
-                var result = _service.UpdateRoom(id, request);
+                var result = _service.UpdateRoomType(id, request);
                 if (result == null)
                 {
                     return NotFound();
