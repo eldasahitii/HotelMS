@@ -1,93 +1,96 @@
-﻿//using System.Linq.Expressions;
-//using HotelMS.Data;
-//using HotelMS.Data.DTO;
-//using HotelMS.Data.Interfaces;
-//using Microsoft.AspNetCore.Http.HttpResults;
-//using Microsoft.AspNetCore.Mvc;
+﻿using HotelMS.Data.DTO;
+using HotelMS.Data.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
-//namespace HotelMS.Controllers
-//{
-//    [ApiController]
-//    [Route("api/[controller]")]
+namespace HotelMS.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CleaningStaffController : ControllerBase
+    {
+        private readonly ICleaningStaffService _service;
 
-//    public class CleaningStaffController : ControllerBase
-//    {
-//        private readonly ICleaningStaffService _service;
-//        public CleaningStaffController(ICleaningStaffService service)
-//        {
-//            _service = service;
-//        }
+        public CleaningStaffController(ICleaningStaffService service)
+        {
+            _service = service;
+        }
 
-//        [HttpGet("getCleaningStaff")]
-//        public async Task<IActionResult> GetCleaningStaff(int id)
-//        {
-//            try
-//            {
-//                var result = await _service.GetCleaningStaff(id);
-//                if (result == null) return NotFound();
-//                return Ok(result);
-//            }
-//            catch (Exception ex)
-//            {
-//                return BadRequest(ex.Message);
-//            }
-//        }
+        [HttpPost("addCleaningStaff")]
+        public async Task<IActionResult> AddCleaningStaff([FromBody] CleaningStaffDTO request)
+        {
+            try
+            {
+                var result = await _service.AddCleaningStaff(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-//        [HttpGet("getAll")]
+        [HttpGet("getCleaningStaff")]
+        public async Task<IActionResult> GetCleaningStaff(int id)
+        {
+            try
+            {
+                var result = await _service.GetCleaningStaff(id);
+                if (result == null)
+                    return NotFound();
 
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-//        public async Task<IActionResult> GetAll()
-//        {
-//            try
-//            {
-//                var result = await _service.GetAllCleaningStaff();
-//                return Ok(result);
-//            }
-//            catch (Exception ex)
-//            {
-//                return BadRequest(ex.Message);
-//            }
-//        }
-//        [HttpPut("updateCleaningStaff")]
-//        public async Task<IActionResult> Update(int id, [FromBody] CleaningStaffDTO dto)
-//        {
-//            try
-//            {
-//                var result = await _service.UpdateCleaningStaff(id, dto);
-//                if (result == null) return NotFound();
-//                return Ok(result);
-//            }
-//            catch (Exception ex)
-//            {
-//                return BadRequest(ex.Message);
-//            }
-//        }
+        [HttpGet("getAllCleaningStaff")]
+        public async Task<IActionResult> GetAllCleaningStaff()
+        {
+            try
+            {
+                var result = await _service.GetAllCleaningStaff();
+                return Ok(result); 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut("updateCleaningStaff")]
+        public async Task<IActionResult> UpdateCleaningStaff(int id, [FromBody] CleaningStaffDTO request)
+        {
+            try
+            {
+                var result = await _service.UpdateCleaningStaff(id, request);
+                if (result == null)
+                    return NotFound("Cleaning staff not found.");
 
-//        [HttpDelete("deleteCleaningStaff")]
-//        public async Task<IActionResult> Delete(int id)
-//        {
-//            try
-//            {
-//                var result = await _service.DeleteCleaningStaff(id);
-//                if (result == null) return NotFound();
-//                return Ok(result);
-//            }
-//            catch (Exception ex)
-//            {
-//                return BadRequest(ex.Message);
-//            }
-//        }
-//        [HttpPost("addCleaningStaff")]
-//        public async Task<IActionResult> Add([FromBody] CleaningStaffDTO dto)
-//        {
-//            var result = await _service.AddCleaningStaff(dto);
-//            return Ok(result);
-//        }
+                return Ok(result); 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-//        [HttpGet("statuses")]
-//        public async Task<IActionResult> GetAllStatuses()
-//        {
-//            var result = await _service.GetAllCleaningStatuses();
-//            return Ok(result);
-//        }
-//}
+        [HttpDelete("deleteCleaningStaff")]
+        public async Task<IActionResult> DeleteCleaningStaff(int id)
+        {
+            try
+            {
+                await _service.DeleteCleaningStaff(id);
+               
+                return Ok("Deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+   
+    } 
+}
