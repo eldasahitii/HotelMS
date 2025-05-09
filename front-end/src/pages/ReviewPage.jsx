@@ -6,6 +6,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState([]);
   const [formData, setFormData] = useState({ name: '', comment: '', rating: 0 });
+  const [editingReview, setEditingReview] = useState(null);
+
 
   useEffect(() => {
     fetchReviews();
@@ -13,7 +15,8 @@ export default function ReviewsPage() {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get("https://localhost:50768/api/Reviews");
+     const res = await axios.get("https://localhost:50768/api/Reviews/GetAll");
+
       setReviews(res.data);
     } catch (err) {
       console.error("Error fetching reviews:", err);
@@ -44,9 +47,24 @@ export default function ReviewsPage() {
     }
   };
 
-  return (
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put("https://localhost:50768/api/reviews/updatereview", {
+        reviewID: editingReview.reviewID,
+        comment: editingReview.comment,
+        rating: editingReview.rating,
+        userID: 1
+      });
+      setEditingReview(null);
+      fetchReviews();
+    } catch (err) {
+      console.error("Error updating review:", err);
+    }
+  };
+
+ return (
     <div style={{ backgroundColor: '#fff7e6', minHeight: '100vh' }}>
-      {/* Navbar */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div className="container-fluid px-4">
           <a className="navbar-brand fw-bold" href="#">Hotel Name</a>
@@ -54,23 +72,21 @@ export default function ReviewsPage() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-   <ul className="navbar-nav">
-  <li className="nav-item">
-    <Link className="nav-link" to="/reviews">Reviews</Link>
-  </li>
-  <li className="nav-item">
-    <Link className="nav-link" to="/login">Login</Link>
-  </li>
-  <li className="nav-item">
-    <Link className="nav-link" to="/signup">Sign Up</Link>
-  </li>
-</ul>
-
+            <ul className="navbar-nav">
+              <li className="nav-item">
+                <Link className="nav-link" to="/reviews">Reviews</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/login">Login</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/signup">Sign Up</Link>
+              </li>
+            </ul>
           </div>
         </div>
       </nav>
 
-      {/* Page Content */}
       <div className="container" style={{ paddingTop: '100px' }}>
         <div className="row justify-content-center">
           <div className="col-md-8">
@@ -118,11 +134,34 @@ export default function ReviewsPage() {
                       ))}
                     </div>
                   </div>
-                  <p className="card-text">{review.comment}</p>
-                  <p className="text-muted small mb-2">{new Date(review.date).toLocaleDateString()}</p>
-                  <button onClick={() => handleDelete(review.reviewID)} className="btn btn-sm btn-outline-danger">
-                    Delete
-                  </button>
+                  {editingReview?.reviewID === review.reviewID ? (
+                    <form onSubmit={handleEditSubmit}>
+                      <textarea
+                        className="form-control mb-2"
+                        value={editingReview.comment}
+                        onChange={(e) => setEditingReview({ ...editingReview, comment: e.target.value })}
+                      />
+                      <div className="mb-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <i
+                            key={star}
+                            className={`bi ${editingReview.rating >= star ? "bi-star-fill" : "bi-star"} text-warning me-1`}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => setEditingReview({ ...editingReview, rating: star })}
+                          ></i>
+                        ))}
+                      </div>
+                      <button type="submit" className="btn btn-sm btn-success me-2">Save</button>
+                      <button type="button" className="btn btn-sm btn-secondary" onClick={() => setEditingReview(null)}>Cancel</button>
+                    </form>
+                  ) : (
+                    <>
+                      <p className="card-text">{review.comment}</p>
+                      <p className="text-muted small mb-2">{new Date(review.date).toLocaleDateString()}</p>
+                      <button onClick={() => setEditingReview(review)} className="btn btn-sm btn-outline-primary me-2">Edit</button>
+                      <button onClick={() => handleDelete(review.reviewID)} className="btn btn-sm btn-outline-danger">Delete</button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
