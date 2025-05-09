@@ -19,11 +19,27 @@ namespace HotelMS.Controllers
         }
 
         // GET: api/reviews
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Review>>> GetReviews()
+        // GET: api/reviews/GetAll
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews()
         {
             return await _context.Reviews.Include(r => r.User).ToListAsync();
         }
+
+        // GET: api/reviews/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Review>> GetReviewById(int id)
+        {
+            var review = await _context.Reviews.Include(r => r.User).FirstOrDefaultAsync(r => r.ReviewID == id);
+            if (review == null)
+            {
+                return NotFound(); // 404 if not found
+            }
+
+            return Ok(review);
+        }
+
+
 
         // POST: api/reviews
         [HttpPost]
@@ -41,7 +57,8 @@ namespace HotelMS.Controllers
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetReviews), new { id = review.ReviewID }, review);
+            return CreatedAtAction(nameof(GetAllReviews), new { id = review.ReviewID }, review);
+
         }
 
         // DELETE: api/reviews/{id}
@@ -59,6 +76,36 @@ namespace HotelMS.Controllers
 
             return NoContent(); // 204
         }
+
+
+        // PUT: api/reviews/updatereview
+        [HttpPut("updatereview")]
+        public async Task<IActionResult> UpdateReview(Review updatedReview)
+        {
+            // For now, simulate "logged-in" user with ID 1
+            int fakeUserId = 1;
+
+            var review = await _context.Reviews.FindAsync(updatedReview.ReviewID);
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            // Only allow update if it's the user's own review
+            if (review.UserID != fakeUserId)
+            {
+                return Forbid("Only the creator of the review can edit it.");
+            }
+
+            review.Comment = updatedReview.Comment;
+            review.Rating = updatedReview.Rating;
+            review.Date = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(review);
+        }
+
 
     }
 }
