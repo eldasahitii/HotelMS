@@ -30,6 +30,7 @@ public class Seed
             var roles = new List<Role>
             {
                 new Role() { RoleType = "Admin" },
+                new Role() { RoleType = "Manager" },
                 new Role() { RoleType = "Recepsionist" },
                 new Role() { RoleType = "Cleaning Staff" },
                 new Role() { RoleType = "Customer" }

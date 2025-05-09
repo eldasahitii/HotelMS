@@ -36,6 +36,11 @@ namespace HotelMS.Services
                     throw new ArgumentException("User with this email already exists.");
                 }
 
+                var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleType == "Customer");
+                if (customerRole == null)
+                {
+                    throw new Exception("Customer role not found in the system.");
+                }
                 CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
 
                 User user = new User
@@ -45,18 +50,19 @@ namespace HotelMS.Services
                     Email = request.Email,
                     PasswordHash = hash,
                     PasswordSalt = salt,
-                    RoleID = request.RoleID,
+                    RoleID = customerRole.RoleID,
                 };
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
-                var token = CreateToken(user);
+                var token = await CreateToken(user);
                 return user.Adapt<User>();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Registration error: " + ex.Message);
                 throw new Exception("An error occurred while attempting to save the user record.");
+
             }
         }
 
@@ -105,31 +111,40 @@ namespace HotelMS.Services
             }
         }
 
-        public async Task <String> CreateToken(User user)
+        public async Task<string> CreateToken(User user)
         {
-          
-            List<Claim> claims = new List<Claim>
+            var role = await _context.Roles
+                .FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
+
+            if (role == null)
             {
-                new Claim(ClaimTypes.Email, user.Email),
-               new Claim(ClaimTypes.Role, user.RoleID.ToString()),
-               new Claim(ClaimTypes.NameIdentifier,user.UserID.ToString()),
-            };
+                throw new Exception("Role not found for the user.");
+            }
+
+            List<Claim> claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+        new Claim(ClaimTypes.Role, role.RoleType),
+    };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-               _configuration.GetSection("AppSettings:JwtSecretKey").Value));
+                _configuration.GetSection("AppSettings:JwtSecretKey").Value));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(7),
-                signingCredentials: cred);
+             issuer: _configuration["Jwt:Issuer"],
+             audience: _configuration["Jwt:Audience"],
+             claims: claims,
+             expires: DateTime.Now.AddDays(7),
+             signingCredentials: cred);
+
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
             return jwt;
-            //return Task.FromResult(jwt);
-
         }
+
 
         public void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
         {
