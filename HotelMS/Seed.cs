@@ -279,7 +279,7 @@ public class Seed
         }
 
         //Seed HotelServiceReservation
-        if(!dataContext.HotelServiceReservations.Amy())
+        if(!dataContext.HotelServiceReservations.Any())
         {
             var customer = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
             var saunaService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Sauna Session");
