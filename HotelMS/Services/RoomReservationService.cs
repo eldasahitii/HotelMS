@@ -93,7 +93,7 @@ namespace HotelMS.Services
             }
 
             if (reservation.UserID != userID) {
-                return "You are not authorized to cancel this reservation");
+                return "You are not authorized to cancel this reservation";
             }
 
             var cancelledStatus = await _context.ReservationStatuses
