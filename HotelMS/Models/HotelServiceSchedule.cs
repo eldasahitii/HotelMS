@@ -5,9 +5,16 @@ namespace HotelMS.Models
 {
     public class HotelServiceSchedule
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public int ServiceId { get; set; }
+        
+        [Required]
+        public int HotelServiceId { get; set; }
+
+        [ForeignKey("HotelServiceId")]
         public HotelService Service { get; set; }
+
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public bool IsAvailabale { get; set; }
