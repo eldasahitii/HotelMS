@@ -87,7 +87,6 @@ public class Seed
         }
 
 
-
         //Seed CleaningStaff
         if (!dataContext.CleaningStaff.Any())
         {
