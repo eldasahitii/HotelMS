@@ -61,8 +61,8 @@ namespace HotelMS.Services
             catch (Exception ex)
             {
                 Console.WriteLine("Registration error: " + ex.Message);
-                //throw new Exception("An error occurred while attempting to save the user record.");
-                throw new Exception(ex.Message);
+                throw new Exception("An error occurred while attempting to save the user record.");
+
             }
         }
 
