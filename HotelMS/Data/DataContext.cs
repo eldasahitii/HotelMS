@@ -18,6 +18,9 @@ namespace HotelMS.Data
         public DbSet<CleaningAssignment> CleaningAssignments { get; set; }
         public DbSet<RoomStatus> RoomStatuses { get; set; }
         public DbSet<ReservationStatus> ReservationStatuses { get; set; }
+        public DbSet<HotelService> HotelServices { get; set; }
+        public DbSet<HotelServiceSchedule> HotelServiceSchedules { get; set; }
+        public DbSet<HotelServiceReservation> HotelServiceReservations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
