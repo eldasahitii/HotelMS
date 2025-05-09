@@ -128,7 +128,6 @@ public class Seed
         {
             var reservationStatuses = new List<ReservationStatus>
             {
-                new ReservationStatus() { ReservationStatusName = "Pending" },
                 new ReservationStatus() { ReservationStatusName = "Confirmed" },
                 new ReservationStatus() { ReservationStatusName = "Cancelled" },
                 new ReservationStatus() { ReservationStatusName = "Completed" }

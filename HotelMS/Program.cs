@@ -39,6 +39,7 @@ builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
 builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 builder.Services.AddScoped<IReservationStatusService, ReservationStatusService>();
+builder.Services.AddScoped<IRoomReservationService,RoomReservationService>();
 builder.Services.AddControllers();
 builder.Services.AddTransient<Seed>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
