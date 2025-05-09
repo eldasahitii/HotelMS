@@ -1,8 +1,8 @@
-﻿namespace HotelMS.Models
-{
-    public enum ServiceType
-    {
-        PoolAndSpa,
-        Events
-    }
-}
+﻿//namespace HotelMS.Models
+//{
+//    public enum ServiceType
+//    {
+//        PoolAndSpa,
+//        Events
+//    }
+//}
