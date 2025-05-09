@@ -1,8 +1,8 @@
-// ManagerDashboard with update staff feature
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { Link } from "react-router-dom";
 
 export default function ManagerDashboard() {
   const [staff, setStaff] = useState([]);
@@ -54,23 +54,27 @@ export default function ManagerDashboard() {
   };
 
   const handleAddStaff = async () => {
-    if (!newStaff.userID || !newStaff.shift) {
-      alert("Please provide both User ID and Shift.");
-      return;
-    }
-    const payload = {
-      ...newStaff,
-      userID: parseInt(newStaff.userID),
-    };
-    try {
-      await axios.post("/api/CleaningStaff/addCleaningStaff", payload);
-      setNewStaff({ userID: '', shift: '', isActive: true, assignedByUserID: 1 });
-      fetchData();
-    } catch (error) {
-      console.error("Add staff failed:", error.response?.data || error.message);
-      alert("Failed to add cleaning staff. Check input and try again.");
-    }
+  if (!newStaff.userID || !newStaff.shift) {
+    alert("Please provide both User ID and Shift.");
+    return;
+  }
+
+  const payload = {
+    userID: parseInt(newStaff.userID),
+    shift: newStaff.shift,
+    isActive: newStaff.isActive,
+    assignedByUserID: newStaff.assignedByUserID,
   };
+
+  try {
+    await axios.post("/api/CleaningStaff/addCleaningStaff", payload);
+    setNewStaff({ userID: '', shift: '', isActive: true, assignedByUserID: 1 });
+    fetchData();
+  } catch (error) {
+    console.error("Add staff failed:", error.response?.data || error.message);
+    alert("Server says: " + JSON.stringify(error.response?.data));
+  }
+};
 
   const handleAddAssignment = async () => {
     await axios.post("/api/CleaningAssignment/addAssignment", newAssignment);
@@ -78,15 +82,15 @@ export default function ManagerDashboard() {
     fetchData();
   };
 
-  const handleStartAssignment = async (id) => {
-    await axios.put(`/api/CleaningAssignment/startAssignment?id=${id}`);
-    fetchData();
-  };
+  // const handleStartAssignment = async (id) => {
+  //   await axios.put(`/api/CleaningAssignment/startAssignment?id=${id}`);
+  //   fetchData();
+  // };
 
-  const handleCompleteAssignment = async (id) => {
-    await axios.put(`/api/CleaningAssignment/markAssignmentCompleted?id=${id}`);
-    fetchData();
-  };
+  // const handleCompleteAssignment = async (id) => {
+  //   await axios.put(`/api/CleaningAssignment/markAssignmentCompleted?id=${id}`);
+  //   fetchData();
+  // };
 
   const handleCancelAssignment = async (id) => {
     await axios.put(`/api/CleaningAssignment/cancelAssignment?id=${id}`);
@@ -119,9 +123,17 @@ export default function ManagerDashboard() {
       <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
         <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
         <ul className="nav flex-column">
-          <li className="nav-item"><span className="nav-link text-white"><i className="bi bi-speedometer2 me-2"></i>Dashboard</span></li>
-          <li className="nav-item"><span className="nav-link text-white"><i className="bi bi-people-fill me-2"></i>Cleaning Staff</span></li>
-          <li className="nav-item"><span className="nav-link text-white"><i className="bi bi-list-task me-2"></i>Assignments</span></li>
+      
+         <li className="nav-item">
+    <Link to="//" className="nav-link text-white">
+      <i className="bi bi-people-fill me-2"></i>Cleaning Staff
+    </Link>
+  </li>
+  <li className="nav-item">
+    <Link to="/manager/assignments" className="nav-link text-white">
+      <i className="bi bi-list-task me-2"></i>Assignments
+    </Link>
+  </li>
         </ul>
       </aside>
       <main className="flex-grow-1 p-4">
