@@ -19,6 +19,7 @@ namespace HotelMS.Services
 
         public async Task<string> AddManager(UserRegistrationDTO request)
         {
+            // Check if the user already exists
             var existingUser = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
@@ -27,14 +28,17 @@ namespace HotelMS.Services
                 return "User already exists";
             }
 
+            // Look up the manager role by name instead of RoleID
             var managerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleType == "Manager");
             if (managerRole == null)
             {
                 return "Manager role not found";
             }
 
+            // Hash the password
             CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
 
+            // Create the new user
             var newUser = new User
             {
                 FirstName = request.FirstName,
@@ -42,14 +46,16 @@ namespace HotelMS.Services
                 Email = request.Email,
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                RoleID = managerRole.RoleID,
+                RoleID = managerRole.RoleID, // Assign RoleID based on the RoleName
             };
 
+            // Add the new user to the database
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
             return "Manager added successfully";
         }
+
 
         public void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
         {

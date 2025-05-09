@@ -55,7 +55,7 @@ namespace HotelMS.Services
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
-                var token = CreateToken(user);
+                var token = await CreateToken(user);
                 return user.Adapt<User>();
             }
             catch (Exception ex)
@@ -133,9 +133,12 @@ namespace HotelMS.Services
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(7),
-                signingCredentials: cred);
+             issuer: _configuration["Jwt:Issuer"],
+             audience: _configuration["Jwt:Audience"],
+             claims: claims,
+             expires: DateTime.Now.AddDays(7),
+             signingCredentials: cred);
+
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
