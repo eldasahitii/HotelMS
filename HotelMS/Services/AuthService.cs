@@ -5,6 +5,7 @@ using HotelMS.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Expressions;
 using System.Security.Claims;
@@ -111,18 +112,20 @@ namespace HotelMS.Services
             }
         }
 
-        public async Task <String> CreateToken(User user)
+        public async Task<string> CreateToken(User user)
         {
-          
+            var role = await _context.Roles.FindAsync(user.RoleID);
+
             List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Email, user.Email),
-               new Claim(ClaimTypes.Role, user.RoleID.ToString()),
-               new Claim(ClaimTypes.NameIdentifier,user.UserID.ToString()),
-            };
+    {
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Role, role.RoleType),
+        new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+    };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-               _configuration.GetSection("AppSettings:JwtSecretKey").Value));
+                _configuration.GetSection("AppSettings:JwtSecretKey").Value));
+
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
@@ -133,8 +136,6 @@ namespace HotelMS.Services
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
             return jwt;
-            //return Task.FromResult(jwt);
-
         }
 
         public void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
