@@ -4,6 +4,7 @@ using HotelMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelMS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250509004416_CreateHotelServiceSchedule")]
+    partial class CreateHotelServiceSchedule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,42 +128,6 @@ namespace HotelMS.Migrations
                     b.ToTable("HotelServices");
                 });
 
-            modelBuilder.Entity("HotelMS.Models.HotelServiceReservation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("HotelServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ReservationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ScheduleId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HotelServiceId");
-
-                    b.HasIndex("ScheduleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("HotelServiceReservations");
-                });
-
             modelBuilder.Entity("HotelMS.Models.HotelServiceSchedule", b =>
                 {
                     b.Property<int>("Id")
@@ -172,18 +139,18 @@ namespace HotelMS.Migrations
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("HotelServiceId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsAvailabale")
                         .HasColumnType("bit");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HotelServiceId");
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("HotelServiceSchedules");
                 });
@@ -436,36 +403,11 @@ namespace HotelMS.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HotelMS.Models.HotelServiceReservation", b =>
-                {
-                    b.HasOne("HotelMS.Models.HotelService", "Service")
-                        .WithMany("HotelServiceReservations")
-                        .HasForeignKey("HotelServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HotelMS.Models.HotelServiceSchedule", "Schedule")
-                        .WithMany()
-                        .HasForeignKey("ScheduleId");
-
-                    b.HasOne("HotelMS.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Schedule");
-
-                    b.Navigation("Service");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("HotelMS.Models.HotelServiceSchedule", b =>
                 {
                     b.HasOne("HotelMS.Models.HotelService", "Service")
-                        .WithMany("HotelServiceSchedules")
-                        .HasForeignKey("HotelServiceId")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -531,13 +473,6 @@ namespace HotelMS.Migrations
             modelBuilder.Entity("HotelMS.Models.CleaningStaff", b =>
                 {
                     b.Navigation("CleaningAssignments");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.HotelService", b =>
-                {
-                    b.Navigation("HotelServiceReservations");
-
-                    b.Navigation("HotelServiceSchedules");
                 });
 
             modelBuilder.Entity("HotelMS.Models.ReservationStatus", b =>
