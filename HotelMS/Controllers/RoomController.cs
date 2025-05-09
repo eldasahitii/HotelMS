@@ -1,29 +1,92 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using HotelMS.Data.DTO;
+﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HotelMS.Controllers
 {
-    [Route("api/[controller]")]
+    [Microsoft.AspNetCore.Mvc.Route("api/[Controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class RoomController : ControllerBase
     {
-        private readonly IUserServices _service;
-        public UserController(IUserServices service)
+        private readonly IRoomService _service;
+        public RoomController(IRoomService service)
         {
             _service = service;
         }
 
-        //koment
-        [HttpGet]
-
-
-        public async Task<IActionResult> GetUser(int id)
+        [HttpPost("addRoom")]
+        public async Task<IActionResult> AddRoom(RoomDTO request)
         {
             try
             {
-                var result = await _service.GetUser(id);
+                var product = await _service.AddRoom(request);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("getRoom")]
+        public async Task<IActionResult> GetRoom(int id)
+        {
+            try
+            {
+                var result = await _service.GetRoom(id);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+
+            }
+        }
+
+        [HttpGet("getAllRooms")]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var result = await _service.GetAll();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("deleteRoom")]
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var result = _service.DeleteRoom(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("updateRoom")]
+
+        public async Task<IActionResult> Update(int id, [FromBody] RoomDTO request)
+        {
+            try
+            {
+                var result = _service.UpdateRoom(id, request);
                 if (result == null)
                 {
                     return NotFound();
@@ -38,53 +101,5 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpGet("getAll")]
-
-
-        public async Task<IActionResult> GetAll()
-        {
-            try
-            {
-                var result = await _service.GetAll();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpDelete("deleteUser")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var result = _service.DeleteUser(id);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpPut("updateUser")]
-        public async Task<IActionResult> Update(int id, [FromBody] UserDTO request)
-        {
-            try
-            {
-                var result = _service.UpdateUser(id, request);
-                if (result == null)
-                    return NotFound();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
     }
 }
-
-

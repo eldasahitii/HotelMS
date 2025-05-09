@@ -26,7 +26,6 @@ const Login = () => {
               localStorage.setItem('email', decoded.email);
               localStorage.setItem('role', decoded.role);
               localStorage.setItem('userID', decoded.nameid);
-
             }
             
             console.log('Login successful:', response.data);

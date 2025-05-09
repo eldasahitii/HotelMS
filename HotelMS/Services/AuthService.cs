@@ -105,13 +105,14 @@ namespace HotelMS.Services
             }
         }
 
-        public Task <String> CreateToken(User user)
+        public async Task <String> CreateToken(User user)
         {
+          
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role,user.RoleID.ToString()),
-                new Claim(ClaimTypes.NameIdentifier,user.UserID.ToString()),
+               new Claim(ClaimTypes.Role, user.RoleID.ToString()),
+               new Claim(ClaimTypes.NameIdentifier,user.UserID.ToString()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
@@ -125,7 +126,8 @@ namespace HotelMS.Services
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return Task.FromResult(jwt);
+            return jwt;
+            //return Task.FromResult(jwt);
 
         }
 

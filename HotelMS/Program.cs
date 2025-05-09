@@ -26,10 +26,18 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 }
 );
+builder.Services.AddControllers()
+    .AddJsonOptions(x =>
+        x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
 // Add services to the container.
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserServices, UserService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
+builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
+builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
+//builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 builder.Services.AddControllers();
 builder.Services.AddTransient<Seed>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -67,3 +75,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
