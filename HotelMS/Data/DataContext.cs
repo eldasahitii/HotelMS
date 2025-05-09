@@ -132,6 +132,20 @@ namespace HotelMS.Data
                 .WithMany(s => s.HotelServiceReservations)
                 .HasForeignKey(r => r.HotelServiceId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            //HotelReservation -> User
+            modelBuilder.Entity<HotelServiceReservation>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //HotelServiceReservation -> HotelServiceSchedule
+            modelBuilder.Entity<HotelServiceReservation>()
+                .HasOne(r => r.Schedule)
+                .WithMany()
+                .HasForeignKey(r => r.ScheduleId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
     }
