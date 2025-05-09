@@ -24,6 +24,7 @@ namespace HotelMS.Data
         public DbSet<RoomType> RoomTypes { get; set; }
         public DbSet<RoomStatus> RoomStatuses { get; set; }
         public DbSet<ReservationStatus> ReservationStatuses { get; set; }
+        public DbSet<HotelService> HotelServices { get; set; }
 
 
 

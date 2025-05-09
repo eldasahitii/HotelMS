@@ -40,6 +40,7 @@ builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
 
 
 
+
 builder.Services.AddControllers();
 builder.Services.AddTransient<Seed>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
