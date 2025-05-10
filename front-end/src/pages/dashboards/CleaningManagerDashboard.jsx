@@ -1,23 +1,24 @@
-// ManagerDashboard with update staff feature
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { Link } from "react-router-dom";
 
-export default function ManagerDashboard() {
+export default function CleaningManagerDashboard() {
   const [staff, setStaff] = useState([]);
-  const [assignments, setAssignments] = useState([]);
   const [newStaff, setNewStaff] = useState({ userID: '', shift: '', isActive: true, assignedByUserID: 1 });
-  const [newAssignment, setNewAssignment] = useState({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: 1 });
   const [shiftFilter, setShiftFilter] = useState('');
   const [searchId, setSearchId] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+  const [editingStaff, setEditingStaff] = useState(null);
+  const [editShift, setEditShift] = useState('');
+  const [editIsActive, setEditIsActive] = useState(true);
 
   const fetchData = async () => {
     try {
       const staffRes = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
       setStaff(staffRes.data);
-      const assignmentRes = await axios.get("/api/CleaningAssignment/getAllAssignments");
-      setAssignments(assignmentRes.data);
     } catch (err) {
       console.error(err);
     }
@@ -28,69 +29,65 @@ export default function ManagerDashboard() {
   }, []);
 
   const handleDeleteStaff = async (id) => {
-    await axios.delete(`/api/CleaningStaff/deleteCleaningStaff?id=${id}`);
-    fetchData();
-  };
-
-  const handleUpdateStaff = async (staff) => {
-    const updatedShift = prompt("Enter new shift:", staff.shift);
-    const isActive = window.confirm("Should this staff be active?");
-    if (!updatedShift) return;
     try {
-      await axios.put(`/api/CleaningStaff/updateCleaningStaff?id=${staff.cleaningStaffID}`, {
-        ...staff,
-        shift: updatedShift,
-        isActive: isActive
-      });
+      await axios.delete(`/api/CleaningStaff/deleteCleaningStaff?id=${id}`);
+      setMessage("Staff deleted successfully.");
+      setMessageType("success");
       fetchData();
     } catch (err) {
-      console.error("Failed to update staff", err);
+      setMessage("Failed to delete staff.");
+      setMessageType("danger");
     }
   };
 
-  const handleDeleteAssignment = async (id) => {
-    await axios.delete(`/api/CleaningAssignment/deleteAssignment?id=${id}`);
-    fetchData();
+  const openEditForm = (staff) => {
+    setEditingStaff(staff);
+    setEditShift(staff.shift);
+    setEditIsActive(staff.isActive);
+  };
+
+  const handleConfirmUpdate = async () => {
+    try {
+      await axios.put(`/api/CleaningStaff/updateCleaningStaff?id=${editingStaff.cleaningStaffID}`, {
+        ...editingStaff,
+        shift: editShift,
+        isActive: editIsActive
+      });
+      setMessage("Staff updated successfully.");
+      setMessageType("success");
+      setEditingStaff(null);
+      fetchData();
+    } catch (err) {
+      setMessage("Failed to update staff.");
+      setMessageType("danger");
+    }
   };
 
   const handleAddStaff = async () => {
     if (!newStaff.userID || !newStaff.shift) {
-      alert("Please provide both User ID and Shift.");
+      setMessage("Please provide both User ID and Shift.");
+      setMessageType("danger");
       return;
     }
+
     const payload = {
-      ...newStaff,
       userID: parseInt(newStaff.userID),
+      shift: newStaff.shift,
+      isActive: newStaff.isActive,
+      assignedByUserID: newStaff.assignedByUserID,
     };
+
     try {
       await axios.post("/api/CleaningStaff/addCleaningStaff", payload);
       setNewStaff({ userID: '', shift: '', isActive: true, assignedByUserID: 1 });
+      setMessage("Staff added successfully.");
+      setMessageType("success");
       fetchData();
     } catch (error) {
       console.error("Add staff failed:", error.response?.data || error.message);
-      alert("Failed to add cleaning staff. Check input and try again.");
+      setMessage("Failed to add staff.");
+      setMessageType("danger");
     }
-  };
-
-  const handleAddAssignment = async () => {
-    await axios.post("/api/CleaningAssignment/addAssignment", newAssignment);
-    setNewAssignment({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: 1 });
-    fetchData();
-  };
-
-  const handleStartAssignment = async (id) => {
-    await axios.put(`/api/CleaningAssignment/startAssignment?id=${id}`);
-    fetchData();
-  };
-
-  const handleCompleteAssignment = async (id) => {
-    await axios.put(`/api/CleaningAssignment/markAssignmentCompleted?id=${id}`);
-    fetchData();
-  };
-
-  const handleCancelAssignment = async (id) => {
-    await axios.put(`/api/CleaningAssignment/cancelAssignment?id=${id}`);
-    fetchData();
   };
 
   const handleGetByShift = async () => {
@@ -105,7 +102,8 @@ export default function ManagerDashboard() {
       const res = await axios.get(`/api/CleaningStaff/getCleaningStaff?id=${searchId}`);
       setStaff(res.data ? [res.data] : []);
     } catch (error) {
-      alert("Staff not found");
+      setMessage("Staff not found.");
+      setMessageType("danger");
     }
   };
 
@@ -119,15 +117,29 @@ export default function ManagerDashboard() {
       <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
         <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
         <ul className="nav flex-column">
-          <li className="nav-item"><span className="nav-link text-white"><i className="bi bi-speedometer2 me-2"></i>Dashboard</span></li>
-          <li className="nav-item"><span className="nav-link text-white"><i className="bi bi-people-fill me-2"></i>Cleaning Staff</span></li>
-          <li className="nav-item"><span className="nav-link text-white"><i className="bi bi-list-task me-2"></i>Assignments</span></li>
+          <li className="nav-item">
+            <Link to="/manager/cleaning-staff" className="nav-link text-white">
+              <i className="bi bi-people-fill me-2"></i>Cleaning Staff
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/manager/assignments" className="nav-link text-white">
+              <i className="bi bi-list-task me-2"></i>Assignments
+            </Link>
+          </li>
         </ul>
       </aside>
       <main className="flex-grow-1 p-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="fw-bold text-primary"><i className="bi bi-speedometer2 me-2"></i>Cleaning Manager</h2>
-        </div>
+        <h2 className="fw-bold text-primary mb-4">
+          <i className="bi bi-people-fill me-2"></i>Cleaning Manager
+        </h2>
+
+        {message && (
+          <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+            {message}
+            <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
+          </div>
+        )}
 
         <div className="card mb-4">
           <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
@@ -148,13 +160,7 @@ export default function ManagerDashboard() {
         <div className="card mb-4">
           <div className="card-body">
             <div className="d-flex gap-2 mb-2">
-              <input
-                type="number"
-                className="form-control"
-                placeholder="Search by Staff ID"
-                value={searchId}
-                onChange={e => setSearchId(e.target.value)}
-              />
+              <input type="number" className="form-control" placeholder="Search by Staff ID" value={searchId} onChange={e => setSearchId(e.target.value)} />
               <button className="btn btn-outline-dark" onClick={handleSearchById}>
                 <i className="bi bi-search"></i> Search
               </button>
@@ -193,7 +199,7 @@ export default function ManagerDashboard() {
                     <td>{s.isActive ? "Active" : "Inactive"}</td>
                     <td>
                       <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteStaff(s.cleaningStaffID)}><i className="bi bi-trash"></i></button>
-                      <button className="btn btn-sm btn-outline-secondary" onClick={() => handleUpdateStaff(s)}><i className="bi bi-pencil-square"></i></button>
+                      <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(s)}><i className="bi bi-pencil-square"></i></button>
                     </td>
                   </tr>
                 ))}
@@ -202,32 +208,27 @@ export default function ManagerDashboard() {
           </div>
         </div>
 
-        <div className="card">
-          <div className="card-header" style={{ backgroundColor: '#a6b8cc', color: '#fff' }}>
-            <i className="bi bi-list-task me-2"></i>Assignments
-          </div>
-          <div className="card-body">
-            <div className="mb-3">
-              <input className="form-control mb-2" placeholder="Room ID" value={newAssignment.roomID} onChange={e => setNewAssignment({ ...newAssignment, roomID: e.target.value })} />
-              <input className="form-control mb-2" placeholder="Staff ID" value={newAssignment.cleaningStaffID} onChange={e => setNewAssignment({ ...newAssignment, cleaningStaffID: e.target.value })} />
-              <button className="btn btn-success w-100" onClick={handleAddAssignment}><i className="bi bi-plus-circle me-2"></i>Add Assignment</button>
+        {editingStaff && (
+          <div className="card mt-4">
+            <div className="card-header bg-warning text-dark">
+              <i className="bi bi-pencil-square me-2"></i>Update Staff Info
             </div>
-            {assignments.map((a, idx) => (
-              <div key={a.cleaningAssignmentID} className="border rounded p-3 mb-3 bg-white">
-                <div className="fw-bold"><i className="bi bi-door-open me-2"></i>Room: {a.roomName}</div>
-                <div><i className="bi bi-person me-2"></i>Staff: {a.staffName}</div>
-                <div><i className="bi bi-info-circle me-2"></i>Status: {a.status}</div>
-                <div className="text-muted"><i className="bi bi-calendar3 me-2"></i>Assigned: {new Date(a.assignedAt).toLocaleString()}</div>
-                <div className="mt-2 d-flex gap-2 flex-wrap">
-                  {/* <button className="btn btn-sm btn-primary" onClick={() => handleStartAssignment(a.cleaningAssignmentID)}><i className="bi bi-play-fill"></i> Start</button>
-                  <button className="btn btn-sm btn-info" onClick={() => handleCompleteAssignment(a.cleaningAssignmentID)}><i className="bi bi-check2-circle"></i> Complete</button> */}
-                  <button className="btn btn-sm btn-warning" onClick={() => handleCancelAssignment(a.cleaningAssignmentID)}><i className="bi bi-x-circle"></i> Cancel</button>
-                  <button className="btn btn-sm btn-danger" onClick={() => handleDeleteAssignment(a.cleaningAssignmentID)}><i className="bi bi-trash"></i> Delete</button>
-                </div>
+            <div className="card-body">
+              <select className="form-control mb-2" value={editShift} onChange={e => setEditShift(e.target.value)}>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Night">Night</option>
+              </select>
+              <div className="form-check form-switch mb-3">
+                <input className="form-check-input" type="checkbox" checked={editIsActive} onChange={e => setEditIsActive(e.target.checked)} />
+                <label className="form-check-label">Active</label>
               </div>
-            ))}
+              <button className="btn btn-primary me-2" onClick={handleConfirmUpdate}><i className="bi bi-check2"></i> Save</button>
+              <button className="btn btn-secondary" onClick={() => setEditingStaff(null)}><i className="bi bi-x"></i> Cancel</button>
+            </div>
           </div>
-        </div>
+        )}
+
       </main>
     </div>
   );

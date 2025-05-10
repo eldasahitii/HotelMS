@@ -31,8 +31,8 @@ public class Seed
             {
                 new Role() { RoleType = "Admin" },
                 new Role() { RoleType = "Manager" },
-                new Role() { RoleType = "Recepsionist" },
-                new Role() { RoleType = "Cleaning Staff" },
+                new Role() { RoleType = "Receptionist" },
+                new Role() { RoleType = "CleaningStaff" },
                 new Role() { RoleType = "Customer" }
             };
 
@@ -47,8 +47,8 @@ public class Seed
         {
 
             var adminRoleID = dataContext.Roles.First(r => r.RoleType == "Admin").RoleID;
-            var recepsionistRoleID = dataContext.Roles.First(r => r.RoleType == "Recepsionist").RoleID;
-            var cleaningStaffRoleID = dataContext.Roles.First(r => r.RoleType == "Cleaning Staff").RoleID;
+            var recepsionistRoleID = dataContext.Roles.First(r => r.RoleType == "Receptionist").RoleID;
+            var cleaningStaffRoleID = dataContext.Roles.First(r => r.RoleType == "CleaningStaff").RoleID;
             var customerRoleID = dataContext.Roles.First(r => r.RoleType == "Customer").RoleID;
 
             CreatePasswordHash("Ruvejda123", out var adminHash, out var adminSalt);

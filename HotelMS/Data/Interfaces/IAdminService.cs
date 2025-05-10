@@ -1,14 +1,11 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Models;
 
-namespace HotelMS.Data.Interfaces
+public interface IAdminService
 {
-    public interface IAdminService
-    {
-        Task<string> AddManager(UserRegistrationDTO request);
-        Task<User> GetManagerByID(int id);
-        Task<IEnumerable<User>> GetManagers();
-        Task<User> UpdateManager(int id,UserDTO request);
-        Task<string> DeleteManager(int id);
-    }
+    Task<string> AddUserWithRole(UserRegistrationDTO request);
+    Task<IEnumerable<User>> GetUsersByRole(string roleType);
+    Task<User> GetUserByIdAndRole(int id, string roleType);
+    Task<User> UpdateUserByRole(int id, string roleType, UserDTO request);
+    Task<string> DeleteUserByRole(int id, string roleType);
 }
