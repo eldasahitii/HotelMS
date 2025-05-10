@@ -37,12 +37,11 @@ namespace HotelMS.Services
                     throw new ArgumentException("User with this email already exists.");
                 }
 
-                var roleExists = await _context.Roles.AnyAsync(r => r.RoleID == request.RoleID);
-                if (roleExists)
+                var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleType == "Customer");
+                if (customerRole == null)
                 {
-                    throw new ArgumentException("Invalid role ID.");
+                    throw new Exception("Customer role not found in the system.");
                 }
-
                 CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
 
                 User user = new User
@@ -52,19 +51,21 @@ namespace HotelMS.Services
                     Email = request.Email,
                     PasswordHash = hash,
                     PasswordSalt = salt,
-                    RoleID = request.RoleID,
+                    RoleID = customerRole.RoleID,
                 };
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
-                var token = CreateToken(user);
+                var token = await CreateToken(user);
                 return user.Adapt<User>();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Registration error: " + ex.Message);
                 throw new Exception("An error occurred while attempting to save the user record.");
+
             }
+
         }
 
         public async Task<string> Login(UserLoginDTO request)
@@ -112,31 +113,72 @@ namespace HotelMS.Services
             }
         }
 
+        //    public async Task<string> CreateToken(User user)
+        //    {
+        //        var role = await _context.Roles
+        //            .FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
+
+        //        if (role == null)
+        //        {
+        //            throw new Exception("Role not found for the user.");
+        //        }
+
+        //        List<Claim> claims = new List<Claim>
+        //{
+        //    new Claim(ClaimTypes.Email, user.Email),
+        //    new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+        //    new Claim(ClaimTypes.Role, role.RoleType),
+        //};
+
+        //        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+        //            _configuration.GetSection("AppSettings:JwtSecretKey").Value));
+        //        var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+        //        var token = new JwtSecurityToken(
+        //         issuer: _configuration["Jwt:Issuer"],
+        //         audience: _configuration["Jwt:Audience"],
+        //         claims: claims,
+        //         expires: DateTime.Now.AddDays(7),
+        //         signingCredentials: cred);
+
+
+        //        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+        //        return jwt;
+        //    }
         public async Task<string> CreateToken(User user)
         {
-            var role = await _context.Roles.FindAsync(user.RoleID);
+            var role = await _context.Roles
+                .FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
 
-            List<Claim> claims = new List<Claim>
+            if (role == null)
+                throw new Exception("Role not found for the user.");
+
+            var claims = new List<Claim>
     {
         new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.Role, role.RoleType),
         new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+        new Claim(ClaimTypes.Role, role.RoleType)
     };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration.GetSection("AppSettings:JwtSecretKey").Value));
+            var secretKey = _configuration["AppSettings:JwtSecretKey"];
+            if (string.IsNullOrEmpty(secretKey))
+                throw new Exception("JWT secret key is missing in configuration.");
 
-            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
             var token = new JwtSecurityToken(
+                issuer: null,
+                audience: null,
                 claims: claims,
-                expires: DateTime.Now.AddDays(7),
-                signingCredentials: cred);
+                expires: DateTime.UtcNow.AddDays(7),
+                signingCredentials: credentials
+            );
 
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return jwt;
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
 
         public void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
         {

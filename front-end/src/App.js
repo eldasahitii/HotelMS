@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { jwtDecode } from 'jwt-decode';
 import CleaningManagerDashboard from './pages/dashboards/CleaningManagerDashboard';
 
+
 const ProtectedRoute = ({ children, allowedRoles }) => {
     const token = localStorage.getItem('token');
 
@@ -36,8 +37,10 @@ function App() {
                         <ProtectedRoute allowedRoles={['Admin']}>
                             <AdminDashboard />
                             <CleaningManagerDashboard/>
+                         
                         </ProtectedRoute>
                     }
+
                 />
                 <Route path="/test-dashboard" element={<CleaningManagerDashboard />} />  
                 {/* veq per testim */}

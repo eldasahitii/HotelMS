@@ -1,6 +1,7 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Controllers
 {
@@ -15,12 +16,28 @@ namespace HotelMS.Controllers
             _service = service;
         }
 
+        //[HttpPost("addCleaningStaff")]
+        //public async Task<IActionResult> AddCleaningStaff([FromBody] CleaningStaffDTO request)
+        //{
+        //    try
+        //    {
+        //        var result = await _service.AddCleaningStaff(request);
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
         [HttpPost("addCleaningStaff")]
-        public async Task<IActionResult> AddCleaningStaff([FromBody] CleaningStaffDTO request)
+        public async Task<IActionResult> AddCleaningStaff([FromBody] CleaningStaffDTO dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
-                var result = await _service.AddCleaningStaff(request);
+                var result = await _service.AddCleaningStaff(dto);
                 return Ok(result);
             }
             catch (Exception ex)
