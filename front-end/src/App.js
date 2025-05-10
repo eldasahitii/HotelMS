@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Header from './Components/Header';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import AdminDashboard from "./pages/dashboards/AdminDashboard"; 
+import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { jwtDecode } from 'jwt-decode';
 import CleaningManagerDashboard from './pages/dashboards/CleaningManagerDashboard';
@@ -40,7 +40,7 @@ function App() {
                         element={
                             <ProtectedRoute allowedRoles={['Admin']}>
                                 <AdminDashboard />
-                                <CleaningManagerDashboard />
+                               
                             </ProtectedRoute>
                         }
                     />

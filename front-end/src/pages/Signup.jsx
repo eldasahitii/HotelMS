@@ -10,7 +10,8 @@ const Signup = () => {
     FirstName: '',
     LastName: '',
     Email: '',
-    Password: ''
+    Password: '',
+    RoleType: 'Customer'
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -26,30 +27,40 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const emailRegex = /^\S+@\S+\.\S+$/;
     const errors = {
       FirstName: !userRegistration.FirstName.trim(),
       LastName: !userRegistration.LastName.trim(),
-      Email: !userRegistration.Email.trim(),
+      Email: !userRegistration.Email.trim() || !emailRegex.test(userRegistration.Email),
       Password: !userRegistration.Password.trim()
     };
     setFormErrors(errors);
     if (Object.values(errors).some(Boolean)) return;
 
     try {
-      const response = await axios.post('https://localhost:7117/api/Auth/register', userRegistration);
+      const response = await axios.post('/api/Auth/register', userRegistration);
+      console.log("RESPONSE:", response);
+
       const { token, isLoggedIn } = response.data;
 
       if (token && isLoggedIn) {
-        localStorage.setItem('token', `Bearer ${token}`);
-        navigate('/login');
+        console.log("Registration successful!");
+        try {
+          localStorage.setItem('token', `Bearer ${token}`);
+          navigate('/admin-dashboard');
+        } catch (navErr) {
+          console.error("Navigation error:", navErr);
+          setError("Signup successful but redirect failed. Please reload.");
+        }
       }
     } catch (error) {
+      console.log("Full Axios Error:", error);
       const message = error.response?.data?.message || error.message;
       console.error("Registration error:", message);
       if (message.includes("already exists")) {
         setError("An account with this email already exists.");
       } else {
-        setError(message);
+        setError("Registration failed: " + message);
       }
     }
   };
@@ -91,7 +102,11 @@ const Signup = () => {
                     value={userRegistration[field]}
                     onChange={handleInputChange}
                   />
-                  {formErrors[field] && <div className="invalid-feedback">{field.replace("Name", " name")} is required.</div>}
+                  {formErrors[field] && (
+                    <div className="invalid-feedback">
+                      {field === "Email" ? "Valid email is required." : `${field.replace("Name", " name")} is required.`}
+                    </div>
+                  )}
                 </div>
               ))}
 

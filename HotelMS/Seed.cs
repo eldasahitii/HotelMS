@@ -206,7 +206,7 @@ public class Seed
                     CheckInDate = DateTime.Now.AddDays(1),
                     CheckOutDate = DateTime.Now.AddDays(5),
                     ReservationStatusID = reservationStatusID, 
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now    
                 }
             };
 

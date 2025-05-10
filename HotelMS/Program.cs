@@ -8,22 +8,38 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using HotelMS.Data.Interfaces;
 using System.Text;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+
+var jwtSecret = builder.Configuration["AppSettings:JwtSecretKey"];
+if (string.IsNullOrEmpty(jwtSecret))
+{
+    throw new Exception("JWT secret key is missing in appsettings.json!");
+}
+var jwtKeyBytes = Encoding.UTF8.GetBytes(jwtSecret);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.RequireHttpsMetadata = false;
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:JwtSecretKey"]!)), 
-            ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha512 } 
+            IssuerSigningKey = new SymmetricSecurityKey(jwtKeyBytes),
+            ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha512 },
+            RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+            NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
         };
+
         options.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>
@@ -33,6 +49,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
     });
+   
+
 
 builder.Services.AddCors(options =>
 {
@@ -41,7 +59,6 @@ builder.Services.AddCors(options =>
                .AllowAnyMethod()
                .AllowAnyHeader());
 });
-
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
@@ -60,9 +77,8 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
 builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
-builder.Services.AddScoped<IAdminService, AdminService>(); 
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddTransient<Seed>();
-
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -90,9 +106,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
 var app = builder.Build();
-
 
 if (args.Length == 1 && args[0].ToLower() == "seeddata")
     SeedData(app);
@@ -103,8 +117,6 @@ void SeedData(IHost app)
     var service = scope.ServiceProvider.GetRequiredService<Seed>();
     service.SeedDataContext();
 }
-
-
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -114,7 +126,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+}      
 
 app.MapControllers();
 app.Run();
