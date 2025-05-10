@@ -5,6 +5,7 @@ using HotelMS.Services;
 using Microsoft.AspNetCore.Mvc;
 
 
+
 namespace HotelMS.Controllers
 {
     [ApiController]
@@ -12,9 +13,9 @@ namespace HotelMS.Controllers
 
     public class HotelServiceController : ControllerBase
     {
-        private readonly HotelServiceService _service;
+        private readonly IHotelServiceService _service;
 
-        public HotelServiceController(HotelServiceService service)
+        public HotelServiceController(IHotelServiceService service)
         {
             _service = service;
         }
