@@ -17,20 +17,21 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost("addAssignment")]
-        public async Task<IActionResult> Add([FromBody] CleaningAssignmentDTO request)
+        public async Task<IActionResult> AddAssignment([FromBody] CleaningAssignmentDTO request)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var result = await _service.AddAssignment(request);
-            return Ok(result);
+            try
+            {
+                var result = await _service.AddAssignment(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Assignment creation failed: " + ex.Message);
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        [HttpGet("getAssignment")]
-        public async Task<IActionResult> Get(int id)
-        {
-            var result = await _service.GetAssignment(id);
-            return result == null ? NotFound() : Ok(result);
-        }
+
 
         [HttpGet("getAllAssignments")]
         public async Task<IActionResult> GetAll()

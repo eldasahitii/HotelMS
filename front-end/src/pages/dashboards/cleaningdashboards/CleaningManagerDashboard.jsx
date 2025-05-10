@@ -118,15 +118,13 @@ export default function CleaningManagerDashboard() {
         <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <Link to="/manager/cleaning-staff" className="nav-link text-white">
+            {/* <Link to="/manager/cleaning-staff" className="nav-link text-white"> */}
               <i className="bi bi-people-fill me-2"></i>Cleaning Staff
-            </Link>
+            {/* </Link> */}
           </li>
-          <li className="nav-item">
-            <Link to="/manager/assignments" className="nav-link text-white">
-              <i className="bi bi-list-task me-2"></i>Assignments
-            </Link>
-          </li>
+          <Link to="/manager/assignments" className="nav-link text-white">
+  <i className="bi bi-list-task me-2"></i>Assignments
+</Link>
         </ul>
       </aside>
       <main className="flex-grow-1 p-4">
