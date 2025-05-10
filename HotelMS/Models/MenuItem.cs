@@ -9,7 +9,7 @@ namespace HotelMS.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 
-        public int Id { get; set; }
+        public int MenuItemID { get; set; }
         [Required]
 
          public string Name { get; set; }
@@ -18,11 +18,15 @@ namespace HotelMS.Models
 
         public double Price { get; set; }
 
-        public string Category { get; set; }
+        //public string Category { get; set; }
 
         public string image_url { get; set; }
 
         public Boolean is_available { get; set; }
+
+        public int MenuCategoryID { get; set; }
+        public MenuCategory MenuCategory { get; set; }
+
         
     }
 }
