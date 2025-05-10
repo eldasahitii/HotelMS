@@ -205,7 +205,7 @@ public class Seed
                     UserID = customerID,
                     CheckInDate = DateTime.Now.AddDays(1),
                     CheckOutDate = DateTime.Now.AddDays(5),
-                    ReservationStatusID = reservationStatusID, 
+                    ReservationStatusID = reservationStatusID,
                     CreatedAt = DateTime.Now
                 }
             };
@@ -213,7 +213,69 @@ public class Seed
             dataContext.RoomReservations.AddRange(reservations);
             dataContext.SaveChanges();
         }
+        if (!dataContext.MenuCategories.Any())
+        {
+            var categories = new List<MenuCategory>
+        {
+            new MenuCategory {Name = "Appetizers"},
+            new MenuCategory { Name = "Main Courses" },
+            new MenuCategory { Name = "Desserts" },
+            new MenuCategory { Name = "Drinks" }
+        };
+
+            dataContext.MenuCategories.AddRange(categories);
+            dataContext.SaveChanges();
+        }
+
+        if (!dataContext.MenuItems.Any())
+        {
+            var appetizersID = dataContext.MenuCategories.First(c => c.Name == "Appetizers").MenuCategoryID;
+            var mainsID = dataContext.MenuCategories.First(c => c.Name == "Main Courses").MenuCategoryID;
+            var dessertsID = dataContext.MenuCategories.First(c => c.Name == "Desserts").MenuCategoryID;
+            var drinksID = dataContext.MenuCategories.First(c => c.Name == "Drinks").MenuCategoryID;
+
+            var menuItems = new List<MenuItem>
+    {
+        new MenuItem { Name = "Bruschetta", Description = "Grilled bread with tomato & basil", Price = 4.99, MenuCategoryID = appetizersID },
+        new MenuItem { Name = "Spaghetti Carbonara", Description = "Pasta with eggs, cheese & pancetta", Price = 10.99, MenuCategoryID = mainsID },
+        new MenuItem { Name = "Tiramisu", Description = "Coffee-flavored Italian dessert", Price = 5.50, MenuCategoryID = dessertsID },
+        new MenuItem { Name = "Lemonade", Description = "Freshly squeezed lemonade", Price = 2.99, MenuCategoryID = drinksID }
+    };
+
+            dataContext.MenuItems.AddRange(menuItems);
+            dataContext.SaveChanges();
+        }
+        if (!dataContext.RestaurantTables.Any())
+        {
+            var tables = new List<RestaurantTable>
+    {
+        new RestaurantTable { TableNumber = 1,  Status = "Available" },
+        new RestaurantTable { TableNumber = 2,  Status = "Available" },
+        new RestaurantTable { TableNumber = 3,  Status = "Available" }
+    };
+
+            dataContext.RestaurantTables.AddRange(tables);
+            dataContext.SaveChanges();
+        }
+        if (!dataContext.RestaurantReservations.Any())
+        {
+            var tableID = dataContext.RestaurantTables.First().RestaurantTableID;
+            var guestID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
+
+
+            var reservation = new RestaurantReservation
+            {
+                GuestID = guestID,
+                date_time = DateTime.Now.AddHours(2),
+                status = "Booked",
+                RestaurantTableID = tableID
+            };
+
+            dataContext.RestaurantReservations.Add(reservation);
+            dataContext.SaveChanges();
+
+        }
     }
 
-   
+
 }

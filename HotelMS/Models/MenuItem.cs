@@ -20,7 +20,7 @@ namespace HotelMS.Models
 
         //public string Category { get; set; }
 
-        public string image_url { get; set; }
+        public string? image_url { get; set; }
 
         public Boolean is_available { get; set; }
 

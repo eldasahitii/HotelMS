@@ -15,7 +15,7 @@ namespace HotelMS.Models
 
         public string Status { get; set; }
 
-        public ICollection<Reservation> Reservations { get; set; }
+        public ICollection<RestaurantReservation> Reservations { get; set; }
         
 
     }

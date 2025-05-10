@@ -60,7 +60,10 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
 builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
-builder.Services.AddScoped<IAdminService, AdminService>(); 
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
+builder.Services.AddScoped<IRestaurantTableService, RestaurantTableService>();
+builder.Services.AddScoped<IRestaurantReservationService, RestaurantReservationService>();
 builder.Services.AddTransient<Seed>();
 
 

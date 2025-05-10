@@ -10,7 +10,7 @@ namespace HotelMS.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 
-        public int MenuCategoryIDs { get; set; }
+        public int MenuCategoryID { get; set; }
         [Required]
 
         public string Name { get; set; }

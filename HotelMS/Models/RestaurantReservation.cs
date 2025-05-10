@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HotelMS.Models
 {
-    public class Reservation
+    public class RestaurantReservation
     {
 
         [Key]
@@ -13,7 +13,7 @@ namespace HotelMS.Models
         public int ReservationID { get; set; }
         [Required]
 
-        public int guest_id { get; set; }
+        public int GuestID { get; set; }
 
         public DateTime date_time { get; set; }
 

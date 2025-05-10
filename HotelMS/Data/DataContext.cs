@@ -28,6 +28,15 @@ namespace HotelMS.Data
         public DbSet<HotelServiceSchedule> HotelServiceSchedules { get; set; }
         public DbSet<HotelServiceReservation> HotelServiceReservations { get; set; }
 
+        public DbSet<MenuCategory> MenuCategories { get; set; }
+
+        public DbSet<MenuItem> MenuItems { get; set; }
+
+        public DbSet<RestaurantTable> RestaurantTables { get; set; }
+
+        public DbSet<RestaurantReservation> RestaurantReservations { get; set; }
+
+
 
 
 
@@ -118,6 +127,21 @@ namespace HotelMS.Data
             modelBuilder.Entity<CleaningStaff>()
              .Property(cs => cs.Shift)
               .HasConversion<string>();
+
+            //Restaurant
+            modelBuilder.Entity<MenuItem>()
+                .HasOne(mi => mi.MenuCategory)
+                .WithMany(mc => mc.MenuItems)
+                .HasForeignKey(mi => mi.MenuCategoryID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<RestaurantReservation>()
+                .HasOne(rr => rr.RestaurantTable)
+                .WithMany(rt => rt.Reservations)
+                .HasForeignKey(rr => rr.RestaurantTableID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
 
         }
     }

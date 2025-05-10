@@ -4,6 +4,7 @@ using HotelMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelMS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250510093942_RestaurantMigration")]
+    partial class RestaurantMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -190,17 +193,17 @@ namespace HotelMS.Migrations
 
             modelBuilder.Entity("HotelMS.Models.MenuCategory", b =>
                 {
-                    b.Property<int>("MenuCategoryID")
+                    b.Property<int>("MenuCategoryIDs")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MenuCategoryID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MenuCategoryIDs"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("MenuCategoryID");
+                    b.HasKey("MenuCategoryIDs");
 
                     b.ToTable("MenuCategories");
                 });
@@ -228,6 +231,7 @@ namespace HotelMS.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("image_url")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("is_available")
@@ -265,14 +269,14 @@ namespace HotelMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationID"));
 
-                    b.Property<int>("GuestID")
-                        .HasColumnType("int");
-
                     b.Property<int>("RestaurantTableID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("date_time")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("guest_id")
+                        .HasColumnType("int");
 
                     b.Property<string>("status")
                         .IsRequired()
