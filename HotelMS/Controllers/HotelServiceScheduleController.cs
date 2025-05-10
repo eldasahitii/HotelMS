@@ -10,10 +10,44 @@ namespace HotelMS.Controllers
     [Route("api/[controller]")]
     public class HotelServiceScheduleController : ControllerBase
     {
-        private readonly HotelServiceScheduleService (IHotelServiceScheduleService scheduleService)
+        private readonly IHotelServiceScheduleService _scheduleService;
+
+        public HotelServiceScheduleController (IHotelServiceScheduleService scheduleService)
         {
-            _scheduleService
+            _scheduleService = scheduleService;
         }
+       
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<HotelServiceSchedule>>> GetAll()
+        {
+            var schedules = await _scheduleService.GetAllSchedulesAsync();
+            return Ok(schedules);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<HotelServiceSchedule>> GetById(int id)
+        {
+            var schedule = await _scheduleService.GetScheduleByIdAsync(id);
+            if (schedule == null) return NotFound();
+            return Ok(schedule);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<HotelServiceSchedule>> Create([FromBody] HotelServiceSchedule schedule)
+        {
+            var createdSchedule = await _scheduleService.CreateScheduleAsync(schedule);
+            return CreatedAtAction(nameof(GetById), new { id = createdSchedule.Id }, createdSchedule);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _scheduleService.DeleteScheduleAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
+        }
+
 
     }
 }

@@ -21,6 +21,12 @@ namespace HotelMS.Services
                 .Include(s => s.Service)
                 .ToListAsync();
         }
+        public async Task<HotelServiceSchedule> GetScheduleByIdAsync(int id)
+        {
+            return await _context.HotelServiceSchedules
+                .Include(s => s.Service)
+                .FirstOrDefaultAsync(s => s.Id == id);
+        }
         public async Task <HotelServiceSchedule> CreateScheduleAsync(HotelServiceSchedule schedule)
         {
             _context.HotelServiceSchedules.Add(schedule);
