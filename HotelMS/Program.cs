@@ -37,7 +37,8 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
 builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
-builder.Services.AddScoped<IHotelServiceService, HotelServiceService>();
+builder.Services.AddScoped<IHotelServiceService, HotelServiceService>(); 
+
 //builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 builder.Services.AddControllers();
 builder.Services.AddTransient<Seed>();

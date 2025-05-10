@@ -7,7 +7,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HotelMS.Services
 {
-    public class HotelServiceService
+    public class HotelServiceService : IHotelServiceService
     {
         private readonly DataContext _context;
 
