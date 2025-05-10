@@ -1,5 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Header from './Components/Header';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminDashboard from "./pages/dashboards/AdminDashboard"; 
@@ -27,27 +28,28 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 function App() {
     return (
         <Router>
-            <Routes>
-                <Route path="/" element={<Navigate to="/signup" />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/login" element={<Login />} />
-                <Route
-                    path="/admin-dashboard"
-                    element={
-                        <ProtectedRoute allowedRoles={['Admin']}>
-                            <AdminDashboard />
-                            <CleaningManagerDashboard/>
-                         
-                        </ProtectedRoute>
-                    }
-
-                />
-                <Route path="/test-dashboard" element={<CleaningManagerDashboard />} />  
-                {/* veq per testim */}
+            <div>
+                {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && <Header />}
                 
-                            </Routes>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/signup" />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route
+                        path="/admin-dashboard"
+                        element={
+                            <ProtectedRoute allowedRoles={['Admin']}>
+                                <AdminDashboard />
+                                <CleaningManagerDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/test-dashboard" element={<CleaningManagerDashboard />} />
+                </Routes>
+            </div>
         </Router>
     );
 }
 
 export default App;
+
