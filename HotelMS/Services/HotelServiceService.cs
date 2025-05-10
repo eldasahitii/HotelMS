@@ -45,5 +45,29 @@ namespace HotelMS.Services
             await _context.SaveChangesAsync();
             return reservation;
         }
+
+        public async Task<HotelService> UpdateServiceAsync(int id, HotelService updatedService)
+        {
+            var service = await _context.HotelServices.FindAsync(id);
+            if (service == null) return null;
+
+            service.Name = updatedService.Name;
+            service.Description = updatedService.Description;
+            
+
+            await _context.SaveChangesAsync();
+            return service;
+        }
+
+        public async Task<bool> DeleteServiceAsync(int id)
+        {
+            var service = await _context.HotelServices.FindAsync(id);
+            if (service == null) return false;
+
+            _context.HotelServices.Remove(service);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
     }
 }

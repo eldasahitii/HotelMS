@@ -50,6 +50,23 @@ namespace HotelMS.Controllers
             return CreatedAtAction(nameof(GetService), new { id = created.HotelServiceId }, created);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] HotelService updated)
+        {
+            var result = await _service.UpdateServiceAsync(id, updated);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var success = await _service.DeleteServiceAsync(id);
+            if (!success) return NotFound();
+            return NoContent();
+        }
+
+
 
     }
 }
