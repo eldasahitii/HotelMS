@@ -18,12 +18,15 @@ namespace HotelMS.Models
         public string Description { get; set; }
         [Required]
         public decimal Price { get; set; }
-        public bool IsAvailable { get; set; } = true;
         [Required]
         public string ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public int? RoomTypeID { get; set; }
+        public RoomType? RoomType { get; set; }
+        public int RoomStatusID { get; set; }
+        public RoomStatus RoomStatus { get; set; }
+        public ICollection<RoomReservation> Reservations { get; set; }
+   
 
-        //public ICollection<RoomAmenity> RoomAmenities { get;set; }
-        //public ICollection<Reservation>Reservations { get; set; }
     }
 }
