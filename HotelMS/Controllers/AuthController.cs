@@ -24,24 +24,6 @@ namespace HotelMS.Controllers
 
         }
 
-        //[HttpPost("register")]
-        //public async Task<IActionResult> Register(UserRegistrationDTO request)
-        //{
-        //    try
-        //    {
-        //        var user = await _service.Register(request);
-        //        if (user == null)
-        //            return BadRequest(new { message = "User registration failed" });
-
-        //        var token = await _service.CreateToken(user);
-        //        return Ok(new { token, isLoggedIn = true });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(" Registration controller error: " + ex.Message);
-        //        return StatusCode(500, new { message = "Registration failed: " + ex.Message });
-        //    }
-        //}
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegistrationDTO request)
         {

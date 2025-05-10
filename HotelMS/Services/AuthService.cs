@@ -24,47 +24,7 @@ namespace HotelMS.Services
             _configuration = configuration;
 
         }
-        //public async Task<User> Register(UserRegistrationDTO request)
-        //{
-        //    try
-        //    {
-        //        var existingUser = await _context.Users
-        //            .FirstOrDefaultAsync(u => u.Email == request.Email);
-
-        //        if (existingUser != null)
-        //        {
-        //            throw new ArgumentException("User with this email already exists.");
-        //        }
-
-        //        var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleType == "Customer");
-        //        if (customerRole == null)
-        //        {
-        //            throw new Exception("Customer role not found in the system.");
-        //        }
-        //        CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
-
-        //        User user = new User
-        //        {
-        //            FirstName = request.FirstName,
-        //            LastName = request.LastName,
-        //            Email = request.Email,
-        //            PasswordHash = hash,
-        //            PasswordSalt = salt,
-        //            RoleID = customerRole.RoleID,
-        //        };
-
-        //        _context.Users.Add(user);
-        //        await _context.SaveChangesAsync();
-        //        return user.Adapt<User>();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine("Registration error: " + ex.Message);
-        //        throw new Exception("An error occurred while attempting to save the user record.");
-
-        //    }
-
-        //}
+    
         public async Task<User> Register(UserRegistrationDTO request)
         {
             try
@@ -149,39 +109,6 @@ namespace HotelMS.Services
                 throw new Exception("An error occurred while attempting to save the user record");
             }
         }
-
-        //    public async Task<string> CreateToken(User user)
-        //    {
-        //        var role = await _context.Roles
-        //            .FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
-
-        //        if (role == null)
-        //            throw new Exception("Role not found for the user.");
-
-        //        var claims = new List<Claim>
-        //{
-        //    new Claim(ClaimTypes.Email, user.Email),
-        //    new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-        //    new Claim(ClaimTypes.Role, role.RoleType)
-        //};
-
-        //        var secretKey = _configuration["AppSettings:JwtSecretKey"];
-        //        if (string.IsNullOrEmpty(secretKey))
-        //            throw new Exception("JWT secret key is missing in configuration.");
-
-        //        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-        //        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-
-        //        var token = new JwtSecurityToken(
-        //            issuer: null,
-        //            audience: null,
-        //            claims: claims,
-        //            expires: DateTime.UtcNow.AddDays(7),
-        //            signingCredentials: credentials
-        //        );
-
-        //        return new JwtSecurityTokenHandler().WriteToken(token);
-        //    }
         public async Task<string> CreateToken(User user)
         {
             Console.WriteLine(" CreateToken called");

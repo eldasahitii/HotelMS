@@ -39,12 +39,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
             NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
         };
-
         options.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>
             {
-                Console.WriteLine("JWT authentication failed: " + context.Exception.Message);
+                Console.WriteLine("JWT authentication failed: " + context.Exception.ToString());
                 return Task.CompletedTask;
             }
         };
