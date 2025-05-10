@@ -6,26 +6,34 @@ using Microsoft.AspNetCore.Identity;
 using HotelMS.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Razor.Language;
 using HotelMS.Data.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Configure JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,  // or set your Issuer here
-            ValidateAudience = false,  // or set your Audience here
+            ValidateIssuer = false,
+            ValidateAudience = false,
             ValidateLifetime = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:JwtSecretKey"])),
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:JwtSecretKey"]!)), 
+            ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha512 } 
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("JWT authentication failed: " + context.Exception.Message);
+                return Task.CompletedTask;
+            }
         };
     });
 
-// 2. Add CORS policy to allow any origin (optional)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
@@ -34,27 +42,28 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader());
 });
 
-// 3. Add DbContext (SQL Server)
+
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// 4. Add controllers with JSON options (to handle circular references)
+
 builder.Services.AddControllers()
     .AddJsonOptions(x =>
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
-// 5. Add Scoped Services (business logic layer)
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
 builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
-builder.Services.AddTransient<Seed>();  // Seed service to add initial data if needed
+builder.Services.AddScoped<IAdminService, AdminService>(); 
+builder.Services.AddTransient<Seed>();
 
-// 6. Add Swagger for API documentation and authentication
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -76,46 +85,36 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] { }
+            Array.Empty<string>()
         }
     });
 });
 
-// 7. Build the application
+
 var app = builder.Build();
 
-// 8. Check if we need to seed data (optional)
+
 if (args.Length == 1 && args[0].ToLower() == "seeddata")
     SeedData(app);
 
 void SeedData(IHost app)
 {
-    var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
-    using (var scope = scopedFactory.CreateScope())
-    {
-        var service = scope.ServiceProvider.GetRequiredService<Seed>();
-        service.SeedDataContext();
-    }
+    using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+    var service = scope.ServiceProvider.GetRequiredService<Seed>();
+    service.SeedDataContext();
 }
 
-// 9. Apply CORS
+
 app.UseCors("AllowAll");
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseHttpsRedirection();
 
-// 10. Use authentication & authorization middleware
-app.UseAuthentication();  // Important for JWT token validation
-app.UseAuthorization();   // Important for checking roles and permissions
-
-// 11. Configure the HTTP request pipeline for Swagger in development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-// 12. Map API controllers
 app.MapControllers();
-
-// 13. Run the application
 app.Run();
