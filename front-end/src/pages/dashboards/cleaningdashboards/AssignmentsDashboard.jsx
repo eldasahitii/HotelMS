@@ -93,7 +93,6 @@ export default function AssignmentsDashboard() {
       setMessageType("danger");
     }
   };
-
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
       <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
@@ -158,7 +157,16 @@ export default function AssignmentsDashboard() {
                     <td>{index + 1}</td>
                     <td>{a.roomName}</td>
                     <td>{a.staffName}</td>
-                    <td>{a.status}</td>
+                  <td>
+                     <span className={`badge ${
+                     a.status === 'Completed' ? 'bg-success' :
+                      a.status === 'InProgress' ? 'bg-info' :
+                      a.status === 'Pending' ? 'bg-secondary' :
+                               'bg-light text-dark'
+                                                   }`}>
+                       {a.status}
+                       </span>
+                       </td>
                     <td>{a.assignedAt?.split('T')[0]}</td>
                     <td>{a.startedAt?.split('T')[0] || '-'}</td>
                     <td>{a.finishedAt?.split('T')[0] || '-'}</td>

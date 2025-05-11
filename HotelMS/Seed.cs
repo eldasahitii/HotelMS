@@ -185,6 +185,7 @@ public class Seed
                     Price = 70.00m, ImageUrl = "twin-room.jpg",
                     CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID, RoomStatusID = availableStatusID
                 }
+
             };
 
             dataContext.Rooms.AddRange(rooms);

@@ -55,14 +55,9 @@ namespace HotelMS.Controllers
             await _service.DeleteAssignment(id);
             return Ok("Deleted successfully");
         }
-        [HttpGet("getAssignmentsForStaff")]
-        public async Task<IActionResult> GetAssignmentsForStaff(int staffId)
-        {
-            var result = await _service.GetAssignmentsForStaff(staffId);
-            return Ok(result);
-        }
+     
         [HttpPut("startAssignment")]
-        public async Task<IActionResult> StartAssignment(int id)
+        public async Task<IActionResult> StartAssignment([FromQuery] int id)
         {
             var success = await _service.StartAssignment(id);
             if (!success)
@@ -72,7 +67,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPut("markAssignmentCompleted")]
-        public async Task<IActionResult> MarkCompleted(int id)
+        public async Task<IActionResult> MarkCompleted([FromQuery] int id)
         {
             var result = await _service.MarkAssignmentCompleted(id);
             return result ? Ok("Marked as completed.") : NotFound("Assignment not found.");
@@ -93,7 +88,13 @@ namespace HotelMS.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
+        [HttpGet("getAssignmentsByStaffName")]
+        public async Task<IActionResult> GetAssignmentsByStaffName([FromQuery] string name)
+        {
+            var result = await _service.GetAssignmentsByStaffName(name);
+            return Ok(result);
+        }
+
     }
 }

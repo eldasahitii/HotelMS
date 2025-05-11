@@ -53,7 +53,7 @@ function App() {
                    <Route
   path="/manager/cleaning-staff"
   element={
-    <ProtectedRoute allowedRoles={['Admin', 'CleaningManager']}>
+    <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
       <CleaningManagerDashboard />
     </ProtectedRoute>
   }
@@ -62,7 +62,7 @@ function App() {
 <Route
   path="/manager/assignments"
   element={
-    <ProtectedRoute allowedRoles={['Admin', 'CleaningManager']}>
+    <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
       <AssignmentsDashboard />
     </ProtectedRoute>
   }
