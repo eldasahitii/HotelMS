@@ -15,7 +15,8 @@ export default function ReviewsPage() {
 
   const fetchReviews = async () => {
     try {
-     const res = await axios.get("https://localhost:50768/api/Reviews/GetAll");
+     const res = await axios.get("https://localhost:7117/api/Reviews/GetAll");
+
 
       setReviews(res.data);
     } catch (err) {
@@ -26,7 +27,7 @@ export default function ReviewsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://localhost:50768/api/Reviews", {
+      await axios.post("https://localhost:7117/api/Reviews", {
         comment: formData.comment,
         rating: formData.rating,
         userID: 1
@@ -40,28 +41,39 @@ export default function ReviewsPage() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://localhost:50768/api/Reviews/${id}`);
+      await axios.delete(`https://localhost:7117/api/Reviews/${id}`);
       fetchReviews();
     } catch (err) {
       console.error("Error deleting review:", err);
     }
   };
 
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.put("https://localhost:50768/api/reviews/updatereview", {
+ const handleEditSubmit = async (e) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem("token"); // ⬅️ Get the saved token
+
+  try {
+    await axios.put(
+      "https://localhost:7117/api/reviews/updatereview",
+      {
         reviewID: editingReview.reviewID,
         comment: editingReview.comment,
         rating: editingReview.rating,
-        userID: 1
-      });
-      setEditingReview(null);
-      fetchReviews();
-    } catch (err) {
-      console.error("Error updating review:", err);
-    }
-  };
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}` // ⬅️ Add token to request
+        }
+      }
+    );
+    setEditingReview(null);
+    fetchReviews();
+  } catch (err) {
+    console.error("Error updating review:", err);
+  }
+};
+
 
  return (
     <div style={{ backgroundColor: '#fff7e6', minHeight: '100vh' }}>
@@ -124,7 +136,10 @@ export default function ReviewsPage() {
               <div className="card mb-3" key={review.reviewID}>
                 <div className="card-body">
                   <div className="d-flex justify-content-between">
-                    <h5 className="card-title">User {review.userID}</h5>
+                 <h5 className="card-title">
+  {review.user?.firstName} {review.user?.lastName}
+</h5>
+
                     <div>
                       {[1, 2, 3, 4, 5].map((s) => (
                         <i

@@ -78,23 +78,25 @@ namespace HotelMS.Controllers
 
             return NoContent(); // 204
         }
-
-
-        // PUT: api/reviews/updatereview
+        [Authorize]
         [HttpPut("updatereview")]
         public async Task<IActionResult> UpdateReview(Review updatedReview)
         {
-            // For now, simulate "logged-in" user with ID 1
-            int fakeUserId = 1;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
 
             var review = await _context.Reviews.FindAsync(updatedReview.ReviewID);
             if (review == null)
             {
-                return NotFound();
+                return NotFound("Review not found.");
             }
 
-            // Only allow update if it's the user's own review
-            if (review.UserID != fakeUserId)
+            if (review.UserID != userId)
             {
                 return Forbid("Only the creator of the review can edit it.");
             }
@@ -104,9 +106,13 @@ namespace HotelMS.Controllers
             review.Date = DateTime.Now;
 
             await _context.SaveChangesAsync();
-
             return Ok(review);
         }
+
+
+
+
+
 
 
     }
