@@ -6,8 +6,10 @@ import Signup from './pages/Signup';
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { jwtDecode } from 'jwt-decode';
-import CleaningManagerDashboard from './pages/dashboards/CleaningManagerDashboard';
+import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/CleaningManagerDashboard';
+import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import axios from 'axios';
+import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/CleaningStaffDashboard';
 
 axios.interceptors.request.use(
   (config) => {
@@ -40,22 +42,39 @@ function App() {
     return (
         <Router>
             <div>
-                {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && <Header />}
+                {window.location.pathname !== "/login" && window.location.pathname !== "/signup" }
                 
                 <Routes>
                     <Route path="/" element={<Navigate to="/signup" />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />} />
-                    <Route
-                        path="/admin-dashboard"
-                        element={
-                            <ProtectedRoute allowedRoles={['Admin']}>
-                                <AdminDashboard />
-                               
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route path="/test-dashboard" element={<CleaningManagerDashboard />} />
+                     <Route path='/header' element={<Header/>}/>
+                    
+                   <Route
+  path="/manager/cleaning-staff"
+  element={
+    <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+      <CleaningManagerDashboard />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/manager/assignments"
+  element={
+    <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+      <AssignmentsDashboard />
+    </ProtectedRoute>
+  }
+/>        
+<Route
+  path="/cleaningstaff/dashboard"
+  element={
+    <ProtectedRoute allowedRoles={['CleaningStaff']}>
+      <CleaningStaffDashboard />
+    </ProtectedRoute>
+  }
+/>      
                 </Routes>
             </div>
         </Router>

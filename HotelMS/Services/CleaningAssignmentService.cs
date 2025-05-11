@@ -114,28 +114,6 @@ namespace HotelMS.Services
                 await _dbContext.SaveChangesAsync();
             }
         }
-        public async Task<IEnumerable<CleaningAssignmentDTO>> GetAssignmentsForStaff(int staffId)
-        {
-            var assignments = await _dbContext.CleaningAssignments
-                .Include(a => a.Room)
-                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
-                .Where(a => a.CleaningStaffID == staffId)
-                .ToListAsync();
-
-            return assignments.Select(a => new CleaningAssignmentDTO
-            {
-                CleaningAssignmentID = a.CleaningAssignmentID,
-                RoomID = a.RoomID,
-                RoomName = a.Room.Name,
-                RoomStatus = a.Room.RoomStatus != null ? a.Room.RoomStatus.RoomStatusName : "Unknown",
-                CleaningStaffID = a.CleaningStaffID,
-                StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
-                Status = a.Status,
-                AssignedAt = a.AssignedAt,
-                StartedAt = a.StartedAt,
-                FinishedAt = a.FinishedAt
-            });
-        }
         public async Task<bool> MarkAssignmentCompleted(int id)
         {
             var assignment = await _dbContext.CleaningAssignments
@@ -193,5 +171,39 @@ namespace HotelMS.Services
             await _dbContext.SaveChangesAsync();
             return true;
         }
+        public async Task<IEnumerable<CleaningAssignmentDTO>> GetAssignmentsByStaffName(string fullName)
+        {
+            var nameLower = fullName.ToLower().Trim();
+
+            var staff = await _dbContext.CleaningStaff
+                .Include(cs => cs.User)
+                .FirstOrDefaultAsync(cs =>
+                    (cs.User.FirstName + " " + cs.User.LastName).ToLower() == nameLower);
+
+            if (staff == null)
+                return Enumerable.Empty<CleaningAssignmentDTO>();
+
+            var assignments = await _dbContext.CleaningAssignments
+                .Include(a => a.Room)
+                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
+                .Where(a => a.CleaningStaffID == staff.CleaningStaffID)
+                .ToListAsync();
+
+            return assignments.Select(a => new CleaningAssignmentDTO
+            {
+                CleaningAssignmentID = a.CleaningAssignmentID,
+                RoomID = a.RoomID,
+                RoomName = a.Room.Name,
+                RoomStatus = a.Room.RoomStatus?.RoomStatusName ?? "Unknown",
+                CleaningStaffID = a.CleaningStaffID,
+                StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
+                Status = a.Status,
+                AssignedAt = a.AssignedAt,
+                StartedAt = a.StartedAt,
+                FinishedAt = a.FinishedAt
+            });
+        }
+
     }
+
 }

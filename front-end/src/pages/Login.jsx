@@ -40,7 +40,17 @@ const Login = () => {
         localStorage.setItem('userID', userId);
 
         console.log('Login successful:', decoded);
-        navigate('/admin-dashboard');
+        // navigate('/admin-dashboard');
+         if (userRole === 'Admin') {
+          navigate('/admin-dashboard');
+        } else if (userRole === 'Manager') {
+          navigate('/manager/cleaning-staff');
+        } else if (userRole === 'CleaningStaff') {
+          navigate('/cleaningstaff/dashboard');
+        } else {
+          setError("Unknown role. Access denied.");
+        }
+      
       }
     } catch (error) {
       const message = error.response?.data?.message || error.message;
