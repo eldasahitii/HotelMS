@@ -30,8 +30,9 @@ public class Seed
             var roles = new List<Role>
             {
                 new Role() { RoleType = "Admin" },
-                new Role() { RoleType = "Recepsionist" },
-                new Role() { RoleType = "Cleaning Staff" },
+                new Role() { RoleType = "Manager" },
+                new Role() { RoleType = "Receptionist" },
+                new Role() { RoleType = "CleaningStaff" },
                 new Role() { RoleType = "Customer" }
             };
 
@@ -46,8 +47,8 @@ public class Seed
         {
 
             var adminRoleID = dataContext.Roles.First(r => r.RoleType == "Admin").RoleID;
-            var recepsionistRoleID = dataContext.Roles.First(r => r.RoleType == "Recepsionist").RoleID;
-            var cleaningStaffRoleID = dataContext.Roles.First(r => r.RoleType == "Cleaning Staff").RoleID;
+            var recepsionistRoleID = dataContext.Roles.First(r => r.RoleType == "Receptionist").RoleID;
+            var cleaningStaffRoleID = dataContext.Roles.First(r => r.RoleType == "CleaningStaff").RoleID;
             var customerRoleID = dataContext.Roles.First(r => r.RoleType == "Customer").RoleID;
 
             CreatePasswordHash("Ruvejda123", out var adminHash, out var adminSalt);
@@ -205,7 +206,7 @@ public class Seed
                     CheckInDate = DateTime.Now.AddDays(1),
                     CheckOutDate = DateTime.Now.AddDays(5),
                     ReservationStatusID = reservationStatusID, 
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now    
                 }
             };
 

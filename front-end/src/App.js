@@ -1,11 +1,24 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Header from './Components/Header';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import AdminDashboard from "./pages/dashboards/AdminDashboard"; 
+import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { jwtDecode } from 'jwt-decode';
 import CleaningManagerDashboard from './pages/dashboards/CleaningManagerDashboard';
+import axios from 'axios';
+
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = token;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
     const token = localStorage.getItem('token');
@@ -26,25 +39,28 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 function App() {
     return (
         <Router>
-            <Routes>
-                <Route path="/" element={<Navigate to="/signup" />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/login" element={<Login />} />
-                <Route
-                    path="/admin-dashboard"
-                    element={
-                        <ProtectedRoute allowedRoles={['Admin']}>
-                            <AdminDashboard />
-                            <CleaningManagerDashboard/>
-                        </ProtectedRoute>
-                    }
-                />
-                <Route path="/test-dashboard" element={<CleaningManagerDashboard />} />  
-                {/* veq per testim */}
+            <div>
+                {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && <Header />}
                 
-                            </Routes>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/signup" />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route
+                        path="/admin-dashboard"
+                        element={
+                            <ProtectedRoute allowedRoles={['Admin']}>
+                                <AdminDashboard />
+                               
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/test-dashboard" element={<CleaningManagerDashboard />} />
+                </Routes>
+            </div>
         </Router>
     );
 }
 
 export default App;
+
