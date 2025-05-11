@@ -26,7 +26,7 @@ namespace HotelMS.Models
         [ForeignKey("AssignedByUserID")]
         public User AssignedBy { get; set; }
 
-        public ICollection<CleaningAssignment> CleaningAssignments { get; set; }
+        public ICollection<CleaningAssignment> CleaningAssignments { get; set; } 
 
     }
 }

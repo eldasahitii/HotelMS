@@ -121,12 +121,6 @@ namespace HotelMS.Data
              .Property(cs => cs.Shift)
               .HasConversion<string>();
 
-            // Review ↔ User (foreign key UserID)
-            modelBuilder.Entity<Review>()
-                .HasOne(r => r.User)
-                .WithMany() // nese ke ne User.cs -> public ICollection<Review> Reviews { get; set; } beje .WithMany(u => u.Reviews)
-                .HasForeignKey(r => r.UserID)
-                .OnDelete(DeleteBehavior.Cascade);
 
 
         }
