@@ -252,7 +252,7 @@ public class Seed
         }
 
         //Seed HotelServiceSchedule
-        if(dataContext.HotelServiceSchedules.Any())
+        if(!dataContext.HotelServiceSchedules.Any())
         {
             var scheduleEntries = new List<HotelServiceSchedule>();
 
