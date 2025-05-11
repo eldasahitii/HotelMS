@@ -24,7 +24,7 @@ public class Seed
 
     public void SeedDataContext()
     {
-
+        // Seed Roles
         if (!dataContext.Roles.Any())
         {
             var roles = new List<Role>
@@ -40,12 +40,9 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-
         // Seed Users
-
         if (!dataContext.Users.Any())
         {
-
             var adminRoleID = dataContext.Roles.First(r => r.RoleType == "Admin").RoleID;
             var recepsionistRoleID = dataContext.Roles.First(r => r.RoleType == "Receptionist").RoleID;
             var cleaningStaffRoleID = dataContext.Roles.First(r => r.RoleType == "CleaningStaff").RoleID;
@@ -80,19 +77,17 @@ public class Seed
                     PasswordHash = customerHash, PasswordSalt = customerSalt,
                     CreatedAt = DateTime.Now, RoleID = customerRoleID
                 }
-
             };
 
             dataContext.Users.AddRange(users);
             dataContext.SaveChanges();
         }
 
-
-        //Seed CleaningStaff
+        // Seed CleaningStaff
         if (!dataContext.CleaningStaff.Any())
         {
             var cleaningStaffUser = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
-            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com");//manager
+            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com"); // manager
 
             if (cleaningStaffUser != null && assignedByUser != null)
             {
@@ -109,9 +104,7 @@ public class Seed
             }
         }
 
-
-        // Seed RoomTypes
-
+        // Seed RoomStatuses
         if (!dataContext.RoomStatuses.Any())
         {
             var roomStatuses = new List<RoomStatus>
@@ -125,6 +118,7 @@ public class Seed
             dataContext.SaveChanges();
         }
 
+        // Seed ReservationStatuses
         if (!dataContext.ReservationStatuses.Any())
         {
             var reservationStatuses = new List<ReservationStatus>
@@ -139,6 +133,7 @@ public class Seed
             dataContext.SaveChanges();
         }
 
+        // Seed RoomTypes
         if (!dataContext.RoomTypes.Any())
         {
             var roomTypes = new List<RoomType>
@@ -153,7 +148,6 @@ public class Seed
         }
 
         // Seed Rooms
-
         if (!dataContext.Rooms.Any())
         {
             var standardRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Standard").RoomTypeID;
@@ -185,13 +179,13 @@ public class Seed
                     Price = 70.00m, ImageUrl = "twin-room.jpg",
                     CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID, RoomStatusID = availableStatusID
                 }
-
             };
 
             dataContext.Rooms.AddRange(rooms);
             dataContext.SaveChanges();
         }
 
+        // Seed RoomReservations
         if (!dataContext.RoomReservations.Any())
         {
             var availableRoomID = dataContext.Rooms.First(r => r.Name == "Single Room").RoomID;
@@ -206,46 +200,44 @@ public class Seed
                     UserID = customerID,
                     CheckInDate = DateTime.Now.AddDays(1),
                     CheckOutDate = DateTime.Now.AddDays(5),
-                    ReservationStatusID = reservationStatusID, 
-                    CreatedAt = DateTime.Now    
+                    ReservationStatusID = reservationStatusID,
+                    CreatedAt = DateTime.Now
                 }
             };
 
             dataContext.RoomReservations.AddRange(reservations);
             dataContext.SaveChanges();
         }
-    }
 
-    // Seed Reviews
-if (!dataContext.Reviews.Any())
-{
-    var customerUser = dataContext.Users.FirstOrDefault(u => u.Email == "velsa@gmail.com");
-
-    if (customerUser != null)
-    {
-        var reviews = new List<Review>
+        // Seed Reviews
+        if (!dataContext.Reviews.Any())
         {
-            new Review()
-            {
-                UserID = customerUser.UserID,
-                Rating = 5,
-                Comment = "Excellent service and very clean rooms!",
-                Date = DateTime.Now.AddDays(-2)
-            },
-            new Review()
-            {
-                UserID = customerUser.UserID,
-                Rating = 4,
-                Comment = "Nice hotel, but breakfast could be better.",
-                Date = DateTime.Now.AddDays(-1)
-            }
-        };
+            var customerUser = dataContext.Users.FirstOrDefault(u => u.Email == "velsa@gmail.com");
 
-    dataContext.Reviews.AddRange(reviews);
-        dataContext.SaveChanges();
+            if (customerUser != null)
+            {
+                var reviews = new List<Review>
+                {
+                    new Review()
+                    {
+                        UserID = customerUser.UserID,
+                        Rating = 5,
+                        Comment = "Excellent service and very clean rooms!",
+                        Date = DateTime.Now.AddDays(-2)
+                    },
+                    new Review()
+                    {
+                        UserID = customerUser.UserID,
+                        Rating = 4,
+                        Comment = "Nice hotel, but breakfast could be better.",
+                        Date = DateTime.Now.AddDays(-1)
+                    }
+                };
+
+                dataContext.Reviews.AddRange(reviews);
+                dataContext.SaveChanges();
+            }
+        }
     }
 }
 
-
-   
-}
