@@ -216,5 +216,36 @@ public class Seed
         }
     }
 
+    // Seed Reviews
+if (!dataContext.Reviews.Any())
+{
+    var customerUser = dataContext.Users.FirstOrDefault(u => u.Email == "velsa@gmail.com");
+
+    if (customerUser != null)
+    {
+        var reviews = new List<Review>
+        {
+            new Review()
+            {
+                UserID = customerUser.UserID,
+                Rating = 5,
+                Comment = "Excellent service and very clean rooms!",
+                Date = DateTime.Now.AddDays(-2)
+            },
+            new Review()
+            {
+                UserID = customerUser.UserID,
+                Rating = 4,
+                Comment = "Nice hotel, but breakfast could be better.",
+                Date = DateTime.Now.AddDays(-1)
+            }
+        };
+
+    dataContext.Reviews.AddRange(reviews);
+        dataContext.SaveChanges();
+    }
+}
+
+
    
 }
