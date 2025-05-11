@@ -25,7 +25,7 @@ namespace HotelMS.Services
                 .ToListAsync();
         }
 
-        public async Task<HotelServiceReservation> GetReservationById (int id)
+        public async Task<HotelServiceReservation> GetReservationByIdAsync (int id)
         {
             return await _context.HotelServiceReservations
                 .Include(r => r.Service)

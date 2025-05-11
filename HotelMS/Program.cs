@@ -39,6 +39,7 @@ builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
 builder.Services.AddScoped<IHotelServiceService, HotelServiceService>();
 builder.Services.AddScoped<IHotelServiceScheduleService, HotelServiceScheduleService>();
+builder.Services.AddScoped<IHotelServiceReservationService, HotelServiceReservationService>();
 
 
 
