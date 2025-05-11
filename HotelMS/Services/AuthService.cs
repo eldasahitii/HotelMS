@@ -24,47 +24,45 @@ namespace HotelMS.Services
             _configuration = configuration;
 
         }
+    
         public async Task<User> Register(UserRegistrationDTO request)
         {
             try
             {
-                var existingUser = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email == request.Email);
+                if (string.IsNullOrEmpty(request.RoleType))
+                    throw new Exception("RoleType is required");
 
+                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
                 if (existingUser != null)
-                {
                     throw new ArgumentException("User with this email already exists.");
-                }
 
-                var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleType == "Customer");
-                if (customerRole == null)
-                {
-                    throw new Exception("Customer role not found in the system.");
-                }
+                var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleType == request.RoleType);
+                if (role == null)
+                    throw new Exception("Specified role does not exist.");
+
                 CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
 
-                User user = new User
+                var user = new User
                 {
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     Email = request.Email,
                     PasswordHash = hash,
                     PasswordSalt = salt,
-                    RoleID = customerRole.RoleID,
+                    RoleID = role.RoleID,
+                    CreatedAt = DateTime.UtcNow,
+                   
                 };
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
-                var token = await CreateToken(user);
-                return user.Adapt<User>();
+                return user;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Registration error: " + ex.Message);
-                throw new Exception("An error occurred while attempting to save the user record.");
-
+                Console.WriteLine("[Register] Error: " + ex.ToString());
+                throw;
             }
-
         }
 
         public async Task<string> Login(UserLoginDTO request)
@@ -111,62 +109,42 @@ namespace HotelMS.Services
                 throw new Exception("An error occurred while attempting to save the user record");
             }
         }
-
-        //    public async Task<string> CreateToken(User user)
-        //    {
-        //        var role = await _context.Roles
-        //            .FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
-
-        //        if (role == null)
-        //        {
-        //            throw new Exception("Role not found for the user.");
-        //        }
-
-        //        List<Claim> claims = new List<Claim>
-        //{
-        //    new Claim(ClaimTypes.Email, user.Email),
-        //    new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-        //    new Claim(ClaimTypes.Role, role.RoleType),
-        //};
-
-        //        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-        //            _configuration.GetSection("AppSettings:JwtSecretKey").Value));
-        //        var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-        //        var token = new JwtSecurityToken(
-        //         issuer: _configuration["Jwt:Issuer"],
-        //         audience: _configuration["Jwt:Audience"],
-        //         claims: claims,
-        //         expires: DateTime.Now.AddDays(7),
-        //         signingCredentials: cred);
-
-
-        //        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-        //        return jwt;
-        //    }
         public async Task<string> CreateToken(User user)
         {
-            var role = await _context.Roles
-                .FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
+            Console.WriteLine(" CreateToken called");
 
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
             if (role == null)
+            {
+                Console.WriteLine(" Role not found for user: " + user.RoleID);
                 throw new Exception("Role not found for the user.");
+            }
+
+            Console.WriteLine(" Role found: " + role.RoleType);
 
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-        new Claim(ClaimTypes.Role, role.RoleType)
-    };
-
+{
+    new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", user.Email ?? ""),
+    new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", user.UserID.ToString()),
+    new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", role.RoleType ?? "")
+};
+ 
             var secretKey = _configuration["AppSettings:JwtSecretKey"];
-            if (string.IsNullOrEmpty(secretKey))
-                throw new Exception("JWT secret key is missing in configuration.");
+            Console.WriteLine(" JWT Secret Loaded: " + (secretKey ?? "NULL"));
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            if (string.IsNullOrEmpty(secretKey))
+            {
+                Console.WriteLine(" JWT secret is null or empty");
+                throw new Exception("JWT secret key is missing in configuration.");
+            }
+
+            var keyBytes = Encoding.UTF8.GetBytes(secretKey);
+            Console.WriteLine(" Key bytes length: " + keyBytes.Length);
+
+            var key = new SymmetricSecurityKey(keyBytes);
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
+            Console.WriteLine(" Creating token...");
             var token = new JwtSecurityToken(
                 issuer: null,
                 audience: null,
@@ -175,9 +153,10 @@ namespace HotelMS.Services
                 signingCredentials: credentials
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var writtenToken = new JwtSecurityTokenHandler().WriteToken(token);
+            Console.WriteLine("Token created");
+            return writtenToken;
         }
-
 
         public void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
         {

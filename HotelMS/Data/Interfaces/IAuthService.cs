@@ -8,7 +8,8 @@ namespace HotelMS.Data.Interfaces
         Task<User> Register(UserRegistrationDTO request);
         Task<string> Login(UserLoginDTO request);
         Task<UserDTO> ChangePassword(int UserID, ChangePasswordDTO request);
-       
-        Task<string> CreateToken(User user);
+
+        public Task<string> CreateToken(User user);
+
     }
 }

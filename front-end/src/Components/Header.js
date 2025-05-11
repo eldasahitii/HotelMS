@@ -7,7 +7,7 @@ const Header = () => {
       <div className="container-fluid d-flex justify-content-between align-items-center">
 
         <div className="logo">
-          <img src="imgs/logo1.png" alt="Logo" className="img-fluid" />
+          {/* <img src="imgs/logo1.png" alt="Logo" className="img-fluid" /> */}
         </div>
         <ul className="nav ms-auto">
           <li className="nav-item">
