@@ -15,41 +15,17 @@ namespace HotelMS.Services
             _dbContext = dbContext;
         }
 
-        //public async Task<CleaningStaff> AddCleaningStaff(CleaningStaffDTO request)
-        //{
-        //    try
-        //    {
-        //        bool alreadyExists = await _dbContext.CleaningStaff
-        //    .AnyAsync(cs => cs.UserID == request.UserID);
-        //        var user = await _dbContext.Users.FindAsync(request.UserID);
-
-        //        if (alreadyExists)
-        //            throw new Exception("This user is already assigned as cleaning staff.");
-
-        //        var staff = new CleaningStaff
-        //        {
-        //            UserID = request.UserID,
-        //            IsActive = request.IsActive,
-        //            Shift = request.Shift,
-        //            AssignedByUserID = request.AssignedByUserID
-        //        };
-
-        //        _dbContext.CleaningStaff.Add(staff);
-        //        await _dbContext.SaveChangesAsync();
-
-        //        return staff;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        throw new Exception("An error occurred while attempting to save the cleaning staff record.");
-        //    }
-        //}
         public async Task<object> AddCleaningStaff(CleaningStaffDTO dto)
         {
             var user = await _dbContext.Users.FindAsync(dto.UserID);
             if (user == null)
                 throw new Exception("User not found");
+
+            var cleaningStaffRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "CleaningStaff");
+            if (cleaningStaffRole == null)
+                throw new Exception("Role 'CleaningStaff' not found in Roles table.");
+
+            user.RoleID = cleaningStaffRole.RoleID;
 
             var staff = new CleaningStaff
             {

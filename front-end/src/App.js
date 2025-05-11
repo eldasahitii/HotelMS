@@ -5,7 +5,9 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ReviewsPage from './pages/ReviewPage';
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
-import CleaningManagerDashboard from './pages/dashboards/CleaningManagerDashboard';
+import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/CleaningManagerDashboard';
+import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
+import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/CleaningStaffDashboard';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -52,6 +54,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/reviews" element={<ReviewsPage />} />
+          <Route path="/header" element={<Header />} />
 
           <Route
             path="/admin-dashboard"
@@ -62,7 +65,32 @@ function App() {
             }
           />
 
-          <Route path="/test-dashboard" element={<CleaningManagerDashboard />} />
+          <Route
+            path="/manager/cleaning-staff"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+                <CleaningManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/manager/assignments"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+                <AssignmentsDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/cleaningstaff/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['CleaningStaff']}>
+                <CleaningStaffDashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </Router>
@@ -70,3 +98,4 @@ function App() {
 }
 
 export default App;
+
