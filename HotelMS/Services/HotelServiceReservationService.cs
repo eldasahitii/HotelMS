@@ -48,10 +48,10 @@ namespace HotelMS.Services
                 return null;
 
             // Update fields (add only fields you want to allow editing)
-            existing.ScheduleId = updatedReservation.ScheduleId;
-            existing.ServiceId = updatedReservation.ServiceId;
-            existing.UserId = updatedReservation.UserId;
-            existing.ReservationDate = updatedReservation.ReservationDate;
+            //existing.ScheduleId = updatedReservation.ScheduleId;
+            //existing.ServiceId = updatedReservation.ServiceId;
+            //existing.UserId = updatedReservation.UserId;
+            //existing.ReservationDate = updatedReservation.ReservationDate;
             // Add more fields as necessary
 
             await _context.SaveChangesAsync();
