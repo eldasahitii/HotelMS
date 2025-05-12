@@ -45,8 +45,8 @@ namespace HotelMS.Controllers
             return Ok(reservations);
         }
 
-        [HttpDelete("ConacelReservationUser")]
-        [Authorize(Roles = "Customer")]
+        [HttpDelete("CancelReservationUser")]
+        [Authorize]
         public async Task<IActionResult> CancelMyReservation(int id)
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
@@ -64,7 +64,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpDelete("staffCancelReservation")]
-        [Authorize(Roles = "Admin,Receptionist")]
+        [Authorize(Roles = "Admin,Recepsionist")]
         public async Task<IActionResult> CancelReservationAsStaff(int id)
         {
             var result = await roomReservationService.CancelReservation(id, 0, true);

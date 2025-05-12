@@ -18,7 +18,6 @@ namespace HotelMS.Models
         public string Description { get; set; }
         [Required]
         public decimal Price { get; set; }
-        public bool IsAvailable { get; set; } = true;
         [Required]
         public string ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;

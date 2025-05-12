@@ -26,18 +26,30 @@ namespace HotelMS.Services
                     Size = request.Size,
                     Description = request.Description,
                     Price = request.Price,
-                    ImageUrl = request.ImageUrl
+                    ImageUrl = request.ImageUrl,
+                    RoomStatusID = request.RoomStatusID
                 };
+
+                if (request.RoomTypeID.HasValue)
+                {
+                    room.RoomTypeID = request.RoomTypeID.Value;
+                }
 
                 _dbContext.Rooms.Add(room);
                 await _dbContext.SaveChangesAsync();
-
                 return room;
-            } catch (Exception ex) { 
-                Console.WriteLine(ex.Message);
-                throw new Exception("An error occurred while attempting to save the product record."); 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                throw new Exception("An error occurred while attempting to save the room.");
             }
         }
+
         public async Task<Room> GetRoom(int id)
         {
             try

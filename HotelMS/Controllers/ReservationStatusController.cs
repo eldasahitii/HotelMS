@@ -65,14 +65,15 @@ namespace HotelMS.Controllers
         {
             try
             {
-                var result = _service.DeleteReservationStatus(id);
-                return Ok(result);
+                await _service.DeleteReservationStatus(id);  
+                return NoContent(); 
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPut("updateReservationStatus")]
         public async Task<IActionResult> UpdateReservationStatus(int id, [FromBody] ReservationStatusDTO request)
         {
