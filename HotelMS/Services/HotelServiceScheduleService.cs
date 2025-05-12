@@ -29,6 +29,9 @@ namespace HotelMS.Services
         }
         public async Task <HotelServiceSchedule> CreateScheduleAsync(HotelServiceSchedule schedule)
         {
+            if (schedule.EndTime <= schedule.StartTime)
+                throw new ArgumentException("End time must be after start time.");
+
             _context.HotelServiceSchedules.Add(schedule);
             await _context.SaveChangesAsync();
             return schedule;
