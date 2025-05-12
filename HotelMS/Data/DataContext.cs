@@ -1,4 +1,6 @@
-﻿using HotelMS.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using HotelMS.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Data
@@ -21,6 +23,7 @@ namespace HotelMS.Data
         public DbSet<HotelService> HotelServices { get; set; }
         public DbSet<HotelServiceSchedule> HotelServiceSchedules { get; set; }
         public DbSet<HotelServiceReservation> HotelServiceReservations { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

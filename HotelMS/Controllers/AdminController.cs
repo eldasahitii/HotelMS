@@ -1,6 +1,7 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,8 @@ namespace HotelMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+
     public class AdminController:ControllerBase
     {
         private readonly IAdminService _adminService;
@@ -36,80 +38,6 @@ namespace HotelMS.Controllers
             }
         }
 
-        //[HttpGet("GetManagers")]
-
-        //public async Task<IActionResult> GetManagers()
-        //{
-        //    try
-        //    {
-        //        var managers = await _adminService.GetManagers();
-        //        return Ok(managers);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-
-        //[HttpGet("GetManagerById")]
-
-        //public async Task<IActionResult> GetManagerByID(int id)
-        //{
-        //    try
-        //    {
-        //        var manager = await _adminService.GetManagerByID(id);
-        //        if (manager == null)
-        //        {
-        //            return NotFound(new { message = "Manager not found" });
-        //        }
-        //        else
-        //        {
-        //            return Ok(manager);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-        //[HttpPut("UpdateManager")]
-        //public async Task<IActionResult> UpdateManager(int id, UserDTO request)
-        //{
-        //    try
-        //    {
-        //        var updated = await _adminService.UpdateManager(id, request);
-        //        if (updated == null)
-        //        {
-        //            return NotFound(new { message = "Manager not found" });
-        //        }
-        //        return Ok(updated);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-
-        //[HttpDelete("DeleteManager")]
-
-        //public async Task<IActionResult> DeleteManager(int id)
-        //{
-        //    try
-        //    {
-        //        var result = await _adminService.DeleteManager(id);
-        //        if (result == "Manager deleted successfully")
-        //        {
-        //            return Ok(result);
-        //        }
-        //        else
-        //        {
-        //            return NotFound(result);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
         [HttpGet("getUsersByRole")]
         public async Task<IActionResult> GetUsersByRole(string roleType)
         {

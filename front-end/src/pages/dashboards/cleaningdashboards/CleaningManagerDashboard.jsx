@@ -3,6 +3,7 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 export default function CleaningManagerDashboard() {
   const [staff, setStaff] = useState([]);
@@ -111,6 +112,16 @@ export default function CleaningManagerDashboard() {
     const res = await axios.get("/api/CleaningStaff/getAllActive");
     setStaff(res.data);
   };
+  const navigate = useNavigate();
+
+const handleLogout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('email');
+  localStorage.removeItem('role');
+  localStorage.removeItem('userID');
+  localStorage.removeItem('name'); 
+  navigate('/login'); 
+};
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
@@ -118,15 +129,15 @@ export default function CleaningManagerDashboard() {
         <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <Link to="/manager/cleaning-staff" className="nav-link text-white">
               <i className="bi bi-people-fill me-2"></i>Cleaning Staff
-            </Link>
           </li>
-          <li className="nav-item">
-            <Link to="/manager/assignments" className="nav-link text-white">
-              <i className="bi bi-list-task me-2"></i>Assignments
-            </Link>
-          </li>
+          <Link to="/manager/assignments" className="nav-link text-white">
+  <i className="bi bi-list-task me-2"></i>Assignments
+</Link>
+<hr className="text-white" />
+<button className="btn btn-outline-light w-100" onClick={handleLogout}>
+  <i className="bi bi-box-arrow-right me-2"></i> Logout
+</button>
         </ul>
       </aside>
       <main className="flex-grow-1 p-4">
