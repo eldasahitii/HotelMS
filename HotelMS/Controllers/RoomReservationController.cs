@@ -1,8 +1,12 @@
 ﻿using System.Security.Claims;
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using HotelMS.Models;
+using HotelMS.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
 
 namespace HotelMS.Controllers
 {
@@ -46,22 +50,17 @@ namespace HotelMS.Controllers
         }
 
         [HttpDelete("CancelReservationUser")]
-        [Authorize]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> CancelMyReservation(int id)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
-
-            if (userIdClaim == null)
-            {
-                return Unauthorized(new { message = "User is not authenticated" });
-            }
-
-            int userId = int.Parse(userIdClaim);
+            int userId = GetUserIDFromClaims();
 
             var result = await roomReservationService.CancelReservation(id, userId, false);
 
             return Ok(result);
         }
+
+
 
         [HttpDelete("staffCancelReservation")]
         [Authorize(Roles = "Admin,Recepsionist")]
