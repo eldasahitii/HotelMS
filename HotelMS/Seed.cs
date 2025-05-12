@@ -201,7 +201,11 @@ public class Seed
                     CheckInDate = DateTime.Now.AddDays(1),
                     CheckOutDate = DateTime.Now.AddDays(5),
 
+
                      
+
+                
+
 
                     ReservationStatusID = reservationStatusID,
 
@@ -212,6 +216,7 @@ public class Seed
             dataContext.RoomReservations.AddRange(reservations);
             dataContext.SaveChanges();
         }
+
 
         if (!dataContext.MenuCategories.Any())
         {
@@ -275,12 +280,6 @@ public class Seed
             dataContext.SaveChanges();
 
         }
-    }
-
-
-
-
-   // Seed Reviews
         if (!dataContext.Reviews.Any())
         {
             var customerUser = dataContext.Users.FirstOrDefault(u => u.Email == "velsa@gmail.com");
@@ -305,11 +304,21 @@ public class Seed
                     }
                 };
 
-    dataContext.Reviews.AddRange(reviews);
+
+                dataContext.Reviews.AddRange(reviews);
+
+               
+
                 dataContext.SaveChanges();
             }
         }
     }
- 
+
 }
+   
+
+
+
+
+  
 

@@ -76,7 +76,8 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
 builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
-builder.Services.AddScoped<IAdminService, AdminService>(); 
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddTransient<Seed>();
 
 builder.Services.AddEndpointsApiExplorer();

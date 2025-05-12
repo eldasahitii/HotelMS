@@ -4,6 +4,7 @@ using HotelMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelMS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250512013116_AddReviewTable")]
+    partial class AddReviewTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,58 +191,6 @@ namespace HotelMS.Migrations
                     b.ToTable("HotelServiceSchedules");
                 });
 
-            modelBuilder.Entity("HotelMS.Models.MenuCategory", b =>
-                {
-                    b.Property<int>("MenuCategoryID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MenuCategoryID"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MenuCategoryID");
-
-                    b.ToTable("MenuCategories");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.MenuItem", b =>
-                {
-                    b.Property<int>("MenuItemID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MenuItemID"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MenuCategoryID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
-                    b.Property<string>("image_url")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("is_available")
-                        .HasColumnType("bit");
-
-                    b.HasKey("MenuItemID");
-
-                    b.HasIndex("MenuCategoryID");
-
-                    b.ToTable("MenuItems");
-                });
-
             modelBuilder.Entity("HotelMS.Models.ReservationStatus", b =>
                 {
                     b.Property<int>("ReservationStatusID")
@@ -283,54 +234,6 @@ namespace HotelMS.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.RestaurantReservation", b =>
-                {
-                    b.Property<int>("ReservationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationID"));
-
-                    b.Property<int>("GuestID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RestaurantTableID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("date_time")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ReservationID");
-
-                    b.HasIndex("RestaurantTableID");
-
-                    b.ToTable("RestaurantReservations");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.RestaurantTable", b =>
-                {
-                    b.Property<int>("RestaurantTableID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RestaurantTableID"));
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TableNumber")
-                        .HasColumnType("int");
-
-                    b.HasKey("RestaurantTableID");
-
-                    b.ToTable("RestaurantTables");
                 });
 
             modelBuilder.Entity("HotelMS.Models.Role", b =>
@@ -611,28 +514,6 @@ namespace HotelMS.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HotelMS.Models.MenuItem", b =>
-                {
-                    b.HasOne("HotelMS.Models.MenuCategory", "MenuCategory")
-                        .WithMany("MenuItems")
-                        .HasForeignKey("MenuCategoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MenuCategory");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.RestaurantReservation", b =>
-                {
-                    b.HasOne("HotelMS.Models.RestaurantTable", "RestaurantTable")
-                        .WithMany("Reservations")
-                        .HasForeignKey("RestaurantTableID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("RestaurantTable");
-                });
-
             modelBuilder.Entity("HotelMS.Models.Room", b =>
                 {
                     b.HasOne("HotelMS.Models.RoomStatus", "RoomStatus")
@@ -701,19 +582,9 @@ namespace HotelMS.Migrations
                     b.Navigation("HotelServiceSchedules");
                 });
 
-            modelBuilder.Entity("HotelMS.Models.MenuCategory", b =>
-                {
-                    b.Navigation("MenuItems");
-                });
-
             modelBuilder.Entity("HotelMS.Models.ReservationStatus", b =>
                 {
                     b.Navigation("RoomReservations");
-                });
-
-            modelBuilder.Entity("HotelMS.Models.RestaurantTable", b =>
-                {
-                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("HotelMS.Models.Role", b =>
