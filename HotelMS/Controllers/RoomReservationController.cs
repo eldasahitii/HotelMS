@@ -71,6 +71,27 @@ namespace HotelMS.Controllers
             return Ok(result);
         }
 
+        [HttpPost("MarkReservationCompleted")]
+        [Authorize(Roles = "Admin,RoomRecepsionist")] 
+        public async Task<IActionResult> MarkReservationCompleted([FromBody] MarkReservationCompletedDTO request)
+        {
+            int userID = GetUserIDFromClaims();
+
+            var result = await roomReservationService.MarkReservationCompleted(request.ReservationID, userID);
+
+            if (result.StartsWith("You are not authorized"))
+            {
+                return Unauthorized(result);  
+            }
+
+            if (result.StartsWith("Reservation not found"))
+            {
+                return NotFound(result); 
+            }
+
+            return Ok(result);  
+        }
+
         private int GetUserIDFromClaims()
         {
             return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);

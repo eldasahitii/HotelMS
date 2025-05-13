@@ -119,14 +119,16 @@ namespace HotelMS.Services
                 .Include(r => r.ReservationStatus)
                 .FirstOrDefaultAsync(r => r.ReservationID == reservationID);
 
-            if (reservation == null) {
+            if (reservation == null)
+            {
                 return "Reservation not found";
             }
 
             var status = await _context.ReservationStatuses
                 .FirstOrDefaultAsync(rs => rs.ReservationStatusID == statusID);
 
-            if (status == null) {
+            if (status == null)
+            {
                 return "Invalid status ID";
             }
 
@@ -137,6 +139,51 @@ namespace HotelMS.Services
             return "Reservation status updated successfully";
 
         }
+
+        public async Task<string> MarkReservationCompleted(int reservationID, int userID)
+        {
+            var reservation = await _context.RoomReservations
+                .Include(r => r.ReservationStatus)
+                .FirstOrDefaultAsync(r => r.ReservationID == reservationID);
+
+            if (reservation == null)
+            {
+                return "Reservation not found";
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == userID);
+            if (user == null)
+            {
+                return "User not found";
+            }
+
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
+
+            if (role == null)
+            {
+                return "User role not found";
+            }
+
+
+            if (reservation.UserID != userID && role.RoleType != "Admin" && role.RoleType != "RoomRecepsionist")
+            {
+                return "You are not authorized to complete this reservation.";
+            }
+
+
+            var completedStatus = await _context.ReservationStatuses
+                .FirstOrDefaultAsync(rs => rs.ReservationStatusName == "Completed");
+
+            if (completedStatus == null)
+            {
+                return "Completed status not found";
+            }
+
+            reservation.ReservationStatusID = completedStatus.ReservationStatusID;
+            await _context.SaveChangesAsync();
+
+            return "Reservation marked as completed";
+        }
     }
-}
+ }
 

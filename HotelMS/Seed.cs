@@ -94,39 +94,36 @@ public class Seed
                     PasswordHash = cleaningManagerHash, PasswordSalt = cleaningManagerSalt,
                     CreatedAt = DateTime.Now, RoleID = cleaningManagerRoleID
                 },
-                  new User() {
+                new User() {
                     FirstName = "Elda", LastName = "Sahiti", Email = "elda@gmail.com",
                     PasswordHash = restaurantManagerHash, PasswordSalt = restaurantManagerSalt,
                     CreatedAt = DateTime.Now, RoleID = restaurantManagerRoleID
                 },
-                    new User() {
+                new User() {
                     FirstName = "Ema", LastName = "Salihu", Email = "ema@gmail.com",
                     PasswordHash = restaurantHostHash, PasswordSalt = restaurantHostSalt,
                     CreatedAt = DateTime.Now, RoleID = restaurantHostRoleID
                 },
-                     new User() {
+                new User() {
                     FirstName = "Rona", LastName = "Veseli", Email = "rona@gmail.com",
                     PasswordHash = serviceManagerHash, PasswordSalt = serviceManagerSalt,
                     CreatedAt = DateTime.Now, RoleID = serviceManagerRoleID
                 },
-                     new User() {
+                new User() {
                     FirstName = "Erblina", LastName = "Kadriu", Email = "erblina@gmail.com",
                     PasswordHash = serviceRecepsionistHash, PasswordSalt = serviceRecepsionistSalt,
                     CreatedAt = DateTime.Now, RoleID = serviceRecepsionistRoleID
                 },
-                     new User() {
+                new User() {
                     FirstName = "Vlera", LastName = "Krasniqi", Email = "vlera@gmail.com",
                     PasswordHash = cleaningStaffHash, PasswordSalt = cleaningStaffSalt,
                     CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID
                 },
-                     new User() {
+                new User() {
                     FirstName = "Erza", LastName = "Musliu", Email = "erza@gmail.com",
                     PasswordHash = customerHash, PasswordSalt = customerSalt,
                     CreatedAt = DateTime.Now, RoleID = customerRoleID
-                },
-
-
-
+                }
             };
 
             dataContext.Users.AddRange(users);
@@ -137,7 +134,7 @@ public class Seed
         if (!dataContext.CleaningStaff.Any())
         {
             var cleaningStaffUser = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
-            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com"); // manager
+            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com");
 
             if (cleaningStaffUser != null && assignedByUser != null)
             {
@@ -149,7 +146,7 @@ public class Seed
                     AssignedByUserID = assignedByUser.UserID
                 };
 
-                dataContext.CleaningStaff.AddRange(cleaningStaff);
+                dataContext.CleaningStaff.Add(cleaningStaff);
                 dataContext.SaveChanges();
             }
         }
@@ -239,7 +236,7 @@ public class Seed
         {
             var availableRoomID = dataContext.Rooms.First(r => r.Name == "Single Room").RoomID;
             var customerID = dataContext.Users.First(u => u.Email == "erza@gmail.com").UserID;
-            var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Pending").ReservationStatusID;
+            var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Confirmed").ReservationStatusID;
 
             var reservations = new List<RoomReservation>
             {
@@ -289,4 +286,3 @@ public class Seed
         }
     }
 }
-
