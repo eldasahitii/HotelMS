@@ -35,7 +35,7 @@ namespace HotelMS.Services
         public async Task<IEnumerable<HotelServiceSchedule>> GetSchedulesByServiceIdAsync(int serviceId)
         {
             return await _context.HotelServiceSchedules
-                .Where(s => s.HotelServiceId == serviceId && s.IsAvailabale)
+                .Where(s => s.HotelServiceId == serviceId && s.IsAvailable)
                 .ToListAsync();
         }
 

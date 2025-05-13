@@ -265,14 +265,14 @@ public class Seed
                     HotelServiceId = service.Id,
                     StartTime = DateTime.Today.AddHours(10),
                     EndTime = DateTime.Today.AddHours(11),
-                    IsAvailabale = true
+                    IsAvailable = true
                 });
                 scheduleEntries.Add(new HotelServiceSchedule
                 {
                     HotelServiceId = service.Id,
                     StartTime = DateTime.Today.AddHours(14),
                     EndTime = DateTime.Today.AddHours(15),
-                    IsAvailabale = true
+                    IsAvailable = true
                 });
             }
             dataContext.HotelServiceSchedules.AddRange(scheduleEntries);
