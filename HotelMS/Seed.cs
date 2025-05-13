@@ -30,8 +30,13 @@ public class Seed
             var roles = new List<Role>
             {
                 new Role() { RoleType = "Admin" },
-                new Role() { RoleType = "Manager" },
-                new Role() { RoleType = "Receptionist" },
+                new Role() { RoleType = "RoomManager" },
+                new Role() { RoleType = "RoomRecepsionist" },
+                new Role() { RoleType = "CleaningManager" },
+                new Role() { RoleType = "RestaurantManager" },
+                new Role() { RoleType = "RestaurantHost" },
+                new Role() { RoleType = "ServiceManager" },
+                new Role() { RoleType = "ServiceRecepsionist" },
                 new Role() { RoleType = "CleaningStaff" },
                 new Role() { RoleType = "Customer" }
             };
@@ -44,14 +49,26 @@ public class Seed
         if (!dataContext.Users.Any())
         {
             var adminRoleID = dataContext.Roles.First(r => r.RoleType == "Admin").RoleID;
-            var recepsionistRoleID = dataContext.Roles.First(r => r.RoleType == "Receptionist").RoleID;
+            var roomManagerRoleID = dataContext.Roles.First(r => r.RoleType == "RoomManager").RoleID;
+            var roomRecepsionistRoleID = dataContext.Roles.First(r => r.RoleType == "RoomRecepsionist").RoleID;
+            var cleaningManagerRoleID = dataContext.Roles.First(r => r.RoleType == "CleaningManager").RoleID;
+            var restaurantManagerRoleID = dataContext.Roles.First(r => r.RoleType == "RestaurantManager").RoleID;
+            var restaurantHostRoleID = dataContext.Roles.First(r => r.RoleType == "RestaurantHost").RoleID;
+            var serviceManagerRoleID = dataContext.Roles.First(r => r.RoleType == "ServiceManager").RoleID;
+            var serviceRecepsionistRoleID = dataContext.Roles.First(r => r.RoleType == "ServiceRecepsionist").RoleID;
             var cleaningStaffRoleID = dataContext.Roles.First(r => r.RoleType == "CleaningStaff").RoleID;
             var customerRoleID = dataContext.Roles.First(r => r.RoleType == "Customer").RoleID;
 
             CreatePasswordHash("Ruvejda123", out var adminHash, out var adminSalt);
-            CreatePasswordHash("Liranda123", out var recepsionistHash, out var recepsionistSalt);
-            CreatePasswordHash("Orgesa123", out var cleaningStaffHash, out var cleaningStaffSalt);
-            CreatePasswordHash("Velsa123", out var customerHash, out var customerSalt);
+            CreatePasswordHash("Liranda123", out var roomManagerHash, out var roomManagerSalt);
+            CreatePasswordHash("Orgesa123", out var roomRecepsionistHash, out var roomRecepsionistSalt);
+            CreatePasswordHash("Velsa123", out var cleaningManagerHash, out var cleaningManagerSalt);
+            CreatePasswordHash("Elda123", out var restaurantManagerHash, out var restaurantManagerSalt);
+            CreatePasswordHash("Ema123", out var restaurantHostHash, out var restaurantHostSalt);
+            CreatePasswordHash("Rona123", out var serviceManagerHash, out var serviceManagerSalt);
+            CreatePasswordHash("Erblina123", out var serviceRecepsionistHash, out var serviceRecepsionistSalt);
+            CreatePasswordHash("Vlera123", out var cleaningStaffHash, out var cleaningStaffSalt);
+            CreatePasswordHash("Erza123", out var customerHash, out var customerSalt);
 
             var users = new List<User>
             {
@@ -63,20 +80,53 @@ public class Seed
                 },
                 new User() {
                     FirstName = "Liranda", LastName = "Ukaj", Email = "liranda@gmail.com",
-                    PasswordHash = recepsionistHash, PasswordSalt = recepsionistSalt,
+                    PasswordHash = roomManagerHash, PasswordSalt = roomManagerSalt,
                     Address = "Prishtina", CreatedAt = DateTime.Now,
-                    RoleID = recepsionistRoleID
+                    RoleID = roomManagerRoleID
                 },
                 new User() {
                     FirstName = "Orgesa", LastName = "Berisha", Email = "orgesa@gmail.com",
-                    PasswordHash = cleaningStaffHash, PasswordSalt = cleaningStaffSalt,
-                    CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID
+                    PasswordHash = roomRecepsionistHash, PasswordSalt = roomRecepsionistSalt,
+                    CreatedAt = DateTime.Now, RoleID = roomRecepsionistRoleID
                 },
                 new User() {
                     FirstName = "Velsa", LastName = "Zemaj", Email = "velsa@gmail.com",
+                    PasswordHash = cleaningManagerHash, PasswordSalt = cleaningManagerSalt,
+                    CreatedAt = DateTime.Now, RoleID = cleaningManagerRoleID
+                },
+                  new User() {
+                    FirstName = "Elda", LastName = "Sahiti", Email = "elda@gmail.com",
+                    PasswordHash = restaurantManagerHash, PasswordSalt = restaurantManagerSalt,
+                    CreatedAt = DateTime.Now, RoleID = restaurantManagerRoleID
+                },
+                    new User() {
+                    FirstName = "Ema", LastName = "Salihu", Email = "ema@gmail.com",
+                    PasswordHash = restaurantHostHash, PasswordSalt = restaurantHostSalt,
+                    CreatedAt = DateTime.Now, RoleID = restaurantHostRoleID
+                },
+                     new User() {
+                    FirstName = "Rona", LastName = "Veseli", Email = "rona@gmail.com",
+                    PasswordHash = serviceManagerHash, PasswordSalt = serviceManagerSalt,
+                    CreatedAt = DateTime.Now, RoleID = serviceManagerRoleID
+                },
+                     new User() {
+                    FirstName = "Erblina", LastName = "Kadriu", Email = "erblina@gmail.com",
+                    PasswordHash = serviceRecepsionistHash, PasswordSalt = serviceRecepsionistSalt,
+                    CreatedAt = DateTime.Now, RoleID = serviceRecepsionistRoleID
+                },
+                     new User() {
+                    FirstName = "Vlera", LastName = "Krasniqi", Email = "vlera@gmail.com",
+                    PasswordHash = cleaningStaffHash, PasswordSalt = cleaningStaffSalt,
+                    CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID
+                },
+                     new User() {
+                    FirstName = "Erza", LastName = "Musliu", Email = "erza@gmail.com",
                     PasswordHash = customerHash, PasswordSalt = customerSalt,
                     CreatedAt = DateTime.Now, RoleID = customerRoleID
-                }
+                },
+
+
+
             };
 
             dataContext.Users.AddRange(users);
@@ -188,7 +238,7 @@ public class Seed
         if (!dataContext.RoomReservations.Any())
         {
             var availableRoomID = dataContext.Rooms.First(r => r.Name == "Single Room").RoomID;
-            var customerID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
+            var customerID = dataContext.Users.First(u => u.Email == "erza@gmail.com").UserID;
             var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Pending").ReservationStatusID;
 
             var reservations = new List<RoomReservation>
@@ -211,7 +261,7 @@ public class Seed
         // Seed Reviews
         if (!dataContext.Reviews.Any())
         {
-            var customerUser = dataContext.Users.FirstOrDefault(u => u.Email == "velsa@gmail.com");
+            var customerUser = dataContext.Users.FirstOrDefault(u => u.Email == "erza@gmail.com");
 
             if (customerUser != null)
             {
