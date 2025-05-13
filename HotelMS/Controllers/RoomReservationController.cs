@@ -22,7 +22,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost("MakeReservation")]
-        [Authorize]
+        [Authorize(Roles ="Admin,RoomRecepsionist,Customer")]
 
         public async Task<IActionResult> MakeReservation([FromBody] RoomReservationDTO request)
         {
@@ -32,7 +32,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetUserReservations")]
-        [Authorize]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,Customer")]
         public async Task<IActionResult> GetUserReservations()
         {
             int userID = GetUserIDFromClaims();
@@ -41,7 +41,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetAllReservations")]
-        [Authorize(Roles = "Admin,Manager,Recepsionist")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
 
         public async Task<IActionResult> GetAllReservations()
         {
@@ -63,7 +63,7 @@ namespace HotelMS.Controllers
 
 
         [HttpDelete("staffCancelReservation")]
-        [Authorize(Roles = "Admin,Recepsionist")]
+        [Authorize(Roles = "Admin,RoomRecepsionist")]
         public async Task<IActionResult> CancelReservationAsStaff(int id)
         {
             var result = await roomReservationService.CancelReservation(id, 0, true);
