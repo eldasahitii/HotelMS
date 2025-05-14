@@ -51,11 +51,11 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAllRoomsStatuses")]
-        public async Task<IActionResult> GetAllRoomStatus()
+        public async Task<IActionResult> GetAllRoomStatus([FromQuery] string role)
         {
             try
             {
-                var result = await _service.GetAllRoomStatus();
+                var result = await _service.GetAllRoomStatus(role);
                 return Ok(result);
             }
             catch (Exception ex)

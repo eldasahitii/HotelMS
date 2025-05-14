@@ -49,19 +49,26 @@ namespace HotelMS.Services
             }
         }
 
-        public async Task<IEnumerable<RoomStatus>> GetAllRoomStatus()
+        public async Task<IEnumerable<RoomStatus>> GetAllRoomStatus(string role = null)
         {
             try
             {
                 var result = await _dbContext.RoomStatuses.ToListAsync();
+
+                if (string.Equals(role, "RoomManager", StringComparison.OrdinalIgnoreCase))
+                {
+                    result = result.Where(rs => rs.RoomStatusID != 3).ToList();
+                }
+
                 return result;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception("An error occured");
+                throw new Exception("An error occurred");
             }
         }
+
 
         public async Task<RoomStatus> UpdateRoomStatus(int id, RoomStatusDTO request)
         {

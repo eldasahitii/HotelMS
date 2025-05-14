@@ -158,7 +158,8 @@ public class Seed
             {
                 new RoomStatus() { RoomStatusName = "Available" },
                 new RoomStatus() { RoomStatusName = "Occupied" },
-                new RoomStatus() { RoomStatusName = "Cleaning" }
+                new RoomStatus() { RoomStatusName = "Cleaning" },
+                new RoomStatus() { RoomStatusName = "Completed" }
             };
 
             dataContext.RoomStatuses.AddRange(roomStatuses);
