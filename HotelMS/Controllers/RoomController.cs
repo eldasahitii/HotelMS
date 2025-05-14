@@ -72,7 +72,7 @@ namespace HotelMS.Controllers
         [HttpDelete("DeleteRoom")]
         [Authorize(Roles = "Admin,RoomManager")]
 
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteRoom(int id)
         {
             try
             {
@@ -87,11 +87,17 @@ namespace HotelMS.Controllers
 
         [HttpPut("UpdateRoom")]
         [Authorize(Roles = "Admin,RoomManager")]
-        public async Task<IActionResult> Update(int id, [FromBody] RoomDTO request)
+        public async Task<IActionResult> UpdateRoom(int id, [FromBody] RoomDTO request)
         {
             try
             {
-                var result = _service.UpdateRoom(id, request);
+                // Optional: Validate request before passing to service
+                if (request.RoomTypeID <= 0 || request.RoomStatusID <= 0)
+                {
+                    return BadRequest("Invalid RoomTypeID or RoomStatusID.");
+                }
+
+                var result = await _service.UpdateRoom(id, request);
                 if (result == null)
                 {
                     return NotFound();
@@ -106,5 +112,7 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
     }
 }

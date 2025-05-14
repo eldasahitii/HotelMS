@@ -27,13 +27,10 @@ namespace HotelMS.Services
                     Description = request.Description,
                     Price = request.Price,
                     ImageUrl = request.ImageUrl,
-                    RoomStatusID = request.RoomStatusID
+                    RoomStatusID = request.RoomStatusID,
+                    RoomTypeID = request.RoomTypeID 
                 };
 
-                if (request.RoomTypeID.HasValue)
-                {
-                    room.RoomTypeID = request.RoomTypeID.Value;
-                }
 
                 _dbContext.Rooms.Add(room);
                 await _dbContext.SaveChangesAsync();
@@ -78,37 +75,23 @@ namespace HotelMS.Services
                 throw new Exception("An error occured");
             }
         }
-
         public async Task<Room> UpdateRoom(int id, RoomDTO request)
         {
-            try
-            {
-                var room = _dbContext.Rooms.Find(id);
+            var room = await _dbContext.Rooms.FindAsync(id);
+            if (room == null) return null;
 
-                if (room == null)
-                {
-                    return null;
-                }
+            room.Name = request.Name;
+            room.Capacity = request.Capacity;
+            room.Size = request.Size;
+            room.Description = request.Description;
+            room.Price = request.Price;
+            room.ImageUrl = request.ImageUrl;
+            room.RoomTypeID = request.RoomTypeID;
+            room.RoomStatusID = request.RoomStatusID;
 
-                if (room != null)
-                {
-                    room.Name = request.Name;
-                    room.Capacity = request.Capacity;
-                    room.Size = request.Size;
-                    room.Description = request.Description;
-                    room.Price = request.Price;
-                    room.ImageUrl = request.ImageUrl;
+            await _dbContext.SaveChangesAsync();
 
-                    _dbContext.SaveChanges();
-                }
-                return room;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw new Exception("An error occured while attmeting to save room");
-            }
-
+            return room;
         }
 
         public async Task DeleteRoom(int id)
