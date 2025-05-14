@@ -12,9 +12,11 @@ const RoomManagerDashboard = () => {
     description: '',
     price: '',
     imageUrl: '',
-    roomStatusID: '',  // This will be selected from dropdown
-    roomTypeID: '',    // This will be selected from dropdown
+    roomStatusID: '',
+    roomTypeID: '',
   });
+  const [editingRoomID, setEditingRoomID] = useState(null);
+  const [editRoom, setEditRoom] = useState(null);
 
   useEffect(() => {
     fetchRooms();
@@ -56,55 +58,55 @@ const RoomManagerDashboard = () => {
   };
 
   const handleAddRoom = async () => {
-    const token = localStorage.getItem('token');  // Get token from localStorage
-    
+    const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token is missing');
       return;
     }
 
-    // Basic validation for required fields
     if (!newRoom.name || !newRoom.capacity || !newRoom.roomStatusID || !newRoom.roomTypeID) {
       alert('Please fill in all required fields');
       return;
     }
 
-    // Ensure roomStatusID and roomTypeID are valid numbers
     const roomStatusID = parseInt(newRoom.roomStatusID, 10);
     const roomTypeID = newRoom.roomTypeID ? parseInt(newRoom.roomTypeID, 10) : null;
 
-    if (isNaN(roomStatusID)) {
-      alert('Invalid Room Status selected!');
-      return;
-    }
-
-    console.log("Room Status ID:", roomStatusID);  // Debugging line
-
-    // Create the room object to be sent
     const updatedRoom = { ...newRoom, roomStatusID, roomTypeID };
 
     try {
-      const response = await axios.post(
-        'https://localhost:7117/api/Room/AddRoom',
-        updatedRoom,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log('Room added successfully:', response.data);
-      fetchRooms();  // Refresh room list after adding
+      await axios.post('https://localhost:7117/api/Room/AddRoom', updatedRoom, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchRooms();
     } catch (error) {
       console.error('Error adding room:', error.response ? error.response.data : error.message);
-      if (error.response && error.response.status === 401) {
-        alert('Unauthorized! Please log in again.');
-      } else if (error.response && error.response.status === 400) {
-        alert('Bad Request: Please check the room data.');
-      } else {
-        alert('An error occurred while adding the room.');
-      }
+    }
+  };
+
+  const startEditRoom = (room) => {
+    setEditingRoomID(room.roomID);
+    setEditRoom({ ...room });
+  };
+
+  const handleUpdateRoom = async () => {
+    const token = localStorage.getItem('token');
+    if (!token || !editRoom) return;
+
+    const roomStatusID = parseInt(editRoom.roomStatusID, 10);
+    const roomTypeID = parseInt(editRoom.roomTypeID, 10);
+
+    try {
+      await axios.put(`https://localhost:7117/api/Room/UpdateRoom?id=${editingRoomID}`,
+        { ...editRoom, roomStatusID, roomTypeID },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setEditingRoomID(null);
+      setEditRoom(null);
+      fetchRooms();
+    } catch (error) {
+      console.error('Error updating room:', error);
+      alert('Failed to update room.');
     }
   };
 
@@ -112,81 +114,90 @@ const RoomManagerDashboard = () => {
     <div>
       <h1>Room Manager Dashboard</h1>
 
-      {/* Add Room Form */}
       <div>
-        <input
-          type="text"
-          placeholder="Room Name"
-          value={newRoom.name}
-          onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Capacity"
-          value={newRoom.capacity}
-          onChange={(e) => setNewRoom({ ...newRoom, capacity: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Size"
-          value={newRoom.size}
-          onChange={(e) => setNewRoom({ ...newRoom, size: e.target.value })}
-        />
-        <textarea
-          placeholder="Description"
-          value={newRoom.description}
-          onChange={(e) => setNewRoom({ ...newRoom, description: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="Price"
-          value={newRoom.price}
-          onChange={(e) => setNewRoom({ ...newRoom, price: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Image URL"
-          value={newRoom.imageUrl}
-          onChange={(e) => setNewRoom({ ...newRoom, imageUrl: e.target.value })}
-        />
+        <h3>Add New Room</h3>
+        <input type="text" placeholder="Room Name" value={newRoom.name} onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })} />
+        <input type="text" placeholder="Capacity" value={newRoom.capacity} onChange={(e) => setNewRoom({ ...newRoom, capacity: e.target.value })} />
+        <input type="text" placeholder="Size" value={newRoom.size} onChange={(e) => setNewRoom({ ...newRoom, size: e.target.value })} />
+        <textarea placeholder="Description" value={newRoom.description} onChange={(e) => setNewRoom({ ...newRoom, description: e.target.value })} />
+        <input type="number" placeholder="Price" value={newRoom.price} onChange={(e) => setNewRoom({ ...newRoom, price: e.target.value })} />
+        <input type="text" placeholder="Image URL" value={newRoom.imageUrl} onChange={(e) => setNewRoom({ ...newRoom, imageUrl: e.target.value })} />
 
-        {/* Room Status Dropdown */}
-        <select
-          value={newRoom.roomStatusID}
-          onChange={(e) => setNewRoom({ ...newRoom, roomStatusID: e.target.value })}
-        >
+        <select value={newRoom.roomStatusID} onChange={(e) => setNewRoom({ ...newRoom, roomStatusID: e.target.value })}>
           <option value="">Select Room Status</option>
           {roomStatuses.map((status) => (
-            <option key={status.roomStatusID} value={status.roomStatusID}>
-              {status.roomStatusName}
-            </option>
+            <option key={status.roomStatusID} value={status.roomStatusID}>{status.roomStatusName}</option>
           ))}
         </select>
 
-        {/* Room Type Dropdown */}
-        <select
-          value={newRoom.roomTypeID}
-          onChange={(e) => setNewRoom({ ...newRoom, roomTypeID: e.target.value })}
-        >
+        <select value={newRoom.roomTypeID} onChange={(e) => setNewRoom({ ...newRoom, roomTypeID: e.target.value })}>
           <option value="">Select Room Type</option>
           {roomTypes.map((type) => (
-            <option key={type.roomTypeID} value={type.roomTypeID}>
-              {type.name}
-            </option>
+            <option key={type.roomTypeID} value={type.roomTypeID}>{type.name}</option>
           ))}
         </select>
 
         <button onClick={handleAddRoom}>Add Room</button>
       </div>
 
-      {/* Display Rooms */}
-      <ul>
-        {rooms.map((room) => (
-          <li key={room.id}>
-            {room.name} - {room.capacity} - {room.size} - {room.description} - {room.price} - {room.roomStatusName} - {room.roomTypeName}
-          </li>
-        ))}
-      </ul>
+      {editRoom && (
+        <div>
+          <h3>Edit Room: {editRoom.name}</h3>
+          <input type="text" value={editRoom.name} onChange={(e) => setEditRoom({ ...editRoom, name: e.target.value })} />
+          <input type="text" value={editRoom.capacity} onChange={(e) => setEditRoom({ ...editRoom, capacity: e.target.value })} />
+          <input type="text" value={editRoom.size} onChange={(e) => setEditRoom({ ...editRoom, size: e.target.value })} />
+          <textarea value={editRoom.description} onChange={(e) => setEditRoom({ ...editRoom, description: e.target.value })} />
+          <input type="number" value={editRoom.price} onChange={(e) => setEditRoom({ ...editRoom, price: e.target.value })} />
+          <input type="text" value={editRoom.imageUrl} onChange={(e) => setEditRoom({ ...editRoom, imageUrl: e.target.value })} />
+
+          <select value={editRoom.roomStatusID} onChange={(e) => setEditRoom({ ...editRoom, roomStatusID: e.target.value })}>
+            <option value="">Select Room Status</option>
+            {roomStatuses.map((status) => (
+              <option key={status.roomStatusID} value={status.roomStatusID}>{status.roomStatusName}</option>
+            ))}
+          </select>
+
+          <select value={editRoom.roomTypeID} onChange={(e) => setEditRoom({ ...editRoom, roomTypeID: e.target.value })}>
+            <option value="">Select Room Type</option>
+            {roomTypes.map((type) => (
+              <option key={type.roomTypeID} value={type.roomTypeID}>{type.name}</option>
+            ))}
+          </select>
+
+          <button onClick={handleUpdateRoom}>Save Changes</button>
+          <button onClick={() => { setEditingRoomID(null); setEditRoom(null); }}>Cancel</button>
+        </div>
+      )}
+
+      <h3>All Rooms</h3>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Capacity</th>
+            <th>Size</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Type</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rooms.map((room) => (
+            <tr key={room.roomID}>
+              <td>{room.name}</td>
+              <td>{room.capacity}</td>
+              <td>{room.size}</td>
+              <td>{room.description}</td>
+              <td>{room.price}</td>
+              <td>{room.roomStatusName}</td>
+              <td>{room.roomTypeName}</td>
+              <td><button onClick={() => startEditRoom(room)}>Edit</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
