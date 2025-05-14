@@ -10,76 +10,101 @@ import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/Clea
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import axios from 'axios';
 import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/CleaningStaffDashboard';
+import RoomManagerDashboard from './pages/dashboards/roomdashboards/RoomManagerDashboard'; 
 
+// Axios interceptor for attaching JWT to requests
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = token;
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
+// ProtectedRoute component to ensure role-based access
 const ProtectedRoute = ({ children, allowedRoles }) => {
     const token = localStorage.getItem('token');
 
-    if(!token) return <Navigate to="/Login" />;
+    if(!token) return <Navigate to="/login" />;
 
-    try{
+    try {
         const decoded = jwtDecode(token);
         const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
         
-        if (!allowedRoles.includes(userRole)) return <Navigate to="/Login" />;
+        // If the user role isn't in the allowed roles, redirect to login
+        if (!allowedRoles.includes(userRole)) return <Navigate to="/login" />;
         return children;
-    }catch{
-        return <Navigate to="/Login" />
+    } catch {
+        return <Navigate to="/login" />;
     }
 }
 
 function App() {
-    return (
-        <Router>
-            <div>
-                {window.location.pathname !== "/login" && window.location.pathname !== "/signup" }
-                
-                <Routes>
-                    <Route path="/" element={<Navigate to="/signup" />} />
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="/login" element={<Login />} />
-                     <Route path='/header' element={<Header/>}/>
-                    
-                   <Route
-  path="/manager/cleaning-staff"
-  element={
-    <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
-      <CleaningManagerDashboard />
-    </ProtectedRoute>
-  }
-/>
+  return (
+    <Router>
+      <div>
+        {/* Only show Header if not on login or signup page */}
+        {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && <Header />}
+        
+        <Routes>
+          {/* Default route */}
+          <Route path="/" element={<Navigate to="/signup" />} />
 
-<Route
-  path="/manager/assignments"
-  element={
-    <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
-      <AssignmentsDashboard />
-    </ProtectedRoute>
-  }
-/>        
-<Route
-  path="/cleaningstaff/dashboard"
-  element={
-    <ProtectedRoute allowedRoles={['CleaningStaff']}>
-      <CleaningStaffDashboard />
-    </ProtectedRoute>
-  }
-/>      
-                </Routes>
-            </div>
-        </Router>
-    );
+          {/* Auth Routes */}
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="/admin-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['Admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager/room-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+                <RoomManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager/cleaning-staff"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+                <CleaningManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager/assignments"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+                <AssignmentsDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cleaningstaff/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['CleaningStaff']}>
+                <CleaningStaffDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Fallback Route */}
+          <Route path="*" element={<div>Page Not Found</div>} />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
 export default App;
-

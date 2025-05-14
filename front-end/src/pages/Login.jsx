@@ -14,9 +14,10 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
+    setError('');  // Reset error state
 
     try {
+      // Sending login request
       const response = await axios.post('https://localhost:7117/api/Auth/login', {
         email,
         password,
@@ -25,32 +26,32 @@ const Login = () => {
       const { token, isLoggedIn } = response.data;
 
       if (token && isLoggedIn) {
-     const rawToken = token.replace('Bearer ', ''); 
-     const decoded = jwtDecode(rawToken);
+        const rawToken = token.replace('Bearer ', ''); 
+        const decoded = jwtDecode(rawToken);
 
-
-       
+        // Decoding user info from the token
         const userEmail = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
         const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
         const userId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
 
+        // Storing data in localStorage
         localStorage.setItem('token', `Bearer ${token}`);
         localStorage.setItem('email', userEmail);
         localStorage.setItem('role', userRole);
         localStorage.setItem('userID', userId);
 
         console.log('Login successful:', decoded);
-        // navigate('/admin-dashboard');
-         if (userRole === 'Admin') {
+
+        // Redirecting based on user role
+        if (userRole === 'Admin') {
           navigate('/admin-dashboard');
-        } else if (userRole === 'Manager') {
-          navigate('/manager/cleaning-staff');
+        } else if (userRole === 'RoomManager') { // Fix for RoomManager
+          navigate('/manager/room-dashboard');  // Redirect to Room Manager Dashboard
         } else if (userRole === 'CleaningStaff') {
           navigate('/cleaningstaff/dashboard');
         } else {
           setError("Unknown role. Access denied.");
         }
-      
       }
     } catch (error) {
       const message = error.response?.data?.message || error.message;
