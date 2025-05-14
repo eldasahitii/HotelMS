@@ -11,6 +11,7 @@ import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/Assignme
 import axios from 'axios';
 import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/CleaningStaffDashboard';
 import RoomManagerDashboard from './pages/dashboards/roomdashboards/RoomManagerDashboard'; 
+import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationDashboard';  
 
 // Axios interceptor for attaching JWT to requests
 axios.interceptors.request.use(
@@ -74,6 +75,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+  <Route
+  path="/admin/reservation-dashboard"
+  element={
+    <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+      <ReservationDashboard />
+    </ProtectedRoute>
+  }
+/>
+
           <Route
             path="/manager/cleaning-staff"
             element={

@@ -52,17 +52,16 @@ const RoomManagerDashboard = () => {
     }
   };
 
-const fetchRoomStatuses = async () => {
-  try {
-    const response = await axios.get('https://localhost:7117/api/RoomStatus/getAllRoomsStatuses', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      params: { role: 'RoomManager' }, 
-    });
-    setRoomStatuses(response.data);
-  } catch (error) {
-    console.error('Error fetching room statuses:', error);
-  }
-};
+  const fetchRoomStatuses = async () => {
+    try {
+      const response = await axios.get('https://localhost:7117/api/RoomStatus/getAllRoomsStatuses', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setRoomStatuses(response.data);
+    } catch (error) {
+      console.error('Error fetching room statuses:', error);
+    }
+  };
 
   const handleAddRoom = async () => {
     const token = localStorage.getItem('token');
@@ -128,7 +127,7 @@ const fetchRoomStatuses = async () => {
     if (!token) return;
 
     const isConfirmed = window.confirm('Are you sure you want to delete this room?');
-    if (!isConfirmed) return; // If the user cancels, exit
+    if (!isConfirmed) return; 
 
     try {
       await axios.delete(`https://localhost:7117/api/Room/DeleteRoom?id=${id}`, {
@@ -148,6 +147,11 @@ const fetchRoomStatuses = async () => {
     navigate('/login');
   };
 
+const handleReservation = () => {
+  navigate('/admin/reservation-dashboard');
+};
+
+
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
       <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
@@ -156,9 +160,14 @@ const fetchRoomStatuses = async () => {
         </h4>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <i className="bi bi-house-door me-2"></i>Rooms
+            <i className="bi bi-house-door me-2"></i> RoomManager
           </li>
-          <button className="btn btn-outline-light w-100" onClick={handleLogout}>
+<button className="btn btn-outline-light w-100 mt-3 mb-3" onClick={handleReservation}>
+  <i className="bi bi-bookmark-plus me-2"></i> Make Reservation
+</button>
+
+
+          <button className="btn btn-outline-light w-100 mt-2" onClick={handleLogout}>
             <i className="bi bi-box-arrow-right me-2"></i> Logout
           </button>
         </ul>
@@ -240,15 +249,11 @@ const fetchRoomStatuses = async () => {
                         <span>No Image</span>
                       )}
                     </td>
-                    <td>{roomStatuses.find(status => status.roomStatusID === room.roomStatusID)?.roomStatusName || 'Unknown'}</td>
-                    <td>{roomTypes.find(type => type.roomTypeID === room.roomTypeID)?.name || 'Unknown'}</td>
+                    <td>{room.roomStatus?.roomStatusName}</td>
+                    <td>{room.roomType?.name}</td>
                     <td>
-                      <button className="btn btn-warning btn-sm" onClick={() => handleEdit(room)}>
-                        <i className="bi bi-pencil"></i> Edit
-                      </button>
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDeleteRoom(room.roomID)}>
-                        <i className="bi bi-trash"></i> Delete
-                      </button>
+                      <button className="btn btn-warning me-2" onClick={() => handleEdit(room)}><i className="bi bi-pencil-square"></i></button>
+                      <button className="btn btn-danger" onClick={() => handleDeleteRoom(room.roomID)}><i className="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 ))}
@@ -256,42 +261,6 @@ const fetchRoomStatuses = async () => {
             </table>
           </div>
         </div>
-
-        {editingRoomId && (
-          <div className="card">
-            <div className="card-header bg-warning text-white">
-              <i className="bi bi-pencil-square me-2"></i>Editing Room {editRoomData.name}
-            </div>
-            <div className="card-body">
-              <input className="form-control mb-2" value={editRoomData.name} onChange={(e) => setEditRoomData({ ...editRoomData, name: e.target.value })} />
-              <input className="form-control mb-2" value={editRoomData.capacity} onChange={(e) => setEditRoomData({ ...editRoomData, capacity: e.target.value })} />
-              <textarea className="form-control mb-2" value={editRoomData.description} onChange={(e) => setEditRoomData({ ...editRoomData, description: e.target.value })}></textarea>
-              <input className="form-control mb-2" type="number" value={editRoomData.price} onChange={(e) => setEditRoomData({ ...editRoomData, price: e.target.value })} />
-
-              <select className="form-control mb-2" value={editRoomData.roomStatusID} onChange={(e) => setEditRoomData({ ...editRoomData, roomStatusID: e.target.value })}>
-                <option value="">Select Room Status</option>
-                {roomStatuses.map((status) => (
-                  <option key={status.roomStatusID} value={status.roomStatusID}>
-                    {status.roomStatusName}
-                  </option>
-                ))}
-              </select>
-
-              <select className="form-control mb-2" value={editRoomData.roomTypeID} onChange={(e) => setEditRoomData({ ...editRoomData, roomTypeID: e.target.value })}>
-                <option value="">Select Room Type</option>
-                {roomTypes.map((type) => (
-                  <option key={type.roomTypeID} value={type.roomTypeID}>
-                    {type.name}
-                  </option>
-                ))}
-              </select>
-
-              <button className="btn btn-warning w-100" onClick={handleUpdateRoom}>
-                <i className="bi bi-check-circle me-2"></i> Update Room
-              </button>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );
