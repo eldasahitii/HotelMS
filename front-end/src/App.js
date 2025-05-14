@@ -13,6 +13,7 @@ import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/Cleani
 import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
 
+
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -51,6 +52,7 @@ function App() {
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />} />
                      <Route path='/header' element={<Header/>}/>
+                     
                     
                    <Route
   path="/manager/cleaning-staff"
