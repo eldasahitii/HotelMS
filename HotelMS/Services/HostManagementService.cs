@@ -20,7 +20,7 @@ namespace HotelMS.Services
 
         public async Task<List<HostDTO>> GetAllHostsAsync()
         {
-            var hostRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "Host");
+            var hostRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "RestaurantHost");
             if (hostRole == null) return new List<HostDTO>();
 
             var hosts = await _dbContext.Users
@@ -40,7 +40,7 @@ namespace HotelMS.Services
             if (user == null) return null;
 
             var role = await _dbContext.Roles.FindAsync(user.RoleID);
-            if (role?.RoleType != "Host") return null;
+            if (role?.RoleType != "RestaurantHost") return null;
 
             return new HostDTO
             {
@@ -52,7 +52,7 @@ namespace HotelMS.Services
         }
         public async Task<HostDTO> CreateHostAsync(HostDTO hostDto)
         {
-            var hostRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "Host");
+            var hostRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "RestaurantHost");
             if (hostRole == null) throw new Exception("Host role not found");
 
             CreatePasswordHash(hostDto.Password, out byte[] hash, out byte[] salt);
@@ -84,7 +84,7 @@ namespace HotelMS.Services
             if (user == null) return false;
 
             var role = await _dbContext.Roles.FindAsync(user.RoleID);
-            if (role?.RoleType != "Host") return false;
+            if (role?.RoleType != "RestaurantHost") return false;
 
             _dbContext.Users.Remove(user);
             await _dbContext.SaveChangesAsync();

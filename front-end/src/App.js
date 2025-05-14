@@ -10,6 +10,8 @@ import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/Clea
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import axios from 'axios';
 import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/CleaningStaffDashboard';
+import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
+import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
 
 axios.interceptors.request.use(
   (config) => {
@@ -74,7 +76,25 @@ function App() {
       <CleaningStaffDashboard />
     </ProtectedRoute>
   }
-/>      
+/>   
+
+<Route
+path="/restaurant-manager/dashboard"
+element={
+  <ProtectedRoute allowedRoles={['RestaurantManager']}>
+    <RestaurantManagerDashboard/>
+  </ProtectedRoute>
+}
+
+/>
+<Route
+path="/host/dashboard"
+element={
+  <ProtectedRoute allowedRoles={['RestaurantHost']}>
+    <RestaurantHostDashboard/>
+  </ProtectedRoute>
+}
+/>
                 </Routes>
             </div>
         </Router>

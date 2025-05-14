@@ -47,6 +47,10 @@ const Login = () => {
           navigate('/manager/cleaning-staff');
         } else if (userRole === 'CleaningStaff') {
           navigate('/cleaningstaff/dashboard');
+        } else if (userRole === 'RestaurantManager') {
+          navigate('/restaurant-manager/dashboard');
+        } else if (userRole === 'RestaurantHost') {
+          navigate('/host/dashboard');
         } else {
           setError("Unknown role. Access denied.");
         }
