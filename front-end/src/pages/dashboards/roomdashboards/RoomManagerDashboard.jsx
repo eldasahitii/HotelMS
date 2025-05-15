@@ -160,7 +160,7 @@ const handleReservation = () => {
         </h4>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <i className="bi bi-house-door me-2"></i> RoomManager
+            <i className="bi bi-house-door me-2"></i> RoomManaging
           </li>
 <button className="btn btn-outline-light w-100 mt-3 mb-3" onClick={handleReservation}>
   <i className="bi bi-bookmark-plus me-2"></i> Make Reservation

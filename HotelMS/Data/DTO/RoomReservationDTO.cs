@@ -4,13 +4,8 @@ namespace HotelMS.Data.DTO
 {
     public class RoomReservationDTO
     {
-        [Required]
-        public int RoomTypeID { get; set; } 
-
-        [Required]
+        public string RoomTypeName { get; set; }
         public DateTime CheckInDate { get; set; }
-
-        [Required]
         public DateTime CheckOutDate { get; set; }
         public string? SpecialRequests { get; set; }
     }

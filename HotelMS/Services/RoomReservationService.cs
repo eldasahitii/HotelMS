@@ -2,6 +2,7 @@
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Services
@@ -28,13 +29,15 @@ namespace HotelMS.Services
             }
 
             var availableRoom = await _context.Rooms
-                .Include(r => r.RoomStatus)
-                .Where(r => r.RoomTypeID == request.RoomTypeID && r.RoomStatus.RoomStatusName == "Available")
-                .Where(r => !_context.RoomReservations.Any(res =>
-                    res.RoomID == r.RoomID &&
-                    res.CheckOutDate > request.CheckInDate &&
-                    res.CheckInDate < request.CheckOutDate))
-                .FirstOrDefaultAsync();
+               .Include(r => r.RoomStatus)
+               .Include(r => r.RoomType) 
+               .Where(r => r.RoomType.Name == request.RoomTypeName && r.RoomStatus.RoomStatusName == "Available")
+               .Where(r => !_context.RoomReservations.Any(res =>
+                   res.RoomID == r.RoomID &&
+                   res.CheckOutDate > request.CheckInDate &&
+                   res.CheckInDate < request.CheckOutDate))
+               .FirstOrDefaultAsync();
+
 
             if (availableRoom == null)
             {
@@ -74,12 +77,29 @@ namespace HotelMS.Services
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<RoomReservation>> GetAllReservations()
+        public async Task<IEnumerable<RoomReservationDTO>> GetAllReservations()
         {
-            return await _context.RoomReservations.Include(r => r.Room)
+            var reservations = await _context.RoomReservations
+                .Include(r => r.Room)
+                    .ThenInclude(room => room.RoomStatus)
+                .Include(r => r.Room)
+                    .ThenInclude(room => room.RoomType)
                 .Include(r => r.ReservationStatus)
+                .Select(r => new RoomReservationDTO
+                {
+                    RoomTypeName = r.Room.RoomType.Name,
+                    CheckInDate = r.CheckInDate,
+                    CheckOutDate = r.CheckOutDate,
+                    SpecialRequests = r.SpecialRequests
+                })
                 .ToListAsync();
+
+            return reservations;
         }
+
+
+
+
 
         public async Task<string> CancelReservation(int reservationID, int userID, bool isAdminOrStaff = false)
         {
