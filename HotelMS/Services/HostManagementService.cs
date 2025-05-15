@@ -78,6 +78,29 @@ namespace HotelMS.Services
                 Email = user.Email
             };
         }
+        public async Task<HostDTO> UpdateHostAsync(int id, HostDTO updatedHost)
+        {
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null) return null;
+
+            var role = await _dbContext.Roles.FindAsync(user.RoleID);
+            if (role?.RoleType != "RestaurantHost") return null;
+
+            user.FirstName = updatedHost.FirstName;
+            user.LastName = updatedHost.LastName;
+            user.Email = updatedHost.Email;
+
+            await _dbContext.SaveChangesAsync();
+
+            return new HostDTO
+            {
+                UserID = user.UserID,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email
+            };
+        }
+
         public async Task<bool> DeleteHostAsync(int userId)
         {
             var user = await _dbContext.Users.FindAsync(userId);

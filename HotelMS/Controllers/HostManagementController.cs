@@ -48,6 +48,21 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut("updateHost")]
+        public async Task<IActionResult> UpdateHost(int id, [FromBody] HostDTO hostDto)
+        {
+            try
+            {
+                var user = await _service.UpdateHostAsync(id, hostDto);
+                if (user == null)
+                    return NotFound("Host not found or invalid role.");
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpGet("getAllHosts")]
         public async Task<IActionResult> GetAllHosts()
