@@ -44,6 +44,9 @@ const handleLogin = async (e) => {
         case 'RoomManager':
           navigate('/manager/room-dashboard');
           break;
+        case 'RoomRecepsionist':               
+          navigate('/recepsionist-dashboard'); 
+          break;
         case 'CleaningStaff':
           navigate('/cleaningstaff/dashboard');
           break;

@@ -12,8 +12,8 @@ import axios from 'axios';
 import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/CleaningStaffDashboard';
 import RoomManagerDashboard from './pages/dashboards/roomdashboards/RoomManagerDashboard'; 
 import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationDashboard';  
+import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
 
-// Axios interceptor for attaching JWT to requests
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -35,7 +35,6 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
         const decoded = jwtDecode(token);
         const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
         
-        // If the user role isn't in the allowed roles, redirect to login
         if (!allowedRoles.includes(userRole)) return <Navigate to="/login" />;
         return children;
     } catch {
@@ -75,14 +74,24 @@ function App() {
               </ProtectedRoute>
             }
           />
-  <Route
-  path="/admin/reservation-dashboard"
+          <Route
+            path="/admin/reservation-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+               <ReservationDashboard />
+            </ProtectedRoute>
+            }
+          />
+ <Route
+  path="/recepsionist-dashboard"
   element={
-    <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
-      <ReservationDashboard />
+    <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
+      <RoomReceptionistDashboard />
     </ProtectedRoute>
   }
 />
+
+
 
           <Route
             path="/manager/cleaning-staff"
