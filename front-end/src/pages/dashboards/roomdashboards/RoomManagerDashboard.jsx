@@ -93,48 +93,47 @@ const RoomManagerDashboard = () => {
     }));
   };
 
-const handleAddRoom = async () => {
-  if (!newRoom.name || !newRoom.capacity || !newRoom.roomStatusID || !newRoom.roomTypeID) {
-    alert('Please fill in all required fields.');
-    return;
-  }
+  const handleAddRoom = async () => {
+    if (!newRoom.name || !newRoom.capacity || !newRoom.roomStatusID || !newRoom.roomTypeID) {
+      alert('Please fill in all required fields.');
+      return;
+    }
 
-  try {
-    const payload = {
-      Name: newRoom.name,
-      Capacity: newRoom.capacity,
-      Size: newRoom.size,
-      Description: newRoom.description,
-      Price: parseFloat(newRoom.price),
-      RoomStatusID: parseInt(newRoom.roomStatusID, 10),
-      RoomTypeID: parseInt(newRoom.roomTypeID, 10),
-      Images: newRoom.images  // <-- must match DTO exactly
-    };
+    try {
+      const payload = {
+        Name: newRoom.name,
+        Capacity: newRoom.capacity,
+        Size: newRoom.size,
+        Description: newRoom.description,
+        Price: parseFloat(newRoom.price),
+        RoomStatusID: parseInt(newRoom.roomStatusID, 10),
+        RoomTypeID: parseInt(newRoom.roomTypeID, 10),
+        Images: newRoom.images  // <-- must match DTO exactly
+      };
 
-    const response = await axios.post('https://localhost:7117/api/Room/AddRoom', payload, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+      const response = await axios.post('https://localhost:7117/api/Room/AddRoom', payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    setMessage('Room added successfully.');
-    setMessageType('success');
-    setNewRoom({
-      name: '',
-      capacity: '',
-      size: '',
-      description: '',
-      price: '',
-      roomStatusID: '',
-      roomTypeID: '',
-      images: [],
-      imageInput: ''
-    });
-    fetchRooms();
-  } catch (error) {
-    console.error('Error adding room:', error);
-    alert('Failed to add room.');
-  }
-};
-
+      setMessage('Room added successfully.');
+      setMessageType('success');
+      setNewRoom({
+        name: '',
+        capacity: '',
+        size: '',
+        description: '',
+        price: '',
+        roomStatusID: '',
+        roomTypeID: '',
+        images: [],
+        imageInput: ''
+      });
+      fetchRooms();
+    } catch (error) {
+      console.error('Error adding room:', error);
+      alert('Failed to add room.');
+    }
+  };
 
   const handleEdit = (room) => {
     setEditingRoomId(room.roomID);
