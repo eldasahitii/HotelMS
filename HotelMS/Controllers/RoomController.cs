@@ -60,7 +60,7 @@ namespace HotelMS.Controllers
         {
             try
             {
-                var result = await _service.GetAll();
+                var result = await _service.GetAllRooms();
                 return Ok(result);
             }
             catch (Exception ex)

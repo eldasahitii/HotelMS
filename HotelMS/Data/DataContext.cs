@@ -23,6 +23,7 @@ namespace HotelMS.Data
         public DbSet<HotelService> HotelServices { get; set; }
         public DbSet<HotelServiceSchedule> HotelServiceSchedules { get; set; }
         public DbSet<HotelServiceReservation> HotelServiceReservations { get; set; }
+        public DbSet<RoomImage> RoomImages { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -63,6 +64,14 @@ namespace HotelMS.Data
                 .WithMany(rs => rs.Rooms)
                 .HasForeignKey(r => r.RoomStatusID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Room ↔ RoomImages (one-to-many)
+            modelBuilder.Entity<RoomImage>()
+                .HasOne(ri => ri.Room)
+                .WithMany(r => r.RoomImages)
+                .HasForeignKey(ri => ri.RoomID)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             // RoomReservation ↔ ReservationStatus
             modelBuilder.Entity<RoomReservation>()

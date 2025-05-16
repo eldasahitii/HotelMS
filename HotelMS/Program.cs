@@ -79,6 +79,7 @@ builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
 builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 builder.Services.AddScoped<IReservationStatusService, ReservationStatusService>();
 builder.Services.AddScoped<IRoomReservationService,RoomReservationService>();
+builder.Services.AddScoped<IRoomImageService, RoomImageService>();
 builder.Services.AddControllers();
 builder.Services.AddScoped<IAdminService, AdminService>(); 
 builder.Services.AddScoped<IRoomService, RoomService>();

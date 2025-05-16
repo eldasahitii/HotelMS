@@ -26,11 +26,9 @@ namespace HotelMS.Services
                     Size = request.Size,
                     Description = request.Description,
                     Price = request.Price,
-                    ImageUrl = request.ImageUrl,
                     RoomStatusID = request.RoomStatusID,
-                    RoomTypeID = request.RoomTypeID 
+                    RoomTypeID = request.RoomTypeID
                 };
-
 
                 _dbContext.Rooms.Add(room);
                 await _dbContext.SaveChangesAsync();
@@ -51,30 +49,41 @@ namespace HotelMS.Services
         {
             try
             {
-                var result = _dbContext.Rooms.Find(id);
-                return result;
+                var room = await _dbContext.Rooms
+                    .Include(r => r.RoomType)
+                    .Include(r => r.RoomStatus)
+                    .Include(r => r.RoomImages)
+                    .FirstOrDefaultAsync(r => r.RoomID == id);
+
+                return room;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception("An error occured.");
-
+                throw new Exception("An error occurred.");
             }
         }
 
-        public async Task<IEnumerable<Room>> GetAll()
+
+        public async Task<IEnumerable<Room>> GetAllRooms()
         {
             try
             {
-                var result = await _dbContext.Rooms.ToListAsync();
-                return result;
+                var rooms = await _dbContext.Rooms
+                    .Include(r => r.RoomType)
+                    .Include(r => r.RoomStatus)
+                    .Include(r => r.RoomImages) 
+                    .ToListAsync();
+
+                return rooms;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception("An error occured");
+                throw new Exception("An error occurred");
             }
         }
+
         public async Task<Room> UpdateRoom(int id, RoomDTO request)
         {
             var room = await _dbContext.Rooms.FindAsync(id);
@@ -85,7 +94,6 @@ namespace HotelMS.Services
             room.Size = request.Size;
             room.Description = request.Description;
             room.Price = request.Price;
-            room.ImageUrl = request.ImageUrl;
             room.RoomTypeID = request.RoomTypeID;
             room.RoomStatusID = request.RoomStatusID;
 

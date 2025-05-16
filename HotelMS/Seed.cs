@@ -209,26 +209,55 @@ public class Seed
                 {
                     Name = "Single Room", Capacity = "1-2 Persons", Size = "15m²",
                     Description = "A cozy single room with modern amenities.",
-                    Price = 50.00m, ImageUrl = "single-room.jpg",
-                    CreatedAt = DateTime.Now, RoomTypeID = standardRoomTypeID, RoomStatusID = availableStatusID
+                    Price = 50.00m,
+                    CreatedAt = DateTime.Now,
+                    RoomTypeID = standardRoomTypeID,
+                    RoomStatusID = availableStatusID
                 },
                 new Room()
                 {
                     Name = "Double Room", Capacity = "2 Adults", Size = "25m²",
                     Description = "A spacious double room with a comfortable bed.",
-                    Price = 80.00m, ImageUrl = "double-room.jpg",
-                    CreatedAt = DateTime.Now, RoomTypeID = deluxeRoomTypeID, RoomStatusID = availableStatusID
+                    Price = 80.00m,
+                    CreatedAt = DateTime.Now,
+                    RoomTypeID = deluxeRoomTypeID,
+                    RoomStatusID = availableStatusID
                 },
                 new Room()
                 {
                     Name = "Twin Room", Capacity = "2-3 Persons", Size = "23m²",
                     Description = "A twin bed room with two comfortable beds and modern amenities.",
-                    Price = 70.00m, ImageUrl = "twin-room.jpg",
-                    CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID, RoomStatusID = availableStatusID
+                    Price = 70.00m,
+                    CreatedAt = DateTime.Now,
+                    RoomTypeID = suiteRoomTypeID,
+                    RoomStatusID = availableStatusID
                 }
             };
 
             dataContext.Rooms.AddRange(rooms);
+            dataContext.SaveChanges();
+
+            // Seed RoomImages for each room (multiple images per room)
+            var singleRoomId = rooms.First(r => r.Name == "Single Room").RoomID;
+            var doubleRoomId = rooms.First(r => r.Name == "Double Room").RoomID;
+            var twinRoomId = rooms.First(r => r.Name == "Twin Room").RoomID;
+
+            var roomImages = new List<RoomImage>
+            {
+                // Single Room images
+                new RoomImage() { RoomID = singleRoomId, ImageUrl = "single-room-1.jpg" },
+                new RoomImage() { RoomID = singleRoomId, ImageUrl = "single-room-2.jpg" },
+
+                // Double Room images
+                new RoomImage() { RoomID = doubleRoomId, ImageUrl = "double-room-1.jpg" },
+                new RoomImage() { RoomID = doubleRoomId, ImageUrl = "double-room-2.jpg" },
+
+                // Twin Room images
+                new RoomImage() { RoomID = twinRoomId, ImageUrl = "twin-room-1.jpg" },
+                new RoomImage() { RoomID = twinRoomId, ImageUrl = "twin-room-2.jpg" }
+            };
+
+            dataContext.RoomImages.AddRange(roomImages);
             dataContext.SaveChanges();
         }
 

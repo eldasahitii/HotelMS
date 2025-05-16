@@ -1,5 +1,6 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelMS.Controllers
@@ -14,6 +15,7 @@ namespace HotelMS.Controllers
             _service = service;
         }
         [HttpPost("AddRoomType")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddRoomType(RoomTypeDTO request)
         {
             try
@@ -28,6 +30,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetRoomType")]
+        [Authorize(Roles = "Admin,RoomManager,RoomReceptionist")]
         public async Task<IActionResult> GetRoomType(int id)
         {
             try
@@ -48,6 +51,7 @@ namespace HotelMS.Controllers
             }
         }
         [HttpGet("GetAllRoomTypes")]
+        [Authorize(Roles = "Admin,RoomManager,RoomReceptionist")]
 
         public async Task<IActionResult> GetAllRoomTypes()
         {
@@ -63,6 +67,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpDelete("DeleteRoomType")]
+        [Authorize(Roles = "Admin")]
 
         public async Task<IActionResult> DeleteRoomType(int id)
         {
@@ -78,6 +83,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPut("UpdateRoomType")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateRoomType(int id, [FromBody] RoomTypeDTO request)
         {
             try
