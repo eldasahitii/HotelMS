@@ -47,7 +47,7 @@ const Signup = () => {
         console.log("Registration successful!");
         try {
           localStorage.setItem('token', `Bearer ${token}`);
-          navigate('/admin-dashboard');
+          navigate('/login');
         } catch (navErr) {
           console.error("Navigation error:", navErr);
           setError("Signup successful but redirect failed. Please reload.");

@@ -43,7 +43,7 @@ const Login = () => {
         // navigate('/admin-dashboard');
          if (userRole === 'Admin') {
           navigate('/admin-dashboard');
-        } else if (userRole === 'Manager') {
+        } else if (userRole === 'CleaningManager') {
           navigate('/manager/cleaning-staff');
         } else if (userRole === 'CleaningStaff') {
           navigate('/cleaningstaff/dashboard');
