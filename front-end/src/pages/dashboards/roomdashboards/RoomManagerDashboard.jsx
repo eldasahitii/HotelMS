@@ -14,9 +14,10 @@ const RoomManagerDashboard = () => {
     size: '',
     description: '',
     price: '',
-    imageUrl: '',
     roomStatusID: '',
     roomTypeID: '',
+    images: [],
+    imageInput: ''
   });
   const [editingRoomId, setEditingRoomId] = useState(null);
   const [editRoomData, setEditRoomData] = useState({});
@@ -24,16 +25,28 @@ const RoomManagerDashboard = () => {
   const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
 
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
     fetchRooms();
     fetchRoomTypes();
     fetchRoomStatuses();
   }, []);
 
+  const getRoleFromToken = () => {
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    } catch (e) {
+      return null;
+    }
+  };
+
   const fetchRooms = async () => {
     try {
       const response = await axios.get('https://localhost:7117/api/Room/GetAllRooms', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setRooms(response.data);
     } catch (error) {
@@ -44,7 +57,7 @@ const RoomManagerDashboard = () => {
   const fetchRoomTypes = async () => {
     try {
       const response = await axios.get('https://localhost:7117/api/RoomType/GetAllRoomTypes', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setRoomTypes(response.data);
     } catch (error) {
@@ -54,8 +67,9 @@ const RoomManagerDashboard = () => {
 
   const fetchRoomStatuses = async () => {
     try {
-      const response = await axios.get('https://localhost:7117/api/RoomStatus/getAllRoomsStatuses', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      const role = getRoleFromToken();
+      const response = await axios.get(`https://localhost:7117/api/RoomStatus/getAllRoomsStatuses?role=${role}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       setRoomStatuses(response.data);
     } catch (error) {
@@ -63,40 +77,64 @@ const RoomManagerDashboard = () => {
     }
   };
 
-  const handleAddRoom = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token is missing');
-      return;
-    }
-    if (!newRoom.name || !newRoom.capacity || !newRoom.roomStatusID || !newRoom.roomTypeID) {
-      alert('Please fill in all required fields');
-      return;
-    }
-
-    const roomStatusID = parseInt(newRoom.roomStatusID, 10);
-    const roomTypeID = newRoom.roomTypeID ? parseInt(newRoom.roomTypeID, 10) : null;
-
-    if (isNaN(roomStatusID)) {
-      alert('Invalid Room Status selected!');
-      return;
-    }
-
-    const updatedRoom = { ...newRoom, roomStatusID, roomTypeID };
-
-    try {
-      const response = await axios.post('https://localhost:7117/api/Room/AddRoom', updatedRoom, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log('Room added successfully:', response.data);
-      fetchRooms();
-      setMessage('Room added successfully.');
-      setMessageType('success');
-    } catch (error) {
-      console.error('Error adding room:', error.response ? error.response.data : error.message);
-      alert('An error occurred while adding the room.');
-    }
+  const addImageUrl = () => {
+    if (newRoom.imageInput.trim() === '') return;
+    setNewRoom(prev => ({
+      ...prev,
+      images: [...prev.images, prev.imageInput.trim()],
+      imageInput: ''
+    }));
   };
+
+  const removeImageUrl = (index) => {
+    setNewRoom(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
+const handleAddRoom = async () => {
+  if (!newRoom.name || !newRoom.capacity || !newRoom.roomStatusID || !newRoom.roomTypeID) {
+    alert('Please fill in all required fields.');
+    return;
+  }
+
+  try {
+    const payload = {
+      Name: newRoom.name,
+      Capacity: newRoom.capacity,
+      Size: newRoom.size,
+      Description: newRoom.description,
+      Price: parseFloat(newRoom.price),
+      RoomStatusID: parseInt(newRoom.roomStatusID, 10),
+      RoomTypeID: parseInt(newRoom.roomTypeID, 10),
+      Images: newRoom.images  // <-- must match DTO exactly
+    };
+
+    const response = await axios.post('https://localhost:7117/api/Room/AddRoom', payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    setMessage('Room added successfully.');
+    setMessageType('success');
+    setNewRoom({
+      name: '',
+      capacity: '',
+      size: '',
+      description: '',
+      price: '',
+      roomStatusID: '',
+      roomTypeID: '',
+      images: [],
+      imageInput: ''
+    });
+    fetchRooms();
+  } catch (error) {
+    console.error('Error adding room:', error);
+    alert('Failed to add room.');
+  }
+};
+
 
   const handleEdit = (room) => {
     setEditingRoomId(room.roomID);
@@ -104,7 +142,6 @@ const RoomManagerDashboard = () => {
   };
 
   const handleUpdateRoom = async () => {
-    const token = localStorage.getItem('token');
     if (!token || !editingRoomId) return;
 
     try {
@@ -123,11 +160,10 @@ const RoomManagerDashboard = () => {
   };
 
   const handleDeleteRoom = async (id) => {
-    const token = localStorage.getItem('token');
     if (!token) return;
 
     const isConfirmed = window.confirm('Are you sure you want to delete this room?');
-    if (!isConfirmed) return; 
+    if (!isConfirmed) return;
 
     try {
       await axios.delete(`https://localhost:7117/api/Room/DeleteRoom?id=${id}`, {
@@ -142,16 +178,6 @@ const RoomManagerDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
-
-const handleReservation = () => {
-  navigate('/admin/reservation-dashboard');
-};
-
-
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
       <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
@@ -160,18 +186,20 @@ const handleReservation = () => {
         </h4>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <i className="bi bi-house-door me-2"></i> RoomManaging
+            <i className="bi bi-house-door me-2"></i> Room Managing
           </li>
-<button className="btn btn-outline-light w-100 mt-3 mb-3" onClick={handleReservation}>
-  <i className="bi bi-bookmark-plus me-2"></i> Make Reservation
-</button>
-
-
-          <button className="btn btn-outline-light w-100 mt-2" onClick={handleLogout}>
+          <button className="btn btn-outline-light w-100 mt-3 mb-3" onClick={() => navigate('/admin/reservation-dashboard')}>
+            <i className="bi bi-bookmark-plus me-2"></i> Make Reservation
+          </button>
+          <button className="btn btn-outline-light w-100 mt-2" onClick={() => {
+            localStorage.removeItem('token');
+            navigate('/login');
+          }}>
             <i className="bi bi-box-arrow-right me-2"></i> Logout
           </button>
         </ul>
       </aside>
+
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-house-door me-2"></i>Room Manager
@@ -191,29 +219,38 @@ const handleReservation = () => {
           <div className="card-body">
             <input className="form-control mb-2" placeholder="Room Name" value={newRoom.name} onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })} />
             <input className="form-control mb-2" placeholder="Capacity" value={newRoom.capacity} onChange={(e) => setNewRoom({ ...newRoom, capacity: e.target.value })} />
+            <input className="form-control mb-2" placeholder="Size" value={newRoom.size} onChange={(e) => setNewRoom({ ...newRoom, size: e.target.value })} />
             <textarea className="form-control mb-2" placeholder="Description" value={newRoom.description} onChange={(e) => setNewRoom({ ...newRoom, description: e.target.value })}></textarea>
             <input className="form-control mb-2" type="number" placeholder="Price" value={newRoom.price} onChange={(e) => setNewRoom({ ...newRoom, price: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Image URL" value={newRoom.imageUrl} onChange={(e) => setNewRoom({ ...newRoom, imageUrl: e.target.value })} />
+
+            <div className="d-flex mb-2">
+              <input className="form-control me-2" placeholder="Add Image URL" value={newRoom.imageInput} onChange={(e) => setNewRoom({ ...newRoom, imageInput: e.target.value })} />
+              <button className="btn btn-primary" onClick={addImageUrl}>Add Image</button>
+            </div>
+
+            <ul>
+              {newRoom.images.map((img, idx) => (
+                <li key={idx}>{img} <button className="btn btn-sm btn-danger" onClick={() => removeImageUrl(idx)}>Remove</button></li>
+              ))}
+            </ul>
 
             <select className="form-control mb-2" value={newRoom.roomStatusID} onChange={(e) => setNewRoom({ ...newRoom, roomStatusID: e.target.value })}>
               <option value="">Select Room Status</option>
-              {roomStatuses.map((status) => (
-                <option key={status.roomStatusID} value={status.roomStatusID}>
-                  {status.roomStatusName}
-                </option>
+              {roomStatuses.map(status => (
+                <option key={status.roomStatusID} value={status.roomStatusID}>{status.roomStatusName}</option>
               ))}
             </select>
 
             <select className="form-control mb-2" value={newRoom.roomTypeID} onChange={(e) => setNewRoom({ ...newRoom, roomTypeID: e.target.value })}>
               <option value="">Select Room Type</option>
-              {roomTypes.map((type) => (
-                <option key={type.roomTypeID} value={type.roomTypeID}>
-                  {type.name}
-                </option>
+              {roomTypes.map(type => (
+                <option key={type.roomTypeID} value={type.roomTypeID}>{type.name}</option>
               ))}
             </select>
 
-            <button className="btn btn-success w-100" onClick={handleAddRoom}><i className="bi bi-check-circle me-2"></i>Add Room</button>
+            <button className="btn btn-success w-100" onClick={handleAddRoom}>
+              <i className="bi bi-check-circle me-2"></i>Add Room
+            </button>
           </div>
         </div>
 
@@ -229,7 +266,7 @@ const handleReservation = () => {
                   <th>Capacity</th>
                   <th>Description</th>
                   <th>Price</th>
-                  <th>Image</th>
+                  <th>Images</th>
                   <th>Status</th>
                   <th>Type</th>
                   <th>Actions</th>
@@ -243,14 +280,21 @@ const handleReservation = () => {
                     <td>{room.description}</td>
                     <td>{room.price}</td>
                     <td>
-                      {room.imageUrl ? (
-                        <img src={room.imageUrl} alt={room.name} style={{ width: '100px', height: '100px', objectFit: 'cover' }} />
+                      {room.roomImages && room.roomImages.length > 0 ? (
+                        room.roomImages.map((img, idx) => (
+                          <img
+                            key={idx}
+                            src={img.imageUrl}
+                            alt={`Room ${room.name} Image ${idx + 1}`}
+                            style={{ width: '80px', height: '80px', objectFit: 'cover', marginRight: '5px' }}
+                          />
+                        ))
                       ) : (
-                        <span>No Image</span>
+                        <span>No Images</span>
                       )}
                     </td>
-                    <td>{room.roomStatus?.roomStatusName}</td>
-                    <td>{room.roomType?.name}</td>
+                    <td>{room.roomStatus?.roomStatusName || 'N/A'}</td>
+                    <td>{room.roomType?.name || 'N/A'}</td>
                     <td>
                       <button className="btn btn-warning me-2" onClick={() => handleEdit(room)}><i className="bi bi-pencil-square"></i></button>
                       <button className="btn btn-danger" onClick={() => handleDeleteRoom(room.roomID)}><i className="bi bi-trash"></i></button>

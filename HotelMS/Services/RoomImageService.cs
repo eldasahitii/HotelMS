@@ -1,7 +1,11 @@
 ﻿using HotelMS.Data;
+using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HotelMS.Services
 {
@@ -21,8 +25,14 @@ namespace HotelMS.Services
                 .ToListAsync();
         }
 
-        public async Task<RoomImage> AddImage(RoomImage image)
+        public async Task<RoomImage> AddImage(RoomImageDTO dto)
         {
+            var image = new RoomImage
+            {
+                RoomID = dto.RoomID,
+                ImageUrl = dto.ImageUrl
+            };
+
             _context.RoomImages.Add(image);
             await _context.SaveChangesAsync();
             return image;

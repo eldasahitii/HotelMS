@@ -15,6 +15,7 @@ namespace HotelMS.Services
         {
             _dbContext = dbContext;
         }
+
         public async Task<Room> AddRoom(RoomDTO request)
         {
             try
@@ -32,6 +33,22 @@ namespace HotelMS.Services
 
                 _dbContext.Rooms.Add(room);
                 await _dbContext.SaveChangesAsync();
+
+                // Add Room Images if any
+                if (request.Images != null && request.Images.Any())
+                {
+                    foreach (var imageUrl in request.Images)
+                    {
+                        var roomImage = new RoomImage
+                        {
+                            ImageUrl = imageUrl,
+                            RoomID = room.RoomID
+                        };
+                        _dbContext.RoomImages.Add(roomImage);
+                    }
+                    await _dbContext.SaveChangesAsync();
+                }
+
                 return room;
             }
             catch (Exception ex)
@@ -64,7 +81,6 @@ namespace HotelMS.Services
             }
         }
 
-
         public async Task<IEnumerable<Room>> GetAllRooms()
         {
             try
@@ -72,7 +88,7 @@ namespace HotelMS.Services
                 var rooms = await _dbContext.Rooms
                     .Include(r => r.RoomType)
                     .Include(r => r.RoomStatus)
-                    .Include(r => r.RoomImages) 
+                    .Include(r => r.RoomImages)
                     .ToListAsync();
 
                 return rooms;
@@ -113,11 +129,10 @@ namespace HotelMS.Services
                     _dbContext.SaveChanges();
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex.Message);
-                throw new Exception("An error occured while attempting to delete room");
-
-
+                throw new Exception("An error occurred while attempting to delete room");
             }
         }
     }

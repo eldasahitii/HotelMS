@@ -91,7 +91,6 @@ namespace HotelMS.Controllers
         {
             try
             {
-                // Optional: Validate request before passing to service
                 if (request.RoomTypeID <= 0 || request.RoomStatusID <= 0)
                 {
                     return BadRequest("Invalid RoomTypeID or RoomStatusID.");

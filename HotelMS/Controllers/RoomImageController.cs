@@ -1,4 +1,5 @@
-﻿using HotelMS.Data.Interfaces;
+﻿using HotelMS.Data.DTO;
+using HotelMS.Data.Interfaces;
 using HotelMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,8 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetImagesByRoom")]
-        [Authorize("Admin,RoomManager,RoomRecepsionist")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
+
         public async Task<IActionResult> GetImagesByRoom(int roomId)
         {
             var images = await _roomImageService.GetImagesByRoomId(roomId);
@@ -25,15 +27,15 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost("AddImage")]
-        [Authorize("Admin.RoomManager")]
-        public async Task<IActionResult> AddImage([FromBody] RoomImage image)
+        [Authorize(Roles ="Admin,RoomManager")]
+        public async Task<IActionResult> AddImage([FromBody] RoomImageDTO image)
         {
             var result = await _roomImageService.AddImage(image);
             return Ok(result);
         }
 
         [HttpDelete("DeleteImage")]
-        [Authorize("Admin,RoomManager")]
+        [Authorize(Roles = "Admin,RoomManager")]
         public async Task<IActionResult> DeleteImage(int imageId)
         {
             await _roomImageService.DeleteImage(imageId);
