@@ -87,7 +87,9 @@ namespace HotelMS.Services
                 .Include(r => r.ReservationStatus)
                 .Select(r => new RoomReservationDTO
                 {
+                    ReservationID = r.ReservationID,
                     RoomTypeName = r.Room.RoomType.Name,
+                    ReservationStatusName = r.ReservationStatus.ReservationStatusName,
                     CheckInDate = r.CheckInDate,
                     CheckOutDate = r.CheckOutDate,
                     SpecialRequests = r.SpecialRequests

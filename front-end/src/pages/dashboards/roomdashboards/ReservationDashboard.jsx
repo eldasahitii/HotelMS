@@ -36,10 +36,16 @@ const ReservationDashboard = () => {
     let filtered = reservations;
 
     if (filterRoomType) {
-      filtered = filtered.filter(r => r.roomTypeName === filterRoomType);
+      filtered = filtered.filter(
+        (r) => r.roomTypeName && r.roomTypeName.toLowerCase() === filterRoomType.toLowerCase()
+      );
     }
     if (filterReservationStatus) {
-      filtered = filtered.filter(r => r.reservationStatusName === filterReservationStatus);
+      filtered = filtered.filter(
+        (r) =>
+          r.reservationStatusName &&
+          r.reservationStatusName.toLowerCase() === filterReservationStatus.toLowerCase()
+      );
     }
 
     setFilteredReservations(filtered);
@@ -55,11 +61,9 @@ const ReservationDashboard = () => {
         }
       );
 
-      const normalizedData = response.data.map(r => ({
+      const normalizedData = response.data.map((r) => ({
         reservationID: r.reservationID,
-        roomID: r.roomID,
         roomTypeName: r.roomTypeName || '',
-        roomStatusName: r.roomStatusName || '',
         reservationStatusName: r.reservationStatusName || '',
         checkInDate: r.checkInDate ? new Date(r.checkInDate).toLocaleDateString() : '',
         checkOutDate: r.checkOutDate ? new Date(r.checkOutDate).toLocaleDateString() : '',
@@ -68,40 +72,20 @@ const ReservationDashboard = () => {
 
       setReservations(normalizedData);
 
-      const types = [...new Set(normalizedData.map(r => r.roomTypeName).filter(Boolean))];
-      const statuses = [...new Set(normalizedData.map(r => r.reservationStatusName).filter(Boolean))];
+      // Extract unique room types and reservation statuses from data, case-insensitive but keep original casing
+      const typesSet = new Set();
+      const statusesSet = new Set();
 
-      setRoomTypes(types);
-      setReservationStatuses(statuses);
+      normalizedData.forEach((r) => {
+        if (r.roomTypeName) typesSet.add(r.roomTypeName);
+        if (r.reservationStatusName) statusesSet.add(r.reservationStatusName);
+      });
+
+      setRoomTypes(Array.from(typesSet));
+      setReservationStatuses(Array.from(statusesSet));
       setFilteredReservations(normalizedData);
     } catch (error) {
       console.error('Error fetching reservations:', error);
-    }
-  };
-
-  const handleCancelReservation = async (id) => {
-    if (!token) return;
-
-    const isConfirmed = window.confirm('Are you sure you want to cancel this reservation?');
-    if (!isConfirmed) return;
-
-    try {
-      const endpoint =
-        userRole === 'Customer'
-          ? `https://localhost:7117/api/RoomReservation/CancelReservationUser?id=${id}`
-          : `https://localhost:7117/api/RoomReservation/staffCancelReservation?id=${id}`;
-
-      await axios.delete(endpoint, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      fetchReservations();
-      setMessage('Reservation cancelled successfully.');
-      setMessageType('success');
-    } catch (error) {
-      console.error('Error cancelling reservation:', error.response?.data || error.message);
-      setMessage('Failed to cancel reservation.');
-      setMessageType('danger');
     }
   };
 
@@ -120,12 +104,12 @@ const ReservationDashboard = () => {
           <li className="nav-item">
             <i className="bi bi-house-door me-2"></i> ReservationManaging
           </li>
-<button
-  className="btn btn-outline-light w-100 mt-3 mb-3"
-  onClick={() => navigate('/manager/room-dashboard')}
->
-  <i className="bi bi-bookmark-plus me-2"></i> Room Managing
-</button>
+          <button
+            className="btn btn-outline-light w-100 mt-3 mb-3"
+            onClick={() => navigate('/manager/room-dashboard')}
+          >
+            <i className="bi bi-bookmark-plus me-2"></i> Room Managing
+          </button>
 
           <button className="btn btn-outline-light w-100 mt-2" onClick={handleLogout}>
             <i className="bi bi-box-arrow-right me-2"></i> Logout
@@ -183,11 +167,9 @@ const ReservationDashboard = () => {
               <thead className="table-light">
                 <tr>
                   <th>Room Type</th>
-                  <th>Room Status</th>
                   <th>Reservation Status</th>
                   <th>Check-In</th>
                   <th>Check-Out</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -195,23 +177,14 @@ const ReservationDashboard = () => {
                   filteredReservations.map((reservation) => (
                     <tr key={reservation.reservationID}>
                       <td>{reservation.roomTypeName}</td>
-                      <td>{reservation.roomStatusName}</td>
                       <td>{reservation.reservationStatusName || 'N/A'}</td>
                       <td>{reservation.checkInDate}</td>
                       <td>{reservation.checkOutDate}</td>
-                      <td>
-                        <button
-                          className="btn btn-danger"
-                          onClick={() => handleCancelReservation(reservation.reservationID)}
-                        >
-                          <i className="bi bi-trash"></i> Cancel
-                        </button>
-                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="text-center text-muted">
+                    <td colSpan="4" className="text-center text-muted">
                       No reservations found.
                     </td>
                   </tr>
