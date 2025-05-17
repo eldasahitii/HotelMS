@@ -40,8 +40,9 @@ namespace HotelMS.Controllers
             var created = await _reservationService.CreateReservationAsync(reservation);
             return CreatedAtAction(nameof(GetReservation), new { id = created.Id }, created);
         }
+
         //[HttpPost]
-        //public async Task<ActionResult<HotelServiceReservation>> CreateReservation(HotelServiceReservationCreateDTO dto)
+        //public async Task<ActionResult<HotelServiceReservation>> CreateReservation(HotelServiceReservationDTO dto)
         //{
         //    var reservation = new HotelServiceReservation
         //    {
@@ -55,6 +56,7 @@ namespace HotelMS.Controllers
         //    var created = await _reservationService.CreateReservationAsync(reservation);
         //    return CreatedAtAction(nameof(GetReservation), new { id = created.Id }, created);
         //}
+
 
 
         [HttpPut("{id}")]

@@ -30,7 +30,36 @@ namespace HotelMS.Models
 
         [Required]
         [MaxLength(50)]
-        [RegularExpression ("^(Confirmed|Pending|Cancelled)$", ErrorMessage = "Status msut be 'Confirmed', 'Pending', or 'Cancelled'.")]
+        [RegularExpression("^(Confirmed|Pending|Cancelled)$", ErrorMessage = "Status msut be 'Confirmed', 'Pending', or 'Cancelled'.")]
         public string Status { get; set; } = "Confirmed";
     }
+    //public class HotelServiceReservation
+    //{
+    //    [Key]
+    //    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    //    public int Id { get; set; }
+
+    //    [Required]
+    //    public int UserId { get; set; }
+
+    //    public User User { get; set; } // ✅ no [Required] here
+
+    //    [Required]
+    //    public int HotelServiceId { get; set; }
+
+    //    public HotelService Service { get; set; } // ✅ no [Required]
+
+    //    public int? ScheduleId { get; set; }
+
+    //    public HotelServiceSchedule Schedule { get; set; } // ✅ no [Required]
+
+    //    [Required]
+    //    public DateTime ReservationTime { get; set; }
+
+    //    [Required]
+    //    [MaxLength(50)]
+    //    [RegularExpression("^(Confirmed|Pending|Cancelled)$", ErrorMessage = "Status must be 'Confirmed', 'Pending', or 'Cancelled'.")]
+    //    public string Status { get; set; } = "Confirmed";
+    //}
+
 }

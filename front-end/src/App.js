@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { jwtDecode } from 'jwt-decode';
 import CleaningManagerDashboard from './pages/dashboards/CleaningManagerDashboard';
 import axios from 'axios';
+import ServiceMain from './Components/Services/ServiceMain';
 
 axios.interceptors.request.use(
   (config) => {
