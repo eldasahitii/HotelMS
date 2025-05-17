@@ -31,6 +31,8 @@ namespace HotelMS.Services
                 result.Add(new RoomRecepsionistDTO
                 {
                     UserID = rr.UserID,
+                    FirstName=rr.User.FirstName,
+                    LastName=rr.User.LastName,
                     Shift = rr.Shift,
                 });
             }
@@ -57,15 +59,19 @@ namespace HotelMS.Services
 
         public async Task<RoomRecepsionistDTO> AddRecepsionist(int assignedByUserId, RoomRecepsionistDTO dto)
         {
-            // Make sure the User exists
             var user = await _context.Users.FindAsync(dto.UserID);
             if (user == null)
                 throw new Exception($"User with ID {dto.UserID} does not exist.");
 
-            // Make sure the assignedBy user exists
             var assigner = await _context.Users.FindAsync(assignedByUserId);
             if (assigner == null)
                 throw new Exception($"User with ID {assignedByUserId} does not exist.");
+
+            var receptionistRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleType == "RoomRecepsionist");
+            if (receptionistRole == null)
+                throw new Exception("Role 'RoomRecepsionist' does not exist.");
+
+            user.RoleID = receptionistRole.RoleID;
 
             var recepsionist = new RoomRecepsionist
             {
@@ -77,8 +83,13 @@ namespace HotelMS.Services
             _context.RoomRecepsionists.Add(recepsionist);
             await _context.SaveChangesAsync();
 
-            return dto; // just return what was passed in
+        
+            dto.FirstName = user.FirstName;
+            dto.LastName = user.LastName;
+
+            return dto;
         }
+
 
 
         public async Task DeleteRecepsionist(int id)
@@ -100,7 +111,6 @@ namespace HotelMS.Services
             if (existing == null)
                 return null;
 
-            // Only update shift - do not overwrite UserID or user info
             existing.Shift = dto.Shift;
 
             await _context.SaveChangesAsync();
@@ -109,7 +119,10 @@ namespace HotelMS.Services
             {
                 UserID = existing.UserID,
                 Shift = existing.Shift,
+                FirstName = existing.User?.FirstName,
+                LastName = existing.User?.LastName
             };
         }
+
     }
 }

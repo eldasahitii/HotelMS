@@ -15,8 +15,6 @@ namespace HotelMS.Models
         [Required]
         public string Shift { get; set; }
 
-        public bool IsActive { get; set; }
-
         [ForeignKey("AssignedByUser")]
         public int AssignedByUserID { get; set; }
         public User AssignedByUser { get; set; }

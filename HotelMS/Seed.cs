@@ -141,7 +141,6 @@ public class Seed
                 var roomRecepsionist = new RoomRecepsionist
                 {
                     UserID = roomRecepsionistUser.UserID,
-                    IsActive = true,
                     Shift = "Morning",
                     AssignedByUserID = assignedByUser.UserID
                 };

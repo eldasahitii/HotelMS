@@ -97,7 +97,7 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpDelete("deleteRoomRecepsionist/{id}")]
+        [HttpDelete("deleteRoomRecepsionist")]
         [Authorize(Roles = "Admin,RoomManager")]
         public async Task<IActionResult> DeleteRoomRecepsionist(int id)
         {
