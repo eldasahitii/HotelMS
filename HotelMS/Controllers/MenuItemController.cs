@@ -72,6 +72,21 @@ namespace HotelMS.Controllers
             }
         }
 
+        [HttpDelete("deleteMenuItem")]
+
+        public async Task<IActionResult> DeleteMenuItem(int id)
+        {
+            try
+            {
+                await _service.DeleteMenuItem(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
     }
 }

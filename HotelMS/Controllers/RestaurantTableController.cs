@@ -18,11 +18,18 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost("addTable")]
-        public async Task<IActionResult> AddTable(RestaurantTable table)
+
+        public async Task<IActionResult> AddTable([FromBody] RestaurantTableDTO dto)
         {
             try
             {
-                var result = await _service.AddTable(table);
+                var entity = new RestaurantTableDTO
+                {
+                    TableNumber = dto.TableNumber,
+                    Status = dto.Status
+                };
+
+                var result = await _service.AddTable(entity);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -30,6 +37,7 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
 
         [HttpGet("getTable")]
         public async Task<IActionResult> GetTable(int id)
@@ -47,18 +55,29 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAllTables")]
-        public async Task<IActionResult> GetAllTables()
+        public async Task<IEnumerable<RestaurantTableDTO>> GetAllTables()
         {
-            try
+            var tables = await _service.GetAllTables();
+            return tables.Select(t => new RestaurantTableDTO
             {
-                var result = await _service.GetAllTables();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+                RestaurantTableID = t.RestaurantTableID,
+                TableNumber = t.TableNumber,
+                Status = t.Status
+            });
         }
+
+        //public async Task<IActionResult> GetAllTables()
+        //{
+        //    try
+        //    {
+        //        var result = await _service.GetAllTables();
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
         [HttpDelete("deleteTable")]
         public async Task<IActionResult> DeleteTable(int id)
@@ -75,11 +94,17 @@ namespace HotelMS.Controllers
         }
 
         [HttpPut("updateTable")]
-        public async Task<IActionResult> UpdateTable(int id, [FromBody] RestaurantTable table)
+        public async Task<IActionResult> UpdateTable(int id, [FromBody] RestaurantTableDTO dto)
         {
             try
             {
-                var result = await _service.UpdateTable(id, table);
+                var entity = new RestaurantTableDTO
+                {
+                    TableNumber = dto.TableNumber,
+                    Status = dto.Status
+                };
+
+                var result = await _service.UpdateTable(id, entity);
                 if (result == null) return NotFound();
                 return Ok(result);
             }
@@ -87,7 +112,7 @@ namespace HotelMS.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
 
+        }
     }
 }

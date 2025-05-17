@@ -16,6 +16,11 @@ export default function RestaurantManagerDashboard() {
   const [newMenuItem, setNewMenuItem] = useState({name: '', description: '', price: '', image_url:'',is_available:true, menuCategoryID: 1});
   const [editingMenuItem, setEditingMenuItem] = useState(null);
   const [editMenuData, setEditMenuData] = useState({name: '', description: '', price: '', image_url: '', is_available: true, menuCategoryID: 1});
+
+  const [tables, setTables] = useState([]);
+  const [newTable, setNewTable] = useState({tableNumber: '', status: 'Available'});
+  const [editingTable, setEditingTable] = useState(null);
+  const [editTableData, setEditTableData] = useState({tableNumber: '', status: 'Available'});
  
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
@@ -43,9 +48,19 @@ export default function RestaurantManagerDashboard() {
       setMessageType("danger");
     }
   };
+  const fetchTables = async () => {
+    try{
+      const response = await axios.get("/api/RestaurantTable/getAllTables");
+      setTables(response.data);
+    } catch {
+      setMessage("Failed to fetch tables.");
+      setMessageType("danger");
+    }
+  };
    useEffect(() => {
     fetchHosts();
     fetchMenuItems();
+    fetchTables();
   }, []);
 
   const handleAddHost = async () => {
@@ -142,6 +157,14 @@ export default function RestaurantManagerDashboard() {
         Authorization: `Bearer ${localStorage.getItem("token")}`
       }
       });
+
+      const updated = menuItems.map(item =>
+      item.menuItemID === editingMenuItem.menuItemID
+        ? { ...item, ...editMenuData }
+        : item
+    );
+    setMenuItems(updated);
+
       setMessage("Menu item updated successfully.");
       setMessageType("success");
       setEditingMenuItem(null);
@@ -167,6 +190,47 @@ export default function RestaurantManagerDashboard() {
     }
   };
 
+  const handleAddTable = async () => {
+    try {
+      await axios.post("/api/RestaurantTable/addTable", newTable);
+      setMessage("Table added successfully.");
+      setMessageType("success");
+      setNewTable({tableNumber: '', status: 'Available'});
+      fetchTables();
+    } catch {
+      setMessage("Failed to add table.");
+      setMessageType("danger");
+    }
+  };
+
+  const handleDeleteTable = async (id) => {
+    try {
+      await axios.delete(`/api/RestaurantTable/deleteTable?id=${id}`);
+      setMessage("Table deleted.");
+      setMessageType("success");
+      fetchTables();
+    } catch {
+      setMessage("failed to delete table.");
+      setMessageType("danger");
+    }
+  };
+  const openEditTable = (table) => {
+    setEditingTable(table);
+    setEditTableData({ tableNumber: table.tableNumber, status: table.status});
+  };
+  const handleUpdateTable = async () => {
+    try {
+      await axios.put(`/api/RestaurantTable/updateTable?id=${editingTable.restaurantTableID}`, editTableData);
+      setMessage("Table updated successfully");
+      setMessageType("success");
+      setEditingTable(null);
+      fetchTables();
+    } catch{
+      setMessage("Failed to update table.");
+      setMessageType("danger");
+    }
+  };
+
   const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.clear();
@@ -185,6 +249,9 @@ export default function RestaurantManagerDashboard() {
              <button className={`nav-link text-white ${activeSection === "menu" ? "fw-bold" : ""}`} onClick={() => setActiveSection("menu")}>
             <i className="bi bi-people-fill me-2"></i>Menu Items
             </button>
+            <button className={`nav-link text-white ${activeSection === "tables" ? "fw-bold" : ""}`} onClick={() => setActiveSection("tables")}>
+              <i className="bi bi-table me-2"></i>Tables
+             </button>
           </li>
           <hr className="text-white" />
           <button className="btn btn-outline-light w-100" onClick={handleLogout}>
@@ -386,6 +453,78 @@ export default function RestaurantManagerDashboard() {
 )}
 </>
       )}
+
+      {activeSection === "tables" && (
+  <>
+    <h2 className="fw-bold text-primary mb-4">
+      <i className="bi bi-table me-2"></i>Table Management
+    </h2>
+
+    {message && (
+      <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+        {message}
+        <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
+      </div>
+    )}
+
+    <div className="card mt-4">
+      <div className="card-header bg-success text-white">
+        <i className="bi bi-plus-circle me-2"></i> Add Table
+      </div>
+      <div className="card-body">
+        <input className="form-control mb-2" type="number" placeholder="Table Number" value={newTable.tableNumber} onChange={e => setNewTable({ ...newTable, tableNumber: e.target.value })} />
+        <input className="form-control mb-2" placeholder="Status" value={newTable.status} onChange={e => setNewTable({ ...newTable, status: e.target.value })} />
+        <button className="btn btn-success w-100" onClick={handleAddTable}>Add Table</button>
+      </div>
+    </div>
+
+    <div className="card mt-4">
+      <div className="card-header bg-primary text-white">
+        <i className="bi bi-list-ul me-2"></i> Tables
+      </div>
+      <div className="card-body p-0">
+        <table className="table mb-0">
+          <thead className="table-light">
+            <tr>
+              <th>#</th>
+              <th>Table Number</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tables.map((table, index) => (
+              <tr key={table.restaurantTableID}>
+                <td>{index + 1}</td>
+                <td>{table.tableNumber}</td>
+                <td>{table.status}</td>
+                <td>
+                  <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteTable(table.restaurantTableID)}><i className="bi bi-trash"></i></button>
+                  <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditTable(table)}><i className="bi bi-pencil-square"></i></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {editingTable && (
+      <div className="card mt-4">
+        <div className="card-header bg-warning text-dark">
+          <i className="bi bi-pencil-square me-2"></i>Edit Table
+        </div>
+        <div className="card-body">
+          <input className="form-control mb-2" type="number" value={editTableData.tableNumber} onChange={e => setEditTableData({ ...editTableData, tableNumber: e.target.value })} />
+          <input className="form-control mb-2" value={editTableData.status} onChange={e => setEditTableData({ ...editTableData, status: e.target.value })} />
+          <button className="btn btn-primary me-2" onClick={handleUpdateTable}>Save</button>
+          <button className="btn btn-secondary" onClick={() => setEditingTable(null)}>Cancel</button>
+        </div>
+      </div>
+    )}
+  </>
+)}
+
       </main>
      
 

@@ -5,13 +5,13 @@ namespace HotelMS.Data.Interfaces
 {
     public interface IRestaurantTableService
     {
-        Task<IEnumerable<RestaurantTable>> GetAllTables();
+        Task<IEnumerable<RestaurantTableDTO>> GetAllTables();
 
         Task<RestaurantTable> GetTable(int id);
 
-        Task<RestaurantTable> AddTable(RestaurantTable table);
+        Task<RestaurantTableDTO> AddTable(RestaurantTableDTO dto);
 
-        Task<RestaurantTable> UpdateTable(int id, RestaurantTable request);
+        Task<RestaurantTableDTO> UpdateTable(int id, RestaurantTableDTO dto);
 
         Task DeleteTable(int id);
     }
