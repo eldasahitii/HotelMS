@@ -1,4 +1,5 @@
 ﻿using HotelMS.Models;
+using HotelMS.Models.DTOs;
 
 namespace HotelMS.Data.DTO
 {
@@ -11,6 +12,7 @@ namespace HotelMS.Data.DTO
         public bool IsActive { get; set; }
 
         public ICollection<HotelServiceScheduleDTO> HotelServiceSchedules { get; set; }
+        public ICollection<HotelServiceScheduleCreateUpdateDTO> HotelServiceScheduleCreateUpdates { get; set; }
         public ICollection<HotelServiceReservationDTO> HotelServiceReservations { get; set; }
 
     }
