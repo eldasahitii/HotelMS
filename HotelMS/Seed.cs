@@ -133,26 +133,26 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-        // Seed CleaningStaff
-        //if (!dataContext.CleaningStaff.Any())
-        //{
-        //    var cleaningStaffUser = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
-        //    var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com"); // manager
+        //Seed CleaningStaff
+        if (!dataContext.CleaningStaff.Any())
+        {
+            var cleaningStaffUser = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
+            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com"); // manager
 
-        //    if (cleaningStaffUser != null && assignedByUser != null)
-        //    {
-        //        var cleaningStaff = new CleaningStaff
-        //        {
-        //            UserID = cleaningStaffUser.UserID,
-        //            IsActive = true,
-        //            Shift = "Morning",
-        //            AssignedByUserID = assignedByUser.UserID
-        //        };
+            if (cleaningStaffUser != null && assignedByUser != null)
+            {
+                var cleaningStaff = new CleaningStaff
+                {
+                    UserID = cleaningStaffUser.UserID,
+                    IsActive = true,
+                    Shift = "Morning",
+                    AssignedByUserID = assignedByUser.UserID
+                };
 
-        //        dataContext.CleaningStaff.AddRange(cleaningStaff);
-        //        dataContext.SaveChanges();
-        //    }
-        //}
+                dataContext.CleaningStaff.AddRange(cleaningStaff);
+                dataContext.SaveChanges();
+            }
+        }
 
         // Seed RoomStatuses
         if (!dataContext.RoomStatuses.Any())

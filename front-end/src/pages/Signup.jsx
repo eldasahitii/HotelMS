@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import email_icon from '../Assets/emaill.png';
-import password_icon from '../Assets/password.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const Signup = () => {
-  const [userRegistration, setUserRegistration] = useState({
+const SignupPage = () => {
+  const [user, setUser] = useState({
     FirstName: '',
     LastName: '',
     Email: '',
@@ -14,14 +12,14 @@ const Signup = () => {
     RoleType: 'Customer'
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   const [formErrors, setFormErrors] = useState({});
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserRegistration(prev => ({ ...prev, [name]: value }));
+    setUser(prev => ({ ...prev, [name]: value }));
     setFormErrors(prev => ({ ...prev, [name]: false }));
   };
 
@@ -29,117 +27,102 @@ const Signup = () => {
     e.preventDefault();
     const emailRegex = /^\S+@\S+\.\S+$/;
     const errors = {
-      FirstName: !userRegistration.FirstName.trim(),
-      LastName: !userRegistration.LastName.trim(),
-      Email: !userRegistration.Email.trim() || !emailRegex.test(userRegistration.Email),
-      Password: !userRegistration.Password.trim()
+      FirstName: !user.FirstName.trim(),
+      LastName: !user.LastName.trim(),
+      Email: !user.Email.trim() || !emailRegex.test(user.Email),
+      Password: !user.Password.trim()
     };
     setFormErrors(errors);
     if (Object.values(errors).some(Boolean)) return;
 
     try {
-      const response = await axios.post('/api/Auth/register', userRegistration);
-      console.log("RESPONSE:", response);
-
+      const response = await axios.post('/api/Auth/register', user);
       const { token, isLoggedIn } = response.data;
-
       if (token && isLoggedIn) {
-        console.log("Registration successful!");
-        try {
-          localStorage.setItem('token', `Bearer ${token}`);
-          navigate('/login');
-        } catch (navErr) {
-          console.error("Navigation error:", navErr);
-          setError("Signup successful but redirect failed. Please reload.");
-        }
+        localStorage.setItem('token', `Bearer ${token}`);
+        navigate('/login');
       }
-    } catch (error) {
-      console.log("Full Axios Error:", error);
-      const message = error.response?.data?.message || error.message;
-      console.error("Registration error:", message);
-      if (message.includes("already exists")) {
-        setError("An account with this email already exists.");
-      } else {
-        setError("Registration failed: " + message);
-      }
+    } catch (err) {
+      const message = err.response?.data?.message || err.message;
+      setError(message.includes("already exists")
+        ? "An account with this email already exists."
+        : "Registration failed: " + message);
     }
   };
 
   return (
-    <div style={{ backgroundColor: '#faf0d9', minHeight: '100vh' }}>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div className="container-fluid px-4">
-          <a className="navbar-brand fw-bold" href="#">Hotel Name</a>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul className="navbar-nav">
-              <li className="nav-item"><a className="nav-link" href="/login">Login</a></li>
-              <li className="nav-item"><a className="nav-link active" href="/signup">Sign Up</a></li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+    <div className="container-fluid vh-100 p-0" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <div className="row h-100 g-0">
+        {/* LEFT SIDE - FORM */}
+        <div className="col-md-6 d-flex align-items-center justify-content-center bg-white">
+          <form className="p-5 rounded shadow w-75 border border-dark bg-white" onSubmit={handleSubmit}>
+            <h2 className="mb-4 text-center fw-bold">MONVELLI</h2>
 
-      <div className="container" style={{ paddingTop: '80px' }}>
-        <div className="row justify-content-center align-items-center" style={{ minHeight: 'calc(100vh - 80px)' }}>
-          <div className="col-md-5 text-center text-md-start">
-            <h1 className="fw-semibold">Welcome to Your Getaway</h1><br />
-            <h5 className="fw-normal">Create your free account and make every stay unforgettable</h5>
-            <h5 className="fw-semibold">Luxury is just a click away</h5>
-          </div>
-          <div className="col-md-6 p-4 bg-white rounded shadow">
-            <h2 className="fw-bold mb-4 text-center">Sign Up</h2>
-            <form onSubmit={handleSubmit}>
-              {["FirstName", "LastName", "Email"].map(field => (
-                <div className="mb-3" key={field}>
-                  <input
-                    type={field === "Email" ? "email" : "text"}
-                    name={field}
-                    className={`form-control ${formErrors[field] ? 'is-invalid' : ''}`}
-                    placeholder={field.replace("Name", " Name")}
-                    value={userRegistration[field]}
-                    onChange={handleInputChange}
-                  />
-                  {formErrors[field] && (
-                    <div className="invalid-feedback">
-                      {field === "Email" ? "Valid email is required." : `${field.replace("Name", " name")} is required.`}
-                    </div>
-                  )}
-                </div>
-              ))}
+            {/* INPUT FIELDS */}
+            {['FirstName', 'LastName', 'Email'].map(field => (
+              <div className="mb-3" key={field}>
+                <label className="form-label">
+                  {field === 'FirstName' ? 'Name' : field === 'LastName' ? 'Surname' : 'Email'}
+                </label>
+                <input
+                  type={field === 'Email' ? 'email' : 'text'}
+                  className={`form-control border-0 border-bottom rounded-0 shadow-none ${formErrors[field] ? 'is-invalid border-danger' : ''}`}
+                  name={field}
+                  value={user[field]}
+                  onChange={handleChange}
+                />
+                {formErrors[field] && <div className="invalid-feedback">{`${field} is required.`}</div>}
+              </div>
+            ))}
 
-              <div className="mb-3 d-flex align-items-start flex-column">
-                <div className="d-flex w-100 align-items-center">
-                  <img src={password_icon} alt="password" width="30" className="me-2" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="Password"
-                    className={`form-control ${formErrors.Password ? 'is-invalid' : ''}`}
-                    placeholder="Password"
-                    value={userRegistration.Password}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {formErrors.Password && <div className="invalid-feedback d-block">Password is required.</div>}
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="btn btn-link p-0 mt-2">
-                  {showPassword ? 'Hide Password' : 'Show Password'}
+            {/* PASSWORD FIELD */}
+            <div className="mb-3">
+              <label className="form-label">Password</label>
+              <div className="input-group">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className={`form-control border-0 border-bottom rounded-0 shadow-none ${formErrors.Password ? 'is-invalid border-danger' : ''}`}
+                  name="Password"
+                  value={user.Password}
+                  onChange={handleChange}
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary rounded-0"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
+              {formErrors.Password && <div className="invalid-feedback d-block">Password is required.</div>}
+            </div>
 
-              {error && <div className="text-danger mb-3">{error}</div>}
-              <button type="submit" className="btn btn-dark w-100">Sign Up</button>
-            </form>
+            {/* ERROR MESSAGE */}
+            {error && <div className="alert alert-danger">{error}</div>}
 
-            <button onClick={() => navigate('/login')} className="btn btn-link mt-3" style={{ color: '#007bff', textDecoration: 'none' }}>
-              Already have an account? Log in
-            </button>
-          </div>
+            <button type="submit" className="btn btn-dark w-100">Sign Up</button>
+
+            <div className="text-center mt-3">
+              <span style={{ fontSize: '0.95rem' }}>Already have an account?</span>{' '}
+              <a href="/login" className="text-decoration-none fw-semibold" style={{ color: '#2a52be' }}>
+                Log In
+              </a>
+            </div>
+          </form>
         </div>
+
+        {/* RIGHT SIDE - IMAGE */}
+        <div
+          className="col-md-6 d-none d-md-block"
+          style={{
+            backgroundImage: 'url("/your-image.jpg")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        />
       </div>
     </div>
   );
 };
 
-export default Signup;
+export default SignupPage;
