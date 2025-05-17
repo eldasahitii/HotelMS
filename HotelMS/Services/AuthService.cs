@@ -51,7 +51,8 @@ namespace HotelMS.Services
                     PasswordSalt = salt,
                     RoleID = role.RoleID,
                     CreatedAt = DateTime.UtcNow,
-                   
+                    Phone = request.Phone
+
                 };
 
                 _context.Users.Add(user);

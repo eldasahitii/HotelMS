@@ -11,5 +11,6 @@ namespace HotelMS.Data.DTO
 
         //public int? RoleID { get; set; }
         public string RoleType { get; set; } = string.Empty;
+        public string? Phone { get; set; }
     }
 }
