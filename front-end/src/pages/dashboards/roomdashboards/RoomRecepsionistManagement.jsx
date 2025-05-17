@@ -1,342 +1,282 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import { useNavigate } from "react-router-dom";
 
-const RoomReceptionistDashboard = () => {
-  const [receptionists, setReceptionists] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); // "success" | "danger"
+const shifts = ["Morning", "Afternoon", "Night"]; // Customize as needed
 
-  // Editing state
+export default function RoomReceptionistManager({ currentUserId }) {
+  const navigate = useNavigate(); // Initialize navigate here
+
+  const [users, setUsers] = useState([]);
+  const [receps, setReceps] = useState([]);
+  const [form, setForm] = useState({ userID: "", shift: "" });
   const [editingId, setEditingId] = useState(null);
-  const [editShift, setEditShift] = useState("");
-
-  // Adding new receptionist state
-  const [newUserID, setNewUserID] = useState("");
-  const [newFirstName, setNewFirstName] = useState("");
-  const [newLastName, setNewLastName] = useState("");
-  const [newShift, setNewShift] = useState("");
-
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-
-  // Axios config with Bearer token
-  const axiosConfig = {
-    headers: { Authorization: `Bearer ${token}` },
-  };
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchReceptionists();
+    fetchUsers();
+    fetchRecepsionists();
   }, []);
 
-  // Fetch all receptionists
-  const fetchReceptionists = async () => {
-    setLoading(true);
+  const fetchUsers = async () => {
     try {
-      const res = await axios.get(
-        "https://localhost:7117/api/RoomRecepsionist/getAllRoomRecepsionists",
-        axiosConfig
-      );
-      setReceptionists(res.data);
+      const res = await axios.get("/api/User/getAll"); // Your users API
+      setUsers(res.data);
+    } catch (err) {
+      setError("Failed to load users");
+    }
+  };
+
+  const fetchRecepsionists = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get("/api/RoomRecepsionist/getAllRoomRecepsionists");
+      setReceps(res.data);
       setLoading(false);
     } catch (err) {
-      setMessage("Failed to load receptionists");
-      setMessageType("danger");
+      setError("Failed to load receptionists");
       setLoading(false);
     }
   };
 
-  // Start editing: set editingId and current shift
-  const handleEdit = (rec) => {
-    setEditingId(rec.userID);
-    setEditShift(rec.shift || "");
+  const handleEditClick = (recep) => {
+    setEditingId(recep.roomReceptionistID);
+    setForm({ userID: recep.userID.toString(), shift: recep.shift });
   };
 
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditShift("");
-  };
-
-  // Save edited shift - important: send full DTO with all required props
-  const saveEdit = async () => {
+  const handleDeleteClick = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this receptionist?")) return;
     try {
-      // Your DTO requires UserID, FirstName, LastName, Shift on update?
-      // The backend only updates Shift but expects other props not null? 
-      // Let's send full DTO from existing receptionist + updated shift
-      const receptionist = receptionists.find((r) => r.userID === editingId);
-      if (!receptionist) throw new Error("Receptionist not found");
+      await axios.delete(`/api/RoomRecepsionist/deleteRoomRecepsionist/${id}`);
+      fetchRecepsionists();
+    } catch (err) {
+      alert("Delete failed: " + (err.response?.data || err.message));
+    }
+  };
 
-      const dto = {
-        userID: receptionist.userID,
-        firstName: receptionist.firstName,
-        lastName: receptionist.lastName,
-        shift: editShift,
-      };
+  const handleChange = (e) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-      await axios.put(
-        `https://localhost:7117/api/RoomRecepsionist/updateRoomRecepsionist/${editingId}`,
-        dto,
-        axiosConfig
-      );
-      setMessage("Receptionist shift updated successfully");
-      setMessageType("success");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!form.userID) {
+      setError("Please select a user.");
+      return;
+    }
+    if (!form.shift) {
+      setError("Please select a shift.");
+      return;
+    }
+    if (!currentUserId) {
+      setError("Current user ID is not set.");
+      return;
+    }
+
+    const selectedUser = users.find((u) => u.userID.toString() === form.userID);
+    if (!selectedUser) {
+      setError("Selected user not found.");
+      return;
+    }
+
+    try {
+      if (editingId) {
+        // Update receptionist shift only
+        await axios.put(`/api/RoomRecepsionist/updateRoomRecepsionist/${editingId}`, {
+          roomReceptionistID: editingId,
+          userID: parseInt(form.userID, 10),
+          firstName: selectedUser.firstName,
+          lastName: selectedUser.lastName,
+          email: selectedUser.email,
+          shift: form.shift,
+        });
+        alert("Receptionist updated successfully");
+      } else {
+        // Add new receptionist - send full DTO
+        const dto = {
+          roomReceptionistID: 0,
+          userID: selectedUser.userID,
+          firstName: selectedUser.firstName,
+          lastName: selectedUser.lastName,
+          email: selectedUser.email,
+          shift: form.shift,
+        };
+        await axios.post(`/api/RoomRecepsionist/addRoomRecepsionist/${currentUserId}`, dto);
+        alert("Receptionist added successfully");
+      }
+      setForm({ userID: "", shift: "" });
       setEditingId(null);
-      fetchReceptionists();
+      fetchRecepsionists();
     } catch (err) {
-      setMessage("Failed to update shift");
-      setMessageType("danger");
+      const msg =
+        err.response?.data?.title ||
+        err.response?.data?.errors ||
+        err.message ||
+        "Submit failed";
+      setError(JSON.stringify(msg));
     }
   };
-
-  // Delete receptionist
-  const deleteReceptionist = async (userID) => {
-    if (!window.confirm("Are you sure you want to delete this receptionist?"))
-      return;
-    try {
-      await axios.delete(
-        `https://localhost:7117/api/RoomRecepsionist/deleteRoomRecepsionist?id=${userID}`,
-        axiosConfig
-      );
-      setMessage("Receptionist deleted successfully");
-      setMessageType("success");
-      fetchReceptionists();
-    } catch (err) {
-      setMessage("Failed to delete receptionist");
-      setMessageType("danger");
-    }
-  };
-
-  // Add new receptionist
-  // NOTE: assignedByUserId should come from your logged-in user info (here hardcoded)
-  const assignedByUserId = 1;
-
-  const addReceptionist = async () => {
-    if (!newUserID || !newFirstName || !newLastName || !newShift) {
-      setMessage("Please fill all new receptionist fields");
-      setMessageType("danger");
-      return;
-    }
-
-    const dto = {
-      userID: parseInt(newUserID),
-      firstName: newFirstName,
-      lastName: newLastName,
-      shift: newShift,
-    };
-
-    try {
-      await axios.post(
-        `https://localhost:7117/api/RoomRecepsionist/addRoomRecepsionist/${assignedByUserId}`,
-        dto,
-        axiosConfig
-      );
-      setMessage("Receptionist added successfully");
-      setMessageType("success");
-      setNewUserID("");
-      setNewFirstName("");
-      setNewLastName("");
-      setNewShift("");
-      fetchReceptionists();
-    } catch (err) {
-      setMessage("Failed to add receptionist");
-      setMessageType("danger");
-    }
-  };
-
-  if (loading)
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="spinner-border text-primary" role="status"></div>
-      </div>
-    );
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-      {/* Sidebar */}
-      <aside
-        className="text-white p-4"
-        style={{ width: "240px", backgroundColor: "#324b6b" }}
-      >
+      <aside className="text-white p-4" style={{ width: "240px", backgroundColor: "#324b6b" }}>
         <h4 className="fw-bold mb-4">
-          <i className="bi bi-building"></i> HotelMS
+          <i className="bi bi-people"></i> HotelMS
         </h4>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <i className="bi bi-house-door me-2"></i> Room Managing
+            <i className="bi bi-person-badge me-2"></i> Receptionist Management
           </li>
+
+          {/* Button to navigate to Room Manager Dashboard */}
+          <button className="btn btn-outline-light w-100 mt-3 mb-3" onClick={() => navigate("/room-manager-dashboard")}>
+            <i className="bi bi-building me-2"></i> Room Manager
+          </button>
+
+          {/* New button for Room Management */}
+          <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/manager/room-dashboard")}>
+            <i className="bi bi-house-door me-2"></i> Room Management
+          </button>
+
+          {/* New button for Reservation */}
+          <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/admin/reservation-dashboard")}>
+            <i className="bi bi-journal-check me-2"></i> Reservation
+          </button>
+
+          {/* New button to navigate to Receptionist Management */}
+          <button
+            className="btn btn-outline-light w-100 mb-3"
+            onClick={() => navigate("/room-manager-receptionist-management")}
+          >
+            <i className="bi bi-person-lines-fill me-2"></i> Receptionist Management
+          </button>
+
+          {/* Logout button */}
+          <button
+            className="btn btn-outline-light w-100 mt-2"
+            onClick={() => {
+              localStorage.removeItem("token");
+              navigate("/login");
+            }}
+          >
+            <i className="bi bi-box-arrow-right me-2"></i> Logout
+          </button>
         </ul>
-
-        {/* Receptionist management - current page, so no navigation */}
-        <button
-          className="btn btn-outline-light w-100 mt-3 mb-3"
-          disabled
-        >
-          <i className="bi bi-people me-2"></i> Receptionist Management
-        </button>
-
-        <button
-          className="btn btn-outline-light w-100 mt-2"
-          onClick={() => {
-            localStorage.removeItem("token");
-            navigate("/login");
-          }}
-        >
-          <i className="bi bi-box-arrow-right me-2"></i> Logout
-        </button>
       </aside>
 
-      {/* Main content */}
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
-          <i className="bi bi-person-lines-fill me-2"></i>Room Receptionist
-          Dashboard
+          <i className="bi bi-person-lines-fill me-2"></i> Room Receptionist Management
         </h2>
 
-        {message && (
-          <div
-            className={`alert alert-${messageType} alert-dismissible fade show`}
-            role="alert"
-          >
-            {message}
-            <button
-              type="button"
-              className="btn-close"
-              onClick={() => setMessage("")}
-            ></button>
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
           </div>
         )}
 
-        <div className="card">
-          <div className="card-header bg-primary text-white">
-            <i className="bi bi-person-lines-fill me-2"></i> Receptionists List
+        <form onSubmit={handleSubmit} className="mb-4">
+          <div className="mb-3">
+            <label htmlFor="userID" className="form-label">
+              User
+            </label>
+            <select
+              id="userID"
+              name="userID"
+              className="form-select"
+              value={form.userID}
+              onChange={handleChange}
+              disabled={!!editingId} // disable user change on edit (optional)
+            >
+              <option value="">-- Select User --</option>
+              {users.map((user) => (
+                <option key={user.userID} value={user.userID}>
+                  {user.firstName} {user.lastName} ({user.email})
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="card-body p-0">
-            <table className="table mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>UserID</th>
-                  <th>Full Name</th>
-                  <th>Shift</th>
-                  <th style={{ width: "180px" }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {receptionists.map((rec) => (
-                  <tr key={rec.userID}>
-                    <td>{rec.userID}</td>
-                    <td>
-                      {rec.firstName} {rec.lastName}
-                    </td>
-                    <td>
-                      {editingId === rec.userID ? (
-                        <select
-                          className="form-select"
-                          value={editShift}
-                          onChange={(e) => setEditShift(e.target.value)}
-                        >
-                          <option value="">Select Shift</option>
-                          <option value="Morning">Morning</option>
-                          <option value="Afternoon">Afternoon</option>
-                          <option value="Night">Night</option>
-                        </select>
-                      ) : (
-                        rec.shift
-                      )}
-                    </td>
-                    <td>
-                      {editingId === rec.userID ? (
-                        <>
-                          <button
-                            className="btn btn-success btn-sm me-2"
-                            onClick={saveEdit}
-                          >
-                            Save
-                          </button>
-                          <button
-                            className="btn btn-secondary btn-sm"
-                            onClick={cancelEdit}
-                          >
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            className="btn btn-primary btn-sm me-2"
-                            onClick={() => handleEdit(rec)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="btn btn-danger btn-sm"
-                            onClick={() => deleteReceptionist(rec.userID)}
-                          >
-                            Delete
-                          </button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ))}
 
-                {/* Add new receptionist row */}
-                <tr>
+          <div className="mb-3">
+            <label htmlFor="shift" className="form-label">
+              Shift
+            </label>
+            <select
+              id="shift"
+              name="shift"
+              className="form-select"
+              value={form.shift}
+              onChange={handleChange}
+            >
+              <option value="">-- Select Shift --</option>
+              {shifts.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button type="submit" className="btn btn-primary">
+            {editingId ? "Update Receptionist" : "Add Receptionist"}
+          </button>
+          {editingId && (
+            <button
+              type="button"
+              className="btn btn-secondary ms-2"
+              onClick={() => {
+                setEditingId(null);
+                setForm({ userID: "", shift: "" });
+                setError("");
+              }}
+            >
+              Cancel
+            </button>
+          )}
+        </form>
+
+        <h3>Existing Receptionists</h3>
+        {loading ? (
+          <p>Loading...</p>
+        ) : receps.length === 0 ? (
+          <p>No receptionists found.</p>
+        ) : (
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Email</th>
+                <th>Shift</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {receps.map((r) => (
+                <tr key={r.roomReceptionistID}>
+                  <td>{r.roomReceptionistID}</td>
                   <td>
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="UserID"
-                      value={newUserID}
-                      onChange={(e) => setNewUserID(e.target.value)}
-                    />
+                    {r.firstName} {r.lastName}
                   </td>
+                  <td>{r.email}</td>
+                  <td>{r.shift}</td>
                   <td>
-                    <input
-                      type="text"
-                      className="form-control mb-1"
-                      placeholder="First Name"
-                      value={newFirstName}
-                      onChange={(e) => setNewFirstName(e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Last Name"
-                      value={newLastName}
-                      onChange={(e) => setNewLastName(e.target.value)}
-                    />
-                  </td>
-                  <td>
-                    <select
-                      className="form-select"
-                      value={newShift}
-                      onChange={(e) => setNewShift(e.target.value)}
-                    >
-                      <option value="">Select Shift</option>
-                      <option value="Morning">Morning</option>
-                      <option value="Afternoon">Afternoon</option>
-                      <option value="Night">Night</option>
-                    </select>
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-success btn-sm"
-                      onClick={addReceptionist}
-                    >
-                      Add
+                    <button className="btn btn-sm btn-warning me-2" onClick={() => handleEditClick(r)}>
+                      Edit
+                    </button>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleDeleteClick(r.roomReceptionistID)}>
+                      Delete
                     </button>
                   </td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+              ))}
+            </tbody>
+          </table>
+        )}
       </main>
     </div>
   );
-};
-
-export default RoomReceptionistDashboard;
+}

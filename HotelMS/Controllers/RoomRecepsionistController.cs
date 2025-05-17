@@ -1,6 +1,5 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
-using HotelMS.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -40,10 +39,9 @@ namespace HotelMS.Controllers
             }
         }
 
-
-        [HttpGet("getRoomRecepsionist")]
+        [HttpGet("getRoomRecepsionist/{id}")]
         [Authorize(Roles = "Admin,RoomManager")]
-        public async Task<IActionResult> GetRoomRecepsionist(int id)
+        public async Task<IActionResult> GetRoomRecepsionist([FromRoute] int id)
         {
             try
             {
@@ -87,7 +85,6 @@ namespace HotelMS.Controllers
                 if (existing == null)
                     return NotFound();
 
-                // Only Shift is updateable, so you can ignore other fields sent by client
                 var updated = await _service.UpdateRecepsionist(id, dto);
                 return Ok(updated);
             }
@@ -97,9 +94,10 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpDelete("deleteRoomRecepsionist")]
+
+        [HttpDelete("deleteRoomRecepsionist/{id}")]
         [Authorize(Roles = "Admin,RoomManager")]
-        public async Task<IActionResult> DeleteRoomRecepsionist(int id)
+        public async Task<IActionResult> DeleteRoomRecepsionist([FromRoute] int id)
         {
             try
             {

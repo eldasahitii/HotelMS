@@ -5,7 +5,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';  // <-- named import, correct for v4.x
 import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/CleaningManagerDashboard';
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import axios from 'axios';
@@ -14,7 +14,6 @@ import RoomManagerDashboard from './pages/dashboards/roomdashboards/RoomManagerD
 import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationDashboard';  
 import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
 import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement'; 
-
 
 axios.interceptors.request.use(
   (config) => {
@@ -29,19 +28,19 @@ axios.interceptors.request.use(
 
 // ProtectedRoute component to ensure role-based access
 const ProtectedRoute = ({ children, allowedRoles }) => {
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
-    if(!token) return <Navigate to="/login" />;
+  if (!token) return <Navigate to="/login" />;
 
-    try {
-        const decoded = jwtDecode(token);
-        const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-        
-        if (!allowedRoles.includes(userRole)) return <Navigate to="/login" />;
-        return children;
-    } catch {
-        return <Navigate to="/login" />;
-    }
+  try {
+    const decoded = jwtDecode(token);
+    const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+    if (!allowedRoles.includes(userRole)) return <Navigate to="/login" />;
+    return children;
+  } catch {
+    return <Navigate to="/login" />;
+  }
 }
 
 function App() {
@@ -50,7 +49,7 @@ function App() {
       <div>
         {/* Only show Header if not on login or signup page */}
         {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && <Header />}
-        
+
         <Routes>
           {/* Default route */}
           <Route path="/" element={<Navigate to="/signup" />} />
@@ -68,11 +67,25 @@ function App() {
               </ProtectedRoute>
             }
           />
-<Route
+  <Route
   path="/room-manager-receptionist-management"
   element={
     <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
-      <RoomRecepsionistManagement />
+      {
+        (() => {
+          const token = localStorage.getItem('token');
+          let currentUserId = null;
+          if (token) {
+            try {
+              const decoded = jwtDecode(token);
+              currentUserId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || null;
+            } catch {
+              currentUserId = null;
+            }
+          }
+          return <RoomRecepsionistManagement currentUserId={currentUserId} />;
+        })()
+      }
     </ProtectedRoute>
   }
 />
@@ -90,20 +103,18 @@ function App() {
             path="/admin/reservation-dashboard"
             element={
               <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
-               <ReservationDashboard />
-            </ProtectedRoute>
+                <ReservationDashboard />
+              </ProtectedRoute>
             }
           />
- <Route
-  path="/recepsionist-dashboard"
-  element={
-    <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
-      <RoomReceptionistDashboard />
-    </ProtectedRoute>
-  }
-/>
-
-
+          <Route
+            path="/recepsionist-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
+                <RoomReceptionistDashboard />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/manager/cleaning-staff"

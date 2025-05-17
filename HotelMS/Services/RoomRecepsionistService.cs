@@ -21,7 +21,7 @@ namespace HotelMS.Services
         public async Task<IEnumerable<RoomRecepsionistDTO>> GetAllRecepsionists()
         {
             var recepsionists = await _context.RoomRecepsionists
-                .Include(rr => rr.User)  
+                .Include(rr => rr.User)
                 .ToListAsync();
 
             var result = new List<RoomRecepsionistDTO>();
@@ -30,16 +30,17 @@ namespace HotelMS.Services
             {
                 result.Add(new RoomRecepsionistDTO
                 {
+                    RoomReceptionistID = rr.RoomReceptionistID,  // <-- important
                     UserID = rr.UserID,
-                    FirstName=rr.User.FirstName,
-                    LastName=rr.User.LastName,
+                    FirstName = rr.User.FirstName,
+                    LastName = rr.User.LastName,
+                    Email = rr.User.Email,
                     Shift = rr.Shift,
                 });
             }
 
             return result;
         }
-
 
         public async Task<RoomRecepsionistDTO> GetRecepsionistById(int id)
         {
@@ -52,11 +53,16 @@ namespace HotelMS.Services
 
             return new RoomRecepsionistDTO
             {
+                RoomReceptionistID = rr.RoomReceptionistID,
                 UserID = rr.UserID,
+                FirstName = rr.User.FirstName,
+                LastName = rr.User.LastName,
+                Email = rr.User.Email,
                 Shift = rr.Shift,
             };
-            }
+        }
 
+        // Changed AddRecepsionist to use UserID directly
         public async Task<RoomRecepsionistDTO> AddRecepsionist(int assignedByUserId, RoomRecepsionistDTO dto)
         {
             var user = await _context.Users.FindAsync(dto.UserID);
@@ -75,7 +81,7 @@ namespace HotelMS.Services
 
             var recepsionist = new RoomRecepsionist
             {
-                UserID = dto.UserID,
+                UserID = user.UserID,
                 Shift = dto.Shift,
                 AssignedByUserID = assignedByUserId,
             };
@@ -83,20 +89,31 @@ namespace HotelMS.Services
             _context.RoomRecepsionists.Add(recepsionist);
             await _context.SaveChangesAsync();
 
-        
+            dto.RoomReceptionistID = recepsionist.RoomReceptionistID; // set newly created receptionist ID
+            dto.Email = user.Email;
             dto.FirstName = user.FirstName;
             dto.LastName = user.LastName;
 
             return dto;
         }
 
-
-
         public async Task DeleteRecepsionist(int id)
         {
             var recepsionist = await _context.RoomRecepsionists.FindAsync(id);
             if (recepsionist != null)
             {
+                var user = await _context.Users.FindAsync(recepsionist.UserID);
+
+                if (user != null)
+                {
+                    var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleType == "Customer");
+                    if (defaultRole != null)
+                    {
+                        user.RoleID = defaultRole.RoleID;
+                        _context.Users.Update(user);
+                    }
+                }
+
                 _context.RoomRecepsionists.Remove(recepsionist);
                 await _context.SaveChangesAsync();
             }
@@ -112,17 +129,19 @@ namespace HotelMS.Services
                 return null;
 
             existing.Shift = dto.Shift;
-
             await _context.SaveChangesAsync();
 
             return new RoomRecepsionistDTO
             {
+                RoomReceptionistID = existing.RoomReceptionistID,
                 UserID = existing.UserID,
-                Shift = existing.Shift,
                 FirstName = existing.User?.FirstName,
-                LastName = existing.User?.LastName
+                LastName = existing.User?.LastName,
+                Email = existing.User?.Email,
+                Shift = existing.Shift
             };
         }
+
 
     }
 }
