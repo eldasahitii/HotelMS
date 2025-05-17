@@ -130,6 +130,27 @@ public class Seed
             dataContext.SaveChanges();
         }
 
+        // Seed RoomRecepsionists
+        if (!dataContext.RoomRecepsionists.Any())
+        {
+            var roomRecepsionistUser = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
+            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com");
+
+            if (roomRecepsionistUser != null && assignedByUser != null)
+            {
+                var roomRecepsionist = new RoomRecepsionist
+                {
+                    UserID = roomRecepsionistUser.UserID,
+                    IsActive = true,
+                    Shift = "Morning",
+                    AssignedByUserID = assignedByUser.UserID
+                };
+
+                dataContext.RoomRecepsionists.Add(roomRecepsionist);
+                dataContext.SaveChanges();
+            }
+        }
+
         // Seed CleaningStaff
         if (!dataContext.CleaningStaff.Any())
         {
@@ -192,127 +213,6 @@ public class Seed
 
             dataContext.RoomTypes.AddRange(roomTypes);
             dataContext.SaveChanges();
-        }
-
-        // Seed Rooms
-        if (!dataContext.Rooms.Any())
-        {
-            var standardRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Standard").RoomTypeID;
-            var deluxeRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Deluxe").RoomTypeID;
-            var suiteRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Suite").RoomTypeID;
-
-            var availableStatusID = dataContext.RoomStatuses.First(rs => rs.RoomStatusName == "Available").RoomStatusID;
-
-            var rooms = new List<Room>
-            {
-                new Room()
-                {
-                    Name = "Single Room", Capacity = "1-2 Persons", Size = "15m²",
-                    Description = "A cozy single room with modern amenities.",
-                    Price = 50.00m,
-                    CreatedAt = DateTime.Now,
-                    RoomTypeID = standardRoomTypeID,
-                    RoomStatusID = availableStatusID
-                },
-                new Room()
-                {
-                    Name = "Double Room", Capacity = "2 Adults", Size = "25m²",
-                    Description = "A spacious double room with a comfortable bed.",
-                    Price = 80.00m,
-                    CreatedAt = DateTime.Now,
-                    RoomTypeID = deluxeRoomTypeID,
-                    RoomStatusID = availableStatusID
-                },
-                new Room()
-                {
-                    Name = "Twin Room", Capacity = "2-3 Persons", Size = "23m²",
-                    Description = "A twin bed room with two comfortable beds and modern amenities.",
-                    Price = 70.00m,
-                    CreatedAt = DateTime.Now,
-                    RoomTypeID = suiteRoomTypeID,
-                    RoomStatusID = availableStatusID
-                }
-            };
-
-            dataContext.Rooms.AddRange(rooms);
-            dataContext.SaveChanges();
-
-            // Seed RoomImages for each room (multiple images per room)
-            var singleRoomId = rooms.First(r => r.Name == "Single Room").RoomID;
-            var doubleRoomId = rooms.First(r => r.Name == "Double Room").RoomID;
-            var twinRoomId = rooms.First(r => r.Name == "Twin Room").RoomID;
-
-            var roomImages = new List<RoomImage>
-            {
-                // Single Room images
-                new RoomImage() { RoomID = singleRoomId, ImageUrl = "single-room-1.jpg" },
-                new RoomImage() { RoomID = singleRoomId, ImageUrl = "single-room-2.jpg" },
-
-                // Double Room images
-                new RoomImage() { RoomID = doubleRoomId, ImageUrl = "double-room-1.jpg" },
-                new RoomImage() { RoomID = doubleRoomId, ImageUrl = "double-room-2.jpg" },
-
-                // Twin Room images
-                new RoomImage() { RoomID = twinRoomId, ImageUrl = "twin-room-1.jpg" },
-                new RoomImage() { RoomID = twinRoomId, ImageUrl = "twin-room-2.jpg" }
-            };
-
-            dataContext.RoomImages.AddRange(roomImages);
-            dataContext.SaveChanges();
-        }
-
-        // Seed RoomReservations
-        if (!dataContext.RoomReservations.Any())
-        {
-            var availableRoomID = dataContext.Rooms.First(r => r.Name == "Single Room").RoomID;
-            var customerID = dataContext.Users.First(u => u.Email == "erza@gmail.com").UserID;
-            var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Confirmed").ReservationStatusID;
-
-            var reservations = new List<RoomReservation>
-            {
-                new RoomReservation()
-                {
-                    RoomID = availableRoomID,
-                    UserID = customerID,
-                    CheckInDate = DateTime.Now.AddDays(1),
-                    CheckOutDate = DateTime.Now.AddDays(5),
-                    ReservationStatusID = reservationStatusID,
-                    CreatedAt = DateTime.Now
-                }
-            };
-
-            dataContext.RoomReservations.AddRange(reservations);
-            dataContext.SaveChanges();
-        }
-
-        // Seed Reviews
-        if (!dataContext.Reviews.Any())
-        {
-            var customerUser = dataContext.Users.FirstOrDefault(u => u.Email == "erza@gmail.com");
-
-            if (customerUser != null)
-            {
-                var reviews = new List<Review>
-                {
-                    new Review()
-                    {
-                        UserID = customerUser.UserID,
-                        Rating = 5,
-                        Comment = "Excellent service and very clean rooms!",
-                        Date = DateTime.Now.AddDays(-2)
-                    },
-                    new Review()
-                    {
-                        UserID = customerUser.UserID,
-                        Rating = 4,
-                        Comment = "Nice hotel, but breakfast could be better.",
-                        Date = DateTime.Now.AddDays(-1)
-                    }
-                };
-
-                dataContext.Reviews.AddRange(reviews);
-                dataContext.SaveChanges();
-            }
         }
     }
 }

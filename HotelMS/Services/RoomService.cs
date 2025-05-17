@@ -2,8 +2,8 @@
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HotelMS.Services
 {
@@ -20,16 +20,8 @@ namespace HotelMS.Services
         {
             try
             {
-                Room room = new Room
-                {
-                    Name = request.Name,
-                    Capacity = request.Capacity,
-                    Size = request.Size,
-                    Description = request.Description,
-                    Price = request.Price,
-                    RoomStatusID = request.RoomStatusID,
-                    RoomTypeID = request.RoomTypeID
-                };
+                // Map DTO to entity
+                Room room = request.Adapt<Room>();
 
                 _dbContext.Rooms.Add(room);
                 await _dbContext.SaveChangesAsync();
@@ -105,13 +97,8 @@ namespace HotelMS.Services
             var room = await _dbContext.Rooms.FindAsync(id);
             if (room == null) return null;
 
-            room.Name = request.Name;
-            room.Capacity = request.Capacity;
-            room.Size = request.Size;
-            room.Description = request.Description;
-            room.Price = request.Price;
-            room.RoomTypeID = request.RoomTypeID;
-            room.RoomStatusID = request.RoomStatusID;
+            // Map updated properties from DTO to existing entity
+            request.Adapt(room);
 
             await _dbContext.SaveChangesAsync();
 
@@ -126,7 +113,7 @@ namespace HotelMS.Services
                 if (result != null)
                 {
                     _dbContext.Rooms.Remove(result);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                 }
             }
             catch (Exception ex)

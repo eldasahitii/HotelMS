@@ -13,6 +13,8 @@ import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/Cleani
 import RoomManagerDashboard from './pages/dashboards/roomdashboards/RoomManagerDashboard'; 
 import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationDashboard';  
 import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
+import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement'; 
+
 
 axios.interceptors.request.use(
   (config) => {
@@ -66,6 +68,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+<Route
+  path="/room-manager-receptionist-management"
+  element={
+    <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
+      <RoomRecepsionistManagement />
+    </ProtectedRoute>
+  }
+/>
+
+
           <Route
             path="/manager/room-dashboard"
             element={
