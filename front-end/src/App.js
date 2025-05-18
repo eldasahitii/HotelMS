@@ -8,6 +8,13 @@ import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/CleaningManagerDashboard';
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/CleaningStaffDashboard';
+import RoomManagerDashboard from './pages/dashboards/roomdashboards/RoomManagerDashboard';
+import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationDashboard';
+import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
+import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement';
+import ServiceMain from './Components/Services/ServiceMain';
+import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
+import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -19,7 +26,7 @@ axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = token;
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -29,7 +36,6 @@ axios.interceptors.request.use(
 // Protected Route component
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('token');
-
   if (!token) return <Navigate to="/login" />;
 
   try {
@@ -38,7 +44,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     if (!allowedRoles.includes(userRole)) return <Navigate to="/login" />;
     return children;
   } catch {
-    return <Navigate to="/login" />
+    return <Navigate to="/login" />;
   }
 };
 
@@ -48,7 +54,7 @@ function App() {
       <div>
         {/* Show Header except on login/signup */}
         {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && <Header />}
-        
+
         <Routes>
           <Route path="/" element={<Navigate to="/signup" />} />
           <Route path="/signup" element={<Signup />} />
@@ -68,7 +74,7 @@ function App() {
           <Route
             path="/manager/cleaning-staff"
             element={
-              <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+              <ProtectedRoute allowedRoles={['CleaningManager']}>
                 <CleaningManagerDashboard />
               </ProtectedRoute>
             }
@@ -77,7 +83,7 @@ function App() {
           <Route
             path="/manager/assignments"
             element={
-              <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+              <ProtectedRoute allowedRoles={['CleaningManager']}>
                 <AssignmentsDashboard />
               </ProtectedRoute>
             }
@@ -91,6 +97,76 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/room-manager-receptionist-management"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
+                {
+                  (() => {
+                    const token = localStorage.getItem('token');
+                    let currentUserId = null;
+                    if (token) {
+                      try {
+                        const decoded = jwtDecode(token);
+                        currentUserId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || null;
+                      } catch {
+                        currentUserId = null;
+                      }
+                    }
+                    return <RoomRecepsionistManagement currentUserId={currentUserId} />;
+                  })()
+                }
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/manager/room-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+                <RoomManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/reservation-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+                <ReservationDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/recepsionist-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
+                <RoomReceptionistDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/restaurant-manager/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RestaurantManager']}>
+                <RestaurantManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/host/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RestaurantHost']}>
+                <RestaurantHostDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<div>Page Not Found</div>} />
         </Routes>
       </div>
     </Router>
@@ -98,4 +174,3 @@ function App() {
 }
 
 export default App;
-

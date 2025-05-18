@@ -5,6 +5,7 @@ using HotelMS.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Expressions;
 using System.Security.Claims;
@@ -51,7 +52,8 @@ namespace HotelMS.Services
                     PasswordSalt = salt,
                     RoleID = role.RoleID,
                     CreatedAt = DateTime.UtcNow,
-                   
+                    Phone = request.Phone
+
                 };
 
                 _context.Users.Add(user);

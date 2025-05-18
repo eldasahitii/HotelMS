@@ -32,7 +32,9 @@ namespace HotelMS.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public int RoleID { get; set; }
         public Role Role { get; set; }
+        public RoomRecepsionist RoomRecepsionist { get; set; }
         public ICollection<RoomReservation> RoomReservations { get; set; }
+
 
 
     }

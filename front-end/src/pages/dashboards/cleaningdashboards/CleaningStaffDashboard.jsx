@@ -65,40 +65,35 @@ export default function AssignmentsByName() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('email');
-    localStorage.removeItem('role');
-    localStorage.removeItem('userID');
-    localStorage.removeItem('name');
+    localStorage.clear();
     navigate('/login');
   };
 
   return (
-    <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
+    <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
+      <aside className="text-white p-3" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
         <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
         <ul className="nav flex-column">
-          <li className="nav-item">
-            <i className="bi bi-person-lines-fill me-2"></i>Dashboard
-          </li>
+          <li className="nav-item mb-2"><i className="bi bi-person-lines-fill me-2"></i>Dashboard</li>
           <hr className="text-white" />
           <button className="btn btn-outline-light w-100" onClick={handleLogout}>
             <i className="bi bi-box-arrow-right me-2"></i> Logout
           </button>
         </ul>
       </aside>
-      <main className="flex-grow-1 p-4">
+
+      <main className="flex-grow-1 p-3">
         <h2 className="text-primary fw-bold mb-4">
           <i className="bi bi-search me-2"></i>Cleaning Assignments
         </h2>
 
         <div className="card mb-4 shadow-sm">
-          <div className="card-header bg-info text-white">
+          <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
             <i className="bi bi-search me-2"></i>Search Assignments by Name
           </div>
           <div className="card-body">
-            <form onSubmit={handleSearch} className="row g-2 align-items-center">
-              <div className="col-sm">
+            <form onSubmit={handleSearch} className="row g-2">
+              <div className="col-12 col-md-8">
                 <input
                   ref={inputRef}
                   className="form-control"
@@ -108,10 +103,10 @@ export default function AssignmentsByName() {
                   onChange={(e) => setStaffName(e.target.value)}
                 />
               </div>
-              <div className="col-auto">
-                <button type="submit" className="btn btn-outline-light">
-                  <i className="bi bi-search"></i> Search
-                </button>
+            <div className="col-12 col-md-4">
+               <button type="submit" className="btn w-100" style={{ color: '#000000', border: '1px solid' }}>
+                <i className="bi bi-search me-2"></i> Search
+              </button>
               </div>
             </form>
           </div>
@@ -124,53 +119,57 @@ export default function AssignmentsByName() {
             <i className="bi bi-list-task me-2"></i>Assignment List
           </div>
           <div className="card-body p-0">
-            <table className="table table-striped mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>#</th>
-                  <th>Room</th>
-                  <th>Staff</th>
-                  <th>Status</th>
-                  <th>Assigned</th>
-                  <th>Started</th>
-                  <th>Finished</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {assignments.map((a, index) => (
-                  <tr key={a.cleaningAssignmentID}>
-                    <td>{index + 1}</td>
-                    <td>{a.roomName}</td>
-                    <td>{a.staffName}</td>
-                    <td>
-                      <span className={`badge ${a.status === 'Completed' ? 'bg-success' : a.status === 'InProgress' ? 'bg-info' : 'bg-secondary'}`}>{a.status}</span>
-                    </td>
-                    <td>{a.assignedAt ? new Date(a.assignedAt).toLocaleString() : '-'}</td>
-                    <td>{a.startedAt ? new Date(a.startedAt).toLocaleString() : '-'}</td>
-                    <td>{a.finishedAt ? new Date(a.finishedAt).toLocaleString() : '-'}</td>
-                    <td>
-                      <div className="btn-group">
-                        <button
-                          className="btn btn-sm btn-outline-secondary"
-                          onClick={() => handleStart(a.cleaningAssignmentID)}
-                          disabled={a.status !== 'Pending'}
-                        >
-                          <i className="bi bi-play-fill"></i>
-                        </button>
-                        <button
-                          className="btn btn-sm btn-outline-success"
-                          onClick={() => handleComplete(a.cleaningAssignmentID)}
-                          disabled={a.status !== 'InProgress'}
-                        >
-                          <i className="bi bi-check-circle"></i>
-                        </button>
-                      </div>
-                    </td>
+            <div className="table-responsive">
+              <table className="table table-striped mb-0">
+                <thead className="table-light">
+                  <tr>
+                    <th>#</th>
+                    <th>Room</th>
+                    <th>Staff</th>
+                    <th>Status</th>
+                    <th>Assigned</th>
+                    <th>Started</th>
+                    <th>Finished</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {assignments.map((a, index) => (
+                    <tr key={a.cleaningAssignmentID}>
+                      <td>{index + 1}</td>
+                      <td>{a.roomName}</td>
+                      <td>{a.staffName}</td>
+                      <td>
+                        <span className={`badge ${a.status === 'Completed' ? 'bg-success' : a.status === 'InProgress' ? 'bg-info' : 'bg-secondary'}`}>
+                          {a.status}
+                        </span>
+                      </td>
+                      <td>{a.assignedAt ? new Date(a.assignedAt).toLocaleString() : '-'}</td>
+                      <td>{a.startedAt ? new Date(a.startedAt).toLocaleString() : '-'}</td>
+                      <td>{a.finishedAt ? new Date(a.finishedAt).toLocaleString() : '-'}</td>
+                      <td>
+                        <div className="btn-group">
+                          <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => handleStart(a.cleaningAssignmentID)}
+                            disabled={a.status !== 'Pending'}
+                          >
+                            <i className="bi bi-play-fill"></i>
+                          </button>
+                          <button
+                            className="btn btn-sm btn-outline-success"
+                            onClick={() => handleComplete(a.cleaningAssignmentID)}
+                            disabled={a.status !== 'InProgress'}
+                          >
+                            <i className="bi bi-check-circle"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </main>

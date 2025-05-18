@@ -25,30 +25,41 @@ const Login = () => {
       const { token, isLoggedIn } = response.data;
 
       if (token && isLoggedIn) {
-        const rawToken = token.replace('Bearer ', '');
-        const decoded = jwtDecode(rawToken);
+        const decoded = jwtDecode(token);
 
-        const userEmail = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
-        const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-        const userId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-
-        localStorage.setItem('token', `Bearer ${token}`);
-        localStorage.setItem('email', userEmail);
-        localStorage.setItem('role', userRole);
-        localStorage.setItem('userID', userId);
+        localStorage.setItem('token', token);
+        localStorage.setItem('email', decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]);
+        localStorage.setItem('role', decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
+        localStorage.setItem('userID', decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]);
 
         console.log('Login successful:', decoded);
-        // navigate('/admin-dashboard');
-         if (userRole === 'Admin') {
-          navigate('/admin-dashboard');
-        } else if (userRole === 'Manager') {
-          navigate('/manager/cleaning-staff');
-        } else if (userRole === 'CleaningStaff') {
-          navigate('/cleaningstaff/dashboard');
-        } else {
-          setError("Unknown role. Access denied.");
+
+        switch (decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]) {
+          case 'Admin':
+            navigate('/admin-dashboard');
+            break;
+          case 'RoomManager':
+            navigate('/manager/room-dashboard');
+            break;
+          case 'RoomRecepsionist':
+            navigate('/recepsionist-dashboard');
+            break;
+          case 'CleaningManager':
+            navigate('/manager/cleaning-staff');
+            break;
+          case 'CleaningStaff':
+            navigate('/cleaningstaff/dashboard');
+            break;
+          case 'RestaurantManager':
+            navigate('/restaurant-manager/dashboard');
+            break;
+          case 'RestaurantHost':
+            navigate('/host/dashboard');
+            break;
+          default:
+            setError("Unknown role. Access denied.");
+            break;
         }
-      
       }
     } catch (error) {
       const message = error.response?.data?.message || error.message;

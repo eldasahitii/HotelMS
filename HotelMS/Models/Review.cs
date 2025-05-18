@@ -22,9 +22,6 @@ namespace HotelMS.Models
 
         public DateTime Date { get; set; } = DateTime.Now;
 
-        // lidhja me tabelën User
-        public User? User { get; set; }  // bëje opsionale me '?'
-
+        public User? User { get; set; }  // Optional navigation property
     }
 }
-

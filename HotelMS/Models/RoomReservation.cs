@@ -19,7 +19,7 @@ namespace HotelMS.Models
         public DateTime CheckOutDate { get; set; }
         public int ReservationStatusID { get; set; }
         public ReservationStatus ReservationStatus { get; set; }
-
+        public string? SpecialRequests { get; set; }
         public DateTime CreatedAt { get; set; }=DateTime.Now;
 
 
