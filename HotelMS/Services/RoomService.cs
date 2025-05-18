@@ -2,8 +2,8 @@
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HotelMS.Services
 {
@@ -15,88 +15,94 @@ namespace HotelMS.Services
         {
             _dbContext = dbContext;
         }
+
         public async Task<Room> AddRoom(RoomDTO request)
         {
             try
             {
-                Room room = new Room
-                {
-                    Name = request.Name,
-                    Capacity = request.Capacity,
-                    Size = request.Size,
-                    Description = request.Description,
-                    Price = request.Price,
-                    ImageUrl = request.ImageUrl
-                };
+                // Map DTO to entity
+                Room room = request.Adapt<Room>();
 
                 _dbContext.Rooms.Add(room);
                 await _dbContext.SaveChangesAsync();
 
+                // Add Room Images if any
+                if (request.Images != null && request.Images.Any())
+                {
+                    foreach (var imageUrl in request.Images)
+                    {
+                        var roomImage = new RoomImage
+                        {
+                            ImageUrl = imageUrl,
+                            RoomID = room.RoomID
+                        };
+                        _dbContext.RoomImages.Add(roomImage);
+                    }
+                    await _dbContext.SaveChangesAsync();
+                }
+
                 return room;
-            } catch (Exception ex) { 
-                Console.WriteLine(ex.Message);
-                throw new Exception("An error occurred while attempting to save the product record."); 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                throw new Exception("An error occurred while attempting to save the room.");
             }
         }
+
         public async Task<Room> GetRoom(int id)
         {
             try
             {
-                var result = _dbContext.Rooms.Find(id);
-                return result;
+                var room = await _dbContext.Rooms
+                    .Include(r => r.RoomType)
+                    .Include(r => r.RoomStatus)
+                    .Include(r => r.RoomImages)
+                    .FirstOrDefaultAsync(r => r.RoomID == id);
+
+                return room;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception("Ann error occured.");
-
+                throw new Exception("An error occurred.");
             }
         }
 
-        public async Task<IEnumerable<Room>> GetAll()
+        public async Task<IEnumerable<Room>> GetAllRooms()
         {
             try
             {
-                var result = await _dbContext.Rooms.ToListAsync();
-                return result;
+                var rooms = await _dbContext.Rooms
+                    .Include(r => r.RoomType)
+                    .Include(r => r.RoomStatus)
+                    .Include(r => r.RoomImages)
+                    .ToListAsync();
+
+                return rooms;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception("An error occured");
+                throw new Exception("An error occurred");
             }
         }
 
         public async Task<Room> UpdateRoom(int id, RoomDTO request)
         {
-            try
-            {
-                var room = _dbContext.Rooms.Find(id);
+            var room = await _dbContext.Rooms.FindAsync(id);
+            if (room == null) return null;
 
-                if (room == null)
-                {
-                    return null;
-                }
+            // Map updated properties from DTO to existing entity
+            request.Adapt(room);
 
-                if (room != null)
-                {
-                    room.Name = request.Name;
-                    room.Capacity = request.Capacity;
-                    room.Size = request.Size;
-                    room.Description = request.Description;
-                    room.Price = request.Price;
-                    room.ImageUrl = request.ImageUrl;
+            await _dbContext.SaveChangesAsync();
 
-                    _dbContext.SaveChanges();
-                }
-                return room;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw new Exception("An error occured while attmeting to save room");
-            }
-
+            return room;
         }
 
         public async Task DeleteRoom(int id)
@@ -107,14 +113,13 @@ namespace HotelMS.Services
                 if (result != null)
                 {
                     _dbContext.Rooms.Remove(result);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex.Message);
-                throw new Exception("An error occured while attempting to delete room");
-
-
+                throw new Exception("An error occurred while attempting to delete room");
             }
         }
     }

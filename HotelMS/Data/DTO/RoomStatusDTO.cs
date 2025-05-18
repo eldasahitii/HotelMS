@@ -1,4 +1,6 @@
-﻿namespace HotelMS.Data.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HotelMS.Data.DTO
 {
     public class RoomStatusDTO
     {
