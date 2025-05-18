@@ -5,7 +5,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { jwtDecode } from 'jwt-decode';  // <-- named import, correct for v4.x
+import { jwtDecode } from 'jwt-decode';
 import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/CleaningManagerDashboard';
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import axios from 'axios';
@@ -15,6 +15,8 @@ import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationD
 import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
 import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement'; 
 import ServiceMain from './Components/Services/ServiceMain';
+import RestaurantHostDashboard from './pages/RestaurantDashboards/RestaurantHostDashboard';
+import RestaurantManagerDashboard from './pages/RestaurantDashboards/RestaurantManagerDashboard';
 
 axios.interceptors.request.use(
   (config) => {
@@ -48,18 +50,13 @@ function App() {
   return (
     <Router>
       <div>
-        {/* Only show Header if not on login or signup page */}
         {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && <Header />}
 
         <Routes>
-          {/* Default route */}
           <Route path="/" element={<Navigate to="/signup" />} />
-
-          {/* Auth Routes */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
 
-          {/* Protected Routes */}
           <Route
             path="/admin-dashboard"
             element={
@@ -68,51 +65,26 @@ function App() {
               </ProtectedRoute>
             }
           />
-  <Route
-  path="/room-manager-receptionist-management"
-  element={
-    <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
-      {
-        (() => {
-          const token = localStorage.getItem('token');
-          let currentUserId = null;
-          if (token) {
-            try {
-              const decoded = jwtDecode(token);
-              currentUserId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || null;
-            } catch {
-              currentUserId = null;
-            }
-          }
-          return <RoomRecepsionistManagement currentUserId={currentUserId} />;
-        })()
-      }
-    </ProtectedRoute>
-  }
-/>
-
 
           <Route
-            path="/manager/room-dashboard"
+            path="/room-manager-receptionist-management"
             element={
-              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
-                <RoomManagerDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/reservation-dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
-                <ReservationDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/recepsionist-dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
-                <RoomReceptionistDashboard />
+              <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
+                {
+                  (() => {
+                    const token = localStorage.getItem('token');
+                    let currentUserId = null;
+                    if (token) {
+                      try {
+                        const decoded = jwtDecode(token);
+                        currentUserId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || null;
+                      } catch {
+                        currentUserId = null;
+                      }
+                    }
+                    return <RoomRecepsionistManagement currentUserId={currentUserId} />;
+                  })()
+                }
               </ProtectedRoute>
             }
           />
@@ -125,14 +97,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/manager/assignments"
             element={
-              <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+              <ProtectedRoute allowedRoles={['Admin', 'Manager', 'CleaningManager']}>
                 <AssignmentsDashboard />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/cleaningstaff/dashboard"
             element={
@@ -142,7 +116,50 @@ function App() {
             }
           />
 
-          {/* Fallback Route */}
+          <Route
+            path="/manager/room-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+                <RoomManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/reservation-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+                <ReservationDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/recepsionist-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
+                <RoomReceptionistDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/restaurant-manager/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RestaurantManager']}>
+                <RestaurantManagerDashboard/>
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/host/dashboard"
+            element={
+             <ProtectedRoute allowedRoles={['RestaurantHost']}>
+               <RestaurantHostDashboard/>
+             </ProtectedRoute>
+            }
+         />
+
           <Route path="*" element={<div>Page Not Found</div>} />
         </Routes>
       </div>
