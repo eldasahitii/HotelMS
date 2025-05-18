@@ -230,21 +230,21 @@ public class Seed
                 {
                     Name = "Single Room", Capacity = "1-2 Persons", Size = "15m²",
                     Description = "A cozy single room with modern amenities.",
-                    Price = 50.00m, ImageUrl = "single-room.jpg",
+                    Price = 50.00m,
                     CreatedAt = DateTime.Now, RoomTypeID = standardRoomTypeID, RoomStatusID = availableStatusID
                 },
                 new Room()
                 {
                     Name = "Double Room", Capacity = "2 Adults", Size = "25m²",
                     Description = "A spacious double room with a comfortable bed.",
-                    Price = 80.00m, ImageUrl = "double-room.jpg",
+                    Price = 80.00m,
                     CreatedAt = DateTime.Now, RoomTypeID = deluxeRoomTypeID, RoomStatusID = availableStatusID
                 },
                 new Room()
                 {
                     Name = "Twin Room", Capacity = "2-3 Persons", Size = "23m²",
                     Description = "A twin bed room with two comfortable beds and modern amenities.",
-                    Price = 70.00m, ImageUrl = "twin-room.jpg",
+                    Price = 70.00m,
                     CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID, RoomStatusID = availableStatusID
                 }
             };
