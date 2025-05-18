@@ -1,37 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { Row, Col, Button } from "react-bootstrap";
+import React from "react";
+import { Card, Button } from "react-bootstrap";
+import RoomSlider from "./RoomSlider";
 
 const RoomCard = ({ title, capacity, size, description, images, link, isReversed }) => {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % images.length);
-    }, 2000);
-    return () => clearInterval(timer);
-  }, [images]);
-
-  const content = (
-    <>
-      <Col md={6}>
-        <img src={images[index]} alt={title} className="img-fluid rounded shadow" />
-      </Col>
-      <Col md={6} className="d-flex flex-column justify-content-center">
-        <h3>{title}</h3>
-        <p>Capacity: {capacity}</p>
-        <p>Size: {size}</p>
-        <p>{description}</p>
-        <a href={link} target="_blank" rel="noopener noreferrer">
-          <Button variant="primary">View More</Button>
-        </a>
-      </Col>
-    </>
-  );
+  const safeTitle = title || "Room";
+  const safeId = safeTitle.replace(/\s+/g, "");
+  const safeImages = Array.isArray(images) ? images : [];
 
   return (
-    <Row className="my-5 align-items-center">
-      {isReversed ? React.Children.toArray(content).reverse() : content}
-    </Row>
+    <Card className={`mb-5 d-flex flex-row ${isReversed ? "flex-row-reverse" : ""} align-items-center`}>
+      <div style={{ flex: 1 }}>
+        <RoomSlider id={safeId} images={safeImages} alt={safeTitle} />
+      </div>
+      <Card.Body style={{ flex: 1 }}>
+        <Card.Title>{safeTitle}</Card.Title>
+        <Card.Text><strong>Capacity:</strong> {capacity || "N/A"}</Card.Text>
+        <Card.Text><strong>Size:</strong> {size || "N/A"}</Card.Text>
+        <Card.Text>{description || "No description available."}</Card.Text>
+        <Button href={link || "#"} target="_blank" variant="primary">
+          View More
+        </Button>
+      </Card.Body>
+    </Card>
   );
 };
 

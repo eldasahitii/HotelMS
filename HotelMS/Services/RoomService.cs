@@ -20,13 +20,11 @@ namespace HotelMS.Services
         {
             try
             {
-                // Map DTO to entity
                 Room room = request.Adapt<Room>();
 
                 _dbContext.Rooms.Add(room);
                 await _dbContext.SaveChangesAsync();
 
-                // Add Room Images if any
                 if (request.Images != null && request.Images.Any())
                 {
                     foreach (var imageUrl in request.Images)
@@ -97,7 +95,6 @@ namespace HotelMS.Services
             var room = await _dbContext.Rooms.FindAsync(id);
             if (room == null) return null;
 
-            // Map updated properties from DTO to existing entity
             request.Adapt(room);
 
             await _dbContext.SaveChangesAsync();

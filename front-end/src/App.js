@@ -5,7 +5,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { jwtDecode } from 'jwt-decode';  // <-- named import, correct for v4.x
+import { jwtDecode } from 'jwt-decode';  
 import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/CleaningManagerDashboard';
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import axios from 'axios';
@@ -17,6 +17,9 @@ import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRe
 import ServiceMain from './Components/Services/ServiceMain';
 import RoomsPage from './pages/Rooms/RoomsPage';
 import RoomCard from './pages/Rooms/RoomCard';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 
 
 axios.interceptors.request.use(
@@ -30,7 +33,6 @@ axios.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ProtectedRoute component to ensure role-based access
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('token');
 
@@ -51,23 +53,19 @@ function App() {
   return (
     <Router>
       <div>
-        {/* Only show Header if not on login or signup page */}
         {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && <Header />}
 
         <Routes>
-          {/* Default route */}
           <Route path="/" element={<Navigate to="/signup" />} />
 
-          {/* Auth Routes */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
 
            <Route path="/rooms" element={<RoomsPage />} />
 
-  {/* Route for individual room card, e.g., /rooms/123 */}
-  <Route path="/rooms/:roomId" element={<RoomCard />} />
-  
-          {/* Protected Routes */}
+
+           <Route path="/rooms/:roomId" element={<RoomCard />} />
+
           <Route
             path="/admin-dashboard"
             element={
@@ -76,10 +74,10 @@ function App() {
               </ProtectedRoute>
             }
           />
-  <Route
-  path="/room-manager-receptionist-management"
-  element={
-    <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
+           <Route
+            path="/room-manager-receptionist-management"
+            element={
+            <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
       {
         (() => {
           const token = localStorage.getItem('token');
@@ -150,7 +148,6 @@ function App() {
             }
           />
 
-          {/* Fallback Route */}
           <Route path="*" element={<div>Page Not Found</div>} />
         </Routes>
       </div>

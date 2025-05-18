@@ -14,10 +14,9 @@ const Login = () => {
 
 const handleLogin = async (e) => {
   e.preventDefault();
-  setError('');  // Reset error state
+  setError(''); 
 
   try {
-    // Sending login request
     const response = await axios.post('https://localhost:7117/api/Auth/login', {
       email,
       password,
@@ -26,9 +25,8 @@ const handleLogin = async (e) => {
     const { token, isLoggedIn } = response.data;
 
     if (token && isLoggedIn) {
-      const decoded = jwtDecode(token);  // No need to strip "Bearer "
+      const decoded = jwtDecode(token); 
 
-      // Storing data in localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('email', decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]);
       localStorage.setItem('role', decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
@@ -36,7 +34,6 @@ const handleLogin = async (e) => {
 
       console.log('Login successful:', decoded);
 
-      // Redirecting based on user role
       switch (decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]) {
         case 'Admin':
           navigate('/admin-dashboard');

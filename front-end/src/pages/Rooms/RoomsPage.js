@@ -1,67 +1,24 @@
 import React from "react";
-import RoomCard from "./RoomCard";
-import { Container } from "react-bootstrap";
+import { Card, Button } from "react-bootstrap";
+import RoomSlider from "./RoomSlider";
 
-const RoomsPage = () => {
-  const rooms = [
-    {
-      title: "Junior Room",
-      capacity: "1-2 PERSONS",
-      size: "22M2",
-      description:
-        "Experience understated luxury in our Superior Double Bed Room. Elegantly designed with a harmonious blend of comfort and style, this space boasts a plush double bed, premium amenities, and more.",
-      images: ["imgs/dhoma1.jpeg", "imgs/slider5.jpeg"],
-      link: "./room3.php",
-    },
-    {
-      title: "Deluxe Room",
-      capacity: "1-2 PERSONS",
-      size: "22M2",
-      description:
-        "Experience understated luxury in our Superior Double Bed Room. Elegantly designed with a harmonious blend of comfort and style, this space boasts a plush double bed, premium amenities, and more.",
-      images: ["imgs/dhoma22.jpeg", "imgs/slider4.webp"],
-      link: "./room2.php",
-    },
-    {
-      title: "Double Room",
-      capacity: "1-2 PERSONS",
-      size: "22M2",
-      description:
-        "Experience understated luxury in our Superior Double Bed Room. Elegantly designed with a harmonious blend of comfort and style, this space boasts a plush double bed, premium amenities.",
-      images: ["imgs/dhoma1.jpeg", "imgs/slider3.jpeg"],
-      link: "./room1.php",
-    },
-    {
-      title: "Twin Room",
-      capacity: "1-2 PERSONS",
-      size: "22M2",
-      description:
-        "Experience understated luxury in our Superior Double Bed Room. Elegantly designed with a harmonious blend of comfort and style, this space boasts a plush double bed, premium amenities, and more.",
-      images: ["imgs/woden.jpeg", "imgs/junior3.jpg"],
-      link: "./room4.php",
-    },
-    {
-      title: "Superior Twin Room",
-      capacity: "1-2 PERSONS",
-      size: "22M2",
-      description:
-        "Experience understated luxury in our Superior Double Bed Room. Elegantly designed with a harmonious blend of comfort and style, this space boasts a plush double bed, premium amenities, and more.",
-      images: ["imgs/supertwin.jpg", "imgs/slider6.jpeg"],
-      link: "./room5.php",
-    },
-  ];
-
+const RoomCard = ({ title, capacity, size, description, images, link, isReversed }) => {
   return (
-    <>
-      <Container className="my-5">
-        <h2 className="text-center mb-4">Welcome to our exquisite hotel rooms!</h2>
-        {rooms.map((room, index) => (
-          <RoomCard key={index} {...room} isReversed={index % 2 === 1} />
-        ))}
-      </Container>
-
-    </>
+    <Card className={`mb-5 d-flex flex-row ${isReversed ? "flex-row-reverse" : ""} align-items-center`}>
+      <div style={{ flex: 1 }}>
+        <RoomSlider id={title.replace(/\s+/g, "")} images={images} alt={title} />
+      </div>
+      <Card.Body style={{ flex: 1 }}>
+        <Card.Title>{title}</Card.Title>
+        <Card.Text><strong>Capacity:</strong> {capacity}</Card.Text>
+        <Card.Text><strong>Size:</strong> {size}</Card.Text>
+        <Card.Text>{description}</Card.Text>
+        <Button href={link} target="_blank" variant="primary">
+          View More
+        </Button>
+      </Card.Body>
+    </Card>
   );
 };
 
-export default RoomsPage;
+export default RoomCard;

@@ -83,7 +83,7 @@ builder.Services.AddScoped<IHotelServiceReservationService, HotelServiceReservat
 
 
 
-//builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
