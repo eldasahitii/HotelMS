@@ -34,17 +34,44 @@ namespace HotelMS.Services
         }
 
 
-        public async Task<IEnumerable<User>> GetAll()
+        //public async Task<IEnumerable<User>> GetAll()
+        //{
+        //    try
+        //    {
+        //        var result = await _dbContext.Users.ToListAsync();
+        //        return result;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //        throw new Exception("An error occured");
+        //    }
+        //}
+        public async Task<IEnumerable<UserDTO>> GetAll()
         {
             try
             {
-                var result = await _dbContext.Users.ToListAsync();
+                var result = await _dbContext.Users
+                    .Include(u => u.Role)
+                    .Select(u => new UserDTO
+                    {
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        Email = u.Email,
+                        Phone = u.Phone,
+                        Address = u.Address,
+                        CreatedAt = u.CreatedAt,
+                        RoleType = u.Role.RoleType, 
+                        UserID = u.UserID           
+                    })
+                    .ToListAsync();
+
                 return result;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception("An error occured");
+                throw new Exception("An error occurred while fetching users.");
             }
         }
 

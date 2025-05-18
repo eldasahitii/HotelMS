@@ -32,7 +32,7 @@ const AdminDashboard = () => {
     await axios.put(`https://localhost:7117/api/users/${userId}/role`, { roleId }, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    fetchUsers(); // Refresh list
+    fetchUsers(); 
   };
 
   return (
