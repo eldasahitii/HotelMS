@@ -76,6 +76,18 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
 builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
+
+builder.Services.AddScoped<IHotelServiceService, HotelServiceService>();
+builder.Services.AddScoped<IHotelServiceScheduleService, HotelServiceScheduleService>();
+builder.Services.AddScoped<IHotelServiceReservationService, HotelServiceReservationService>();
+
+
+
+//builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+builder.Services.AddControllers();
+
+builder.Services.AddScoped<IAdminService, AdminService>();
+
 builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 builder.Services.AddScoped<IReservationStatusService, ReservationStatusService>();
 builder.Services.AddScoped<IRoomReservationService,RoomReservationService>();

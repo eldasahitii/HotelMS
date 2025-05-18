@@ -131,8 +131,36 @@ namespace HotelMS.Data
 
             // Shift conversion to string for CleaningStaff
             modelBuilder.Entity<CleaningStaff>()
-                .Property(cs => cs.Shift)
-                .HasConversion<string>();
+             .Property(cs => cs.Shift)
+              .HasConversion<string>();
+
+            //HotelService -> HotelServiceSchedule
+            modelBuilder.Entity<HotelServiceSchedule>()
+                .HasOne(s => s.Service)
+                .WithMany(h => h.HotelServiceSchedules)
+                .HasForeignKey(s => s.HotelServiceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //HotelService -> HotelReservation
+            modelBuilder.Entity<HotelServiceReservation>()
+                .HasOne(r => r.Service)
+                .WithMany(s => s.HotelServiceReservations)
+                .HasForeignKey(r => r.HotelServiceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //HotelReservation -> User
+            modelBuilder.Entity<HotelServiceReservation>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //HotelServiceReservation -> HotelServiceSchedule
+            modelBuilder.Entity<HotelServiceReservation>()
+                .HasOne(r => r.Schedule)
+                .WithMany()
+                .HasForeignKey(r => r.ScheduleId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

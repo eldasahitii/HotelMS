@@ -15,7 +15,7 @@ namespace HotelMS.Controllers
             _service = service;
         }
 
-
+        //koment
         [HttpGet]
 
 

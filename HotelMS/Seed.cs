@@ -213,5 +213,156 @@ public class Seed
             dataContext.RoomTypes.AddRange(roomTypes);
             dataContext.SaveChanges();
         }
+
+        // Seed Rooms
+
+        if (!dataContext.Rooms.Any())
+        {
+            var standardRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Standard").RoomTypeID;
+            var deluxeRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Deluxe").RoomTypeID;
+            var suiteRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Suite").RoomTypeID;
+
+            var availableStatusID = dataContext.RoomStatuses.First(rs => rs.RoomStatusName == "Available").RoomStatusID;
+
+            var rooms = new List<Room>
+            {
+                new Room()
+                {
+                    Name = "Single Room", Capacity = "1-2 Persons", Size = "15m²",
+                    Description = "A cozy single room with modern amenities.",
+                    Price = 50.00m, ImageUrl = "single-room.jpg",
+                    CreatedAt = DateTime.Now, RoomTypeID = standardRoomTypeID, RoomStatusID = availableStatusID
+                },
+                new Room()
+                {
+                    Name = "Double Room", Capacity = "2 Adults", Size = "25m²",
+                    Description = "A spacious double room with a comfortable bed.",
+                    Price = 80.00m, ImageUrl = "double-room.jpg",
+                    CreatedAt = DateTime.Now, RoomTypeID = deluxeRoomTypeID, RoomStatusID = availableStatusID
+                },
+                new Room()
+                {
+                    Name = "Twin Room", Capacity = "2-3 Persons", Size = "23m²",
+                    Description = "A twin bed room with two comfortable beds and modern amenities.",
+                    Price = 70.00m, ImageUrl = "twin-room.jpg",
+                    CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID, RoomStatusID = availableStatusID
+                }
+            };
+
+            dataContext.Rooms.AddRange(rooms);
+            dataContext.SaveChanges();
+        }
+
+        if (!dataContext.RoomReservations.Any())
+        {
+            var availableRoomID = dataContext.Rooms.First(r => r.Name == "Single Room").RoomID;
+            var customerID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
+            var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Pending").ReservationStatusID;
+
+            var reservations = new List<RoomReservation>
+            {
+                new RoomReservation()
+                {
+                    RoomID = availableRoomID,
+                    UserID = customerID,
+                    CheckInDate = DateTime.Now.AddDays(1),
+                    CheckOutDate = DateTime.Now.AddDays(5),
+                    ReservationStatusID = reservationStatusID, 
+                    CreatedAt = DateTime.Now    
+                }
+            };
+
+            dataContext.RoomReservations.AddRange(reservations);
+            dataContext.SaveChanges();
+        }
+
+        //Seed HotelService
+        if(!dataContext.HotelServices.Any())
+        {
+            var services = new List<HotelService>
+            {
+                new HotelService
+                {
+                    Type = "Pool & Spa",
+                    Name = "Sauna Session",
+                    Description = "30-minute sauna to relax your body",
+                    Price = 30.00m
+                },
+                new HotelService
+                {
+                    Type = "Pool & Spa",
+                    Name = "Full Body Massage",
+                    Description = "1-hour relaxing massgae by professionals",
+                    Price = 60.00m
+                },
+                new HotelService
+                {
+                    Type = "Events",
+                    Name = "Wedding Hall Booking",
+                    Description = "Spacious hall for weddings and ceremonies",
+                    Price = 500.00m
+                },
+                new HotelService
+                {
+                    Type = "Events",
+                    Name = "Conference Room Booking",
+                    Description = "Corporate setup with presentation equipment",
+                    Price = 400.00m
+                }
+            };
+            dataContext.HotelServices.AddRange(services);
+            dataContext.SaveChanges();
+        }
+
+        //Seed HotelServiceSchedule
+        if (!dataContext.HotelServiceSchedules.Any())
+        {
+            var scheduleEntries = new List<HotelServiceSchedule>();
+
+            var allServices = dataContext.HotelServices.ToList();
+            foreach (var service in allServices)
+            {
+                scheduleEntries.Add(new HotelServiceSchedule
+                {
+                    HotelServiceId = service.Id,
+                    StartTime = DateTime.Today.AddHours(10),
+                    EndTime = DateTime.Today.AddHours(11),
+                    IsAvailable = true
+                });
+                scheduleEntries.Add(new HotelServiceSchedule
+                {
+                    HotelServiceId = service.Id,
+                    StartTime = DateTime.Today.AddHours(14),
+                    EndTime = DateTime.Today.AddHours(15),
+                    IsAvailable = true
+                });
+            }
+            dataContext.HotelServiceSchedules.AddRange(scheduleEntries);
+            dataContext.SaveChanges();
+        }
+
+
+        //Seed HotelServiceReservation
+        if (!dataContext.HotelServiceReservations.Any())
+        {
+            var customer = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
+            var saunaService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Sauna Session");
+            var schedule = dataContext.HotelServiceSchedules.FirstOrDefault(s => s.HotelServiceId == saunaService.Id);
+
+            if(customer !=null && saunaService !=null && schedule !=null)
+            {
+                var reservation = new HotelServiceReservation
+                {
+                    UserId = customer.UserID,
+                    HotelServiceId = saunaService.Id,
+                    ScheduleId = schedule.Id,
+                    ReservationTime = DateTime.Now,
+                    Status = "Confirmed"
+                };
+
+                dataContext.HotelServiceReservations.Add(reservation);
+                dataContext.SaveChanges();
+            }
+        }
     }
 }
