@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 export default function AssignmentsDashboard() {
   const [assignments, setAssignments] = useState([]);
+  const [cleaningStaffList, setCleaningStaffList] = useState([]);
   const [newAssignment, setNewAssignment] = useState({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: 2 });
   const [editingAssignment, setEditingAssignment] = useState(null);
   const [editRoomID, setEditRoomID] = useState('');
@@ -21,8 +22,18 @@ export default function AssignmentsDashboard() {
     }
   };
 
+  const fetchCleaningStaff = async () => {
+    try {
+      const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
+      setCleaningStaffList(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     fetchAssignments();
+    fetchCleaningStaff();
   }, []);
 
   const handleAddAssignment = async () => {
@@ -52,16 +63,8 @@ export default function AssignmentsDashboard() {
     }
   };
 
-  const openEditForm = (assignment) => {
-    setEditingAssignment(assignment);
-    setEditRoomID(assignment.roomID);
-  };
-
   const handleConfirmUpdate = async () => {
-    const updated = {
-      roomID: parseInt(editRoomID)
-    };
-
+    const updated = { roomID: parseInt(editRoomID) };
     try {
       await axios.put(`/api/CleaningAssignment/updateAssignment?id=${editingAssignment.cleaningAssignmentID}`, updated);
       setMessage("Assignment updated successfully.");
@@ -93,9 +96,15 @@ export default function AssignmentsDashboard() {
       setMessageType("danger");
     }
   };
+
+  const openEditForm = (assignment) => {
+    setEditingAssignment(assignment);
+    setEditRoomID(assignment.roomID);
+  };
+
   return (
-    <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
+    <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
+      <aside className="text-white p-4" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
         <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
         <ul className="nav flex-column">
           <li className="nav-item">
@@ -110,7 +119,8 @@ export default function AssignmentsDashboard() {
           </li>
         </ul>
       </aside>
-      <main className="flex-grow-1 p-4">
+
+      <main className="flex-grow-1 p-3">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-list-task me-2"></i>Cleaning Assignments
         </h2>
@@ -127,9 +137,26 @@ export default function AssignmentsDashboard() {
             <i className="bi bi-plus-circle me-2"></i>Add New Assignment
           </div>
           <div className="card-body">
-            <input className="form-control mb-2" placeholder="Room ID" value={newAssignment.roomID} onChange={e => setNewAssignment({ ...newAssignment, roomID: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Cleaning Staff ID" value={newAssignment.cleaningStaffID} onChange={e => setNewAssignment({ ...newAssignment, cleaningStaffID: e.target.value })} />
-            <button className="btn btn-success w-100" onClick={handleAddAssignment}><i className="bi bi-check-circle me-2"></i>Add Assignment</button>
+            <div className="row g-2">
+              <div className="col-12 col-md-6">
+                <input className="form-control" placeholder="Room ID" value={newAssignment.roomID}
+                  onChange={e => setNewAssignment({ ...newAssignment, roomID: e.target.value })} />
+              </div>
+              <div className="col-12 col-md-6">
+                <select className="form-control" value={newAssignment.cleaningStaffID}
+                  onChange={e => setNewAssignment({ ...newAssignment, cleaningStaffID: e.target.value })}>
+                  <option value="">Select Cleaning Staff</option>
+                  {cleaningStaffList.map(staff => (
+                    <option key={staff.cleaningStaffID} value={staff.cleaningStaffID}>
+                      {staff.firstName} {staff.lastName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <button className="btn btn-success w-100 mt-3" onClick={handleAddAssignment}>
+              <i className="bi bi-check-circle me-2"></i>Add Assignment
+            </button>
           </div>
         </div>
 
@@ -138,49 +165,56 @@ export default function AssignmentsDashboard() {
             <i className="bi bi-table me-2"></i>Assignments List
           </div>
           <div className="card-body p-0">
-            <table className="table mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>#</th>
-                  <th>Room</th>
-                  <th>Staff</th>
-                  <th>Status</th>
-                  <th>Assigned</th>
-                  <th>Started</th>
-                  <th>Finished</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {assignments.map((a, index) => (
-                  <tr key={a.cleaningAssignmentID}>
-                    <td>{index + 1}</td>
-                    <td>{a.roomName}</td>
-                    <td>{a.staffName}</td>
-                  <td>
-                     <span className={`badge ${
-                     a.status === 'Completed' ? 'bg-success' :
-                      a.status === 'InProgress' ? 'bg-info' :
-                      a.status === 'Pending' ? 'bg-secondary' :
-                               'bg-light text-dark'
-                                                   }`}>
-                       {a.status}
-                       </span>
-                       </td>
-                    <td>{a.assignedAt?.split('T')[0]}</td>
-                    <td>{a.startedAt?.split('T')[0] || '-'}</td>
-                    <td>{a.finishedAt?.split('T')[0] || '-'}</td>
-                    <td>
-                      <div className="btn-group">
-                        <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(a)}><i className="bi bi-pencil"></i></button>
-                        <button className="btn btn-sm btn-outline-warning" onClick={() => handleCancelAssignment(a.cleaningAssignmentID)}><i className="bi bi-x-circle"></i></button>
-                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.cleaningAssignmentID)}><i className="bi bi-trash"></i></button>
-                      </div>
-                    </td>
+            <div className="table-responsive">
+              <table className="table mb-0">
+                <thead className="table-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Room</th>
+                    <th>Staff</th>
+                    <th>Status</th>
+                    <th>Assigned</th>
+                    <th>Started</th>
+                    <th>Finished</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {assignments.map((a) => (
+                    <tr key={a.cleaningAssignmentID}>
+                      <td>{a.cleaningAssignmentID}</td>
+                      <td>{a.roomName}</td>
+                      <td>{a.staffName}</td>
+                      <td>
+                        <span className={`badge ${
+                          a.status === 'Completed' ? 'bg-success' :
+                          a.status === 'InProgress' ? 'bg-info' :
+                          a.status === 'Pending' ? 'bg-secondary' :
+                          'bg-light text-dark'}`}>
+                          {a.status}
+                        </span>
+                      </td>
+                      <td>{a.assignedAt?.split('T')[0]}</td>
+                      <td>{a.startedAt?.split('T')[0] || '-'}</td>
+                      <td>{a.finishedAt?.split('T')[0] || '-'}</td>
+                      <td>
+                        <div className="btn-group">
+                          <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(a)}>
+                            <i className="bi bi-pencil"></i>
+                          </button>
+                          <button className="btn btn-sm btn-outline-warning" onClick={() => handleCancelAssignment(a.cleaningAssignmentID)}>
+                            <i className="bi bi-x-circle"></i>
+                          </button>
+                          <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.cleaningAssignmentID)}>
+                            <i className="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -190,9 +224,20 @@ export default function AssignmentsDashboard() {
               <i className="bi bi-pencil-square me-2"></i>Update Assignment Room
             </div>
             <div className="card-body">
-              <input className="form-control mb-2" placeholder="Room ID" value={editRoomID} onChange={e => setEditRoomID(e.target.value)} />
-              <button className="btn btn-primary me-2" onClick={handleConfirmUpdate}><i className="bi bi-check2"></i> Save</button>
-              <button className="btn btn-secondary" onClick={() => setEditingAssignment(null)}><i className="bi bi-x"></i> Cancel</button>
+              <div className="row g-2">
+                <div className="col-12 col-md-6">
+                  <input className="form-control" placeholder="Room ID" value={editRoomID}
+                    onChange={e => setEditRoomID(e.target.value)} />
+                </div>
+                <div className="col-12 col-md-6 d-flex align-items-end">
+                  <button className="btn btn-primary me-2 w-100" onClick={handleConfirmUpdate}>
+                    <i className="bi bi-check2"></i> Save
+                  </button>
+                  <button className="btn btn-secondary w-100" onClick={() => setEditingAssignment(null)}>
+                    <i className="bi bi-x"></i> Cancel
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}

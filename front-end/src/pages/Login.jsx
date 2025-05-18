@@ -17,6 +17,7 @@ const handleLogin = async (e) => {
   setError(''); 
 
   try {
+
     const response = await axios.post('https://localhost:7117/api/Auth/login', {
       email,
       password,
@@ -27,6 +28,7 @@ const handleLogin = async (e) => {
     if (token && isLoggedIn) {
       const decoded = jwtDecode(token); 
 
+  
       localStorage.setItem('token', token);
       localStorage.setItem('email', decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]);
       localStorage.setItem('role', decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
@@ -44,6 +46,9 @@ const handleLogin = async (e) => {
         case 'RoomRecepsionist':               
           navigate('/recepsionist-dashboard'); 
           break;
+          case 'CleaningManager':
+            navigate('/manager/cleaning-staff');
+            break;
         case 'CleaningStaff':
           navigate('/cleaningstaff/dashboard');
           break;
