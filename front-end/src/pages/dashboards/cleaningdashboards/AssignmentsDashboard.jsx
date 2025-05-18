@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 export default function AssignmentsDashboard() {
   const [assignments, setAssignments] = useState([]);
   const [cleaningStaffList, setCleaningStaffList] = useState([]);
-  const [newAssignment, setNewAssignment] = useState({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: 2 });
+  const [newAssignment, setNewAssignment] = useState({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: null });
   const [editingAssignment, setEditingAssignment] = useState(null);
   const [editRoomID, setEditRoomID] = useState('');
   const [message, setMessage] = useState('');
@@ -37,15 +37,16 @@ export default function AssignmentsDashboard() {
   }, []);
 
   const handleAddAssignment = async () => {
-    const parsedAssignment = {
-      roomID: parseInt(newAssignment.roomID),
-      cleaningStaffID: parseInt(newAssignment.cleaningStaffID),
-      status: newAssignment.status,
-      assignedByUserID: newAssignment.assignedByUserID
-    };
+  const loggedInUserID = localStorage.getItem("userID");
 
+  const parsedAssignment = {
+    roomID: parseInt(newAssignment.roomID),
+    cleaningStaffID: parseInt(newAssignment.cleaningStaffID),
+    status: newAssignment.status,
+    assignedByUserID: parseInt(loggedInUserID) 
+  };
     if (isNaN(parsedAssignment.roomID) || isNaN(parsedAssignment.cleaningStaffID)) {
-      setMessage("Room ID and Cleaning Staff ID must be numbers.");
+      setMessage("Room ID and Cleaning Staff must be filled.");
       setMessageType("danger");
       return;
     }
@@ -54,7 +55,7 @@ export default function AssignmentsDashboard() {
       await axios.post("/api/CleaningAssignment/addAssignment", parsedAssignment);
       setMessage("Assignment added successfully.");
       setMessageType("success");
-      setNewAssignment({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: 2 });
+      setNewAssignment({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: null });
       fetchAssignments();
     } catch (err) {
       const error = err.response?.data?.message || "Failed to add assignment.";

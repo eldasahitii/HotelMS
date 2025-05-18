@@ -128,6 +128,7 @@ export default function AssignmentsByName() {
                     <th>Staff</th>
                     <th>Status</th>
                     <th>Assigned</th>
+                    <th>Assigned By</th>
                     <th>Started</th>
                     <th>Finished</th>
                     <th>Actions</th>
@@ -145,6 +146,7 @@ export default function AssignmentsByName() {
                         </span>
                       </td>
                       <td>{a.assignedAt ? new Date(a.assignedAt).toLocaleString() : '-'}</td>
+                      <td>{a.assignedByName || '-'}</td>
                       <td>{a.startedAt ? new Date(a.startedAt).toLocaleString() : '-'}</td>
                       <td>{a.finishedAt ? new Date(a.finishedAt).toLocaleString() : '-'}</td>
                       <td>

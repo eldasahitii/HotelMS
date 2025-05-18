@@ -52,7 +52,7 @@ namespace HotelMS.Services
         {
             var assignment = await _dbContext.CleaningAssignments
                 .Include(a => a.Room)
-                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
+                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User).Include(a => a.AssignedBy)
                 .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
 
             if (assignment == null) return null;
@@ -67,7 +67,8 @@ namespace HotelMS.Services
                 Status = assignment.Status,
                 AssignedAt = assignment.AssignedAt,
                 StartedAt = assignment.StartedAt,
-                FinishedAt = assignment.FinishedAt
+                FinishedAt = assignment.FinishedAt,
+                AssignedByName = assignment.AssignedBy != null ? assignment.AssignedBy.FirstName + " " + assignment.AssignedBy.LastName : "N/A"
             };
         }
 
@@ -75,7 +76,7 @@ namespace HotelMS.Services
         {
             var assignments = await _dbContext.CleaningAssignments
                 .Include(a => a.Room)
-                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
+                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User).Include(a => a.AssignedBy)
                 .ToListAsync();
 
             return assignments.Select(a => new CleaningAssignmentDTO
@@ -88,7 +89,8 @@ namespace HotelMS.Services
                 Status = a.Status,
                 AssignedAt = a.AssignedAt,
                 StartedAt = a.StartedAt,
-                FinishedAt = a.FinishedAt
+                FinishedAt = a.FinishedAt,
+                 AssignedByName = a.AssignedBy != null ? a.AssignedBy.FirstName + " " + a.AssignedBy.LastName : "N/A"
             });
         }
 
@@ -198,7 +200,7 @@ namespace HotelMS.Services
 
             var assignments = await _dbContext.CleaningAssignments
                 .Include(a => a.Room)
-                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
+                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User).Include(a => a.AssignedBy)
                 .Where(a => a.CleaningStaffID == staff.CleaningStaffID)
                 .ToListAsync();
 
@@ -213,7 +215,8 @@ namespace HotelMS.Services
                 Status = a.Status,
                 AssignedAt = a.AssignedAt,
                 StartedAt = a.StartedAt,
-                FinishedAt = a.FinishedAt
+                FinishedAt = a.FinishedAt,
+                AssignedByName = a.AssignedBy != null ? a.AssignedBy.FirstName + " " + a.AssignedBy.LastName : "N/A"
             });
         }
 
