@@ -14,6 +14,8 @@ namespace HotelMS.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<ReviewCategory> ReviewCategories { get; set; }
+
         public DbSet<Room> Rooms { get; set; }
         public DbSet<RoomReservation> RoomReservations { get; set; }
         public DbSet<RoomType> RoomTypes { get; set; }

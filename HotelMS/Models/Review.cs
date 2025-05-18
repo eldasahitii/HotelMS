@@ -14,6 +14,15 @@ namespace HotelMS.Models
         [Required]
         public int UserID { get; set; }
 
+        [ForeignKey("UserID")]
+        public User? User { get; set; }
+
+        [Required]
+        public int ReviewCategoryID { get; set; } // New
+
+        [ForeignKey("ReviewCategoryID")]
+        public ReviewCategory Category { get; set; }  // New
+
         [Range(1, 5)]
         public int Rating { get; set; }
 
@@ -21,7 +30,5 @@ namespace HotelMS.Models
         public string Comment { get; set; }
 
         public DateTime Date { get; set; } = DateTime.Now;
-
-        public User? User { get; set; }  // Optional navigation property
     }
 }

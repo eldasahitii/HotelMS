@@ -277,38 +277,57 @@ if (!dataContext.RoomReservations.Any())
     dataContext.RoomReservations.AddRange(reservations);
     dataContext.SaveChanges();
 }
-
-// Seed Reviews
-if (!dataContext.Reviews.Any())
-{
-    var customerUser = dataContext.Users.FirstOrDefault(u => u.Email == "velsa@gmail.com");
-    if (customerUser != null)
+        if (!dataContext.ReviewCategories.Any())
+        {
+            var reviewCategories = new List<ReviewCategory>
     {
-        var reviews = new List<Review>
+        new ReviewCategory { CategoryName = "Room" },
+        new ReviewCategory { CategoryName = "Restaurant" },
+        new ReviewCategory { CategoryName = "Cleaning Staff" },
+        new ReviewCategory { CategoryName = "Service" }
+    };
+
+            dataContext.ReviewCategories.AddRange(reviewCategories);
+            dataContext.SaveChanges();
+        }
+
+        //  Seed Reviews AFTER categories exist
+        if (!dataContext.Reviews.Any())
+        {
+            var customerUser = dataContext.Users.FirstOrDefault(u => u.Email == "velsa@gmail.com");
+            var roomCategory = dataContext.ReviewCategories.FirstOrDefault(c => c.CategoryName == "Room");
+            var serviceCategory = dataContext.ReviewCategories.FirstOrDefault(c => c.CategoryName == "Service");
+
+            if (customerUser != null && roomCategory != null && serviceCategory != null)
+            {
+                var reviews = new List<Review>
         {
             new Review()
             {
                 UserID = customerUser.UserID,
                 Rating = 5,
                 Comment = "Excellent service and very clean rooms!",
-                Date = DateTime.Now.AddDays(-2)
+                Date = DateTime.Now.AddDays(-2),
+                ReviewCategoryID = roomCategory.ReviewCategoryID
             },
             new Review()
             {
                 UserID = customerUser.UserID,
                 Rating = 4,
                 Comment = "Nice hotel, but breakfast could be better.",
-                Date = DateTime.Now.AddDays(-1)
+                Date = DateTime.Now.AddDays(-1),
+                ReviewCategoryID = serviceCategory.ReviewCategoryID
             }
         };
 
-        dataContext.Reviews.AddRange(reviews);
-        dataContext.SaveChanges();
-    }
-}
+                dataContext.Reviews.AddRange(reviews);
+                dataContext.SaveChanges();
+            }
+        }
 
-// Seed HotelServices
-if (!dataContext.HotelServices.Any())
+
+        // Seed HotelServices
+        if (!dataContext.HotelServices.Any())
 {
     var services = new List<HotelService>
     {
