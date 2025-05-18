@@ -26,8 +26,6 @@ axios.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
-
-// ProtectedRoute component to ensure role-based access
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('token');
 
@@ -43,49 +41,105 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/login" />;
   }
 }
-
 function App() {
-    return (
-        <Router>
-            <div>
-                {window.location.pathname !== "/login" && window.location.pathname !== "/signup" }
-                
-                <Routes>
-                    <Route path="/" element={<Navigate to="/signup" />} />
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="/login" element={<Login />} />
-                     <Route path='/header' element={<Header/>}/>
-                    
-                   <Route
-  path="/manager/cleaning-staff"
-  element={
-    <ProtectedRoute allowedRoles={['CleaningManager']}>
-      <CleaningManagerDashboard />
-     
-    </ProtectedRoute>
-  }
-/>
+  return (
+    <Router>
+      <div>
+        {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && <Header />}
 
-<Route
-  path="/manager/assignments"
-  element={
-    <ProtectedRoute allowedRoles={['CleaningManager']}>
-      <AssignmentsDashboard />
-    </ProtectedRoute>
-  }
-/>        
-<Route
-  path="/cleaningstaff/dashboard"
-  element={
-    <ProtectedRoute allowedRoles={['CleaningStaff']}>
-      <CleaningStaffDashboard />
-    </ProtectedRoute>
-  }
-/>      
-                </Routes>
-            </div>
-        </Router>
-    );
+        <Routes>
+          <Route path="/" element={<Navigate to="/signup" />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+
+          <Route
+            path="/admin-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['Admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/room-manager-receptionist-management"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
+                {
+                  (() => {
+                    const token = localStorage.getItem('token');
+                    let currentUserId = null;
+                    if (token) {
+                      try {
+                        const decoded = jwtDecode(token);
+                        currentUserId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || null;
+                      } catch {
+                        currentUserId = null;
+                      }
+                    }
+                    return <RoomRecepsionistManagement currentUserId={currentUserId} />;
+                  })()
+                }
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager/cleaning-staff"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+                <CleaningManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager/assignments"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'Manager', 'CleaningManager']}>
+                <AssignmentsDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cleaningstaff/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['CleaningStaff']}>
+                <CleaningStaffDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/manager/room-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+                <RoomManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/reservation-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+                <ReservationDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/recepsionist-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
+                <RoomReceptionistDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<div>Page Not Found</div>} />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
 export default App;

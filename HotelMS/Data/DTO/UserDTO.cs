@@ -10,7 +10,7 @@
         public string? Address { get; set; }
         public DateTime CreatedAt { get; set; }
         //public RoleID int  { get; set; }
-        public string RoleType { get; set; }
+        public string? RoleType { get; set; }
     }
 }
   
