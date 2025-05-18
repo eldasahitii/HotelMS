@@ -104,6 +104,11 @@ builder.Services.AddScoped<IHostService, HostService>();
 
 builder.Services.AddScoped<IRoomRecepsionistService, RoomRecepsionistService>();
 
+builder.Services.AddScoped<IMenuService, MenuService>();
+builder.Services.AddScoped<IRestaurantReservationService, RestaurantReservationService>();
+builder.Services.AddScoped<IRestaurantTableService, RestaurantTableService>();
+builder.Services.AddScoped<IHostManagementService, HostManagementService>();
+builder.Services.AddScoped<IHostService, HostService>();
 builder.Services.AddTransient<Seed>();
 
 builder.Services.AddEndpointsApiExplorer();

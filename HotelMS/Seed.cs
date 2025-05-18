@@ -302,8 +302,21 @@ public class Seed
                 };
 
                 dataContext.HotelServiceReservations.Add(reservation);
+
+                //dataContext.Reviews.AddRange(reviews);
+
+
+
                 dataContext.SaveChanges();
             }
         }
     }
+
 }
+   
+
+
+
+
+  
+
