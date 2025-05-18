@@ -48,24 +48,27 @@ namespace HotelMS.Controllers
         // POST: api/reviews
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Review>> PostReview(Review review)
-
+        public async Task<ActionResult<Review>> PostReview([FromBody] Review review) // ✅ Add [FromBody]
         {
+            // ✅ This returns helpful validation errors instead of generic 400
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdClaim))
                 return Unauthorized("User ID not found in token.");
 
             review.UserID = int.Parse(userIdClaim);
-
-
             review.Date = DateTime.Now;
 
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetAllReviews), new { id = review.ReviewID }, review);
-
         }
+
 
         // DELETE: api/reviews/{id}
         [HttpDelete("{id}")]

@@ -32,25 +32,33 @@ export default function ReviewsPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post("https://localhost:7117/api/Reviews", {
-        comment: formData.comment,
-        rating: formData.rating,
-        reviewCategoryID: parseInt(formData.reviewCategoryID)
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      fetchReviews();
-      setFormData({ comment: '', rating: 0, reviewCategoryID: '' });
-    } catch (err) {
-      console.error("Error submitting review:", err);
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const payload = {
+    comment: formData.comment,
+    rating: formData.rating,
+    reviewCategoryID: parseInt(formData.reviewCategoryID)
   };
+
+  console.log("Submitting payload:", payload); // ⬅️ Add this
+
+  try {
+    const token = localStorage.getItem("token");
+    await axios.post("https://localhost:7117/api/Reviews", payload, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    fetchReviews();
+    setFormData({ comment: '', rating: 0, reviewCategoryID: '' });
+  } catch (err) {
+    console.error("Error submitting review:", err);
+  }
+};
+
+
 
   const handleDelete = async (id) => {
     try {

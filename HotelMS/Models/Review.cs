@@ -21,7 +21,7 @@ namespace HotelMS.Models
         public int ReviewCategoryID { get; set; } // New
 
         [ForeignKey("ReviewCategoryID")]
-        public ReviewCategory Category { get; set; }  // New
+        public ReviewCategory? Category { get; set; } // Make this optional
 
         [Range(1, 5)]
         public int Rating { get; set; }
