@@ -6,14 +6,20 @@ import { useNavigate } from 'react-router-dom';
 
 export default function RestaurantHostDashboard() {
   const [reservations, setReservations] = useState([]);
-  const [newReservation, setNewReservation] = useState({ guestID: '', date_time: '', restaurantTableID: '' });
+  const [newReservation, setNewReservation] = useState({ GuestID: '',RestaurantTableID: '', date_time: '', status: 'Booked' });
+  const [editingReservation, setEditingReservation] = useState(null);
+  const [newStatus, setNewStatus] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
 
   const fetchReservations = async () => {
     try {
-      const res = await axios.get("/api/Host/getAllReservations");
+      const res = await axios.get("/api/Host/getAllReservations",{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
       setReservations(res.data);
     } catch (err) {
       setMessage("Failed to fetch reservations.");
@@ -27,10 +33,14 @@ export default function RestaurantHostDashboard() {
 
   const handleAddReservation = async () => {
     try {
-      await axios.post("/api/Host/createReservation", newReservation);
+      await axios.post("/api/Host/createReservation", newReservation, {
+         headers: {
+         Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
       setMessage("Reservation added successfully.");
       setMessageType("success");
-      setNewReservation({ guestID: '', date_time: '', restaurantTableID: '' });
+      setNewReservation({ GuestID: '', RestaurantTableID: '',  date_time: '', status: 'Booked' });
       fetchReservations();
     } catch (error) {
       setMessage("Failed to add reservation.");
@@ -49,7 +59,24 @@ export default function RestaurantHostDashboard() {
       setMessageType("danger");
     }
   };
-
+  const handleUpdateReservationStatus = async (id) => {
+    try {
+      await axios.put(`/api/Host/updateReservationStatus?id=${id}`, JSON.stringify(newStatus), {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      setMessage("Status updated.");
+      setMessageType("success");
+      setEditingReservation(null);
+      setNewStatus('');
+      fetchReservations();
+    } catch (error) {
+      setMessage("Failed to update status.");
+      setMessageType("danger");
+    }
+  };
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
@@ -85,9 +112,9 @@ export default function RestaurantHostDashboard() {
             <i className="bi bi-plus-circle me-2"></i>Add Reservation
           </div>
           <div className="card-body">
-            <input className="form-control mb-2" placeholder="Guest ID" value={newReservation.guestID} onChange={e => setNewReservation({ ...newReservation, guestID: e.target.value })} />
+            <input className="form-control mb-2" placeholder="Guest ID" value={newReservation.GuestID} onChange={e => setNewReservation({ ...newReservation, GuestID: e.target.value })} />
             <input className="form-control mb-2" type="datetime-local" value={newReservation.date_time} onChange={e => setNewReservation({ ...newReservation, date_time: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Table ID" value={newReservation.restaurantTableID} onChange={e => setNewReservation({ ...newReservation, restaurantTableID: e.target.value })} />
+            <input className="form-control mb-2" placeholder="Table ID" value={newReservation.RestaurantTableID} onChange={e => setNewReservation({ ...newReservation, RestaurantTableID: e.target.value })} />
             <button className="btn btn-primary w-100" onClick={handleAddReservation}><i className="bi bi-check2-circle me-2"></i>Add</button>
           </div>
         </div>
@@ -112,19 +139,48 @@ export default function RestaurantHostDashboard() {
                 {reservations.map((res, index) => (
                   <tr key={res.reservationID}>
                     <td>{index + 1}</td>
-                    <td>{res.guestID}</td>
+                    <td>{res.GuestID}</td>
                     <td>{new Date(res.date_time).toLocaleString()}</td>
-                    <td>{res.restaurantTableID}</td>
+                    <td>{res.RestaurantTableID}</td>
                     <td>{res.status}</td>
                     <td>
                       <button className="btn btn-sm btn-outline-danger" onClick={() => handleCancelReservation(res.reservationID)}>
                         <i className="bi bi-x-circle"></i>
                       </button>
+                      <button className="btn btn-sm btn-outline-secondary me-2" onClick={() => {
+                         setEditingReservation(res.reservationID);
+                          setNewStatus(res.status);
+                       }}>
+                       <i className="bi bi-pencil-square"></i>
+                      </button>
+
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            {editingReservation && (
+  <div className="card mt-4">
+    <div className="card-header bg-warning text-dark">
+      Update Reservation Status
+    </div>
+    <div className="card-body">
+      <input
+        className="form-control mb-2"
+        placeholder="New Status"
+        value={newStatus}
+        onChange={e => setNewStatus(e.target.value)}
+      />
+      <button className="btn btn-primary me-2" onClick={() => handleUpdateReservationStatus(editingReservation)}>
+        Save
+      </button>
+      <button className="btn btn-secondary" onClick={() => setEditingReservation(null)}>
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
+
           </div>
         </div>
       </main>

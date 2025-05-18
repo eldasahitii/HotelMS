@@ -51,21 +51,21 @@ namespace HotelMS.Controllers
                 }
             }
 
-            [HttpPost("createReservation")]
-            public async Task<IActionResult> CreateReservation([FromBody] RestaurantReservation request)
+        [HttpPost("createReservation")]
+        public async Task<IActionResult> CreateReservation([FromBody] RestaurantReservation request)
+        {
+            try
             {
-                try
-                {
-                    var result = await _service.CreateReservationAsync(request);
-                    return Ok(result);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
+                var result = await _service.CreateReservationAsync(request);
+                return Ok(result);
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-            [HttpDelete("cancelReservation")]
+        [HttpDelete("cancelReservation")]
             public async Task<IActionResult> CancelReservation(int id)
             {
                 try
