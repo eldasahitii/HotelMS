@@ -13,26 +13,4 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 } */
-.font-crimson {
-  font-family: 'Crimson Text', serif;
-}
-.custom-large-text {
-  font-size: 55px;
-}
-@keyframes slideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.slide-in-text {
-  opacity: 0;
-  animation: slideIn 1s ease-in-out forwards;
-}
-
 

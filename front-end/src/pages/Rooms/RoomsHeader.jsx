@@ -6,7 +6,7 @@ function RoomsHeader() {
     backgroundImage: `url(${tryroms})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
-    height: "500px",
+    height: "600px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

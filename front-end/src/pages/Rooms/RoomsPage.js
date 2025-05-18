@@ -10,6 +10,7 @@ import room4a from "../../Assets/images/woden.jpeg";
 import room4b from "../../Assets/images/junior3.jpg";
 import room5a from "../../Assets/images/supertwin.jpg";
 import room5b from "../../Assets/images/slider6.jpeg";
+import './Rooms.css';
 
 const RoomsHeader = lazy(() => import("./RoomsHeader"));
 
@@ -20,48 +21,74 @@ function RoomsPage() {
         <RoomsHeader />
       </Suspense>
 
-      <RoomCard
-        title="Double Room"
-        capacity="1-2 PERSONS"
-        size="22M2"
-        description="Understated luxury and comfort."
-        images={[room1a, room1b]}
-        link="./room1.php"
-      />
-      <RoomCard
-        title="Deluxe Room"
-        capacity="1-2 PERSONS"
-        size="25M2"
-        description="Modern, cozy, and stylish stay."
-        images={[room2a, room2b]}
-        reverse
-        link="./room2.php"
-      />
-      <RoomCard
-        title="Junior Suite"
-        capacity="1-3 PERSONS"
-        size="35M2"
-        description="Elegant décor and larger living space."
-        images={[room3a, room3b]}
-        link="./room3.php"
-      />
-      <RoomCard
-        title="Woden Suite"
-        capacity="1-2 PERSONS"
-        size="30M2"
-        description="Warm ambiance with wood-style design."
-        images={[room4a, room4b]}
-        reverse
-        link="./room4.php"
-      />
-      <RoomCard
-        title="Super Twin"
-        capacity="2-3 PERSONS"
-        size="28M2"
-        description="Spacious twin room with modern features."
-        images={[room5a, room5b]}
-        link="./room5.php"
-      />
+      <div className="extra-margin-top">
+        <div className="mb-5">
+          <RoomCard
+            title="Junior Room"
+            capacity="1-2 PERSONS"
+            size="22M2"
+            description="Experience understated luxury in our Superior Double Bed Room.
+Elegantly designed with a harmonious blend of comfort and style,
+this space boasts a plush double bed, premium amenities, and more."
+            images={[room1a, room1b]}
+            link="./room1.php"
+          />
+        </div>
+
+        <div className="mb-5">
+          <RoomCard
+            title="Deluxe Room"
+            capacity="1-2 PERSONS"
+            size="22M2"
+            description="Experience understated luxury in our Superior Double Bed Room.
+Elegantly designed with a harmonious blend of comfort and style,
+this space boasts a plush double bed, premium amenities, and more."
+            images={[room2a, room2b]}
+            reverse
+            link="./room2.php"
+          />
+        </div>
+
+        <div className="mb-5">
+          <RoomCard
+            title="Double Room"
+            capacity="1-2 PERSONS"
+            size="22M2"
+            description="Experience understated luxury in our Superior Double Bed Room.
+Elegantly designed with a harmonious blend of comfort and style,
+this space boasts a plush double bed, premium amenit"
+            images={[room3a, room3b]}
+            link="./room3.php"
+          />
+        </div>
+
+        <div className="mb-5">
+          <RoomCard
+            title="Twin Room"
+            capacity="1-2 PERSONS"
+            size="30M2"
+            description="Experience understated luxury in our Superior Double Bed Room.
+Elegantly designed with a harmonious blend of comfort and style,
+this space boasts a plush double bed, premium amenities, and more."
+            images={[room4a, room4b]}
+            reverse
+            link="./room4.php"
+          />
+        </div>
+
+        <div className="mb-5">
+          <RoomCard
+            title="Superior Twin Room"
+            capacity="2-3 PERSONS"
+            size="28M2"
+            description="Experience understated luxury in our Superior Double Bed Room.
+Elegantly designed with a harmonious blend of comfort and style,
+this space boasts a plush double bed, premium amenities, and more."
+            images={[room5a, room5b]}
+            link="./room5.php"
+          />
+        </div>
+      </div>
     </>
   );
 }
