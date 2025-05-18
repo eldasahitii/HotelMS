@@ -36,7 +36,6 @@ const handleLogin = async (e) => {
 
       console.log('Login successful:', decoded);
 
-      // Redirecting based on user role
       switch (decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]) {
         case 'Admin':
           navigate('/admin-dashboard');
@@ -47,6 +46,9 @@ const handleLogin = async (e) => {
         case 'RoomRecepsionist':               
           navigate('/recepsionist-dashboard'); 
           break;
+          case 'CleaningManager':
+            navigate('/manager/cleaning-staff');
+            break;
         case 'CleaningStaff':
           navigate('/cleaningstaff/dashboard');
           break;

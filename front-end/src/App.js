@@ -15,8 +15,8 @@ import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationD
 import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
 import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement'; 
 import ServiceMain from './Components/Services/ServiceMain';
-import RestaurantHostDashboard from './pages/RestaurantDashboards/RestaurantHostDashboard';
-import RestaurantManagerDashboard from './pages/RestaurantDashboards/RestaurantManagerDashboard';
+import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
+import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 
 axios.interceptors.request.use(
   (config) => {
@@ -28,6 +28,8 @@ axios.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+
+
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('token');
 
@@ -43,6 +45,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/login" />;
   }
 }
+
 function App() {
   return (
     <Router>
@@ -85,26 +88,25 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/manager/cleaning-staff"
             element={
-              <ProtectedRoute allowedRoles={['RestaurantManager']}>
-                <RestaurantManagerDashboard/>
+              <ProtectedRoute allowedRoles={['CleaningManager']}>
+                <CleaningManagerDashboard />
               </ProtectedRoute>
             }
-
           />
+
           <Route
-            path="/host/dashboard"
+            path="/manager/assignments"
             element={
-             <ProtectedRoute allowedRoles={['RestaurantHost']}>
-               <RestaurantHostDashboard/>
-             </ProtectedRoute>
-              <ProtectedRoute allowedRoles={['Admin', 'Manager', 'CleaningManager']}>
+              <ProtectedRoute allowedRoles={['CleaningManager']}>
                 <AssignmentsDashboard />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/cleaningstaff/dashboard"
             element={
@@ -112,7 +114,7 @@ function App() {
                 <CleaningStaffDashboard />
               </ProtectedRoute>
             }
-         />
+          />
 
           <Route
             path="/manager/room-dashboard"
@@ -140,6 +142,23 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/restaurant-manager/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['RestaurantManager']}>
+                <RestaurantManagerDashboard/>
+              </ProtectedRoute>
+            }
+
+          />
+          <Route
+            path="/host/dashboard"
+            element={
+             <ProtectedRoute allowedRoles={['RestaurantHost']}>
+               <RestaurantHostDashboard/>
+             </ProtectedRoute>
+            }
+         />
 
           <Route path="*" element={<div>Page Not Found</div>} />
         </Routes>
