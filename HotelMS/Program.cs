@@ -96,6 +96,8 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IAdminService, AdminService>(); 
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRecepsionistService, RoomRecepsionistService>();
+builder.Services.AddScoped<IHotelService, HotelServiceService>();
+
 builder.Services.AddTransient<Seed>();
 
 builder.Services.AddEndpointsApiExplorer();

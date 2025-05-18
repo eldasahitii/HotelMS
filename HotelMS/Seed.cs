@@ -277,7 +277,9 @@ public class Seed
         }
 
         //Seed HotelService
-        if(!dataContext.HotelServices.Any())
+        Console.WriteLine("Seeding HotelServices...");
+
+        if (!dataContext.HotelServices.Any())
         {
             var services = new List<HotelService>
             {
