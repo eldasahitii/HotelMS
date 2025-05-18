@@ -6,7 +6,7 @@ namespace HotelMS.Data.Interfaces
     public interface IUserServices
     {
         Task<User> GetUser(int id);
-        Task<IEnumerable<User>> GetAll();
+        Task<IEnumerable<UserDTO>> GetAll();
        
         Task DeleteUser(int id);
         Task<User> UpdateUser(int id, UserDTO request);

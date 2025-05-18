@@ -15,8 +15,8 @@ import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationD
 import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
 import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement'; 
 import ServiceMain from './Components/Services/ServiceMain';
-import RestaurantHostDashboard from './pages/RestaurantDashboards/RestaurantHostDashboard';
-import RestaurantManagerDashboard from './pages/RestaurantDashboards/RestaurantManagerDashboard';
+import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
+import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 
 axios.interceptors.request.use(
   (config) => {
@@ -29,7 +29,7 @@ axios.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ProtectedRoute component to ensure role-based access
+
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('token');
 
@@ -92,7 +92,7 @@ function App() {
           <Route
             path="/manager/cleaning-staff"
             element={
-              <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+              <ProtectedRoute allowedRoles={['CleaningManager']}>
                 <CleaningManagerDashboard />
               </ProtectedRoute>
             }
@@ -101,7 +101,7 @@ function App() {
           <Route
             path="/manager/assignments"
             element={
-              <ProtectedRoute allowedRoles={['Admin', 'Manager', 'CleaningManager']}>
+              <ProtectedRoute allowedRoles={['CleaningManager']}>
                 <AssignmentsDashboard />
               </ProtectedRoute>
             }

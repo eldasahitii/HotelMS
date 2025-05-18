@@ -96,7 +96,7 @@ namespace HotelMS.Services
         {
             var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
             if (assignment == null) return null;
-
+            assignment.RoomID = request.RoomID;
             assignment.Status = request.Status;
             assignment.StartedAt = request.StartedAt;
             assignment.FinishedAt = request.FinishedAt;
@@ -158,7 +158,10 @@ namespace HotelMS.Services
         }
         public async Task<bool> CancelAssignment(int id)
         {
-            var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
+            var assignment = await _dbContext.CleaningAssignments
+                .Include(a => a.Room)  
+                .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
+
             if (assignment == null) return false;
 
             if (assignment.Status == "Completed")
@@ -168,9 +171,19 @@ namespace HotelMS.Services
             assignment.StartedAt = null;
             assignment.FinishedAt = null;
 
+            
+            var availableStatus = await _dbContext.RoomStatuses
+                .FirstOrDefaultAsync(rs => rs.RoomStatusName == "Available");
+
+            if (availableStatus != null && assignment.Room != null)
+            {
+                assignment.Room.RoomStatusID = availableStatus.RoomStatusID;
+            }
+
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
         public async Task<IEnumerable<CleaningAssignmentDTO>> GetAssignmentsByStaffName(string fullName)
         {
             var nameLower = fullName.ToLower().Trim();
