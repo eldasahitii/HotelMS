@@ -15,6 +15,9 @@ import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationD
 import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
 import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement'; 
 import ServiceMain from './Components/Services/ServiceMain';
+import RoomsPage from './pages/Rooms/RoomsPage';
+import RoomCard from './pages/Rooms/RoomCard';
+
 
 axios.interceptors.request.use(
   (config) => {
@@ -59,6 +62,11 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
 
+           <Route path="/rooms" element={<RoomsPage />} />
+
+  {/* Route for individual room card, e.g., /rooms/123 */}
+  <Route path="/rooms/:roomId" element={<RoomCard />} />
+  
           {/* Protected Routes */}
           <Route
             path="/admin-dashboard"

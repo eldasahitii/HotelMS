@@ -71,19 +71,19 @@ namespace HotelMS.Controllers
 
         [HttpDelete("DeleteRoom")]
         [Authorize(Roles = "Admin,RoomManager")]
-
         public async Task<IActionResult> DeleteRoom(int id)
         {
             try
             {
-                var result = _service.DeleteRoom(id);
-                return Ok(result);
+                await _service.DeleteRoom(id);
+                return Ok(new { message = $"Room with ID {id} deleted successfully." });
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
 
         [HttpPut("UpdateRoom")]
         [Authorize(Roles = "Admin,RoomManager")]
