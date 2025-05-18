@@ -5,35 +5,48 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState([]);
-  const [formData, setFormData] = useState({ name: '', comment: '', rating: 0 });
+  const [categories, setCategories] = useState([]);
+  const [formData, setFormData] = useState({ comment: '', rating: 0, reviewCategoryID: '' });
   const [editingReview, setEditingReview] = useState(null);
-
 
   useEffect(() => {
     fetchReviews();
+    fetchCategories();
   }, []);
 
   const fetchReviews = async () => {
     try {
-     const res = await axios.get("https://localhost:7117/api/Reviews/GetAll");
-
-
+      const res = await axios.get("https://localhost:7117/api/Reviews/GetAll");
       setReviews(res.data);
     } catch (err) {
       console.error("Error fetching reviews:", err);
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get("https://localhost:7117/api/reviewcategories");
+      setCategories(res.data);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const token = localStorage.getItem("token");
       await axios.post("https://localhost:7117/api/Reviews", {
         comment: formData.comment,
         rating: formData.rating,
-        userID: 1
+        reviewCategoryID: parseInt(formData.reviewCategoryID)
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       fetchReviews();
-      setFormData({ name: '', comment: '', rating: 0 });
+      setFormData({ comment: '', rating: 0, reviewCategoryID: '' });
     } catch (err) {
       console.error("Error submitting review:", err);
     }
@@ -48,34 +61,27 @@ export default function ReviewsPage() {
     }
   };
 
- const handleEditSubmit = async (e) => {
-  e.preventDefault();
-
-  const token = localStorage.getItem("token"); // ⬅️ Get the saved token
-
-  try {
-    await axios.put(
-      "https://localhost:7117/api/reviews/updatereview",
-      {
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    try {
+      await axios.put("https://localhost:7117/api/reviews/updatereview", {
         reviewID: editingReview.reviewID,
         comment: editingReview.comment,
-        rating: editingReview.rating,
-      },
-      {
+        rating: editingReview.rating
+      }, {
         headers: {
-          Authorization: `Bearer ${token}` // ⬅️ Add token to request
+          Authorization: `Bearer ${token}`
         }
-      }
-    );
-    setEditingReview(null);
-    fetchReviews();
-  } catch (err) {
-    console.error("Error updating review:", err);
-  }
-};
+      });
+      setEditingReview(null);
+      fetchReviews();
+    } catch (err) {
+      console.error("Error updating review:", err);
+    }
+  };
 
-
- return (
+  return (
     <div style={{ backgroundColor: '#fff7e6', minHeight: '100vh' }}>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div className="container-fluid px-4">
@@ -106,6 +112,21 @@ export default function ReviewsPage() {
               <h2 className="fw-bold mb-4 text-center">Leave a Review</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
+                  <label htmlFor="category" className="form-label">Category</label>
+                  <select
+                    className="form-select"
+                    id="category"
+                    value={formData.reviewCategoryID}
+                    onChange={(e) => setFormData({ ...formData, reviewCategoryID: e.target.value })}
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map(cat => (
+                      <option key={cat.reviewCategoryID} value={cat.reviewCategoryID}>{cat.categoryName}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-3">
                   <label htmlFor="comment" className="form-label">Comment</label>
                   <textarea
                     className="form-control"
@@ -114,6 +135,7 @@ export default function ReviewsPage() {
                     placeholder="Share your experience..."
                     value={formData.comment}
                     onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+                    required
                   ></textarea>
                 </div>
                 <div className="mb-4">
@@ -136,10 +158,10 @@ export default function ReviewsPage() {
               <div className="card mb-3" key={review.reviewID}>
                 <div className="card-body">
                   <div className="d-flex justify-content-between">
-                 <h5 className="card-title">
-  {review.user?.firstName} {review.user?.lastName}
-</h5>
-
+                    <h5 className="card-title">
+                      {review.user?.firstName} {review.user?.lastName} —
+                      <span className="text-muted fs-6 ms-2">{review.category?.categoryName}</span>
+                    </h5>
                     <div>
                       {[1, 2, 3, 4, 5].map((s) => (
                         <i
