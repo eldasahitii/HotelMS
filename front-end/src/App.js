@@ -10,32 +10,38 @@ import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/Clea
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import axios from 'axios';
 import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/CleaningStaffDashboard';
+import RoomManagerDashboard from './pages/dashboards/roomdashboards/RoomManagerDashboard'; 
+import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationDashboard';  
+import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
+import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement'; 
+import ServiceMain from './Components/Services/ServiceMain';
 
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = token;
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
+// ProtectedRoute component to ensure role-based access
 const ProtectedRoute = ({ children, allowedRoles }) => {
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
-    if(!token) return <Navigate to="/Login" />;
+  if (!token) return <Navigate to="/login" />;
 
-    try{
-        const decoded = jwtDecode(token);
-        const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-        
-        if (!allowedRoles.includes(userRole)) return <Navigate to="/Login" />;
-        return children;
-    }catch{
-        return <Navigate to="/Login" />
-    }
+  try {
+    const decoded = jwtDecode(token);
+    const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+    if (!allowedRoles.includes(userRole)) return <Navigate to="/login" />;
+    return children;
+  } catch {
+    return <Navigate to="/login" />;
+  }
 }
 
 function App() {
@@ -83,4 +89,3 @@ function App() {
 }
 
 export default App;
-

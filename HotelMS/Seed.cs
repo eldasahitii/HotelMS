@@ -94,50 +94,67 @@ public class Seed
                     PasswordHash = cleaningManagerHash, PasswordSalt = cleaningManagerSalt,
                     CreatedAt = DateTime.Now, RoleID = cleaningManagerRoleID
                 },
-                  new User() {
+                new User() {
                     FirstName = "Elda", LastName = "Sahiti", Email = "elda@gmail.com",
                     PasswordHash = restaurantManagerHash, PasswordSalt = restaurantManagerSalt,
                     CreatedAt = DateTime.Now, RoleID = restaurantManagerRoleID
                 },
-                    new User() {
+                new User() {
                     FirstName = "Ema", LastName = "Salihu", Email = "ema@gmail.com",
                     PasswordHash = restaurantHostHash, PasswordSalt = restaurantHostSalt,
                     CreatedAt = DateTime.Now, RoleID = restaurantHostRoleID
                 },
-                     new User() {
+                new User() {
                     FirstName = "Rona", LastName = "Veseli", Email = "rona@gmail.com",
                     PasswordHash = serviceManagerHash, PasswordSalt = serviceManagerSalt,
                     CreatedAt = DateTime.Now, RoleID = serviceManagerRoleID
                 },
-                     new User() {
+                new User() {
                     FirstName = "Erblina", LastName = "Kadriu", Email = "erblina@gmail.com",
                     PasswordHash = serviceRecepsionistHash, PasswordSalt = serviceRecepsionistSalt,
                     CreatedAt = DateTime.Now, RoleID = serviceRecepsionistRoleID
                 },
-                     new User() {
+                new User() {
                     FirstName = "Vlera", LastName = "Krasniqi", Email = "vlera@gmail.com",
                     PasswordHash = cleaningStaffHash, PasswordSalt = cleaningStaffSalt,
                     CreatedAt = DateTime.Now, RoleID = cleaningStaffRoleID
                 },
-                     new User() {
+                new User() {
                     FirstName = "Erza", LastName = "Musliu", Email = "erza@gmail.com",
                     PasswordHash = customerHash, PasswordSalt = customerSalt,
                     CreatedAt = DateTime.Now, RoleID = customerRoleID
-                },
-
-
-
+                }
             };
 
             dataContext.Users.AddRange(users);
             dataContext.SaveChanges();
         }
 
+        // Seed RoomRecepsionists
+        if (!dataContext.RoomRecepsionists.Any())
+        {
+            var roomRecepsionistUser = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
+            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com");
+
+            if (roomRecepsionistUser != null && assignedByUser != null)
+            {
+                var roomRecepsionist = new RoomRecepsionist
+                {
+                    UserID = roomRecepsionistUser.UserID,
+                    Shift = "Morning",
+                    AssignedByUserID = assignedByUser.UserID
+                };
+
+                dataContext.RoomRecepsionists.Add(roomRecepsionist);
+                dataContext.SaveChanges();
+            }
+        }
+
         //Seed CleaningStaff
         if (!dataContext.CleaningStaff.Any())
         {
             var cleaningStaffUser = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
-            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com"); // manager
+            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com");
 
             if (cleaningStaffUser != null && assignedByUser != null)
             {
@@ -149,7 +166,7 @@ public class Seed
                     AssignedByUserID = assignedByUser.UserID
                 };
 
-                dataContext.CleaningStaff.AddRange(cleaningStaff);
+                dataContext.CleaningStaff.Add(cleaningStaff);
                 dataContext.SaveChanges();
             }
         }
@@ -161,7 +178,8 @@ public class Seed
             {
                 new RoomStatus() { RoomStatusName = "Available" },
                 new RoomStatus() { RoomStatusName = "Occupied" },
-                new RoomStatus() { RoomStatusName = "Cleaning" }
+                new RoomStatus() { RoomStatusName = "Cleaning" },
+                new RoomStatus() { RoomStatusName = "Completed" }
             };
 
             dataContext.RoomStatuses.AddRange(roomStatuses);
@@ -173,7 +191,6 @@ public class Seed
         {
             var reservationStatuses = new List<ReservationStatus>
             {
-                new ReservationStatus() { ReservationStatusName = "Pending" },
                 new ReservationStatus() { ReservationStatusName = "Confirmed" },
                 new ReservationStatus() { ReservationStatusName = "Cancelled" },
                 new ReservationStatus() { ReservationStatusName = "Completed" }
@@ -198,6 +215,7 @@ public class Seed
         }
 
         // Seed Rooms
+
         if (!dataContext.Rooms.Any())
         {
             var standardRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Standard").RoomTypeID;
@@ -212,21 +230,21 @@ public class Seed
                 {
                     Name = "Single Room", Capacity = "1-2 Persons", Size = "15m²",
                     Description = "A cozy single room with modern amenities.",
-                    Price = 50.00m, ImageUrl = "single-room.jpg",
+                    Price = 50.00m,
                     CreatedAt = DateTime.Now, RoomTypeID = standardRoomTypeID, RoomStatusID = availableStatusID
                 },
                 new Room()
                 {
                     Name = "Double Room", Capacity = "2 Adults", Size = "25m²",
                     Description = "A spacious double room with a comfortable bed.",
-                    Price = 80.00m, ImageUrl = "double-room.jpg",
+                    Price = 80.00m,
                     CreatedAt = DateTime.Now, RoomTypeID = deluxeRoomTypeID, RoomStatusID = availableStatusID
                 },
                 new Room()
                 {
                     Name = "Twin Room", Capacity = "2-3 Persons", Size = "23m²",
                     Description = "A twin bed room with two comfortable beds and modern amenities.",
-                    Price = 70.00m, ImageUrl = "twin-room.jpg",
+                    Price = 70.00m,
                     CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID, RoomStatusID = availableStatusID
                 }
             };
@@ -235,11 +253,10 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-        // Seed RoomReservations
         if (!dataContext.RoomReservations.Any())
         {
             var availableRoomID = dataContext.Rooms.First(r => r.Name == "Single Room").RoomID;
-            var customerID = dataContext.Users.First(u => u.Email == "erza@gmail.com").UserID;
+            var customerID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
             var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Pending").ReservationStatusID;
 
             var reservations = new List<RoomReservation>
@@ -284,10 +301,9 @@ public class Seed
                     }
                 };
 
-                dataContext.Reviews.AddRange(reviews);
+                dataContext.HotelServiceReservations.Add(reservation);
                 dataContext.SaveChanges();
             }
         }
     }
 }
-

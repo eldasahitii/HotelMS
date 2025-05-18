@@ -12,52 +12,51 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setError('');  // Reset error state
 
-    try {
-      const response = await axios.post('https://localhost:7117/api/Auth/login', {
-        email,
-        password,
-      });
+  try {
+    // Sending login request
+    const response = await axios.post('https://localhost:7117/api/Auth/login', {
+      email,
+      password,
+    });
 
-      const { token, isLoggedIn } = response.data;
+    const { token, isLoggedIn } = response.data;
 
-      if (token && isLoggedIn) {
-     const rawToken = token.replace('Bearer ', ''); 
-     const decoded = jwtDecode(rawToken);
+    if (token && isLoggedIn) {
+      const decoded = jwtDecode(token);  // No need to strip "Bearer "
 
+      // Storing data in localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('email', decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]);
+      localStorage.setItem('role', decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
+      localStorage.setItem('userID', decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]);
 
-       
-        const userEmail = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
-        const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-        const userId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+      console.log('Login successful:', decoded);
 
-        localStorage.setItem('token', `Bearer ${token}`);
-        localStorage.setItem('email', userEmail);
-        localStorage.setItem('role', userRole);
-        localStorage.setItem('userID', userId);
-
-        console.log('Login successful:', decoded);
-        // navigate('/admin-dashboard');
-         if (userRole === 'Admin') {
+      // Redirecting based on user role
+      switch (decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]) {
+        case 'Admin':
           navigate('/admin-dashboard');
         } else if (userRole === 'CleaningManager') {
           navigate('/manager/cleaning-staff');
         } else if (userRole === 'CleaningStaff') {
           navigate('/cleaningstaff/dashboard');
-        } else {
+          break;
+        default:
           setError("Unknown role. Access denied.");
-        }
-      
+          break;
       }
-    } catch (error) {
-      const message = error.response?.data?.message || error.message;
-      console.error('Login error:', message);
-      setError("Login failed. Please check your credentials or try again.");
     }
-  };
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    console.error('Login error:', error.response?.data || error);
+    setError("Login failed. Please check your credentials or try again.");
+  }
+};
+
 
   return (
     <div className="container d-flex flex-column align-items-center mt-5 p-4 bg-white rounded shadow" style={{ maxWidth: '500px' }}>
