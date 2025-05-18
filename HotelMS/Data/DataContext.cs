@@ -27,6 +27,17 @@ namespace HotelMS.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<RoomRecepsionist> RoomRecepsionists { get; set; }
 
+        public DbSet<MenuCategory> MenuCategories { get; set; }
+
+        public DbSet<MenuItem> MenuItems { get; set; }
+
+        public DbSet<RestaurantTable> RestaurantTables { get; set; }
+
+        public DbSet<RestaurantReservation> RestaurantReservations { get; set; }
+
+
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -161,6 +172,21 @@ namespace HotelMS.Data
                 .WithMany()
                 .HasForeignKey(r => r.ScheduleId)
                 .OnDelete(DeleteBehavior.Restrict);
+            //Restaurant
+            modelBuilder.Entity<MenuItem>()
+                .HasOne(mi => mi.MenuCategory)
+                .WithMany(mc => mc.MenuItems)
+                .HasForeignKey(mi => mi.MenuCategoryID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<RestaurantReservation>()
+                .HasOne(rr => rr.RestaurantTable)
+                .WithMany(rt => rt.Reservations)
+                .HasForeignKey(rr => rr.RestaurantTableID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
         }
     }
 }
