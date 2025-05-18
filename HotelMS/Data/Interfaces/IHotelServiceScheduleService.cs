@@ -12,18 +12,20 @@
 //    }
 //}
 
+
+using HotelMS.Data.DTO;
+using HotelMS.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HotelMS.Models.DTOs;
 
-namespace HotelMS.Services
+namespace HotelMS.Data.Interfaces
 {
     public interface IHotelServiceScheduleService
     {
-        Task<IEnumerable<HotelServiceScheduleDTO>> GetAllAsync();
-        Task<HotelServiceScheduleDTO> GetByIdAsync(int id);
-        Task<HotelServiceScheduleDTO> CreateAsync(HotelServiceScheduleCreateUpdateDTO DTO);
-        Task<bool> UpdateAsync(int id, HotelServiceScheduleCreateUpdateDTO DTO);
-        Task<bool> DeleteAsync(int id);
+        Task<HotelServiceSchedule> AddSchedule(HotelServiceScheduleDTO request);
+        Task<HotelServiceSchedule> GetSchedule(int id);
+        Task<IEnumerable<HotelServiceSchedule>> GetAllSchedules(int? hotelServiceId = null);
+        Task DeleteSchedule(int id);
+        Task<HotelServiceSchedule> UpdateSchedule(int id, HotelServiceScheduleDTO request);
     }
 }

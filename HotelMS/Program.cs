@@ -128,6 +128,16 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    var context = services.GetRequiredService<DataContext>();
+
+//    var seeder = new Seed(context);
+//    seeder.SeedDataContext(); // Call the instance method
+//}
+
+
 if (args.Length == 1 && args[0].ToLower() == "seeddata")
     SeedData(app);
 

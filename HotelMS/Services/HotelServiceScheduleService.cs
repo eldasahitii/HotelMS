@@ -57,101 +57,226 @@
 //        }
 //    }
 //}
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Threading.Tasks;
+//using HotelMS.Data;
+//using HotelMS.Models;
+//using HotelMS.Models.DTOs;
+//using Microsoft.EntityFrameworkCore;
+
+//namespace HotelMS.Services
+//{
+//    public class HotelServiceScheduleService : IHotelServiceScheduleService
+//    {
+//        private readonly DataContext _context;
+
+//        public HotelServiceScheduleService(DataContext context)
+//        {
+//            _context = context;
+//        }
+
+//        public async Task<IEnumerable<HotelServiceScheduleDTO>> GetAllAsync()
+//        {
+//            return await _context.HotelServiceSchedules
+//                .Select(x => new HotelServiceScheduleDTO
+//                {
+//                    Id = x.Id,
+//                    HotelServiceId = x.HotelServiceId,
+//                    StartTime = x.StartTime,
+//                    EndTime = x.EndTime,
+//                    IsAvailable = x.IsAvailable
+//                }).ToListAsync();
+//        }
+
+//        public async Task<HotelServiceScheduleDTO> GetByIdAsync(int id)
+//        {
+//            var schedule = await _context.HotelServiceSchedules.FindAsync(id);
+//            if (schedule == null) return null;
+
+//            return new HotelServiceScheduleDTO
+//            {
+//                Id = schedule.Id,
+//                HotelServiceId = schedule.HotelServiceId,
+//                StartTime = schedule.StartTime,
+//                EndTime = schedule.EndTime,
+//                IsAvailable = schedule.IsAvailable
+//            };
+//        }
+
+//        public async Task<HotelServiceScheduleDTO> CreateAsync(HotelServiceScheduleCreateUpdateDTO dto)
+//        {
+
+//            var schedule = new HotelServiceSchedule
+//            {
+//                HotelServiceId = dto.HotelServiceId,
+//                StartTime = dto.StartTime,
+//                EndTime = dto.EndTime,
+//                IsAvailable = dto.IsAvailable
+//            };
+
+//            _context.HotelServiceSchedules.Add(schedule);
+//            await _context.SaveChangesAsync();
+
+//            return new HotelServiceScheduleDTO
+//            {
+//                Id = schedule.Id,
+//                HotelServiceId = schedule.HotelServiceId,
+//                StartTime = schedule.StartTime,
+//                EndTime = schedule.EndTime,
+//                IsAvailable = schedule.IsAvailable
+//            };
+//        }
+
+
+//        public async Task<bool> UpdateAsync(int id, HotelServiceScheduleCreateUpdateDTO DTO)
+//        {
+//            var schedule = await _context.HotelServiceSchedules.FindAsync(id);
+//            if (schedule == null) return false;
+
+//            schedule.HotelServiceId = DTO.HotelServiceId;
+//            schedule.StartTime = DTO.StartTime;
+//            schedule.EndTime = DTO.EndTime;
+//            schedule.IsAvailable = DTO.IsAvailable;
+
+//            _context.HotelServiceSchedules.Update(schedule);
+//            await _context.SaveChangesAsync();
+//            return true;
+//        }
+
+//        public async Task<bool> DeleteAsync(int id)
+//        {
+//            var schedule = await _context.HotelServiceSchedules.FindAsync(id);
+//            if (schedule == null) return false;
+
+//            _context.HotelServiceSchedules.Remove(schedule);
+//            await _context.SaveChangesAsync();
+//            return true;
+//        }
+//    }
+//}
+using HotelMS.Data.DTO;
+using HotelMS.Data;
+using HotelMS.Models;
+using HotelMS.Data.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HotelMS.Data;
-using HotelMS.Models;
-using HotelMS.Models.DTOs;
-using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Services
 {
     public class HotelServiceScheduleService : IHotelServiceScheduleService
     {
-        private readonly DataContext _context;
+        private readonly DataContext _dbContext;
 
-        public HotelServiceScheduleService(DataContext context)
+        public HotelServiceScheduleService(DataContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<HotelServiceScheduleDTO>> GetAllAsync()
+        public async Task<HotelServiceSchedule> AddSchedule(HotelServiceScheduleDTO request)
         {
-            return await _context.HotelServiceSchedules
-                .Select(x => new HotelServiceScheduleDTO
+            try
+            {
+                var schedule = new HotelServiceSchedule
                 {
-                    Id = x.Id,
-                    HotelServiceId = x.HotelServiceId,
-                    StartTime = x.StartTime,
-                    EndTime = x.EndTime,
-                    IsAvailable = x.IsAvailable
-                }).ToListAsync();
-        }
+                    HotelServiceId = request.HotelServiceId,
+                    StartTime = request.StartTime,
+                    EndTime = request.EndTime,
+                    IsAvailable = request.IsAvailable
+                };
 
-        public async Task<HotelServiceScheduleDTO> GetByIdAsync(int id)
-        {
-            var schedule = await _context.HotelServiceSchedules.FindAsync(id);
-            if (schedule == null) return null;
+                _dbContext.HotelServiceSchedules.Add(schedule);
+                await _dbContext.SaveChangesAsync();
 
-            return new HotelServiceScheduleDTO
+                return schedule;
+            }
+            catch (Exception ex)
             {
-                Id = schedule.Id,
-                HotelServiceId = schedule.HotelServiceId,
-                StartTime = schedule.StartTime,
-                EndTime = schedule.EndTime,
-                IsAvailable = schedule.IsAvailable
-            };
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error occurred while attempting to save the hotel service schedule.");
+            }
         }
 
-        public async Task<HotelServiceScheduleDTO> CreateAsync(HotelServiceScheduleCreateUpdateDTO dto)
+        public async Task<HotelServiceSchedule> GetSchedule(int id)
         {
-
-            var schedule = new HotelServiceSchedule
+            try
             {
-                HotelServiceId = dto.HotelServiceId,
-                StartTime = dto.StartTime,
-                EndTime = dto.EndTime,
-                IsAvailable = dto.IsAvailable
-            };
-
-            _context.HotelServiceSchedules.Add(schedule);
-            await _context.SaveChangesAsync();
-
-            return new HotelServiceScheduleDTO
+                return await _dbContext.HotelServiceSchedules.FindAsync(id);
+            }
+            catch (Exception ex)
             {
-                Id = schedule.Id,
-                HotelServiceId = schedule.HotelServiceId,
-                StartTime = schedule.StartTime,
-                EndTime = schedule.EndTime,
-                IsAvailable = schedule.IsAvailable
-            };
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error occurred while retrieving the hotel service schedule.");
+            }
         }
 
-
-        public async Task<bool> UpdateAsync(int id, HotelServiceScheduleCreateUpdateDTO DTO)
+        public async Task<IEnumerable<HotelServiceSchedule>> GetAllSchedules(int? hotelServiceId = null)
         {
-            var schedule = await _context.HotelServiceSchedules.FindAsync(id);
-            if (schedule == null) return false;
+            try
+            {
+                IQueryable<HotelServiceSchedule> query = _dbContext.HotelServiceSchedules;
 
-            schedule.HotelServiceId = DTO.HotelServiceId;
-            schedule.StartTime = DTO.StartTime;
-            schedule.EndTime = DTO.EndTime;
-            schedule.IsAvailable = DTO.IsAvailable;
+                if (hotelServiceId.HasValue)
+                {
+                    query = query.Where(s => s.HotelServiceId == hotelServiceId.Value);
+                }
 
-            _context.HotelServiceSchedules.Update(schedule);
-            await _context.SaveChangesAsync();
-            return true;
+                return await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error occurred while retrieving hotel service schedules.");
+            }
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<HotelServiceSchedule> UpdateSchedule(int id, HotelServiceScheduleDTO request)
         {
-            var schedule = await _context.HotelServiceSchedules.FindAsync(id);
-            if (schedule == null) return false;
+            try
+            {
+                var schedule = await _dbContext.HotelServiceSchedules.FindAsync(id);
 
-            _context.HotelServiceSchedules.Remove(schedule);
-            await _context.SaveChangesAsync();
-            return true;
+                if (schedule == null)
+                {
+                    return null;
+                }
+
+                schedule.HotelServiceId = request.HotelServiceId;
+                schedule.StartTime = request.StartTime;
+                schedule.EndTime = request.EndTime;
+                schedule.IsAvailable = request.IsAvailable;
+
+                await _dbContext.SaveChangesAsync();
+
+                return schedule;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error occurred while attempting to update the hotel service schedule.");
+            }
+        }
+
+        public async Task DeleteSchedule(int id)
+        {
+            try
+            {
+                var schedule = await _dbContext.HotelServiceSchedules.FindAsync(id);
+                if (schedule != null)
+                {
+                    _dbContext.HotelServiceSchedules.Remove(schedule);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error occurred while attempting to delete the hotel service schedule.");
+            }
         }
     }
 }
+

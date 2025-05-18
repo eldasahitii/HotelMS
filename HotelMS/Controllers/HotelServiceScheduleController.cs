@@ -59,16 +59,79 @@
 //    }
 //}
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HotelMS.Models.DTOs;
-using HotelMS.Services;
+//using System.Collections.Generic;
+//using System.Threading.Tasks;
+//using HotelMS.Models.DTOs;
+//using HotelMS.Services;
+//using Microsoft.AspNetCore.Mvc;
+
+//namespace HotelMS.Controllers
+//{
+//    [ApiController]
+//    [Route("api/[controller]")]
+//    public class HotelServiceScheduleController : ControllerBase
+//    {
+//        private readonly IHotelServiceScheduleService _service;
+
+//        public HotelServiceScheduleController(IHotelServiceScheduleService service)
+//        {
+//            _service = service;
+//        }
+
+//        [HttpGet]
+//        public async Task<IEnumerable<HotelServiceScheduleDTO>> GetAll()
+//        {
+//            return await _service.GetAllAsync();
+//        }
+
+//        [HttpGet("{id}")]
+//        public async Task<ActionResult<HotelServiceScheduleDTO>> GetById(int id)
+//        {
+//            var schedule = await _service.GetByIdAsync(id);
+//            if (schedule == null) return NotFound();
+//            return Ok(schedule);
+//        }
+
+//        [HttpPost]
+//        public async Task<ActionResult<HotelServiceScheduleDTO>> Create(HotelServiceScheduleCreateUpdateDTO DTO)
+//        {
+//            //if (DTO.EndTime <= DTO.StartTime)
+//            //{
+//            //    return BadRequest("End time must be after start time.");
+//            //}
+//            var created = await _service.CreateAsync(DTO);
+//            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+//        }
+
+//        [HttpPut("{id}")]
+//        public async Task<IActionResult> Update(int id, HotelServiceScheduleCreateUpdateDTO DTO)
+//        {
+//            var updated = await _service.UpdateAsync(id, DTO);
+//            if (!updated) return NotFound();
+//            return NoContent();
+//        }
+
+//        [HttpDelete("{id}")]
+//        public async Task<IActionResult> Delete(int id)
+//        {
+//            var deleted = await _service.DeleteAsync(id);
+//            if (!deleted) return NotFound();
+//            return NoContent();
+//        }
+//    }
+//}
+
+using HotelMS.Data.DTO;
+using HotelMS.Data.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace HotelMS.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class HotelServiceScheduleController : ControllerBase
     {
         private readonly IHotelServiceScheduleService _service;
@@ -78,45 +141,85 @@ namespace HotelMS.Controllers
             _service = service;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<HotelServiceScheduleDTO>> GetAll()
+        [HttpPost("addSchedule")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddSchedule([FromBody] HotelServiceScheduleDTO request)
         {
-            return await _service.GetAllAsync();
+            try
+            {
+                var schedule = await _service.AddSchedule(request);
+                return Ok(schedule);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<HotelServiceScheduleDTO>> GetById(int id)
+        [HttpGet("getSchedule")]
+        [Authorize(Roles = "Admin,ServiceManager,Receptionist")]
+        public async Task<IActionResult> GetSchedule(int id)
         {
-            var schedule = await _service.GetByIdAsync(id);
-            if (schedule == null) return NotFound();
-            return Ok(schedule);
+            try
+            {
+                var schedule = await _service.GetSchedule(id);
+                if (schedule == null)
+                    return NotFound();
+
+                return Ok(schedule);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpPost]
-        public async Task<ActionResult<HotelServiceScheduleDTO>> Create(HotelServiceScheduleCreateUpdateDTO DTO)
+        [HttpGet("getAllSchedules")]
+        [Authorize(Roles = "Admin,ServiceManager,Receptionist")]
+        public async Task<IActionResult> GetAllSchedules([FromQuery] int? hotelServiceId = null)
         {
-            //if (DTO.EndTime <= DTO.StartTime)
-            //{
-            //    return BadRequest("End time must be after start time.");
-            //}
-            var created = await _service.CreateAsync(DTO);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            try
+            {
+                var schedules = await _service.GetAllSchedules(hotelServiceId);
+                return Ok(schedules);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, HotelServiceScheduleCreateUpdateDTO DTO)
+        [HttpPut("updateSchedule")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateSchedule(int id, [FromBody] HotelServiceScheduleDTO request)
         {
-            var updated = await _service.UpdateAsync(id, DTO);
-            if (!updated) return NotFound();
-            return NoContent();
+            try
+            {
+                var updatedSchedule = await _service.UpdateSchedule(id, request);
+                if (updatedSchedule == null)
+                    return NotFound();
+
+                return Ok(updatedSchedule);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("deleteSchedule")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteSchedule(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted) return NotFound();
-            return NoContent();
+            try
+            {
+                await _service.DeleteSchedule(id);
+                return Ok(new { message = "Schedule deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

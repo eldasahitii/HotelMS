@@ -9,25 +9,43 @@
 //    }
 //}
 
-namespace HotelMS.Models.DTOs
+//namespace HotelMS.Models.DTOs
+//{
+//    // For reading data (returns to client)
+//    public class HotelServiceScheduleDTO
+//    {
+//        public int Id { get; set; }
+//        public int HotelServiceId { get; set; }
+//        public DateTime StartTime { get; set; }
+//        public DateTime EndTime { get; set; }
+//        public bool IsAvailable { get; set; }
+//    }
+
+
+//    // For creating/updating data (from client)
+//    public class HotelServiceScheduleCreateUpdateDTO
+//    {
+//        public int HotelServiceId { get; set; }
+//        public DateTime StartTime { get; set; }
+//        public DateTime EndTime { get; set; }
+//        public bool IsAvailable { get; set; }
+//    }
+//}
+namespace HotelMS.Data.DTO
 {
-    // For reading data (returns to client)
     public class HotelServiceScheduleDTO
     {
         public int Id { get; set; }
+
         public int HotelServiceId { get; set; }
+
+        // Instead of full service details, just expose the name here:
+        public string ServiceName { get; set; }
+
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public bool IsAvailable { get; set; }
-    }
 
-
-    // For creating/updating data (from client)
-    public class HotelServiceScheduleCreateUpdateDTO
-    {
-        public int HotelServiceId { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
         public bool IsAvailable { get; set; }
     }
 }
+
