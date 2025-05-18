@@ -50,12 +50,13 @@ const handleLogin = async (e) => {
         case 'CleaningStaff':
           navigate('/cleaningstaff/dashboard');
           break;
-        default:
-        } else if (userRole === 'RestaurantManager') {
+        case 'RestaurantManager':
           navigate('/restaurant-manager/dashboard');
-        } else if (userRole === 'RestaurantHost') {
+          break;
+        case 'RestaurantHost':
           navigate('/host/dashboard');
-        } else {
+          break;
+        default:
           setError("Unknown role. Access denied.");
           break;
       }
