@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Header from './Components/Header';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import ReviewsPage from './pages/ReviewPage';
+
+import AboutUs from './pages/AboutUs';
+
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/CleaningManagerDashboard';
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
@@ -59,7 +61,7 @@ function App() {
           <Route path="/" element={<Navigate to="/signup" />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/reviews" element={<ReviewsPage />} />
+          <Route path="/about" element={<AboutUs />} />
           <Route path="/header" element={<Header />} />
 
           <Route
@@ -165,6 +167,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+         
 
           <Route path="*" element={<div>Page Not Found</div>} />
         </Routes>
