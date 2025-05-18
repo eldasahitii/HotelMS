@@ -2,8 +2,8 @@
 
 namespace HotelMS.Data.DTO
 {
-    public class RoomStatusDTO
+    public class RoomTypeDTO
     {
-        public string RoomStatusName { get; set; }
+        public string Name { get; set; }
     }
 }

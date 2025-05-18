@@ -1,5 +1,6 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,13 +16,14 @@ namespace HotelMS.Controllers
             _service = service;
         }
 
-        [HttpPost("addRoom")]
+        [HttpPost("AddRoom")]
+        [Authorize(Roles = "Admin,RoomManager")]
         public async Task<IActionResult> AddRoom(RoomDTO request)
         {
             try
             {
-                var product = await _service.AddRoom(request);
-                return Ok(product);
+                var result = await _service.AddRoom(request);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -29,7 +31,8 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpGet("getRoom")]
+        [HttpGet("GetRoom")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
         public async Task<IActionResult> GetRoom(int id)
         {
             try
@@ -51,12 +54,13 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpGet("getAllRooms")]
+        [HttpGet("GetAllRooms")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                var result = await _service.GetAll();
+                var result = await _service.GetAllRooms();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -65,9 +69,10 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpDelete("deleteRoom")]
+        [HttpDelete("DeleteRoom")]
+        [Authorize(Roles = "Admin,RoomManager")]
 
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteRoom(int id)
         {
             try
             {
@@ -80,13 +85,18 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpPut("updateRoom")]
-
-        public async Task<IActionResult> Update(int id, [FromBody] RoomDTO request)
+        [HttpPut("UpdateRoom")]
+        [Authorize(Roles = "Admin,RoomManager")]
+        public async Task<IActionResult> UpdateRoom(int id, [FromBody] RoomDTO request)
         {
             try
             {
-                var result = _service.UpdateRoom(id, request);
+                if (request.RoomTypeID <= 0 || request.RoomStatusID <= 0)
+                {
+                    return BadRequest("Invalid RoomTypeID or RoomStatusID.");
+                }
+
+                var result = await _service.UpdateRoom(id, request);
                 if (result == null)
                 {
                     return NotFound();
@@ -101,5 +111,7 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
     }
 }

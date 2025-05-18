@@ -7,7 +7,7 @@ namespace HotelMS.Data.Interfaces
     {
         Task<RoomStatus> AddRoomStatus(RoomStatusDTO request);
         Task<RoomStatus> GetRoomStatus(int id);
-        Task<IEnumerable<RoomStatus>> GetAllRoomStatus();
+        Task<IEnumerable<RoomStatus>> GetAllRoomStatus(string role = null);
         Task DeleteRoomStatus(int id);
         Task<RoomStatus> UpdateRoomStatus(int id, RoomStatusDTO request);
     }
