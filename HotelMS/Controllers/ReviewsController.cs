@@ -23,8 +23,12 @@ namespace HotelMS.Controllers
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews()
         {
-            return await _context.Reviews.Include(r => r.User).ToListAsync();
+            return await _context.Reviews
+                .Include(r => r.User)
+                .Include(r => r.Category) //  Include the ReviewCategory
+                .ToListAsync();
         }
+
 
         // GET: api/reviews/{id}
         [HttpGet("{id}")]
