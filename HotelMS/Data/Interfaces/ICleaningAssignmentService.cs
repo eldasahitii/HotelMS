@@ -10,10 +10,10 @@ namespace HotelMS.Data.Interfaces
         Task<IEnumerable<CleaningAssignmentDTO>> GetAllAssignments();
         Task<CleaningAssignment> UpdateAssignment(int id, CleaningAssignmentDTO request);
         Task DeleteAssignment(int id);
-        Task<IEnumerable<CleaningAssignmentDTO>> GetAssignmentsForStaff(int staffId);
+        //Task<IEnumerable<CleaningAssignmentDTO>> GetAssignmentsForStaff(int staffId);
         Task<bool> StartAssignment(int id);
         Task<bool> MarkAssignmentCompleted(int id);
         Task<bool> CancelAssignment(int id);
-
+        Task<IEnumerable<CleaningAssignmentDTO>> GetAssignmentsByStaffName(string fullName);
     }
 }
