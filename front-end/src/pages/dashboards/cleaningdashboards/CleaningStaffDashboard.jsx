@@ -102,7 +102,6 @@ const resolveCurrentCleaningStaffID = async () => {
         <h2 className="text-primary fw-bold mb-4">
           <i className="bi bi-search me-2"></i>Cleaning Assignments
         </h2>
-
         <div className="card mb-4 shadow-sm">
           <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
             <i className="bi bi-search me-2"></i>Search Assignments by Name
