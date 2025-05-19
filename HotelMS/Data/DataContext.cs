@@ -85,12 +85,11 @@ namespace HotelMS.Data
                 .HasForeignKey(r => r.RoomStatusID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Room ↔ RoomImages (one-to-many)
             modelBuilder.Entity<RoomImage>()
-                .HasOne(ri => ri.Room)
-                .WithMany(r => r.RoomImages)
-                .HasForeignKey(ri => ri.RoomID)
-                .OnDelete(DeleteBehavior.Cascade);
+       .HasOne(ri => ri.RoomType)
+       .WithMany(rt => rt.RoomImages)
+       .HasForeignKey(ri => ri.RoomTypeID)
+       .OnDelete(DeleteBehavior.Cascade);
 
 
             // RoomReservation ↔ ReservationStatus

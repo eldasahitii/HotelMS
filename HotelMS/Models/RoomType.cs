@@ -8,9 +8,26 @@ namespace HotelMS.Models
         public int RoomTypeID { get; set; }
 
         [Required]
-        [MaxLength(50)]
-        public string Name { get; set; }
+        [MaxLength(100)]
+        public string Name { get; set; }          
 
-        public ICollection<Room> Rooms { get; set; } 
+        [Required]
+        [MaxLength(50)]
+        public string Capacity { get; set; }    
+
+        [Required]
+        [MaxLength(50)]
+        public string Size { get; set; }           
+
+        [Required]
+        public string Description { get; set; }   
+
+        [Required]
+        public decimal Price { get; set; }         
+
+        public ICollection<Room> Rooms { get; set; }
+
+        public ICollection<RoomImage> RoomImages { get; set; }  
+
     }
 }

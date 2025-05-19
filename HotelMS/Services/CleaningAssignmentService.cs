@@ -61,7 +61,7 @@ namespace HotelMS.Services
             {
                 CleaningAssignmentID = assignment.CleaningAssignmentID,
                 RoomID = assignment.RoomID,
-                RoomName = assignment.Room.Name,
+                RoomName = assignment.Room.Title,
                 CleaningStaffID = assignment.CleaningStaffID,
                 StaffName = assignment.CleaningStaff.User.FirstName + " " + assignment.CleaningStaff.User.LastName,
                 Status = assignment.Status,
@@ -82,7 +82,7 @@ namespace HotelMS.Services
             {
                 CleaningAssignmentID = a.CleaningAssignmentID,
                 RoomID = a.RoomID,
-                RoomName = a.Room.Name,
+                RoomName = a.Room.Title,
                 CleaningStaffID = a.CleaningStaffID,
                 StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
                 Status = a.Status,
@@ -206,7 +206,7 @@ namespace HotelMS.Services
             {
                 CleaningAssignmentID = a.CleaningAssignmentID,
                 RoomID = a.RoomID,
-                RoomName = a.Room.Name,
+                RoomName = a.Room.Title,
                 RoomStatus = a.Room.RoomStatus?.RoomStatusName ?? "Unknown",
                 CleaningStaffID = a.CleaningStaffID,
                 StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
