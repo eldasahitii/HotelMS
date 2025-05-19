@@ -11,5 +11,6 @@ namespace HotelMS.Data.Interfaces
         Task<IEnumerable<RoomDTO>> GetAllRooms();
         Task DeleteRoom(int id);
         Task<RoomDTO> UpdateRoom(int id, RoomDTO request);
+        Task<RoomDetailsDTO> GetRoomDetails(int id);
     }
 }

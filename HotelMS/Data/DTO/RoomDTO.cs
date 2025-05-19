@@ -4,6 +4,8 @@ namespace HotelMS.Data.DTO
 {
     public class RoomDTO
     {
+        [Required]
+        public string RoomNumber { get; set; }
 
         [Required]
         public string Title { get; set; }

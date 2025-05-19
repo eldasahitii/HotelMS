@@ -6,7 +6,7 @@ import "./Rooms.css";
 
 const RoomCard = ({
   id,
-  name,      
+  title,
   capacity,
   size,
   description,
@@ -23,7 +23,7 @@ const RoomCard = ({
       <Card className="border-0 shadow-none">
         <Row className={`align-items-center ${reverse ? "flex-row-reverse" : ""}`}>
           <Col md={6} className="p-0 pe-md-4">
-            <RoomSlider images={images} alt={name} />
+            <RoomSlider images={images} alt={title} />
           </Col>
           <Col md={6}>
             <Card.Body
@@ -34,7 +34,7 @@ const RoomCard = ({
                 className="fs-1 fs-md-2 fs-sm-3 mb-4 text-dark"
                 style={{ fontWeight: 100 }}
               >
-                {name}
+                {title}
               </Card.Title>
 
               <Card.Text className="fs-5 fs-md-6">
@@ -65,6 +65,5 @@ const RoomCard = ({
     </Container>
   );
 };
-
 
 export default RoomCard;

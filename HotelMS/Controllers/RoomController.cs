@@ -112,6 +112,25 @@ namespace HotelMS.Controllers
             }
         }
 
+        [HttpGet("GetRoomDetails/{id}")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
+        public async Task<IActionResult> GetRoomDetails(int id)
+        {
+            try
+            {
+                var result = await _service.GetRoomDetails(id);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
     }
 }

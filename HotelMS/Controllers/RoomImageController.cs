@@ -18,7 +18,8 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetImagesByRoom")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
+        //[Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
+        [Authorize]
 
         public async Task<IActionResult> GetImagesByRoom(int roomId)
         {

@@ -88,4 +88,35 @@ public class RoomService : IRoomService
             await _dbContext.SaveChangesAsync();
         }
     }
+    public async Task<RoomDetailsDTO> GetRoomDetails(int roomId)
+    {
+        var room = await _dbContext.Rooms
+            .Include(r => r.RoomType)
+                .ThenInclude(rt => rt.RoomImages)
+            .Include(r => r.RoomStatus)
+            .FirstOrDefaultAsync(r => r.RoomID == roomId);
+
+        if (room == null) return null;
+
+        return new RoomDetailsDTO
+        {
+            RoomID = room.RoomID,
+            RoomNumber=room.RoomNumber,
+            Title = room.Title,
+            CreatedAt = room.CreatedAt,
+            RoomStatusID = room.RoomStatusID,
+            RoomStatusName = room.RoomStatus.RoomStatusName,
+            RoomType = new RoomTypeDTO
+            {
+                Name = room.RoomType.Name,
+                Capacity = room.RoomType.Capacity,
+                Size = room.RoomType.Size,
+                Description = room.RoomType.Description,
+                Price = room.RoomType.Price,
+                Images = room.RoomType.RoomImages.Select(img => img.ImageUrl).ToList()
+            }
+        };
+    }
+
+
 }

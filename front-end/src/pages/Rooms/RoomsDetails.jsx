@@ -10,8 +10,15 @@ const RoomDetailsPage = () => {
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
-        const response = await axios.get(`/api/rooms/${roomId}`);
-        setRoom(response.data);
+        // Match your backend route here exactly
+        const response = await axios.get(`/api/Room/GetRoomDetails/${roomId}`);
+
+        // Map 'name' to 'title' for consistency
+        const roomData = response.data;
+        setRoom({
+          ...roomData,
+          title: roomData.name,
+        });
       } catch (error) {
         console.error("Failed to fetch room data", error);
       }
@@ -40,7 +47,7 @@ const RoomDetailsPage = () => {
     <div className="container mt-5" style={{ minHeight: "70vh" }}>
       <div className="text-center mx-auto" style={{ maxWidth: "700px" }}>
         <h1 className="fw-bold mb-4" style={{ fontSize: "3rem", color: "#222" }}>
-          {room.name || room.title}
+          {room.title}
         </h1>
         <p><strong>Capacity:</strong> {room.capacity}</p>
         <p><strong>Size:</strong> {room.size}</p>
@@ -51,7 +58,7 @@ const RoomDetailsPage = () => {
         {room.images?.length > 0 && (
           <img
             src={room.images[0]}
-            alt={room.name}
+            alt={room.title}
             className="img-fluid rounded shadow my-3"
             style={{ maxHeight: "300px", objectFit: "cover" }}
           />

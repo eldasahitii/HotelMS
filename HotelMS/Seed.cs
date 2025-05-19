@@ -266,6 +266,7 @@ public class Seed
     {
         new Room()
         {
+            RoomNumber="Junior1",
             Title = "Junior Room",
             CreatedAt = DateTime.Now,
             RoomTypeID = juniorRoomTypeID,
@@ -273,6 +274,7 @@ public class Seed
         },
         new Room()
         {
+            RoomNumber="Deluxe1",
             Title = "Deluxe Room",
             CreatedAt = DateTime.Now,
             RoomTypeID = deluxeRoomTypeID,
@@ -280,6 +282,7 @@ public class Seed
         },
         new Room()
         {
+            RoomNumber="Double1",
             Title = "Double Room",
             CreatedAt = DateTime.Now,
             RoomTypeID = doubleRoomTypeID,
@@ -287,6 +290,7 @@ public class Seed
         },
         new Room()
         {
+            RoomNumber="Twin1",
             Title = "Twin Room",
             CreatedAt = DateTime.Now,
             RoomTypeID = twinRoomTypeID,
@@ -294,6 +298,7 @@ public class Seed
         },
         new Room()
         {
+            RoomNumber="Superior1",
             Title = "Superior Twin Room",
             CreatedAt = DateTime.Now,
             RoomTypeID = superiorTwinRoomTypeID,

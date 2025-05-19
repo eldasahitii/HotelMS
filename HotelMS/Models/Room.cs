@@ -8,6 +8,8 @@ namespace HotelMS.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int RoomID { get; set; }
+        [Required]
+        public string RoomNumber { get; set; }
 
         [Required]
         public string Title { get; set; }
