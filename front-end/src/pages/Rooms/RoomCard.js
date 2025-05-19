@@ -3,12 +3,12 @@ import { Card, Button, Row, Col, Container } from "react-bootstrap";
 import RoomSlider from "./RoomSlider";
 import "./Rooms.css";
 
-const RoomCard = ({ title, capacity, size, description, images, link, reverse }) => {
+const RoomCard = ({ title, capacity, size, description, images, link, reverse, price }) => {
   return (
     <Container
       fluid
       className="custom-container px-2 px-md-5"
-      style={{ marginBottom: "130px" }} 
+      style={{ marginBottom: "130px" }}
     >
       <Card className="border-0 shadow-none">
         <Row className={`align-items-center ${reverse ? "flex-row-reverse" : ""}`}>
@@ -33,6 +33,10 @@ const RoomCard = ({ title, capacity, size, description, images, link, reverse })
 
               <Card.Text className="fs-5 fs-md-6">
                 <strong>Size:</strong> {size}
+              </Card.Text>
+
+              <Card.Text className="fs-5 fs-md-6 fw-bold">
+                <strong>Price:</strong> ${price}
               </Card.Text>
 
               <Card.Text className="fs-6 fs-md-5">{description}</Card.Text>

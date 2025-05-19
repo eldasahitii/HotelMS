@@ -26,6 +26,7 @@ function RoomsPage() {
             title="Junior Room"
             capacity="1-2 PERSONS"
             size="22M2"
+            price={120} 
             description={`Experience understated luxury in our Superior Double Bed Room.
 Elegantly designed with a harmonious blend of comfort and style,
 this space boasts a plush double bed, premium amenities, and more.`}
@@ -39,6 +40,7 @@ this space boasts a plush double bed, premium amenities, and more.`}
             title="Deluxe Room"
             capacity="1-2 PERSONS"
             size="22M2"
+            price={140}
             description={`Experience understated luxury in our Superior Double Bed Room.
 Elegantly designed with a harmonious blend of comfort and style,
 this space boasts a plush double bed, premium amenities, and more.`}
@@ -53,6 +55,7 @@ this space boasts a plush double bed, premium amenities, and more.`}
             title="Double Room"
             capacity="1-2 PERSONS"
             size="22M2"
+            price={110} 
             description={`Experience understated luxury in our Superior Double Bed Room.
 Elegantly designed with a harmonious blend of comfort and style,
 this space boasts a plush double bed, premium amenit`}
@@ -66,6 +69,7 @@ this space boasts a plush double bed, premium amenit`}
             title="Twin Room"
             capacity="1-2 PERSONS"
             size="30M2"
+            price={130}  
             description={`Experience understated luxury in our Superior Double Bed Room.
 Elegantly designed with a harmonious blend of comfort and style,
 this space boasts a plush double bed, premium amenities, and more.`}
@@ -80,6 +84,7 @@ this space boasts a plush double bed, premium amenities, and more.`}
             title="Superior Twin Room"
             capacity="2-3 PERSONS"
             size="28M2"
+            price={160} 
             description={`Experience understated luxury in our Superior Double Bed Room.
 Elegantly designed with a harmonious blend of comfort and style,
 this space boasts a plush double bed, premium amenities, and more.`}
