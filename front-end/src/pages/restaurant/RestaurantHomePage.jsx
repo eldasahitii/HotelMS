@@ -9,9 +9,37 @@ import restaurantInterior from '../../Assets/images/restaurantInterior.jpg';
 import pasta from '../../Assets/images/pasta.jpg';
 import steak from '../../Assets/images/steak.jpg';
 import risotto from '../../Assets/images/risotto.jpg';
+import axios from 'axios';
+import {useState} from 'react';
 
 
 const RestaurantHomePage = () => {
+
+  const [formData, setFormData] = useState({
+  guestID: '',
+  dateTime: '',
+  tableID: ''
+});
+
+const handleChange = (e) => {
+  setFormData({...formData, [e.target.name]: e.target.value});
+};
+
+const handleSubmit = async(e) => {
+  e.preventDeafult();
+  try {
+    await axios.post('/api/Host/createReservation', {
+      guestID: parseInt(formData.guestID),
+      dateTime: formData.dateTime,
+      restaurantTableID: parseInt(formData.tableID)
+    });
+    alert('Reservation submitted!');
+    setFormData({guestID: '', dateTime: '', tableID: ''});
+  } catch (error) {
+    alert("Error creating reservation");
+    console.error(error);
+  }
+};
   return (
    <div>
      <section className="container-fluid p-0 position-relative">
@@ -112,6 +140,53 @@ const RestaurantHomePage = () => {
           </div>
         </div>
 
+      </section>
+
+      <section className="py-5 bg-light">
+        <div className="container">
+          <h2 className="text-center mb-4">Book a Table</h2>
+
+          <form className="row g-3" onSubmit={handleSubmit}>
+            <div className="col-md-6">
+              <input 
+              type="number"
+              className="form-control"
+              placeholder='Guest ID'
+              name="guestID"
+              value={FormData.guestID}
+              onChange={handleChange}
+              required
+              />
+            </div>
+            <div className="col-md-6">
+              <input
+              type="datetime-local"
+              className="form-control"
+              name="dateTime"
+              value={formData.dateTime}
+              onChange={handleChange}
+              required
+              />
+           </div>
+           <div className="col-md-6">
+             <input
+             type="number"
+             className="form-control"
+             placeholder="Table ID"
+             name="tableID"
+             value={formData.tableID}
+             onChange={handleChange}
+             required
+             />
+           </div>
+
+            <div className="col-12 text-center">
+              <button type="submit" className="btn btn-dark px-5">Submit Reservation</button>
+           </div>
+
+
+          </form>
+        </div>
       </section>
 
 
