@@ -79,4 +79,16 @@ img {
 .extra-margin-top {
   margin-top: 90px;
 }
+img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .display-4 {
+    font-size: 2rem;
+  }
+}
+
 

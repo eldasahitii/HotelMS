@@ -21,6 +21,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
 import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 import RoomsDetails from './pages/Rooms/RoomsDetails';
+import ReservationPage from './pages/Rooms/ReservationPage';
 
 axios.interceptors.request.use(
   (config) => {
@@ -76,6 +77,15 @@ function App() {
           <Route path="/rooms" element={<RoomsPage />} />
           <Route path="/rooms/:roomId" element={<RoomsDetails />} />
 
+          {/* NEW: Reservation Page route */}
+          <Route
+            path="/reserve"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
+                <ReservationPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Protected Routes */}
           <Route
@@ -92,6 +102,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
                 <RoomRecepsionistManagement currentUserId={currentUserId} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reservations"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist']}>
+                <ReservationPage />
               </ProtectedRoute>
             }
           />
