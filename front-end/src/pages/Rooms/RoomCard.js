@@ -4,7 +4,16 @@ import { Link } from "react-router-dom";
 import RoomSlider from "./RoomSlider";
 import "./Rooms.css";
 
-const RoomCard = ({ id, title, capacity, size, description, images, reverse, price }) => {
+const RoomCard = ({
+  id,
+  name,      
+  capacity,
+  size,
+  description,
+  images = [],
+  reverse = false,
+  price,
+}) => {
   return (
     <Container
       fluid
@@ -14,7 +23,7 @@ const RoomCard = ({ id, title, capacity, size, description, images, reverse, pri
       <Card className="border-0 shadow-none">
         <Row className={`align-items-center ${reverse ? "flex-row-reverse" : ""}`}>
           <Col md={6} className="p-0 pe-md-4">
-            <RoomSlider images={images} alt={title} />
+            <RoomSlider images={images} alt={name} />
           </Col>
           <Col md={6}>
             <Card.Body
@@ -25,7 +34,7 @@ const RoomCard = ({ id, title, capacity, size, description, images, reverse, pri
                 className="fs-1 fs-md-2 fs-sm-3 mb-4 text-dark"
                 style={{ fontWeight: 100 }}
               >
-                {title}
+                {name}
               </Card.Title>
 
               <Card.Text className="fs-5 fs-md-6">
@@ -56,5 +65,6 @@ const RoomCard = ({ id, title, capacity, size, description, images, reverse, pri
     </Container>
   );
 };
+
 
 export default RoomCard;

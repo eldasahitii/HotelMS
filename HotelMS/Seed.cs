@@ -305,6 +305,38 @@ public class Seed
             dataContext.SaveChanges();
         }
 
+        if (!dataContext.RoomImages.Any())
+        {
+            var juniorRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Junior Room").RoomTypeID;
+            var deluxeRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Deluxe Room").RoomTypeID;
+            var doubleRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Double Room").RoomTypeID;
+            var twinRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Twin Room").RoomTypeID;
+            var superiorTwinRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Superior Twin Room").RoomTypeID;
+
+            var roomImages = new List<RoomImage>
+    {
+        new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "images/dhoma1.jpeg" },
+        new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "images/slider3.jpeg" },
+
+        new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "images/dhoma22.jpeg" },
+        new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "images/slider4.webp" },
+
+        new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "images/dhoma3.jpeg" },
+        new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "images/slider5.jpeg" },
+
+        new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "images/woden.jpeg" },
+        new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "images/junior3.jpg" },
+
+        new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "images/supertwin.jpg" },
+        new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "images/slider6.jpeg" }
+    };
+
+            dataContext.RoomImages.AddRange(roomImages);
+            dataContext.SaveChanges();
+        }
+
+
+
 
         if (!dataContext.RoomReservations.Any())
         {
