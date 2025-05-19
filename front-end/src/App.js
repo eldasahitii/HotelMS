@@ -159,6 +159,14 @@ function App() {
              </ProtectedRoute>
             }
          />
+         <Route
+            path="/services"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Recepcionist']}>
+                <ServiceMain />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="*" element={<div>Page Not Found</div>} />
         </Routes>
@@ -166,5 +174,6 @@ function App() {
     </Router>
   );
 }
+
 
 export default App;

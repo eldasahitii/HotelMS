@@ -1,33 +1,52 @@
-import React, { useState } from 'react';
-import { Button, Container, Row, Col } from 'react-bootstrap';
-import PoolService from './PoolService';
-import SpaService from './SpaService';
-import EventsService from './EventsService';
+// src/components/HotelServices/HotelServicesList.js
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const ServicesMain = () => {
-  const [activeService, setActiveService] = useState('');
+const HotelServicesList = () => {
+  const navigate = useNavigate();
 
-  const renderServiceComponent = () => {
-    switch (activeService) {
-      case 'pool': return <PoolService />;
-      case 'spa': return <SpaService />;
-      case 'events': return <EventsService />;
-      default: return <p>Select a service to view details.</p>;
+  const services = [
+    {
+      id: 1,
+      name: 'Pool & Spa',
+      description: 'Relax and unwind in our luxurious pool and spa facilities.',
+      imageUrl: 'https://source.unsplash.com/400x250/?spa,pool',
+      route: '/services/pool-spa'
+    },
+    {
+      id: 2,
+      name: 'Events',
+      description: 'Book venues for weddings, conferences, and special occasions.',
+      imageUrl: 'https://source.unsplash.com/400x250/?wedding,event',
+      route: '/services/events'
     }
-  };
+  ];
 
   return (
-    <Container className="my-4">
-      <Row className="mb-3">
-        <Col><Button variant="primary" onClick={() => setActiveService('pool')}>Pool</Button></Col>
-        <Col><Button variant="info" onClick={() => setActiveService('spa')}>Spa</Button></Col>
-        <Col><Button variant="success" onClick={() => setActiveService('events')}>Events</Button></Col>
-      </Row>
-      <Row>
-        <Col>{renderServiceComponent()}</Col>
-      </Row>
-    </Container>
+    <div className="container mt-5">
+      <h2 className="mb-4">Hotel Services</h2>
+      <div className="row">
+        {services.map(service => (
+          <div className="col-md-6 mb-4" key={service.id}>
+            <div className="card shadow-sm">
+              <img src={service.imageUrl} className="card-img-top" alt={service.name} />
+              <div className="card-body">
+                <h5 className="card-title">{service.name}</h5>
+                <p className="card-text">{service.description}</p>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate(service.route)}
+                >
+                  View {service.name}
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
-export default ServicesMain;
+export default HotelServicesList;
