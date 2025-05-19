@@ -20,6 +20,7 @@ import RoomCard from './pages/Rooms/RoomCard';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
 import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
+import RoomsDetails from './pages/Rooms/RoomsDetails';
 
 axios.interceptors.request.use(
   (config) => {
@@ -73,7 +74,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/rooms" element={<RoomsPage />} />
-          <Route path="/rooms/:roomId" element={<RoomCard />} />
+          <Route path="/rooms/:roomId" element={<RoomsDetails />} />
+
 
           {/* Protected Routes */}
           <Route

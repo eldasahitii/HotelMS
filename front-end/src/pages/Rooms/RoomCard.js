@@ -1,9 +1,10 @@
 import React from "react";
-import { Card, Button, Row, Col, Container } from "react-bootstrap";
+import { Card, Row, Col, Container } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import RoomSlider from "./RoomSlider";
 import "./Rooms.css";
 
-const RoomCard = ({ title, capacity, size, description, images, link, reverse, price }) => {
+const RoomCard = ({ id, title, capacity, size, description, images, reverse, price }) => {
   return (
     <Container
       fluid
@@ -41,15 +42,13 @@ const RoomCard = ({ title, capacity, size, description, images, link, reverse, p
 
               <Card.Text className="fs-6 fs-md-5">{description}</Card.Text>
 
-              <Button
-                href={link || "#"}
-                target="_blank"
-                variant="outline-danger"
-                className="mt-auto w-auto px-4 py-2 fs-5 fs-md-6"
+              <Link
+                to={`/rooms/${id}`}
+                className="btn btn-outline-danger mt-auto w-auto px-4 py-2 fs-5 fs-md-6"
                 style={{ maxWidth: "150px" }}
               >
                 View More
-              </Button>
+              </Link>
             </Card.Body>
           </Col>
         </Row>

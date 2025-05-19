@@ -23,73 +23,63 @@ function RoomsPage() {
       <div className="extra-margin-top">
         <div className="mb-5">
           <RoomCard
+            id="1"
             title="Junior Room"
             capacity="1-2 PERSONS"
             size="22M2"
             price={120} 
-            description={`Experience understated luxury in our Superior Double Bed Room.
-Elegantly designed with a harmonious blend of comfort and style,
-this space boasts a plush double bed, premium amenities, and more.`}
+            description="Our Junior Room is perfect for solo travelers or couples. Enjoy amenities like free Wi-Fi, a flat-screen TV, complimentary breakfast, a mini bar, and air conditioning—all in a cozy and elegant setting."
             images={[room1a, room1b]}
-            link="./room1.php"
           />
         </div>
 
         <div className="mb-5">
           <RoomCard
+            id="2"
             title="Deluxe Room"
             capacity="1-2 PERSONS"
             size="22M2"
             price={140}
-            description={`Experience understated luxury in our Superior Double Bed Room.
-Elegantly designed with a harmonious blend of comfort and style,
-this space boasts a plush double bed, premium amenities, and more.`}
+            description="The Deluxe Room offers an elevated stay with a plush king-size bed, high-speed Wi-Fi, a coffee machine, 24-hour room service, and a luxurious en-suite bathroom with premium toiletries."
             images={[room2a, room2b]}
             reverse
-            link="./room2.php"
           />
         </div>
 
         <div className="mb-5">
           <RoomCard
+            id="3"
             title="Double Room"
             capacity="1-2 PERSONS"
             size="22M2"
             price={110} 
-            description={`Experience understated luxury in our Superior Double Bed Room.
-Elegantly designed with a harmonious blend of comfort and style,
-this space boasts a plush double bed, premium amenit`}
+            description="This stylish Double Room includes a comfortable double bed, smart TV, workspace, wardrobe, and essentials like free Wi-Fi, air conditioning, and a safe for your valuables."
             images={[room3a, room3b]}
-            link="./room3.php"
           />
         </div>
 
         <div className="mb-5">
           <RoomCard
+            id="4"
             title="Twin Room"
             capacity="1-2 PERSONS"
             size="30M2"
             price={130}  
-            description={`Experience understated luxury in our Superior Double Bed Room.
-Elegantly designed with a harmonious blend of comfort and style,
-this space boasts a plush double bed, premium amenities, and more.`}
+            description="Our Twin Room is ideal for friends or colleagues traveling together. Features two single beds, private bathroom, complimentary toiletries, Wi-Fi, mini fridge, and daily housekeeping."
             images={[room4a, room4b]}
             reverse
-            link="./room4.php"
           />
         </div>
 
         <div className="mb-5">
           <RoomCard
+            id="5"
             title="Superior Twin Room"
             capacity="2-3 PERSONS"
             size="28M2"
             price={160} 
-            description={`Experience understated luxury in our Superior Double Bed Room.
-Elegantly designed with a harmonious blend of comfort and style,
-this space boasts a plush double bed, premium amenities, and more.`}
+            description="The Superior Twin Room accommodates up to three guests with two twin beds and a pull-out sofa. Includes amenities such as a minibar, room service, a flat-screen TV, and complimentary breakfast."
             images={[room5a, room5b]}
-            link="./room5.php"
           />
         </div>
       </div>
