@@ -204,58 +204,148 @@ public class Seed
         if (!dataContext.RoomTypes.Any())
         {
             var roomTypes = new List<RoomType>
-            {
-                new RoomType() { Name = "Standard" },
-                new RoomType() { Name = "Deluxe" },
-                new RoomType() { Name = "Suite" }
-            };
+    {
+        new RoomType()
+        {
+            Name = "Junior Room",
+            Capacity = "1-2 PERSONS",
+            Size = "22M2",
+            Description = "Our Junior Room is perfect for solo travelers or couples. Enjoy amenities like free Wi-Fi, a flat-screen TV, complimentary breakfast, a mini bar, and air conditioning—all in a cozy and elegant setting.",
+            Price = 120m
+        },
+        new RoomType()
+        {
+            Name = "Deluxe Room",
+            Capacity = "1-2 PERSONS",
+            Size = "22M2",
+            Description = "The Deluxe Room offers an elevated stay with a plush king-size bed, high-speed Wi-Fi, a coffee machine, 24-hour room service, and a luxurious en-suite bathroom with premium toiletries.",
+            Price = 140m
+        },
+        new RoomType()
+        {
+            Name = "Double Room",
+            Capacity = "1-2 PERSONS",
+            Size = "22M2",
+            Description = "This stylish Double Room includes a comfortable double bed, smart TV, workspace, wardrobe, and essentials like free Wi-Fi, air conditioning, and a safe for your valuables.",
+            Price = 110m
+        },
+        new RoomType()
+        {
+            Name = "Twin Room",
+            Capacity = "1-2 PERSONS",
+            Size = "30M2",
+            Description = "Our Twin Room is ideal for friends or colleagues traveling together. Features two single beds, private bathroom, complimentary toiletries, Wi-Fi, mini fridge, and daily housekeeping.",
+            Price = 130m
+        },
+        new RoomType()
+        {
+            Name = "Superior Twin Room",
+            Capacity = "2-3 PERSONS",
+            Size = "28M2",
+            Description = "The Superior Twin Room accommodates up to three guests with two twin beds and a pull-out sofa. Includes amenities such as a minibar, room service, a flat-screen TV, and complimentary breakfast.",
+            Price = 160m
+        }
+    };
 
             dataContext.RoomTypes.AddRange(roomTypes);
             dataContext.SaveChanges();
         }
 
         // Seed Rooms
-
         if (!dataContext.Rooms.Any())
         {
-            var standardRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Standard").RoomTypeID;
-            var deluxeRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Deluxe").RoomTypeID;
-            var suiteRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Suite").RoomTypeID;
+            var juniorRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Junior Room").RoomTypeID;
+            var deluxeRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Deluxe Room").RoomTypeID;
+            var doubleRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Double Room").RoomTypeID;
+            var twinRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Twin Room").RoomTypeID;
+            var superiorTwinRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Superior Twin Room").RoomTypeID;
 
             var availableStatusID = dataContext.RoomStatuses.First(rs => rs.RoomStatusName == "Available").RoomStatusID;
 
             var rooms = new List<Room>
-            {
-                new Room()
-                {
-                    Name = "Single Room", Capacity = "1-2 Persons", Size = "15m²",
-                    Description = "A cozy single room with modern amenities.",
-                    Price = 50.00m,
-                    CreatedAt = DateTime.Now, RoomTypeID = standardRoomTypeID, RoomStatusID = availableStatusID
-                },
-                new Room()
-                {
-                    Name = "Double Room", Capacity = "2 Adults", Size = "25m²",
-                    Description = "A spacious double room with a comfortable bed.",
-                    Price = 80.00m,
-                    CreatedAt = DateTime.Now, RoomTypeID = deluxeRoomTypeID, RoomStatusID = availableStatusID
-                },
-                new Room()
-                {
-                    Name = "Twin Room", Capacity = "2-3 Persons", Size = "23m²",
-                    Description = "A twin bed room with two comfortable beds and modern amenities.",
-                    Price = 70.00m,
-                    CreatedAt = DateTime.Now, RoomTypeID = suiteRoomTypeID, RoomStatusID = availableStatusID
-                }
-            };
+    {
+        new Room()
+        {
+            RoomNumber="Junior1",
+            Title = "Junior Room",
+            CreatedAt = DateTime.Now,
+            RoomTypeID = juniorRoomTypeID,
+            RoomStatusID = availableStatusID
+        },
+        new Room()
+        {
+            RoomNumber="Deluxe1",
+            Title = "Deluxe Room",
+            CreatedAt = DateTime.Now,
+            RoomTypeID = deluxeRoomTypeID,
+            RoomStatusID = availableStatusID
+        },
+        new Room()
+        {
+            RoomNumber="Double1",
+            Title = "Double Room",
+            CreatedAt = DateTime.Now,
+            RoomTypeID = doubleRoomTypeID,
+            RoomStatusID = availableStatusID
+        },
+        new Room()
+        {
+            RoomNumber="Twin1",
+            Title = "Twin Room",
+            CreatedAt = DateTime.Now,
+            RoomTypeID = twinRoomTypeID,
+            RoomStatusID = availableStatusID
+        },
+        new Room()
+        {
+            RoomNumber="Superior1",
+            Title = "Superior Twin Room",
+            CreatedAt = DateTime.Now,
+            RoomTypeID = superiorTwinRoomTypeID,
+            RoomStatusID = availableStatusID
+        }
+    };
 
             dataContext.Rooms.AddRange(rooms);
             dataContext.SaveChanges();
         }
 
+        if (!dataContext.RoomImages.Any())
+        {
+            var juniorRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Junior Room").RoomTypeID;
+            var deluxeRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Deluxe Room").RoomTypeID;
+            var doubleRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Double Room").RoomTypeID;
+            var twinRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Twin Room").RoomTypeID;
+            var superiorTwinRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Superior Twin Room").RoomTypeID;
+
+            var roomImages = new List<RoomImage>
+    {
+        new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "images/dhoma1.jpeg" },
+        new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "images/slider3.jpeg" },
+
+        new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "images/dhoma22.jpeg" },
+        new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "images/slider4.webp" },
+
+        new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "images/dhoma3.jpeg" },
+        new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "images/slider5.jpeg" },
+
+        new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "images/woden.jpeg" },
+        new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "images/junior3.jpg" },
+
+        new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "images/supertwin.jpg" },
+        new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "images/slider6.jpeg" }
+    };
+
+            dataContext.RoomImages.AddRange(roomImages);
+            dataContext.SaveChanges();
+        }
+
+
+
+
         if (!dataContext.RoomReservations.Any())
         {
-            var availableRoomID = dataContext.Rooms.First(r => r.Name == "Single Room").RoomID;
+            var availableRoomID = dataContext.Rooms.First(r => r.Title == "Single Room").RoomID;
             var customerID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
             var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Pending").ReservationStatusID;
 

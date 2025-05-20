@@ -5,11 +5,11 @@ namespace HotelMS.Data.Interfaces
 {
     public interface IRoomTypeService
     {
-        Task<RoomType> AddRoomType(RoomTypeDTO request);
-        Task<RoomType> GetRoomType(int id);
-        Task<IEnumerable<RoomType>> GetAllRoomTypes();
+        Task<RoomTypeDTO> AddRoomType(RoomTypeDTO request);
+        Task<RoomTypeDTO> GetRoomType(int id);
+        Task<IEnumerable<RoomTypeDTO>> GetAllRoomTypes();
+        Task<RoomTypeDTO> UpdateRoomType(int id, RoomTypeDTO request);
         Task DeleteRoomType(int id);
-        Task <RoomType>UpdateRoomType(int id,RoomTypeDTO request);
 
     }
 }

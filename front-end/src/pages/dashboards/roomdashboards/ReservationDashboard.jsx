@@ -72,7 +72,6 @@ const ReservationDashboard = () => {
 
       setReservations(normalizedData);
 
-      // Extract unique room types and reservation statuses from data, case-insensitive but keep original casing
       const typesSet = new Set();
       const statusesSet = new Set();
 
@@ -129,7 +128,6 @@ const ReservationDashboard = () => {
           </div>
         )}
 
-        {/* Filters */}
         <div className="mb-3 d-flex gap-3">
           <select
             className="form-select"

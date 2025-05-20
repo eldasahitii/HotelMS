@@ -18,10 +18,10 @@ namespace HotelMS.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<RoomImage>> GetImagesByRoomId(int roomId)
+        public async Task<IEnumerable<RoomImage>> GetImagesByRoomId(int roomTypeId)
         {
             return await _context.RoomImages
-                .Where(img => img.RoomID == roomId)
+                .Where(img => img.RoomTypeID == roomTypeId)
                 .ToListAsync();
         }
 
@@ -29,7 +29,7 @@ namespace HotelMS.Services
         {
             var image = new RoomImage
             {
-                RoomID = dto.RoomID,
+                RoomTypeID = dto.RoomTypeID,
                 ImageUrl = dto.ImageUrl
             };
 

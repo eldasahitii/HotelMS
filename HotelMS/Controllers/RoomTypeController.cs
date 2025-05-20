@@ -2,6 +2,7 @@
 using HotelMS.Data.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Controllers
 {
@@ -51,7 +52,8 @@ namespace HotelMS.Controllers
             }
         }
         [HttpGet("GetAllRoomTypes")]
-        [Authorize(Roles = "Admin,RoomManager,RoomReceptionist")]
+        //[Authorize(Roles = "Admin,RoomManager,RoomReceptionist")]
+        [Authorize]
 
         public async Task<IActionResult> GetAllRoomTypes()
         {
@@ -68,13 +70,16 @@ namespace HotelMS.Controllers
 
         [HttpDelete("DeleteRoomType")]
         [Authorize(Roles = "Admin")]
-
         public async Task<IActionResult> DeleteRoomType(int id)
         {
             try
             {
-                var result = _service.DeleteRoomType(id);
-                return Ok(result);
+                await _service.DeleteRoomType(id);
+                return Ok("Room type deleted successfully.");
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Room type not found.");
             }
             catch (Exception ex)
             {
@@ -82,13 +87,15 @@ namespace HotelMS.Controllers
             }
         }
 
+
+
         [HttpPut("UpdateRoomType")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateRoomType(int id, [FromBody] RoomTypeDTO request)
         {
             try
             {
-                var result = _service.UpdateRoomType(id, request);
+                var result = await _service.UpdateRoomType(id, request); 
                 if (result == null)
                 {
                     return NotFound();
@@ -103,5 +110,6 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
     }
 }

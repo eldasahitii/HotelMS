@@ -8,21 +8,23 @@ namespace HotelMS.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int RoomID { get; set; }
+        [Required]
+        public string RoomNumber { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public string Title { get; set; }
 
-        [Required]
-        public string Capacity { get; set; }
+        //[Required]
+        //public string Capacity { get; set; }
 
-        [Required]
-        public string Size { get; set; }
+        //[Required]
+        //public string Size { get; set; }
 
-        [Required]
-        public string Description { get; set; }
+        //[Required]
+        //public string Description { get; set; }
 
-        [Required]
-        public decimal Price { get; set; }
+        //[Required]
+        //public decimal Price { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public int RoomTypeID { get; set; }
@@ -32,7 +34,7 @@ namespace HotelMS.Models
         public RoomStatus RoomStatus { get; set; }
 
         public ICollection<RoomReservation> Reservations { get; set; }
-        public ICollection<RoomImage> RoomImages { get; set; }
+        //public ICollection<RoomImage> RoomImages { get; set; }
     }
 
 }

@@ -57,7 +57,7 @@ namespace HotelMS.Services
             _context.RoomReservations.Add(reservation);
             await _context.SaveChangesAsync();
 
-            return $"Reservation created successfully for room {availableRoom.Name}";
+            return $"Reservation created successfully for room {availableRoom.Title}";
         }
 
         public async Task<IEnumerable<UserReservationResponseDTO>> GetUserReservations(int userID)
@@ -69,7 +69,7 @@ namespace HotelMS.Services
                 .Select(r => new UserReservationResponseDTO
                 {
                     ReservationID = r.ReservationID,
-                    RoomName = r.Room.Name,
+                    RoomName = r.Room.Title,
                     CheckInDate = r.CheckInDate,
                     CheckOutDate = r.CheckOutDate,
                     Status = r.ReservationStatus.ReservationStatusName

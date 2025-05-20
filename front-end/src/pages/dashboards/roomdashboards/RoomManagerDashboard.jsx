@@ -108,7 +108,7 @@ const RoomManagerDashboard = () => {
         Price: parseFloat(newRoom.price),
         RoomStatusID: parseInt(newRoom.roomStatusID, 10),
         RoomTypeID: parseInt(newRoom.roomTypeID, 10),
-        Images: newRoom.images  // <-- must match DTO exactly
+        Images: newRoom.images
       };
 
       const response = await axios.post('https://localhost:7117/api/Room/AddRoom', payload, {
@@ -187,8 +187,7 @@ const RoomManagerDashboard = () => {
     <li className="nav-item">
       <i className="bi bi-person-badge me-2"></i> Receptionist Management
     </li>
-    
-    {/* Button to navigate to Room Manager Dashboard */}
+  
     <button
       className="btn btn-outline-light w-100 mt-3 mb-3"
       onClick={() => navigate('/room-manager-dashboard')}
@@ -196,7 +195,6 @@ const RoomManagerDashboard = () => {
       <i className="bi bi-building me-2"></i> Room Manager
     </button>
 
-    {/* New button to navigate to Receptionist Management */}
     <button
       className="btn btn-outline-light w-100 mb-3"
       onClick={() => navigate('/room-manager-receptionist-management')}
@@ -204,7 +202,6 @@ const RoomManagerDashboard = () => {
       <i className="bi bi-person-lines-fill me-2"></i> Receptionist Management
     </button>
 
-    {/* Logout button */}
     <button
       className="btn btn-outline-light w-100 mt-2"
       onClick={() => {
