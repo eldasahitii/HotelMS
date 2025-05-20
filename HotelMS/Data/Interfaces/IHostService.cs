@@ -10,7 +10,7 @@ namespace HotelMS.Data.Interfaces
 
         Task<RestaurantReservation> GetReservationByIdAsync(int id);
 
-        Task<RestaurantReservation> CreateReservationAsync(RestaurantReservation reservation);
+        Task<RestaurantReservationDTO> CreateReservationAsync(RestaurantReservationCreateDTO dto);
 
         Task<bool> CancelReservationAsync(int reservationId);
 

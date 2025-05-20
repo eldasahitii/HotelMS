@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function RestaurantHostDashboard() {
   const [reservations, setReservations] = useState([]);
-  const [newReservation, setNewReservation] = useState({ GuestID: '',RestaurantTableID: '', date_time: '', status: 'Booked' });
+  const [newReservation, setNewReservation] = useState({ guestID: '',restaurantTableID: '', dateTime: '', status: 'Booked' });
   const [editingReservation, setEditingReservation] = useState(null);
   const [newStatus, setNewStatus] = useState('');
   const [message, setMessage] = useState('');
@@ -40,7 +40,7 @@ export default function RestaurantHostDashboard() {
       });
       setMessage("Reservation added successfully.");
       setMessageType("success");
-      setNewReservation({ GuestID: '', RestaurantTableID: '',  date_time: '', status: 'Booked' });
+      setNewReservation({ guestID: '', restaurantTableID: '',  dateTime: '', status: 'Booked' });
       fetchReservations();
     } catch (error) {
       setMessage("Failed to add reservation.");
@@ -112,9 +112,9 @@ export default function RestaurantHostDashboard() {
             <i className="bi bi-plus-circle me-2"></i>Add Reservation
           </div>
           <div className="card-body">
-            <input className="form-control mb-2" placeholder="Guest ID" value={newReservation.GuestID} onChange={e => setNewReservation({ ...newReservation, GuestID: e.target.value })} />
-            <input className="form-control mb-2" type="datetime-local" value={newReservation.date_time} onChange={e => setNewReservation({ ...newReservation, date_time: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Table ID" value={newReservation.RestaurantTableID} onChange={e => setNewReservation({ ...newReservation, RestaurantTableID: e.target.value })} />
+            <input className="form-control mb-2" placeholder="Guest ID" value={newReservation.guestID} onChange={e => setNewReservation({ ...newReservation, guestID: e.target.value })} />
+            <input className="form-control mb-2" type="datetime-local" value={newReservation.dateTime} onChange={e => setNewReservation({ ...newReservation, dateTime: e.target.value })} />
+            <input className="form-control mb-2" placeholder="Table ID" value={newReservation.restaurantTableID} onChange={e => setNewReservation({ ...newReservation, restaurantTableID: e.target.value })} />
             <button className="btn btn-primary w-100" onClick={handleAddReservation}><i className="bi bi-check2-circle me-2"></i>Add</button>
           </div>
         </div>

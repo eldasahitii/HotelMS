@@ -31,12 +31,44 @@ namespace HotelMS.Services
                 .FirstOrDefaultAsync(r => r.ReservationID == id);
         }
 
-        public async Task<RestaurantReservation> CreateReservationAsync(RestaurantReservation reservation)
+        public async Task<RestaurantReservationDTO> CreateReservationAsync(RestaurantReservationCreateDTO dto)
         {
+            // Create a new reservation entity from the DTO
+            var reservation = new RestaurantReservation
+            {
+                GuestID = dto.GuestID,
+                RestaurantTableID = dto.RestaurantTableID,
+                date_time = dto.DateTime,
+                status = dto.Status
+            };
+
             _dbContext.RestaurantReservations.Add(reservation);
             await _dbContext.SaveChangesAsync();
-            return reservation;
+
+            // Optionally, include the table info to populate DTO fields
+            var table = await _dbContext.RestaurantTables
+                .FirstOrDefaultAsync(t => t.RestaurantTableID == dto.RestaurantTableID);
+
+            // Return a clean DTO
+            return new RestaurantReservationDTO
+            {
+                ReservationID = reservation.ReservationID,
+                GuestID = reservation.GuestID,
+                RestaurantTableID = reservation.RestaurantTableID,
+                TableNumber = table?.TableNumber ?? 0, // fallback if null
+                DateTime = reservation.date_time,
+                Status = reservation.status,
+                GuestName = "" // you can fetch guest name if needed
+            };
         }
+
+
+        //public async Task<RestaurantReservationDTO> CreateReservationAsync(RestaurantReservationCreateDTO dto)
+        //{
+        //    _dbContext.RestaurantReservations.Add(reservation);
+        //    await _dbContext.SaveChangesAsync();
+        //    return reservation;
+        //}
 
         public async Task<bool> CancelReservationAsync(int id)
         {

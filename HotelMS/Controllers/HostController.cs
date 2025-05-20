@@ -52,7 +52,7 @@ namespace HotelMS.Controllers
             }
 
         [HttpPost("createReservation")]
-        public async Task<IActionResult> CreateReservation([FromBody] RestaurantReservation request)
+        public async Task<IActionResult> CreateReservation([FromBody] RestaurantReservationCreateDTO request)
         {
             try
             {
