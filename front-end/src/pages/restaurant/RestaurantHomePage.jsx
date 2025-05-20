@@ -16,10 +16,14 @@ import {useState} from 'react';
 const RestaurantHomePage = () => {
 
   const [formData, setFormData] = useState({
-  guestID: '',
-  dateTime: '',
-  tableID: ''
+  firstName: '',
+  lastName: '',
+  email: '',
+  phoneNumber: '',
+  dateTime: ''
 });
+
+const [message, setMessage] = useState('');
 
 const handleChange = (e) => {
   setFormData({...formData, [e.target.name]: e.target.value});
@@ -28,16 +32,18 @@ const handleChange = (e) => {
 const handleSubmit = async(e) => {
   e.preventDeafult();
   try {
-    await axios.post('/api/Host/createReservation', {
-      guestID: parseInt(formData.guestID),
-      dateTime: formData.dateTime,
-      restaurantTableID: parseInt(formData.tableID)
+    await axios.post('/api/PublicRestaurantRes/make', formData);
+    setMessage('Reservation submitted successfully!');
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      dateTime: ''
     });
-    alert('Reservation submitted!');
-    setFormData({guestID: '', dateTime: '', tableID: ''});
   } catch (error) {
-    alert("Error creating reservation");
-    console.error(error);
+    setMessage(error.response?.data || 'Error creating reservation');
+      console.error(error);
   }
 };
   return (
@@ -148,44 +154,66 @@ const handleSubmit = async(e) => {
 
           <form className="row g-3" onSubmit={handleSubmit}>
             <div className="col-md-6">
-              <input 
-              type="number"
-              className="form-control"
-              placeholder='Guest ID'
-              name="guestID"
-              value={FormData.guestID}
-              onChange={handleChange}
-              required
+              <input
+                type="text"
+                className="form-control"
+                placeholder="First Name"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
               />
             </div>
             <div className="col-md-6">
               <input
-              type="datetime-local"
-              className="form-control"
-              name="dateTime"
-              value={formData.dateTime}
-              onChange={handleChange}
-              required
+                type="text"
+                className="form-control"
+                placeholder="Last Name"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
               />
-           </div>
-           <div className="col-md-6">
-             <input
-             type="number"
-             className="form-control"
-             placeholder="Table ID"
-             name="tableID"
-             value={formData.tableID}
-             onChange={handleChange}
-             required
-             />
-           </div>
-
+            </div>
+            <div className="col-md-6">
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <input
+                type="tel"
+                className="form-control"
+                placeholder="Phone Number"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-6">
+              <input
+                type="datetime-local"
+                className="form-control"
+                name="dateTime"
+                value={formData.dateTime}
+                onChange={handleChange}
+                required
+              />
+            </div>
             <div className="col-12 text-center">
               <button type="submit" className="btn btn-dark px-5">Submit Reservation</button>
-           </div>
-
-
+            </div>
           </form>
+
+          {message && (
+            <div className="alert alert-info mt-3 text-center">{message}</div>
+          )}
         </div>
       </section>
 

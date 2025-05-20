@@ -1,4 +1,5 @@
-﻿using HotelMS.Data.DTO;
+﻿using HotelMS.Data;
+using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +16,12 @@ namespace HotelMS.Controllers
     {
        
             private readonly IHostService _service;
+            private readonly DataContext _context;
 
-            public HostController(IHostService service)
+        public HostController(IHostService service, DataContext context)
             {
                 _service = service;
+                _context = context;
             }
 
             [HttpGet("getAllReservations")]
@@ -35,7 +38,21 @@ namespace HotelMS.Controllers
                 }
             }
 
-            [HttpGet("getReservation")]
+        [HttpGet("getAllGuests")]
+        public async Task<IActionResult> GetAllGuests()
+        {
+            try
+            {
+                var guests = await _context.RestaurantGuests.ToListAsync();
+                return Ok(guests);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Failed to load guests: " + (ex.InnerException?.Message ?? ex.Message));
+            }
+        }
+
+        [HttpGet("getReservation")]
             public async Task<IActionResult> GetReservation(int id)
             {
                 try
@@ -61,7 +78,9 @@ namespace HotelMS.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                //return BadRequest(ex.Message);
+                var fullError = ex.ToString();
+                return BadRequest("FULL ERROR: " + fullError);
             }
         }
 

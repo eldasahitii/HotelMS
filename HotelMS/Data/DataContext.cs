@@ -35,6 +35,8 @@ namespace HotelMS.Data
 
         public DbSet<RestaurantReservation> RestaurantReservations { get; set; }
 
+        public DbSet<RestaurantGuest> RestaurantGuests { get; set; }
+
 
 
 

@@ -4,6 +4,7 @@ using HotelMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelMS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250520183431_UpdatedRestaurantGuestModel")]
+    partial class UpdatedRestaurantGuestModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -297,6 +300,9 @@ namespace HotelMS.Migrations
                     b.Property<int>("GuestID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RestaurantGuestGuestID")
+                        .HasColumnType("int");
+
                     b.Property<int>("RestaurantTableID")
                         .HasColumnType("int");
 
@@ -309,7 +315,7 @@ namespace HotelMS.Migrations
 
                     b.HasKey("ReservationID");
 
-                    b.HasIndex("GuestID");
+                    b.HasIndex("RestaurantGuestGuestID");
 
                     b.HasIndex("RestaurantTableID");
 
@@ -694,19 +700,15 @@ namespace HotelMS.Migrations
 
             modelBuilder.Entity("HotelMS.Models.RestaurantReservation", b =>
                 {
-                    b.HasOne("HotelMS.Models.RestaurantGuest", "RestaurantGuest")
+                    b.HasOne("HotelMS.Models.RestaurantGuest", null)
                         .WithMany("RestaurantReservations")
-                        .HasForeignKey("GuestID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RestaurantGuestGuestID");
 
                     b.HasOne("HotelMS.Models.RestaurantTable", "RestaurantTable")
                         .WithMany("Reservations")
                         .HasForeignKey("RestaurantTableID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("RestaurantGuest");
 
                     b.Navigation("RestaurantTable");
                 });

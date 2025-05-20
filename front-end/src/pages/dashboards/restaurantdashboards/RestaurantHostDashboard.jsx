@@ -43,7 +43,8 @@ export default function RestaurantHostDashboard() {
       setNewReservation({ guestID: '', restaurantTableID: '',  dateTime: '', status: 'Booked' });
       fetchReservations();
     } catch (error) {
-      setMessage("Failed to add reservation.");
+      const serverMSg = error.response?.data || "Failed to add reservations.";
+      setMessage(serverMSg);
       setMessageType("danger");
     }
   };

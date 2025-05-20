@@ -13,7 +13,9 @@ namespace HotelMS.Models
         public int ReservationID { get; set; }
         [Required]
 
+        [ForeignKey("RestaurantGuest")]
         public int GuestID { get; set; }
+        public RestaurantGuest RestaurantGuest { get; set; }
 
         public DateTime date_time { get; set; }
 
@@ -21,6 +23,8 @@ namespace HotelMS.Models
 
         public int RestaurantTableID { get; set; }
         public RestaurantTable RestaurantTable { get; set; }
+
+       
 
     }
 }

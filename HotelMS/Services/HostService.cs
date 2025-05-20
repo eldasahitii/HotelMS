@@ -33,6 +33,13 @@ namespace HotelMS.Services
 
         public async Task<RestaurantReservationDTO> CreateReservationAsync(RestaurantReservationCreateDTO dto)
         {
+
+            bool isBooked = await _dbContext.RestaurantReservations.AnyAsync(r => r.RestaurantTableID == dto.RestaurantTableID && r.date_time == dto.DateTime && r.status != "Canceled");
+
+                if(isBooked)
+            {
+                throw new Exception("This table is already booked at the selected date and time.");
+            }
             // Create a new reservation entity from the DTO
             var reservation = new RestaurantReservation
             {
