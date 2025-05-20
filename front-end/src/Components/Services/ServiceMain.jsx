@@ -34,7 +34,6 @@ const ServiceMain = () => {
         >
           Welcome to Hotel Services
         </h1>
-
         <p className="lead" style={{ color: '#5D4037' }}>
           Discover elegance, comfort, and premium hospitality tailored just for you.
         </p>
@@ -54,7 +53,7 @@ const ServiceMain = () => {
                   <button
                     className="btn"
                     style={{ backgroundColor: '#A0522D', color: '#fff' }}
-                    onClick={() => navigate(service.route)}
+                    onClick={() => navigate('/services/pool-spa')}
                   >
                     View {service.name}
                   </button>

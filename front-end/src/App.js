@@ -10,13 +10,14 @@ import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/Clea
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import axios from 'axios';
 import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/CleaningStaffDashboard';
-import RoomManagerDashboard from './pages/dashboards/roomdashboards/RoomManagerDashboard'; 
-import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationDashboard';  
+import RoomManagerDashboard from './pages/dashboards/roomdashboards/RoomManagerDashboard';
+import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationDashboard';
 import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
-import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement'; 
+import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement';
 import ServiceMain from './Components/Services/ServiceMain';
 import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
 import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
+import PoolSpaPage from './Components/Services/PoolSpaPage';
 
 axios.interceptors.request.use(
   (config) => {
@@ -146,7 +147,7 @@ function App() {
             path="/restaurant-manager/dashboard"
             element={
               <ProtectedRoute allowedRoles={['RestaurantManager']}>
-                <RestaurantManagerDashboard/>
+                <RestaurantManagerDashboard />
               </ProtectedRoute>
             }
 
@@ -154,12 +155,12 @@ function App() {
           <Route
             path="/host/dashboard"
             element={
-             <ProtectedRoute allowedRoles={['RestaurantHost']}>
-               <RestaurantHostDashboard/>
-             </ProtectedRoute>
+              <ProtectedRoute allowedRoles={['RestaurantHost']}>
+                <RestaurantHostDashboard />
+              </ProtectedRoute>
             }
-         />
-         <Route
+          />
+          <Route
             path="/services"
             element={
               <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Recepcionist']}>
@@ -167,6 +168,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/services/pool-spa"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Receptionist']}>
+                <PoolSpaPage />
+              </ProtectedRoute>
+            }
+          />
+
 
           <Route path="*" element={<div>Page Not Found</div>} />
         </Routes>
