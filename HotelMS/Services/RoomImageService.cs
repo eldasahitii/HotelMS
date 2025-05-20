@@ -18,7 +18,7 @@ namespace HotelMS.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<RoomImage>> GetImagesByRoomId(int roomTypeId)
+        public async Task<IEnumerable<RoomImage>> GetImagesByRoomTypeId(int roomTypeId)
         {
             return await _context.RoomImages
                 .Where(img => img.RoomTypeID == roomTypeId)
@@ -47,5 +47,10 @@ namespace HotelMS.Services
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<RoomImage> GetImageById(int imageId)
+        {
+            return await _context.RoomImages.FindAsync(imageId);
+        }
+
     }
 }

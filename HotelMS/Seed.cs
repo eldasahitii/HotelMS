@@ -320,20 +320,20 @@ public class Seed
 
             var roomImages = new List<RoomImage>
     {
-        new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "images/dhoma1.jpeg" },
-        new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "images/slider3.jpeg" },
+        new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "Images/roomtypes/dhoma1.jpeg" },
+        new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "Images/roomtypes/slider3.jpeg" },
 
-        new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "images/dhoma22.jpeg" },
-        new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "images/slider4.webp" },
+        new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "Images/roomtypes/dhoma22.jpeg" },
+        new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "Images/roomtypes/slider4.webp" },
 
-        new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "images/dhoma3.jpeg" },
-        new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "images/slider5.jpeg" },
+        new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "Images/roomtypes/dhoma3.jpeg" },
+        new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "Images/roomtypes/slider5.jpeg" },
 
-        new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "images/woden.jpeg" },
-        new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "images/junior3.jpg" },
+        new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "Images/roomtypes/woden.jpeg" },
+        new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "Images/roomtypes/junior3.jpg" },
 
-        new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "images/supertwin.jpg" },
-        new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "images/slider6.jpeg" }
+        new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "Images/roomtypes/supertwin.jpg" },
+        new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "Images/roomtypes/slider6.jpeg" }
     };
 
             dataContext.RoomImages.AddRange(roomImages);

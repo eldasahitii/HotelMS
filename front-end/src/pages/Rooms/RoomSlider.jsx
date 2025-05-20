@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import './Rooms.css';
+import "./Rooms.css";
 
 const RoomSlider = ({ images, interval = 2500, alt = "Room image" }) => {
   const [index, setIndex] = useState(0);
@@ -8,14 +8,14 @@ const RoomSlider = ({ images, interval = 2500, alt = "Room image" }) => {
   useEffect(() => {
     const imgCount = images.length;
     const timer = setInterval(() => {
-      setIndex(prev => (prev + 1) % imgCount);
+      setIndex((prev) => (prev + 1) % imgCount);
     }, interval);
 
     return () => clearInterval(timer);
   }, [images, interval]);
 
   return (
-    <div className="room-slider-wrapper position-relative">
+    <div className="room-slider-wrapper position-relative" style={{ height: "300px" }}>
       {images.map((img, i) => (
         <img
           key={i}

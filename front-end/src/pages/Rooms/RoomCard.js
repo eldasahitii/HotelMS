@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import RoomSlider from "./RoomSlider";
 import "./Rooms.css";
 
+const BACKEND_BASE_URL = "https://yourbackend.com"; // Change this accordingly
+
 const RoomCard = ({
   id,
   title,
@@ -14,6 +16,12 @@ const RoomCard = ({
   reverse = false,
   price,
 }) => {
+  // Prepend backend URL to images
+  const imagesWithFullUrls = images.map((img) => {
+    if (img.startsWith("http")) return img; // Already a full URL
+    return `${BACKEND_BASE_URL}/${img}`;
+  });
+
   return (
     <Container
       fluid
@@ -23,12 +31,16 @@ const RoomCard = ({
       <Card className="border-0 shadow-none">
         <Row className={`align-items-center ${reverse ? "flex-row-reverse" : ""}`}>
           <Col md={6} className="p-0 pe-md-4">
-            <RoomSlider images={images} alt={title} />
+            <RoomSlider images={imagesWithFullUrls} alt={title} />
           </Col>
           <Col md={6}>
             <Card.Body
               className="border rounded p-5 p-md-4 p-sm-3 d-flex flex-column lh-base"
-              style={{ height: "430px", fontFamily: "'Crimson Text', serif", fontWeight: 100 }}
+              style={{
+                height: "430px",
+                fontFamily: "'Crimson Text', serif",
+                fontWeight: 100,
+              }}
             >
               <Card.Title
                 className="fs-1 fs-md-2 fs-sm-3 mb-4 text-dark"
