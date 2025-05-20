@@ -2,9 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
-import email_icon from '../Assets/emaill.png';
-import password_icon from '../Assets/password.png';
-import {jwtDecode} from 'jwt-decode'; // note: default import without braces
+import {jwtDecode} from 'jwt-decode'; 
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -25,16 +23,15 @@ const Login = () => {
       const { token, isLoggedIn } = response.data;
 
       if (token && isLoggedIn) {
-        // Decode the JWT token
+    
         const decoded = jwtDecode(token);
 
-        // Store raw token (without 'Bearer ')
+        
         localStorage.setItem('token', token);
         localStorage.setItem('email', decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]);
         localStorage.setItem('role', decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
         localStorage.setItem('userID', decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]);
 
-        // Set the axios default Authorization header for all requests
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
         console.log('Login successful:', decoded);
@@ -85,7 +82,7 @@ const Login = () => {
       <h2 className="fw-bold mb-4">Log In</h2>
       <form onSubmit={handleLogin} className="w-100">
         <div className="mb-3 d-flex align-items-center">
-          <img src={email_icon} alt="email" width="30" className="me-3" />
+         
           <input
             type="email"
             className="form-control"
@@ -97,7 +94,7 @@ const Login = () => {
         </div>
 
         <div className="mb-3 d-flex align-items-center">
-          <img src={password_icon} alt="password" width="30" className="me-3" />
+         
           <input
             type="password"
             className="form-control"
