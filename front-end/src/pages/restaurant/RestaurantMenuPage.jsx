@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import {useState} from 'react';
-import restaurantImg from '../../Assets/images/restaurant.jpg';
+// import restaurantImg from '../../Assets/images/restaurant.jpg';
 import AvocadoToast from '../../Assets/images/AvocadoToast.png';
 import FluffyPancakes from '../../Assets/images/FluffyPancakes.png';
 import SalmonBagel from '../../Assets/images/SalmonBagel.png';
@@ -18,33 +18,33 @@ const RestaurantMenuPage = () => {
          <div>
             <section className="container-fluid p-0 position-relative">
        
-        <div
+        {/* <div
           className="position-absolute top-0 start-0 w-100 h-100"
           style={{
-            backgroundImage: `url(${restaurantImg})`,
+            // backgroundImage: `url(${restaurantImg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             filter: 'blur(4px) brightness(0.6)',
             zIndex: 1,
           }}
-        />
+        /> */}
 
   
-        <div
+        {/* <div
           className="d-flex justify-content-center align-items-center text-center text-white"
           style={{
             height: '100vh',
             position: 'relative',
             zIndex: 2,
           }}
-        >
+        > */}
           <div className="container px-3">
             <h1 className="display-4 fw-bold">Our Menu</h1>
             <p className="lead mx-auto" style={{ maxWidth: '700px' }}>
                Explore our thoughtfully curated menu, crafted with passion and the finest organic ingredients.
             </p>
           </div>
-        </div>
+        {/* </div> */}
       </section>
 
       <section className="py-5 bg-white">

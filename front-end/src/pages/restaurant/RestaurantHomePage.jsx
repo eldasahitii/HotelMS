@@ -2,13 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from '../../Components/Header';
-import restaurantImg from '../../Assets/images/restaurant.jpg';
 import './RestaurantHomePage.css';
-import restaurantTerrace from '../../Assets/images/restaurantTerrace.jpg';
-import restaurantInterior from '../../Assets/images/restaurantInterior.jpg';
-import pasta from '../../Assets/images/pasta.jpg';
-import steak from '../../Assets/images/steak.jpg';
-import risotto from '../../Assets/images/risotto.jpg';
 import axios from 'axios';
 import {useState} from 'react';
 import { Link } from 'react-router-dom';
@@ -27,6 +21,8 @@ const RestaurantHomePage = () => {
 
 const [settings, setSettings] = useState(null);
 
+const [menuItems, setMenuItems] = useState([]);
+
 const [message, setMessage] = useState('');
 
 const fetchSettings = async () => {
@@ -36,10 +32,20 @@ const fetchSettings = async () => {
   } catch (err) {
     console.error("Error loading settings: ", err);
   }
-}
+};
+
+const fetchMenuItems = async () => {
+  try {
+    const res = await axios.get('/api/MenuItem/getAllMenuItems');
+    setMenuItems(res.data);
+  } catch (err) {
+    console.error("Failed to load menu items: ", err);
+  }
+};
 
 useEffect(() => {
   fetchSettings();
+  fetchMenuItems();
 }, []);
 
 const handleChange = (e) => {
@@ -62,6 +68,8 @@ const handleSubmit = async(e) => {
     setMessage(error.response?.data || 'Error creating reservation');
       console.error(error);
   }
+
+  if(!settings) return <div>Loading...</div>
 };
   return (
    <div>
@@ -147,6 +155,32 @@ const handleSubmit = async(e) => {
       </section>
 
       <section className="py-5 bg-white">
+  <div className="container text-center">
+    <h2 className="mb-4 fw-bold">Chef's Selections</h2>
+    <p className="mb-5 lead">A taste of our favorites, hand-picked by our head chef.</p>
+
+    <div className="row justify-content-center g-4 menu-card">
+      {menuItems.slice(0, 3).map((item) => (
+        <div className="col-sm-6 col-md-4 col-1g-3" key={item.menuItemID}>
+          <div className="card shadow-sm">
+            <img src={item.image_url} className="card-img-top" alt={item.name} style={{ height: '200px', objectFit: 'cover' }} />
+            <div className="card-body">
+              <h5 className="card-title fw-bold">{item.name}</h5>
+              <p className="card-text small">{item.description}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div className="mt-5">
+      <Link to="/restaurant/menu" className="btn btn-dark btn-1g">View Full Menu</Link>
+    </div>
+  </div>
+</section>
+
+
+      {/* <section className="py-5 bg-white">
         <div className="container text-center">
           <h2 className="mb-4 fw-bold">Chef's Selections</h2>
           <p className="mb-5 lead">A taste of our favorites, hand-picked by our head chef.</p>
@@ -188,7 +222,7 @@ const handleSubmit = async(e) => {
           </div>
         </div>
 
-      </section>
+      </section> */}
 
       <section className="py-5 bg-light">
         <div className="container">

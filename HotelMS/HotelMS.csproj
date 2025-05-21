@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Images\" />
+    <Folder Include="wwwroot\Images\restaurant\" />
     <Folder Include="wwwroot\Images\roomtypes\" />
   </ItemGroup>
 
