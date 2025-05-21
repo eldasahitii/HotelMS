@@ -1,0 +1,94 @@
+
+.font-crimson {
+  font-family: 'Crimson Text', serif;
+}
+
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.slide-in-text {
+  opacity: 0;
+  animation: slideIn 1s ease-in-out forwards;
+}
+
+.slide-in {
+  animation: slideIn 1s ease-in-out forwards;
+  opacity: 0;
+}
+
+.room-slider-wrapper {
+  width: 100%;
+  height: 435px;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  position: relative;
+}
+
+.room-description {
+  font-family: 'Crimson Text', serif;
+  font-weight: 100;
+  line-height: 1.5;
+}
+
+.room-title {
+  font-weight: 100;
+  color: #363231;
+  margin-bottom: 30px;
+}
+
+img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.custom-btn {
+  width: auto;
+  max-width: 150px;
+}
+
+.custom-btn:hover,
+.custom-btn:focus {
+  background-color: #8B0000;
+  color: white;
+  text-decoration: none;
+  border-color: #8B0000;
+}
+.extra-margin-top {
+  margin-top: 90px;
+}
+img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .display-4 {
+    font-size: 2rem;
+  }
+}
+
+

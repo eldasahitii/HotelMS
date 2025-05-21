@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const shifts = ["Morning", "Afternoon", "Night"]; // Customize as needed
+const shifts = ["Morning", "Afternoon", "Night"]; 
 
 export default function RoomReceptionistManager({ currentUserId }) {
-  const navigate = useNavigate(); // Initialize navigate here
+  const navigate = useNavigate(); 
 
   const [users, setUsers] = useState([]);
   const [receps, setReceps] = useState([]);
@@ -84,7 +84,6 @@ export default function RoomReceptionistManager({ currentUserId }) {
 
     try {
       if (editingId) {
-        // Update receptionist shift only
         await axios.put(`/api/RoomRecepsionist/updateRoomRecepsionist/${editingId}`, {
           roomReceptionistID: editingId,
           userID: parseInt(form.userID, 10),
@@ -95,7 +94,6 @@ export default function RoomReceptionistManager({ currentUserId }) {
         });
         alert("Receptionist updated successfully");
       } else {
-        // Add new receptionist - send full DTO
         const dto = {
           roomReceptionistID: 0,
           userID: selectedUser.userID,
@@ -131,22 +129,18 @@ export default function RoomReceptionistManager({ currentUserId }) {
             <i className="bi bi-person-badge me-2"></i> Receptionist Management
           </li>
 
-          {/* Button to navigate to Room Manager Dashboard */}
           <button className="btn btn-outline-light w-100 mt-3 mb-3" onClick={() => navigate("/room-manager-dashboard")}>
             <i className="bi bi-building me-2"></i> Room Manager
           </button>
 
-          {/* New button for Room Management */}
           <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/manager/room-dashboard")}>
             <i className="bi bi-house-door me-2"></i> Room Management
           </button>
 
-          {/* New button for Reservation */}
           <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/admin/reservation-dashboard")}>
             <i className="bi bi-journal-check me-2"></i> Reservation
           </button>
 
-          {/* New button to navigate to Receptionist Management */}
           <button
             className="btn btn-outline-light w-100 mb-3"
             onClick={() => navigate("/room-manager-receptionist-management")}
@@ -154,7 +148,6 @@ export default function RoomReceptionistManager({ currentUserId }) {
             <i className="bi bi-person-lines-fill me-2"></i> Receptionist Management
           </button>
 
-          {/* Logout button */}
           <button
             className="btn btn-outline-light w-100 mt-2"
             onClick={() => {
@@ -189,7 +182,7 @@ export default function RoomReceptionistManager({ currentUserId }) {
               className="form-select"
               value={form.userID}
               onChange={handleChange}
-              disabled={!!editingId} // disable user change on edit (optional)
+              disabled={!!editingId}
             >
               <option value="">-- Select User --</option>
               {users.map((user) => (

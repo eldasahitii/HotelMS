@@ -430,23 +430,12 @@ namespace HotelMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomID"));
 
-                    b.Property<string>("Capacity")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("RoomNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("RoomStatusID")
                         .HasColumnType("int");
@@ -454,7 +443,7 @@ namespace HotelMS.Migrations
                     b.Property<int>("RoomTypeID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Size")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -479,12 +468,15 @@ namespace HotelMS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoomID")
+                    b.Property<bool>("IsPreview")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RoomTypeID")
                         .HasColumnType("int");
 
                     b.HasKey("RoomImageID");
 
-                    b.HasIndex("RoomID");
+                    b.HasIndex("RoomTypeID");
 
                     b.ToTable("RoomImages");
                 });
@@ -582,7 +574,24 @@ namespace HotelMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomTypeID"));
 
+                    b.Property<string>("Capacity")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Size")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -784,13 +793,13 @@ namespace HotelMS.Migrations
 
             modelBuilder.Entity("HotelMS.Models.RoomImage", b =>
                 {
-                    b.HasOne("HotelMS.Models.Room", "Room")
+                    b.HasOne("HotelMS.Models.RoomType", "RoomType")
                         .WithMany("RoomImages")
-                        .HasForeignKey("RoomID")
+                        .HasForeignKey("RoomTypeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Room");
+                    b.Navigation("RoomType");
                 });
 
             modelBuilder.Entity("HotelMS.Models.RoomRecepsionist", b =>
@@ -890,8 +899,6 @@ namespace HotelMS.Migrations
             modelBuilder.Entity("HotelMS.Models.Room", b =>
                 {
                     b.Navigation("Reservations");
-
-                    b.Navigation("RoomImages");
                 });
 
             modelBuilder.Entity("HotelMS.Models.RoomStatus", b =>
@@ -901,6 +908,8 @@ namespace HotelMS.Migrations
 
             modelBuilder.Entity("HotelMS.Models.RoomType", b =>
                 {
+                    b.Navigation("RoomImages");
+
                     b.Navigation("Rooms");
                 });
 

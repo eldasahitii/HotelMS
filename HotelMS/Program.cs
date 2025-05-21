@@ -83,7 +83,7 @@ builder.Services.AddScoped<IHotelServiceReservationService, HotelServiceReservat
 
 
 
-//builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
@@ -152,6 +152,8 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 
 if (app.Environment.IsDevelopment())
 {

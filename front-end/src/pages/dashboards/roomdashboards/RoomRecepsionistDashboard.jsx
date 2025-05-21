@@ -78,7 +78,6 @@ const RoomReceptionistDashboard = () => {
     </li>
   </ul>
 
-  {/* Add this button for receptionist management */}
   <button
     className="btn btn-outline-light w-100 mt-3 mb-3"
     onClick={() => navigate('/room-manager-receptionist-management')}
@@ -86,7 +85,6 @@ const RoomReceptionistDashboard = () => {
     <i className="bi bi-people me-2"></i> Receptionist Management
   </button>
 
-  {/* Your other buttons */}
   <button
     className="btn btn-outline-light w-100 mt-2"
     onClick={() => {
