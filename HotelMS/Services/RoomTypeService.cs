@@ -33,7 +33,20 @@ namespace HotelMS.Services
                 };
 
                 _dbContext.RoomTypes.Add(roomType);
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(); 
+
+                if (request.Images != null && request.Images.Any())
+                {
+                    var roomImages = request.Images.Select(img => new RoomImage
+                    {
+                        RoomTypeID = roomType.RoomTypeID,
+                        ImageUrl = img.ImageUrl,
+                        IsPreview = img.IsPreview
+                    }).ToList();
+
+                    _dbContext.RoomImages.AddRange(roomImages);
+                    await _dbContext.SaveChangesAsync();
+                }
 
                 return await GetRoomType(roomType.RoomTypeID);
             }
@@ -43,6 +56,7 @@ namespace HotelMS.Services
                 throw new Exception("An error occurred while attempting to save the room type.");
             }
         }
+
 
         public async Task<RoomTypeDTO> GetRoomType(int id)
         {
