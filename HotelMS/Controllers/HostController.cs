@@ -78,11 +78,26 @@ namespace HotelMS.Controllers
             }
             catch (Exception ex)
             {
-                //return BadRequest(ex.Message);
                 var fullError = ex.ToString();
                 return BadRequest("FULL ERROR: " + fullError);
             }
         }
+
+        [HttpPost("createReservationWithGuest")]
+        public async Task<IActionResult> CreateReservationWithGuest([FromBody] RestaurantReservationGuestDTO dto)
+        {
+            try
+            {
+                var result = await _service.CreateReservationWithGuestAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                var fullError = ex.ToString();
+                return BadRequest("FULL ERROR: " + fullError);
+            }
+        }
+
 
         [HttpDelete("cancelReservation")]
             public async Task<IActionResult> CancelReservation(int id)

@@ -69,6 +69,58 @@ namespace HotelMS.Services
             };
         }
 
+        public async Task<RestaurantReservationDTO> CreateReservationWithGuestAsync(RestaurantReservationGuestDTO dto)
+        {
+            var existingGuest = await _dbContext.RestaurantGuests
+                .FirstOrDefaultAsync(g => g.Email.ToLower() == dto.Email.ToLower());
+
+            RestaurantGuest guest;
+
+            if (existingGuest != null)
+            {
+                guest = existingGuest;
+            }
+            else
+            {
+                guest = new RestaurantGuest
+                {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName,
+                    Email = dto.Email,
+                    PhoneNumber = dto.PhoneNumber
+                };
+
+                _dbContext.RestaurantGuests.Add(guest);
+                await _dbContext.SaveChangesAsync(); 
+            }
+
+            var reservation = new RestaurantReservation
+            {
+                GuestID = guest.GuestID,
+                RestaurantTableID = dto.RestaurantTableID,
+                date_time = dto.DateTime,
+                status = dto.Status ?? "Booked"
+            };
+
+            _dbContext.RestaurantReservations.Add(reservation);
+            await _dbContext.SaveChangesAsync();
+
+            var table = await _dbContext.RestaurantTables
+                .FirstOrDefaultAsync(t => t.RestaurantTableID == reservation.RestaurantTableID);
+
+            return new RestaurantReservationDTO
+            {
+                ReservationID = reservation.ReservationID,
+                GuestID = guest.GuestID,
+                GuestName = $"{guest.FirstName} {guest.LastName}",
+                RestaurantTableID = reservation.RestaurantTableID,
+                TableNumber = table?.TableNumber ?? 0,
+                DateTime = reservation.date_time,
+                Status = reservation.status
+            };
+        }
+
+
 
         //public async Task<RestaurantReservationDTO> CreateReservationAsync(RestaurantReservationCreateDTO dto)
         //{
