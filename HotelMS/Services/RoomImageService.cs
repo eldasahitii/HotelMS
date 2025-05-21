@@ -18,7 +18,7 @@ namespace HotelMS.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<RoomImage>> GetImagesByRoomId(int roomTypeId)
+        public async Task<IEnumerable<RoomImage>> GetImagesByRoomTypeId(int roomTypeId)
         {
             return await _context.RoomImages
                 .Where(img => img.RoomTypeID == roomTypeId)
@@ -30,7 +30,8 @@ namespace HotelMS.Services
             var image = new RoomImage
             {
                 RoomTypeID = dto.RoomTypeID,
-                ImageUrl = dto.ImageUrl
+                ImageUrl = dto.ImageUrl,
+                IsPreview = dto.IsPreview 
             };
 
             _context.RoomImages.Add(image);
@@ -47,5 +48,17 @@ namespace HotelMS.Services
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<RoomImage> GetImageById(int imageId)
+        {
+            return await _context.RoomImages.FindAsync(imageId);
+        }
+        public async Task<IEnumerable<RoomImage>> GetImagesByRoomTypeIdAndPreviewFlag(int roomTypeId, bool isPreview)
+        {
+            return await _context.RoomImages
+                .Where(img => img.RoomTypeID == roomTypeId && img.IsPreview == isPreview)
+                .ToListAsync();
+        }
+
+
     }
 }

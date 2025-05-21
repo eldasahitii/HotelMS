@@ -31,7 +31,8 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetRoomType")]
-        [Authorize(Roles = "Admin,RoomManager,RoomReceptionist")]
+        //[Authorize(Roles = "Admin,RoomManager,RoomReceptionist")]
+        [Authorize]
         public async Task<IActionResult> GetRoomType(int id)
         {
             try

@@ -3,6 +3,10 @@ using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HotelMS.Services
 {
@@ -31,8 +35,6 @@ namespace HotelMS.Services
                 _dbContext.RoomTypes.Add(roomType);
                 await _dbContext.SaveChangesAsync();
 
-
-
                 return await GetRoomType(roomType.RoomTypeID);
             }
             catch (Exception ex)
@@ -44,65 +46,60 @@ namespace HotelMS.Services
 
         public async Task<RoomTypeDTO> GetRoomType(int id)
         {
-            try
+            var roomType = await _dbContext.RoomTypes
+                .Include(rt => rt.RoomImages)
+                .FirstOrDefaultAsync(rt => rt.RoomTypeID == id);
+
+            if (roomType == null) return null;
+
+            return new RoomTypeDTO
             {
-                var roomType = await _dbContext.RoomTypes
-                    .Include(rt => rt.RoomImages) 
-                    .FirstOrDefaultAsync(rt => rt.RoomTypeID == id);
-
-                if (roomType == null) return null;
-
-                return new RoomTypeDTO
+                RoomTypeID = roomType.RoomTypeID,
+                Name = roomType.Name,
+                Capacity = roomType.Capacity,
+                Size = roomType.Size,
+                Description = roomType.Description,
+                Price = roomType.Price,
+                Images = roomType.RoomImages?.Select(img => new RoomImageDTO
                 {
-                    Name = roomType.Name,
-                    Capacity = roomType.Capacity,
-                    Size = roomType.Size,
-                    Description = roomType.Description,
-                    Price = roomType.Price,
-                    Images = roomType.RoomImages?.Select(img => img.ImageUrl).ToList() ?? new List<string>()
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw new Exception("An error occurred while fetching the room type.");
-            }
+                    RoomTypeID = img.RoomTypeID,
+                    ImageUrl = img.ImageUrl,
+                    IsPreview = img.IsPreview
+                }).ToList() ?? new List<RoomImageDTO>()
+            };
         }
 
         public async Task<IEnumerable<RoomTypeDTO>> GetAllRoomTypes()
         {
-            try
-            {
-                var roomTypes = await _dbContext.RoomTypes
-                    .Include(rt => rt.RoomImages) 
-                    .ToListAsync();
+            var roomTypes = await _dbContext.RoomTypes
+                .Include(rt => rt.RoomImages)
+                .ToListAsync();
 
-                return roomTypes.Select(roomType => new RoomTypeDTO
-                {
-                    Name = roomType.Name,
-                    Capacity = roomType.Capacity,
-                    Size = roomType.Size,
-                    Description = roomType.Description,
-                    Price = roomType.Price,
-                    Images = roomType.RoomImages?.Select(img => img.ImageUrl).ToList() ?? new List<string>()
-                });
-            }
-            catch (Exception ex)
+            return roomTypes.Select(roomType => new RoomTypeDTO
             {
-                Console.WriteLine(ex.Message);
-                throw new Exception("An error occurred while fetching room types.");
-            }
+                RoomTypeID = roomType.RoomTypeID,
+                Name = roomType.Name,
+                Capacity = roomType.Capacity,
+                Size = roomType.Size,
+                Description = roomType.Description,
+                Price = roomType.Price,
+                Images = roomType.RoomImages?.Select(img => new RoomImageDTO
+                {
+                    RoomTypeID = img.RoomTypeID,
+                    ImageUrl = img.ImageUrl,
+                    IsPreview = img.IsPreview
+                }).ToList() ?? new List<RoomImageDTO>()
+            });
         }
+
+
 
         public async Task<RoomTypeDTO> UpdateRoomType(int id, RoomTypeDTO request)
         {
             try
             {
                 var roomType = await _dbContext.RoomTypes.FindAsync(id);
-                if (roomType == null)
-                {
-                    return null;
-                }
+                if (roomType == null) return null;
 
                 roomType.Name = request.Name;
                 roomType.Capacity = request.Capacity;
@@ -131,6 +128,10 @@ namespace HotelMS.Services
                     throw new KeyNotFoundException("Room type not found.");
                 }
 
+                // Optionally: remove related RoomImages if cascade delete not configured
+                var images = _dbContext.RoomImages.Where(img => img.RoomTypeID == id);
+                _dbContext.RoomImages.RemoveRange(images);
+
                 _dbContext.RoomTypes.Remove(roomType);
                 await _dbContext.SaveChangesAsync();
             }
@@ -140,7 +141,5 @@ namespace HotelMS.Services
                 throw new Exception("An error occurred while attempting to delete the room type.");
             }
         }
-
-
     }
 }

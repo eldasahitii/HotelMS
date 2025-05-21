@@ -6,36 +6,47 @@ import axios from "axios";
 function RoomsPage() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-useEffect(() => {
-  const backendBaseUrl = "https://localhost:7117/";
+  useEffect(() => {
+    const backendBaseUrl = "https://localhost:7117/";
 
-  axios.get("https://localhost:7117/api/RoomType/getAllRoomTypes")
-    .then(res => {
-      const mappedRooms = res.data.map(roomType => ({
-        id: roomType.id, // confirm your RoomType has id
-        title: roomType.name,
-        capacity: roomType.capacity,
-        size: roomType.size,
-        price: roomType.price,
-        description: roomType.description,
-        images: (roomType.images || []).map(img => backendBaseUrl + img),
-      }));
-      setRooms(mappedRooms);
-      setLoading(false);
-    })
-    .catch(err => {
-      console.error("Failed to fetch room types:", err);
-      setLoading(false);
-    });
-}, []);
-
-
+    axios.get(`${backendBaseUrl}api/RoomType/GetAllRoomTypes`)
+      .then(res => {
+        const mappedRooms = res.data.map(roomType => ({
+          id: roomType.roomTypeID,
+          title: roomType.name,
+          capacity: roomType.capacity,
+          size: roomType.size,
+          price: roomType.price,
+          description: roomType.description,
+          images: (roomType.images || []).map(imgObj => 
+            // Make sure imageUrl doesn't start with slash before joining with base URL
+            backendBaseUrl + (imgObj.imageUrl.startsWith("/") ? imgObj.imageUrl.slice(1) : imgObj.imageUrl)
+          ),
+        }));
+        setRooms(mappedRooms);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch room types:", err);
+        setError("Failed to load rooms. Please try again later.");
+        setLoading(false);
+      });
+  }, []);
 
   if (loading) {
     return (
       <div className="container mt-5">
         <h2>Loading rooms...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mt-5 text-danger">
+        <h3>{error}</h3>
       </div>
     );
   }
@@ -53,7 +64,7 @@ useEffect(() => {
               size={room.size}
               price={room.price}
               description={room.description}
-              images={room.images || []}
+              images={room.images}
               reverse={idx % 2 === 1}
             />
           </div>
