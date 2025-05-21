@@ -19,6 +19,7 @@ import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/Res
 import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 import RestaurantFrontPage from './pages/restaurant/RestaurantHomePage';
 import RestaurantHomePage from './pages/restaurant/RestaurantHomePage';
+import RestaurantMenuPage from './pages/restaurant/RestaurantMenuPage';
 
 axios.interceptors.request.use(
   (config) => {
@@ -58,7 +59,10 @@ function App() {
           <Route path="/" element={<Navigate to="/signup" />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/restaurant" element={<RestaurantHomePage/>}/>
+          <Route path="/restaurant">
+          <Route index element={<RestaurantHomePage />} />
+          <Route path="menu" element={<RestaurantMenuPage />} />
+          </Route>
 
           <Route
             path="/admin-dashboard"

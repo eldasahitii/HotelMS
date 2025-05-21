@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from '../../Components/Header';
@@ -11,6 +11,8 @@ import steak from '../../Assets/images/steak.jpg';
 import risotto from '../../Assets/images/risotto.jpg';
 import axios from 'axios';
 import {useState} from 'react';
+import { Link } from 'react-router-dom';
+
 
 
 const RestaurantHomePage = () => {
@@ -23,14 +25,29 @@ const RestaurantHomePage = () => {
   dateTime: ''
 });
 
+const [settings, setSettings] = useState(null);
+
 const [message, setMessage] = useState('');
+
+const fetchSettings = async () => {
+  try {
+    const res = await axios.get('/api/RestaurantSettings/get');
+    setSettings(res.data);
+  } catch (err) {
+    console.error("Error loading settings: ", err);
+  }
+}
+
+useEffect(() => {
+  fetchSettings();
+}, []);
 
 const handleChange = (e) => {
   setFormData({...formData, [e.target.name]: e.target.value});
 };
 
 const handleSubmit = async(e) => {
-  e.preventDeafult();
+  e.preventDefault();
   try {
     await axios.post('/api/PublicRestaurantRes/make', formData);
     setMessage('Reservation submitted successfully!');
@@ -51,14 +68,23 @@ const handleSubmit = async(e) => {
      <section className="container-fluid p-0 position-relative">
        
         <div
-          className="position-absolute top-0 start-0 w-100 h-100"
-          style={{
-            backgroundImage: `url(${restaurantImg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'blur(4px) brightness(0.6)',
-            zIndex: 1,
+
+         className="position-absolute top-0 start-0 w-100 h-100"
+         style={{
+          backgroundImage: `url(${settings?.welcomeImageUrl})`,
+           backgroundSize: 'cover',
+           backgroundPosition: 'center',
+           filter: 'blur(4px) brightness(0.6)',
+           zIndex: 1,
           }}
+          // className="position-absolute top-0 start-0 w-100 h-100"
+          // style={{
+          //   backgroundImage: `url(${restaurantImg})`,
+          //   backgroundSize: 'cover',
+          //   backgroundPosition: 'center',
+          //   filter: 'blur(4px) brightness(0.6)',
+          //   zIndex: 1,
+          // }}
         />
 
   
@@ -71,11 +97,14 @@ const handleSubmit = async(e) => {
           }}
         >
           <div className="container px-3">
-            <h1 className="display-4 fw-bold">Welcome to Rolve Restaurant</h1>
+
+            <h1 className="display-4 fw-bold">{settings?.welcomeTitle}</h1>
+            <p className="lead mx-auto">{settings?.welcomeMessage}</p>
+            {/* <h1 className="display-4 fw-bold">Welcome to Rolve Restaurant</h1>
             <p className="lead mx-auto" style={{ maxWidth: '700px' }}>
               Discover the essence of fine dining at Rolve Restaurant, where every dish is crafted with
               organic ingredients, timeless flavors, and a passion for culinary excellence.
-            </p>
+            </p> */}
           </div>
         </div>
       </section>
@@ -85,20 +114,33 @@ const handleSubmit = async(e) => {
           <div className="row align-items-center">
             <div className="col-md-6 mb-4 mb-md-0">
               <img
+              src={settings?.aboutImageUrl1}
+              alt="Terrace"
+              className="img-fluid rounded shadow w-50"
+              />
+              {/* <img
                 src={restaurantTerrace}
                 alt="Inside Rolve Restaurant"
                 className="img-fluid rounded shadow w-50"
+              /> */}
+              {/* <img src={restaurantInterior} alt="restaurant interior"  className="img-fluid rounded shadow w-50" /> */}
+              <img
+              src={settings?.aboutImageUrl2}
+              alt="Interior"
+              className="img-fluid rounded shadow w-50"
               />
-              <img src={restaurantInterior} alt="restaurant interior"  className="img-fluid rounded shadow w-50" />
             </div>
             <div className="col-md-6 text-center text-md-start">
-              <h2 className="mb-4">About Rolve Restaurant</h2>
+
+              <h2 className="mb-4">{settings?.aboutTitle}</h2>
+              <p className="lead">{settings?.aboutMessage}</p>
+              {/* <h2 className="mb-4">About Rolve Restaurant</h2>
               <p className="lead">
                 At Rolve Restaurant, we believe food should not only taste amazing but also be nourishing.
                 Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring
                 every dish to life. From our vibrant kitchen to your table, we serve with passion, purpose,
                 and a deep respect for nature.
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
@@ -142,7 +184,7 @@ const handleSubmit = async(e) => {
           </div>
 
           <div className="mt-5">
-            <a href="" className="btn btn-dark btn-1g"> View Full Menu</a>
+            <Link to="/restaurant/menu" className="btn btn-dark btn-1g">View Full Menu</Link>
           </div>
         </div>
 
