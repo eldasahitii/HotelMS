@@ -65,6 +65,7 @@ namespace HotelMS.Services
 
             return rooms.Select(room => new RoomDTO
             {
+                RoomID = room.RoomID,
                 Title = room.Title,
                 RoomTypeID = room.RoomTypeID,
                 RoomStatusID = room.RoomStatusID,
