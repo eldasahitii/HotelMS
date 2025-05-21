@@ -22,9 +22,8 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost("MakeReservation")]
-        [Authorize(Roles ="Admin,RoomRecepsionist,Customer")]
-
-        public async Task<IActionResult> MakeReservation([FromBody] RoomReservationDTO request)
+        [Authorize(Roles = "Admin,RoomRecepsionist,Customer")]
+        public async Task<IActionResult> MakeReservation([FromBody] RoomReservationCreateDTO request)
         {
             int userID = GetUserIDFromClaims();
             var result = await roomReservationService.MakeReservation(userID, request);
