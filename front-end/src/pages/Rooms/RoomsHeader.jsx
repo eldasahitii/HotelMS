@@ -1,9 +1,9 @@
 import React from "react";
-import tryroms from "../../Assets/images/tryroms.jpg";
+import tryromsImage from "../../Assets/images/tryroms.jpg";
 
 function RoomsHeader() {
   const bgStyle = {
-    backgroundImage: `url(${tryroms})`,
+    backgroundImage: `url(${tryromsImage})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     height: "600px",

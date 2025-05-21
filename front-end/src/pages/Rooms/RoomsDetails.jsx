@@ -1,75 +1,109 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 
-const RoomDetailsPage = () => {
-  const { roomId } = useParams();
-  const navigate = useNavigate();
+export default function RoomsDetails() {
+  const { roomId } = useParams(); // Get roomId from URL
   const [room, setRoom] = useState(null);
+  const [error, setError] = useState(null);
+
+  const token = localStorage.getItem("token"); // Get JWT from localStorage
+  const backendBaseUrl = "https://localhost:7117/";
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRoomDetails = async () => {
-      try {
-        // Match your backend route here exactly
-        const response = await axios.get(`/api/Room/GetRoomDetails/${roomId}`);
+      if (!roomId) {
+        setError("Room ID not provided.");
+        return;
+      }
 
-        // Map 'name' to 'title' for consistency
-        const roomData = response.data;
-        setRoom({
-          ...roomData,
-          title: roomData.name,
+      if (!token) {
+        setError("Unauthorized. Please log in first.");
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${backendBaseUrl}api/RoomType/GetRoomType`, {
+          params: { id: roomId },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
         });
-      } catch (error) {
-        console.error("Failed to fetch room data", error);
+
+        const roomData = response.data;
+
+        setRoom({
+          id: roomData.roomTypeID,
+          name: roomData.name,
+          capacity: roomData.capacity,
+          size: roomData.size,
+          price: roomData.price,
+          description: roomData.description,
+          images: (roomData.images || []).map((imgObj) =>
+            backendBaseUrl + (imgObj.imageUrl.startsWith("/") ? imgObj.imageUrl.slice(1) : imgObj.imageUrl)
+          ),
+        });
+      } catch (err) {
+        console.error("Failed to load room details:", err);
+        if (err.response) {
+          if (err.response.status === 404) {
+            setError("Room not found.");
+          } else if (err.response.status === 401) {
+            setError("Unauthorized. Please log in again.");
+          } else {
+            setError(`Server error: ${err.response.status} ${err.response.statusText}`);
+          }
+        } else {
+          setError("Network error or server not reachable.");
+        }
       }
     };
+
     fetchRoomDetails();
-  }, [roomId]);
+  }, [roomId, token]);
 
   const handleBookNow = () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    } else {
-      navigate("/reserve", { state: { roomId } });
+    if (!room || !room.id) {
+      alert("Room data not loaded yet. Please wait.");
+      return;
     }
+    // Navigate to reservation page with roomTypeId as query param
+    navigate(`/reserve?roomTypeId=${room.id}`);
   };
 
-  if (!room) {
-    return (
-      <div className="container mt-5">
-        <h2>Loading room details...</h2>
-      </div>
-    );
-  }
+  if (error) return <div className="alert alert-danger m-3">{error}</div>;
+  if (!room) return <div className="m-3">Loading room details...</div>;
 
   return (
-    <div className="container mt-5" style={{ minHeight: "70vh" }}>
-      <div className="text-center mx-auto" style={{ maxWidth: "700px" }}>
-        <h1 className="fw-bold mb-4" style={{ fontSize: "3rem", color: "#222" }}>
-          {room.title}
-        </h1>
-        <p><strong>Capacity:</strong> {room.capacity}</p>
-        <p><strong>Size:</strong> {room.size}</p>
-        <p><strong>Price:</strong> ${room.price} per night</p>
-        <p>{room.description}</p>
+    <div className="container mt-4">
+      <h2>{room.name}</h2>
+      <p><strong>Capacity:</strong> {room.capacity}</p>
+      <p><strong>Size:</strong> {room.size}</p>
+      <p><strong>Price:</strong> ${room.price}</p>
+      <p><strong>Description:</strong> {room.description}</p>
 
-        {/* Optional: Show first image if available */}
-        {room.images?.length > 0 && (
-          <img
-            src={room.images[0]}
-            alt={room.title}
-            className="img-fluid rounded shadow my-3"
-            style={{ maxHeight: "300px", objectFit: "cover" }}
-          />
-        )}
+      {room.images && room.images.length > 0 ? (
+        <div className="d-flex flex-wrap gap-3 mt-3">
+          {room.images.map((imgPath, index) => (
+            <img
+              key={index}
+              src={imgPath}
+              alt={`Room image ${index + 1}`}
+              className="img-thumbnail"
+              style={{ width: "250px", height: "auto", objectFit: "cover", borderRadius: "8px" }}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-muted">No images available.</p>
+      )}
 
-        <button type="button" className="btn btn-primary btn-lg mt-4 px-5" onClick={handleBookNow}>
-          Book Now
-        </button>
-      </div>
+      <button onClick={handleBookNow} className="btn btn-primary mt-4">
+        Book Now
+      </button>
     </div>
   );
-};
-
-export default RoomDetailsPage;
+}
