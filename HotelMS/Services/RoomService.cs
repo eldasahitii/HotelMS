@@ -122,9 +122,19 @@ namespace HotelMS.Services
                     Size = room.RoomType.Size,
                     Description = room.RoomType.Description,
                     Price = room.RoomType.Price,
-                    Images = room.RoomType.RoomImages.Select(img => img.ImageUrl).ToList()
+                    Images = room.RoomType.RoomImages
+                .Where(img => !img.IsPreview)
+                .Select(img => new RoomImageDTO
+                {
+                    RoomTypeID = img.RoomTypeID,
+                    ImageUrl = img.ImageUrl,
+                    IsPreview = img.IsPreview
+                })
+                .ToList()
                 }
+
             };
         }
+
     }
 }

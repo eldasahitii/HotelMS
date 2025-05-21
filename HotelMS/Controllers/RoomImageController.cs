@@ -1,5 +1,6 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using HotelMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -59,13 +60,15 @@ namespace HotelMS.Controllers
             var dto = new RoomImageDTO
             {
                 RoomTypeID = roomTypeId,
-                ImageUrl = imageUrl
+                ImageUrl = imageUrl,
+                IsPreview = model.IsPreview 
             };
 
             var savedImage = await _roomImageService.AddImage(dto);
 
             return Ok(new { ImageUrl = imageUrl, savedImage });
         }
+
 
 
         [HttpDelete("DeleteImage")]
@@ -90,6 +93,19 @@ namespace HotelMS.Controllers
             await _roomImageService.DeleteImage(imageId);
 
             return NoContent();
+        }
+
+        [HttpGet("GetImagesByRoomTypeId/{roomTypeId}")]
+        public async Task<ActionResult<IEnumerable<RoomImage>>> GetImagesByRoomTypeId(
+       int roomTypeId,
+       [FromQuery] bool isPreview = false)
+        {
+            var images = await _roomImageService.GetImagesByRoomTypeIdAndPreviewFlag(roomTypeId, isPreview);
+
+            if (images == null)
+                return NotFound();
+
+            return Ok(images);
         }
 
     }

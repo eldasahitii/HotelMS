@@ -78,14 +78,16 @@ function App() {
           <Route path="/rooms/:roomId" element={<RoomsDetails />} />
 
           {/* NEW: Reservation Page route */}
-          <Route
-            path="/reserve"
-            element={
-              <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
-                <ReservationPage />
-              </ProtectedRoute>
-            }
-          />
+<Route
+  path="/reserve"
+  element={
+    <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
+      <ReservationPage />
+    </ProtectedRoute>
+  }
+/>
+
+
 
           {/* Protected Routes */}
           <Route

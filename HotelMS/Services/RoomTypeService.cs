@@ -54,13 +54,18 @@ namespace HotelMS.Services
 
             return new RoomTypeDTO
             {
-                RoomTypeID = roomType.RoomTypeID,  // <-- Add this line
+                RoomTypeID = roomType.RoomTypeID,
                 Name = roomType.Name,
                 Capacity = roomType.Capacity,
                 Size = roomType.Size,
                 Description = roomType.Description,
                 Price = roomType.Price,
-                Images = roomType.RoomImages?.Select(img => img.ImageUrl).ToList() ?? new List<string>()
+                Images = roomType.RoomImages?.Select(img => new RoomImageDTO
+                {
+                    RoomTypeID = img.RoomTypeID,
+                    ImageUrl = img.ImageUrl,
+                    IsPreview = img.IsPreview
+                }).ToList() ?? new List<RoomImageDTO>()
             };
         }
 
@@ -72,15 +77,21 @@ namespace HotelMS.Services
 
             return roomTypes.Select(roomType => new RoomTypeDTO
             {
-                RoomTypeID = roomType.RoomTypeID,  // <-- Add this line
+                RoomTypeID = roomType.RoomTypeID,
                 Name = roomType.Name,
                 Capacity = roomType.Capacity,
                 Size = roomType.Size,
                 Description = roomType.Description,
                 Price = roomType.Price,
-                Images = roomType.RoomImages?.Select(img => img.ImageUrl).ToList() ?? new List<string>()
+                Images = roomType.RoomImages?.Select(img => new RoomImageDTO
+                {
+                    RoomTypeID = img.RoomTypeID,
+                    ImageUrl = img.ImageUrl,
+                    IsPreview = img.IsPreview
+                }).ToList() ?? new List<RoomImageDTO>()
             });
         }
+
 
 
         public async Task<RoomTypeDTO> UpdateRoomType(int id, RoomTypeDTO request)

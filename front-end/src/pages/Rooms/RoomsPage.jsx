@@ -14,13 +14,16 @@ function RoomsPage() {
     axios.get(`${backendBaseUrl}api/RoomType/GetAllRoomTypes`)
       .then(res => {
         const mappedRooms = res.data.map(roomType => ({
-          id: roomType.roomTypeID,  // Important: use roomTypeID here
+          id: roomType.roomTypeID,
           title: roomType.name,
           capacity: roomType.capacity,
           size: roomType.size,
           price: roomType.price,
           description: roomType.description,
-          images: (roomType.images || []).map(img => backendBaseUrl + img.replace(/^\//, "")), // remove leading slash if any
+          images: (roomType.images || []).map(imgObj => 
+            // Make sure imageUrl doesn't start with slash before joining with base URL
+            backendBaseUrl + (imgObj.imageUrl.startsWith("/") ? imgObj.imageUrl.slice(1) : imgObj.imageUrl)
+          ),
         }));
         setRooms(mappedRooms);
         setLoading(false);

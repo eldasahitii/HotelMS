@@ -319,22 +319,42 @@ public class Seed
             var superiorTwinRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Superior Twin Room").RoomTypeID;
 
             var roomImages = new List<RoomImage>
-    {
-        new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "Images/roomtypes/dhoma1.jpeg" },
-        new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "Images/roomtypes/slider3.jpeg" },
+{
+    new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "Images/roomtypes/dhoma1.jpeg", IsPreview = true },
+    new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "Images/roomtypes/slider3.jpeg", IsPreview = true },
+    new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "Images/roomtypes/dhoma3bath.webp", IsPreview = false },
+    new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "Images/roomtypes/junior.jpg", IsPreview = false },
+    new RoomImage { RoomTypeID = juniorRoomTypeID, ImageUrl = "Images/roomtypes/room3-bathroom2.jpg", IsPreview = false },
 
-        new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "Images/roomtypes/dhoma22.jpeg" },
-        new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "Images/roomtypes/slider4.webp" },
 
-        new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "Images/roomtypes/dhoma3.jpeg" },
-        new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "Images/roomtypes/slider5.jpeg" },
+    new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "Images/roomtypes/dhoma22.jpeg", IsPreview = true },
+    new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "Images/roomtypes/slider4.webp", IsPreview = true },
+    new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "Images/roomtypes/room2-bathroom.jpg", IsPreview = false },
+    new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "Images/roomtypes/dhoma22.jpeg", IsPreview = false },
+    new RoomImage { RoomTypeID = deluxeRoomTypeID, ImageUrl = "Images/roomtypes/room2-bathrom2.jpg", IsPreview = false },
 
-        new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "Images/roomtypes/woden.jpeg" },
-        new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "Images/roomtypes/junior3.jpg" },
 
-        new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "Images/roomtypes/supertwin.jpg" },
-        new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "Images/roomtypes/slider6.jpeg" }
-    };
+
+    new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "Images/roomtypes/dhoma3.jpeg", IsPreview = true },
+    new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "Images/roomtypes/slider5.jpeg", IsPreview = true },
+    new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "Images/roomtypes/dhoma1details.jpeg", IsPreview = false },
+    new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "Images/roomtypes/dhoma1.jpeg", IsPreview = false },
+    new RoomImage { RoomTypeID = doubleRoomTypeID, ImageUrl = "Images/roomtypes/bathroom2-room1.jpg", IsPreview = false },
+
+    new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "Images/roomtypes/woden.jpeg", IsPreview = true },
+    new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "Images/roomtypes/junior3.jpg", IsPreview = true },
+    new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "Images/roomtypes/twin-bathrom.jpg", IsPreview = false },
+    new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "Images/roomtypes/junior3.jpg", IsPreview = false },
+    new RoomImage { RoomTypeID = twinRoomTypeID, ImageUrl = "Images/roomtypes/twin-bathroom2.jpg", IsPreview = false },
+
+
+    new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "Images/roomtypes/supertwin.jpg", IsPreview = true },
+    new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "Images/roomtypes/slider6.jpeg", IsPreview = true },
+    new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "Images/roomtypes/supertwin-bathroom2.jpg", IsPreview = false },
+    new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "Images/roomtypes/supertwin.jpg", IsPreview = false },
+    new RoomImage { RoomTypeID = superiorTwinRoomTypeID, ImageUrl = "Images/roomtypes/tile.jpg", IsPreview = false },
+};
+
 
             dataContext.RoomImages.AddRange(roomImages);
             dataContext.SaveChanges();

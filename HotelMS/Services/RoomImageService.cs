@@ -30,7 +30,8 @@ namespace HotelMS.Services
             var image = new RoomImage
             {
                 RoomTypeID = dto.RoomTypeID,
-                ImageUrl = dto.ImageUrl
+                ImageUrl = dto.ImageUrl,
+                IsPreview = dto.IsPreview 
             };
 
             _context.RoomImages.Add(image);
@@ -51,6 +52,13 @@ namespace HotelMS.Services
         {
             return await _context.RoomImages.FindAsync(imageId);
         }
+        public async Task<IEnumerable<RoomImage>> GetImagesByRoomTypeIdAndPreviewFlag(int roomTypeId, bool isPreview)
+        {
+            return await _context.RoomImages
+                .Where(img => img.RoomTypeID == roomTypeId && img.IsPreview == isPreview)
+                .ToListAsync();
+        }
+
 
     }
 }
