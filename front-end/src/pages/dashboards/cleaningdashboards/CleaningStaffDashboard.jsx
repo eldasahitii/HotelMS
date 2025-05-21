@@ -9,6 +9,8 @@ export default function AssignmentsByName() {
   const [staffName, setStaffName] = useState("");
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
+  const loggedInUserID = parseInt(localStorage.getItem("userID"));
+  const [currentCleaningStaffID, setCurrentCleaningStaffID] = useState(null);
   const inputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -21,9 +23,23 @@ export default function AssignmentsByName() {
       setMessageType("danger");
     }
   };
+const resolveCurrentCleaningStaffID = async () => {
+  try {
+    const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
+    const userID = parseInt(localStorage.getItem("userID"));
+
+    const match = res.data.find(s => s.userID === userID);
+    if (match) {
+      setCurrentCleaningStaffID(match.cleaningStaffID);
+    }
+  } catch (err) {
+    console.error("Failed to resolve cleaningStaffID", err);
+  }
+};
 
   useEffect(() => {
     fetchAllAssignments();
+     resolveCurrentCleaningStaffID(); 
     if (inputRef.current) inputRef.current.focus();
   }, []);
 
@@ -86,7 +102,6 @@ export default function AssignmentsByName() {
         <h2 className="text-primary fw-bold mb-4">
           <i className="bi bi-search me-2"></i>Cleaning Assignments
         </h2>
-
         <div className="card mb-4 shadow-sm">
           <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
             <i className="bi bi-search me-2"></i>Search Assignments by Name
@@ -128,6 +143,7 @@ export default function AssignmentsByName() {
                     <th>Staff</th>
                     <th>Status</th>
                     <th>Assigned</th>
+                    <th>Assigned By</th>
                     <th>Started</th>
                     <th>Finished</th>
                     <th>Actions</th>
@@ -137,7 +153,7 @@ export default function AssignmentsByName() {
                   {assignments.map((a, index) => (
                     <tr key={a.cleaningAssignmentID}>
                       <td>{index + 1}</td>
-                      <td>{a.roomName}</td>
+                     <td>{a.roomName} (#{a.roomNumber})</td>
                       <td>{a.staffName}</td>
                       <td>
                         <span className={`badge ${a.status === 'Completed' ? 'bg-success' : a.status === 'InProgress' ? 'bg-info' : 'bg-secondary'}`}>
@@ -145,6 +161,7 @@ export default function AssignmentsByName() {
                         </span>
                       </td>
                       <td>{a.assignedAt ? new Date(a.assignedAt).toLocaleString() : '-'}</td>
+                      <td>{a.assignedByName || '-'}</td>
                       <td>{a.startedAt ? new Date(a.startedAt).toLocaleString() : '-'}</td>
                       <td>{a.finishedAt ? new Date(a.finishedAt).toLocaleString() : '-'}</td>
                       <td>
@@ -152,14 +169,16 @@ export default function AssignmentsByName() {
                           <button
                             className="btn btn-sm btn-outline-secondary"
                             onClick={() => handleStart(a.cleaningAssignmentID)}
-                            disabled={a.status !== 'Pending'}
+                            disabled={a.status !== 'Pending'||  a.cleaningStaffID !== currentCleaningStaffID}
+                              title={a.cleaningStaffID !== loggedInUserID ? "You cannot start another staff's assignment" : ""}
                           >
                             <i className="bi bi-play-fill"></i>
                           </button>
                           <button
                             className="btn btn-sm btn-outline-success"
                             onClick={() => handleComplete(a.cleaningAssignmentID)}
-                            disabled={a.status !== 'InProgress'}
+                            disabled={a.status !== 'InProgress'||  a.cleaningStaffID !== currentCleaningStaffID}
+                              title={a.cleaningStaffID !== loggedInUserID ? "You cannot start another staff's assignment" : ""}
                           >
                             <i className="bi bi-check-circle"></i>
                           </button>
