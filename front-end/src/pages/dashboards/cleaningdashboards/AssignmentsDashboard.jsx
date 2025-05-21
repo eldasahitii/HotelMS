@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 export default function AssignmentsDashboard() {
   const [assignments, setAssignments] = useState([]);
   const [cleaningStaffList, setCleaningStaffList] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [newAssignment, setNewAssignment] = useState({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: null });
   const [editingAssignment, setEditingAssignment] = useState(null);
   const [editRoomID, setEditRoomID] = useState('');
@@ -30,33 +31,67 @@ export default function AssignmentsDashboard() {
       console.error(err);
     }
   };
+const getRoomTypeName = (roomTypeID) => {
+  switch (roomTypeID) {
+    case 1: return "Junior Room";
+    case 2: return "Deluxe Room";
+    case 3: return "Double Room";
+    case 4: return "Twin Room";
+    case 5: return "Superior Twin Room";
+    default: return "Unknown Type";
+  }
+};
 
+  // const fetchRooms = async () => {
+  //   try {
+  //     const res = await axios.get("/api/Room/getAllRooms");
+  //     const filtered = res.data.filter(r => r.roomID !== undefined);
+  //     setRooms(filtered);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+const fetchRooms = async () => {
+  try {
+    const res = await axios.get("/api/Room/getAllRooms");
+    const filtered = res.data.filter(r => r.roomStatusID === 1); // Available rooms
+    setRooms(filtered);
+  } catch (err) {
+    console.error(err);
+  }
+};
   useEffect(() => {
     fetchAssignments();
     fetchCleaningStaff();
+    fetchRooms();
   }, []);
 
   const handleAddAssignment = async () => {
-  const loggedInUserID = localStorage.getItem("userID");
-
-  const parsedAssignment = {
-    roomID: parseInt(newAssignment.roomID),
-    cleaningStaffID: parseInt(newAssignment.cleaningStaffID),
-    status: newAssignment.status,
-    assignedByUserID: parseInt(loggedInUserID) 
-  };
-    if (isNaN(parsedAssignment.roomID) || isNaN(parsedAssignment.cleaningStaffID)) {
-      setMessage("Room ID and Cleaning Staff must be filled.");
+    const loggedInUserID = localStorage.getItem("userID");
+    if (!newAssignment.roomID || !newAssignment.cleaningStaffID) {
+      setMessage("Please select both a Room and a Cleaning Staff.");
       setMessageType("danger");
       return;
     }
-
+    if (!loggedInUserID) {
+      setMessage("User ID not found. Please log in again.");
+      setMessageType("danger");
+      return;
+    }
+    const parsedAssignment = {
+      roomID: parseInt(newAssignment.roomID),
+      cleaningStaffID: parseInt(newAssignment.cleaningStaffID),
+      status: newAssignment.status,
+      assignedByUserID: parseInt(loggedInUserID)
+    };
     try {
+      console.log("Submitting assignment:", parsedAssignment);
       await axios.post("/api/CleaningAssignment/addAssignment", parsedAssignment);
       setMessage("Assignment added successfully.");
       setMessageType("success");
       setNewAssignment({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: null });
       fetchAssignments();
+      fetchRooms();
     } catch (err) {
       const error = err.response?.data?.message || "Failed to add assignment.";
       setMessage(error);
@@ -82,6 +117,7 @@ export default function AssignmentsDashboard() {
     try {
       await axios.put(`/api/CleaningAssignment/cancelAssignment?id=${id}`);
       fetchAssignments();
+      fetchRooms();
     } catch (err) {
       setMessage("Failed to cancel assignment.");
       setMessageType("danger");
@@ -92,6 +128,7 @@ export default function AssignmentsDashboard() {
     try {
       await axios.delete(`/api/CleaningAssignment/deleteAssignment?id=${id}`);
       fetchAssignments();
+      fetchRooms();
     } catch (err) {
       setMessage("Failed to delete assignment.");
       setMessageType("danger");
@@ -140,15 +177,26 @@ export default function AssignmentsDashboard() {
           <div className="card-body">
             <div className="row g-2">
               <div className="col-12 col-md-6">
-                <input className="form-control" placeholder="Room ID" value={newAssignment.roomID}
-                  onChange={e => setNewAssignment({ ...newAssignment, roomID: e.target.value })} />
+              <select
+  className="form-control"
+  value={newAssignment.roomID}
+  onChange={e => setNewAssignment({ ...newAssignment, roomID: e.target.value })}
+>
+  <option key="select-room-placeholder" value="">Select Room</option>
+  {rooms.map((room, index) => (
+    <option key={`room-${index}`} value={index + 1}>
+    {room.title} (#{room.roomNumber}) - {getRoomTypeName(room.roomTypeID)}
+
+    </option>
+  ))}
+</select>
               </div>
               <div className="col-12 col-md-6">
                 <select className="form-control" value={newAssignment.cleaningStaffID}
                   onChange={e => setNewAssignment({ ...newAssignment, cleaningStaffID: e.target.value })}>
-                  <option value="">Select Cleaning Staff</option>
+                  <option key="select-staff-placeholder" value="">Select Cleaning Staff</option>
                   {cleaningStaffList.map(staff => (
-                    <option key={staff.cleaningStaffID} value={staff.cleaningStaffID}>
+                    <option key={`staff-${staff.cleaningStaffID}`} value={staff.cleaningStaffID}>
                       {staff.firstName} {staff.lastName}
                     </option>
                   ))}
@@ -160,7 +208,6 @@ export default function AssignmentsDashboard() {
             </button>
           </div>
         </div>
-
         <div className="card">
           <div className="card-header" style={{ backgroundColor: '#7ca8d8', color: '#fff' }}>
             <i className="bi bi-table me-2"></i>Assignments List

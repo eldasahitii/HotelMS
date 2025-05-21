@@ -65,7 +65,6 @@ export default function CleaningManagerDashboard() {
       setMessageType("danger");
     }
   };
-
   const handleAddStaff = async () => {
     if (!newStaff.userID || !newStaff.shift) {
       setMessage("Please select User and Shift.");

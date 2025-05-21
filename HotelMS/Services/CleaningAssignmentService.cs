@@ -20,13 +20,15 @@ namespace HotelMS.Services
             var room = await _dbContext.Rooms
                 .Include(r => r.RoomStatus)
                 .FirstOrDefaultAsync(r => r.RoomID == request.RoomID);
+            if (room == null)
+                throw new Exception("Room not found.");
 
-            if (room.RoomStatus?.RoomStatusName != "Available" && room.RoomStatus?.RoomStatusName != "Occupied")
+            await _dbContext.Entry(room).ReloadAsync();
+            if (room.RoomStatusID != 1 && room.RoomStatusID != 2)
                 throw new Exception("Cannot assign task unless room is Available or Occupied.");
-
             var cleaningStatus = await _dbContext.RoomStatuses
                 .FirstOrDefaultAsync(rs => rs.RoomStatusName == "Cleaning");
-
+                
             if (cleaningStatus == null)
                 throw new Exception("Cleaning status not defined in RoomStatuses table.");
 
@@ -109,13 +111,25 @@ namespace HotelMS.Services
 
         public async Task DeleteAssignment(int id)
         {
-            var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
+            var assignment = await _dbContext.CleaningAssignments
+                .Include(a => a.Room)
+                .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
+
             if (assignment != null)
             {
+                var availableStatus = await _dbContext.RoomStatuses
+                    .FirstOrDefaultAsync(rs => rs.RoomStatusName == "Available");
+
+                if (availableStatus != null && assignment.Room != null)
+                {
+                    assignment.Room.RoomStatusID = availableStatus.RoomStatusID;
+                }
+
                 _dbContext.CleaningAssignments.Remove(assignment);
                 await _dbContext.SaveChangesAsync();
             }
         }
+
         public async Task<bool> MarkAssignmentCompleted(int id)
         {
             var assignment = await _dbContext.CleaningAssignments
