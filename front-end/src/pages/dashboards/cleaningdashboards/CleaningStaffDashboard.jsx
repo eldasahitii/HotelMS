@@ -153,7 +153,7 @@ const resolveCurrentCleaningStaffID = async () => {
                   {assignments.map((a, index) => (
                     <tr key={a.cleaningAssignmentID}>
                       <td>{index + 1}</td>
-                      <td>{a.roomName}</td>
+                     <td>{a.roomName} (#{a.roomNumber})</td>
                       <td>{a.staffName}</td>
                       <td>
                         <span className={`badge ${a.status === 'Completed' ? 'bg-success' : a.status === 'InProgress' ? 'bg-info' : 'bg-secondary'}`}>

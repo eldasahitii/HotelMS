@@ -31,40 +31,30 @@ export default function AssignmentsDashboard() {
       console.error(err);
     }
   };
-const getRoomTypeName = (roomTypeID) => {
-  switch (roomTypeID) {
-    case 1: return "Junior Room";
-    case 2: return "Deluxe Room";
-    case 3: return "Double Room";
-    case 4: return "Twin Room";
-    case 5: return "Superior Twin Room";
-    default: return "Unknown Type";
-  }
-};
 
-  // const fetchRooms = async () => {
-  //   try {
-  //     const res = await axios.get("/api/Room/getAllRooms");
-  //     const filtered = res.data.filter(r => r.roomID !== undefined);
-  //     setRooms(filtered);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-const fetchRooms = async () => {
-  try {
-    const res = await axios.get("/api/Room/getAllRooms");
-    const filtered = res.data.filter(r => r.roomStatusID === 1); // Available rooms
-    setRooms(filtered);
-  } catch (err) {
-    console.error(err);
-  }
-};
+  const fetchRooms = async () => {
+    try {
+      const res = await axios.get("/api/Room/getAllRooms");
+      const usedRoomIDs = new Set(assignments.filter(a => a.status === 'Pending' || a.status === 'InProgress').map(a => a.roomID));
+      const availableRooms = res.data.filter(r =>
+        (r.roomStatusID === 1 || r.roomStatusID === 2) &&
+        r.roomID &&
+        !usedRoomIDs.has(r.roomID)
+      );
+      setRooms(availableRooms);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     fetchAssignments();
     fetchCleaningStaff();
-    fetchRooms();
   }, []);
+
+  useEffect(() => {
+    fetchRooms();
+  }, [assignments]);
 
   const handleAddAssignment = async () => {
     const loggedInUserID = localStorage.getItem("userID");
@@ -85,13 +75,11 @@ const fetchRooms = async () => {
       assignedByUserID: parseInt(loggedInUserID)
     };
     try {
-      console.log("Submitting assignment:", parsedAssignment);
       await axios.post("/api/CleaningAssignment/addAssignment", parsedAssignment);
       setMessage("Assignment added successfully.");
       setMessageType("success");
       setNewAssignment({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: null });
       fetchAssignments();
-      fetchRooms();
     } catch (err) {
       const error = err.response?.data?.message || "Failed to add assignment.";
       setMessage(error);
@@ -99,25 +87,30 @@ const fetchRooms = async () => {
     }
   };
 
-  const handleConfirmUpdate = async () => {
-    const updated = { roomID: parseInt(editRoomID) };
-    try {
-      await axios.put(`/api/CleaningAssignment/updateAssignment?id=${editingAssignment.cleaningAssignmentID}`, updated);
-      setMessage("Assignment updated successfully.");
-      setMessageType("success");
-      setEditingAssignment(null);
-      fetchAssignments();
-    } catch (err) {
-      setMessage("Failed to update assignment.");
-      setMessageType("danger");
-    }
+ const handleConfirmUpdate = async () => {
+  const updated = {
+    roomID: parseInt(editRoomID),
+    status: editingAssignment.status || "Pending",  
+    startedAt: editingAssignment.startedAt || null,
+    finishedAt: editingAssignment.finishedAt || null
   };
 
+  try {
+    await axios.put(`/api/CleaningAssignment/updateAssignment?id=${editingAssignment.cleaningAssignmentID}`, updated);
+    setMessage("Assignment updated successfully.");
+    setMessageType("success");
+    setEditingAssignment(null);
+    fetchAssignments();
+  } catch (err) {
+    const error = err.response?.data?.message || "Failed to update assignment.";
+    setMessage(error);
+    setMessageType("danger");
+  }
+};
   const handleCancelAssignment = async (id) => {
     try {
       await axios.put(`/api/CleaningAssignment/cancelAssignment?id=${id}`);
       fetchAssignments();
-      fetchRooms();
     } catch (err) {
       setMessage("Failed to cancel assignment.");
       setMessageType("danger");
@@ -128,7 +121,6 @@ const fetchRooms = async () => {
     try {
       await axios.delete(`/api/CleaningAssignment/deleteAssignment?id=${id}`);
       fetchAssignments();
-      fetchRooms();
     } catch (err) {
       setMessage("Failed to delete assignment.");
       setMessageType("danger");
@@ -177,23 +169,21 @@ const fetchRooms = async () => {
           <div className="card-body">
             <div className="row g-2">
               <div className="col-12 col-md-6">
-              <select
+               <select
   className="form-control"
   value={newAssignment.roomID}
   onChange={e => setNewAssignment({ ...newAssignment, roomID: e.target.value })}
 >
-  <option key="select-room-placeholder" value="">Select Room</option>
-  {rooms.map((room, index) => (
-    <option key={`room-${index}`} value={index + 1}>
-    {room.title} (#{room.roomNumber}) - {getRoomTypeName(room.roomTypeID)}
-
+  <option value="">Select Room</option>
+  {rooms.map(room => (
+    <option key={room.roomID} value={room.roomID}>
+      {room.title} (#{room.roomNumber})
     </option>
   ))}
 </select>
               </div>
               <div className="col-12 col-md-6">
-                <select className="form-control" value={newAssignment.cleaningStaffID}
-                  onChange={e => setNewAssignment({ ...newAssignment, cleaningStaffID: e.target.value })}>
+                <select className="form-control" value={newAssignment.cleaningStaffID} onChange={e => setNewAssignment({ ...newAssignment, cleaningStaffID: e.target.value })}>
                   <option key="select-staff-placeholder" value="">Select Cleaning Staff</option>
                   {cleaningStaffList.map(staff => (
                     <option key={`staff-${staff.cleaningStaffID}`} value={staff.cleaningStaffID}>
@@ -208,6 +198,8 @@ const fetchRooms = async () => {
             </button>
           </div>
         </div>
+    
+
         <div className="card">
           <div className="card-header" style={{ backgroundColor: '#7ca8d8', color: '#fff' }}>
             <i className="bi bi-table me-2"></i>Assignments List
@@ -231,7 +223,7 @@ const fetchRooms = async () => {
                   {assignments.map((a) => (
                     <tr key={a.cleaningAssignmentID}>
                       <td>{a.cleaningAssignmentID}</td>
-                      <td>{a.roomName}</td>
+                      <td>{a.roomName} (#{a.roomNumber})</td>
                       <td>{a.staffName}</td>
                       <td>
                         <span className={`badge ${
@@ -274,8 +266,14 @@ const fetchRooms = async () => {
             <div className="card-body">
               <div className="row g-2">
                 <div className="col-12 col-md-6">
-                  <input className="form-control" placeholder="Room ID" value={editRoomID}
-                    onChange={e => setEditRoomID(e.target.value)} />
+                <select className="form-control" value={editRoomID} onChange={e => setEditRoomID(e.target.value)}>
+  <option value="">Select Room</option>
+  {rooms.map(room => (
+    <option key={room.roomID} value={room.roomID}>
+      {room.title} (#{room.roomNumber})
+    </option>
+  ))}
+</select>
                 </div>
                 <div className="col-12 col-md-6 d-flex align-items-end">
                   <button className="btn btn-primary me-2 w-100" onClick={handleConfirmUpdate}>

@@ -8,6 +8,7 @@
         public string? RoomStatus { get; set; }
         public int CleaningStaffID { get; set; }
         public string? StaffName { get; set; }
+        public string? RoomNumber { get; set; }
 
         public string? Status { get; set; }
 
