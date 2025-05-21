@@ -6,7 +6,7 @@ namespace HotelMS.Data.Interfaces
     public interface IHostService
     {
 
-        Task<List<RestaurantReservation>> GetAllReservationsAsync();
+        Task<List<RestaurantReservationDTO>> GetAllReservationsAsync();
 
         Task<RestaurantReservation> GetReservationByIdAsync(int id);
 

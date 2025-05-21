@@ -6,9 +6,19 @@ import { useNavigate } from 'react-router-dom';
 
 export default function RestaurantHostDashboard() {
   const [reservations, setReservations] = useState([]);
-  const [newReservation, setNewReservation] = useState({ guestID: '',restaurantTableID: '', dateTime: '', status: 'Booked' });
+  const [newReservation, setNewReservation] = useState({ 
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    restaurantTableID: '',
+    dateTime: '',
+    status: 'Booked'
+  });
   const [editingReservation, setEditingReservation] = useState(null);
   const [newStatus, setNewStatus] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredReservations, setFilteredReservations] = useState([]);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
@@ -33,14 +43,22 @@ export default function RestaurantHostDashboard() {
 
   const handleAddReservation = async () => {
     try {
-      await axios.post("/api/Host/createReservation", newReservation, {
+      await axios.post("/api/Host/createReservationWithGuest", newReservation, {
          headers: {
          Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       });
       setMessage("Reservation added successfully.");
       setMessageType("success");
-      setNewReservation({ guestID: '', restaurantTableID: '',  dateTime: '', status: 'Booked' });
+      setNewReservation({ 
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        restaurantTableID: '',
+        dateTime: '',
+        status: 'Booked'
+      });
       fetchReservations();
     } catch (error) {
       const serverMSg = error.response?.data || "Failed to add reservations.";
@@ -78,10 +96,24 @@ export default function RestaurantHostDashboard() {
       setMessageType("danger");
     }
   };
+
+const handleSearch = () => {
+  const trimmedSearch = searchTerm.trim().toLowerCase();
+
+  const filtered = reservations.filter(res =>
+    res.guestName &&
+    res.guestName.toLowerCase().includes(trimmedSearch)
+  );
+
+  setFilteredReservations(filtered);
+};
+
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
   };
+
+ const reservationList = filteredReservations.length > 0 ? filteredReservations : reservations;
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#fefefe' }}>
@@ -113,23 +145,44 @@ export default function RestaurantHostDashboard() {
             <i className="bi bi-plus-circle me-2"></i>Add Reservation
           </div>
           <div className="card-body">
-            <input className="form-control mb-2" placeholder="Guest ID" value={newReservation.guestID} onChange={e => setNewReservation({ ...newReservation, guestID: e.target.value })} />
+            <input className="form-control mb-2" placeholder="First Name" value={newReservation.firstName} onChange={e => setNewReservation({ ...newReservation, firstName: e.target.value })} />
+            <input className="form-control mb-2" placeholder="Last Name" value={newReservation.lastName} onChange={e => setNewReservation({ ...newReservation, lastName: e.target.value })} />
+            <input className="form-control mb-2" type="email" placeholder="Email" value={newReservation.email} onChange={e => setNewReservation({ ...newReservation, email: e.target.value })} />
+            <input className="form-control mb-2" placeholder="Phone Number" value={newReservation.phoneNumber} onChange={e => setNewReservation({ ...newReservation, phoneNumber: e.target.value })} />
             <input className="form-control mb-2" type="datetime-local" value={newReservation.dateTime} onChange={e => setNewReservation({ ...newReservation, dateTime: e.target.value })} />
             <input className="form-control mb-2" placeholder="Table ID" value={newReservation.restaurantTableID} onChange={e => setNewReservation({ ...newReservation, restaurantTableID: e.target.value })} />
             <button className="btn btn-primary w-100" onClick={handleAddReservation}><i className="bi bi-check2-circle me-2"></i>Add</button>
           </div>
         </div>
 
+
+        
+        <div className="row mb-3">
+              <div className="col-md-6">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search by guest name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="col-md-2">
+                <button className="btn btn-primary w-100" onClick={handleSearch}>Search</button>
+              </div><br/> <br /><br />
         <div className="card">
           <div className="card-header bg-secondary text-white">
-            <i className="bi bi-list-ul me-2"></i>All Reservations
+              <i className="bi bi-list-ul me-2"></i>All Reservations
           </div>
           <div className="card-body p-0">
+            </div>
             <table className="table mb-0">
               <thead className="table-light">
                 <tr>
                   <th>#</th>
-                  <th>Guest ID</th>
+                  <th>Guest Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
                   <th>Date & Time</th>
                   <th>Table ID</th>
                   <th>Status</th>
@@ -140,9 +193,11 @@ export default function RestaurantHostDashboard() {
                 {reservations.map((res, index) => (
                   <tr key={res.reservationID}>
                     <td>{index + 1}</td>
-                    <td>{res.GuestID}</td>
-                    <td>{new Date(res.date_time).toLocaleString()}</td>
-                    <td>{res.RestaurantTableID}</td>
+                    <td>{res.guestName}</td>
+                    <td>{res.email}</td>
+                    <td>{res.phoneNumber}</td>
+                    <td>{new Date(res.dateTime).toLocaleString()}</td>
+                    <td>{res.restaurantTableID}</td>
                     <td>{res.status}</td>
                     <td>
                       <button className="btn btn-sm btn-outline-danger" onClick={() => handleCancelReservation(res.reservationID)}>

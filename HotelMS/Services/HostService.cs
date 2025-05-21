@@ -17,12 +17,33 @@ namespace HotelMS.Services
             _dbContext = dbContext;
         }
 
-        public async Task<List<RestaurantReservation>> GetAllReservationsAsync()
+
+        public async Task<List<RestaurantReservationDTO>> GetAllReservationsAsync()
         {
             return await _dbContext.RestaurantReservations
+                .Include(r => r.RestaurantGuest)
                 .Include(r => r.RestaurantTable)
+                .Select(r => new RestaurantReservationDTO
+                {
+                    ReservationID = r.ReservationID,
+                    GuestID = r.GuestID,
+                    GuestName = r.RestaurantGuest.FirstName + " " + r.RestaurantGuest.LastName,
+                    Email = r.RestaurantGuest.Email,
+                    PhoneNumber = r.RestaurantGuest.PhoneNumber,
+                    RestaurantTableID = r.RestaurantTableID,
+                    TableNumber = r.RestaurantTable.TableNumber,
+                    DateTime = r.date_time,
+                    Status = r.status
+                })
                 .ToListAsync();
         }
+
+        //public async Task<List<RestaurantReservation>> GetAllReservationsAsync()
+        //{
+        //    return await _dbContext.RestaurantReservations
+        //        .Include(r => r.RestaurantTable)
+        //        .ToListAsync();
+        //}
 
         public async Task<RestaurantReservation> GetReservationByIdAsync(int id)
         {
@@ -113,6 +134,8 @@ namespace HotelMS.Services
                 ReservationID = reservation.ReservationID,
                 GuestID = guest.GuestID,
                 GuestName = $"{guest.FirstName} {guest.LastName}",
+                Email = guest.Email,
+                PhoneNumber = guest.PhoneNumber,
                 RestaurantTableID = reservation.RestaurantTableID,
                 TableNumber = table?.TableNumber ?? 0,
                 DateTime = reservation.date_time,
