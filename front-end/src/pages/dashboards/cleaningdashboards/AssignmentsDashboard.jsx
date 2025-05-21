@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function AssignmentsDashboard() {
   const [assignments, setAssignments] = useState([]);
@@ -131,6 +131,11 @@ export default function AssignmentsDashboard() {
     setEditingAssignment(assignment);
     setEditRoomID(assignment.roomID);
   };
+   const navigate = useNavigate();
+    const handleLogout = () => {
+      localStorage.clear();
+      navigate('/login');
+    };
 
   return (
     <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
@@ -147,6 +152,8 @@ export default function AssignmentsDashboard() {
               <i className="bi bi-list-task me-2"></i>Assignments
             </Link>
           </li>
+          <hr className="text-white" />
+          <button className="btn btn-outline-light w-100" onClick={handleLogout}><i className="bi bi-box-arrow-right me-2"></i> Logout</button>
         </ul>
       </aside>
 

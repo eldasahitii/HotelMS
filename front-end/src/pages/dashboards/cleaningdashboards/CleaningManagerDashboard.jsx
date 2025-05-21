@@ -109,11 +109,18 @@ export default function CleaningManagerDashboard() {
 
   return (
     <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      <aside className="text-white p-4" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
-        <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
-        <ul className="nav flex-column">
-          <li className="nav-item"><i className="bi bi-people-fill me-2"></i>Cleaning Staff</li>
-          <Link to="/manager/assignments" className="nav-link text-white"><i className="bi bi-list-task me-2"></i>Assignments</Link>
+    <aside className="text-white p-4" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
+            <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
+            <ul className="nav flex-column">
+              <li className="nav-item">
+                <Link to="/manager/cleaning-staff" className="nav-link text-white">
+                  <i className="bi bi-people-fill me-2"></i>Cleaning Staff
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/manager/assignments" className="nav-link text-white">
+                  <i className="bi bi-list-task me-2"></i>Assignments
+                </Link></li>
           <hr className="text-white" />
           <button className="btn btn-outline-light w-100" onClick={handleLogout}><i className="bi bi-box-arrow-right me-2"></i> Logout</button>
         </ul>
