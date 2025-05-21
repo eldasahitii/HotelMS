@@ -16,7 +16,7 @@ namespace HotelMS.Services
             _context = context;
         }
 
-        public async Task<string> MakeReservation(int userID, RoomReservationDTO request)
+        public async Task<string> MakeReservation(int userID, RoomReservationCreateDTO request)
         {
             if (request.CheckInDate >= request.CheckOutDate)
             {
@@ -28,37 +28,55 @@ namespace HotelMS.Services
                 return "Check-in date cannot be in the past";
             }
 
-            var availableRoom = await _context.Rooms
-               .Include(r => r.RoomStatus)
-               .Include(r => r.RoomType) 
-               .Where(r => r.RoomType.Name == request.RoomTypeName && r.RoomStatus.RoomStatusName == "Available")
-               .Where(r => !_context.RoomReservations.Any(res =>
-                   res.RoomID == r.RoomID &&
-                   res.CheckOutDate > request.CheckInDate &&
-                   res.CheckInDate < request.CheckOutDate))
-               .FirstOrDefaultAsync();
+            // Correctly determine actualUserID to avoid FK errors
+            int actualUserID = (request.CustomerUserID.HasValue && request.CustomerUserID > 0)
+                ? request.CustomerUserID.Value
+                : userID;
 
-
-            if (availableRoom == null)
+            // Verify user exists
+            var userExists = await _context.Users.AnyAsync(u => u.UserID == actualUserID);
+            if (!userExists)
             {
-                return "No available room of the selected type for the given dates.";
+                return $"User with ID {actualUserID} does not exist.";
+            }
+
+            var room = await _context.Rooms
+                .Include(r => r.RoomStatus)
+                .FirstOrDefaultAsync(r => r.RoomID == request.RoomID && r.RoomStatus.RoomStatusName == "Available");
+
+            if (room == null)
+            {
+                return "Selected room is not available.";
+            }
+
+            bool isConflicting = await _context.RoomReservations.AnyAsync(res =>
+                res.RoomID == request.RoomID &&
+                res.CheckOutDate > request.CheckInDate &&
+                res.CheckInDate < request.CheckOutDate);
+
+            if (isConflicting)
+            {
+                return "Room is already reserved for the selected dates.";
             }
 
             var reservation = new RoomReservation
             {
-                RoomID = availableRoom.RoomID,
-                UserID = userID,
+                RoomID = room.RoomID,
+                UserID = actualUserID,
                 CheckInDate = request.CheckInDate,
                 CheckOutDate = request.CheckOutDate,
-                ReservationStatusID = 1,
+                ReservationStatusID = 1, // Assuming 1 means 'Booked' or 'Pending'
+                SpecialRequests = request.SpecialRequests,
                 CreatedAt = DateTime.Now
             };
 
             _context.RoomReservations.Add(reservation);
             await _context.SaveChangesAsync();
 
-            return $"Reservation created successfully for room {availableRoom.Title}";
+            return $"Reservation created successfully for room {room.Title}";
         }
+
+
 
         public async Task<IEnumerable<UserReservationResponseDTO>> GetUserReservations(int userID)
         {

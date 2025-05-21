@@ -7,7 +7,7 @@ const ReservationPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Read roomTypeId from query params
+  // Read roomId from query params
   const queryParams = new URLSearchParams(location.search);
   const roomId = queryParams.get("roomTypeId");
 
@@ -18,7 +18,6 @@ const ReservationPage = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
 
   // Reservation states
   const [checkInDate, setCheckInDate] = useState("");
@@ -69,58 +68,53 @@ const ReservationPage = () => {
         setLastName(user.lastName || "");
         setEmail(user.email || "");
         setPhone(user.phone || "");
-        setAddress(user.address || "");
       })
       .catch((error) => {
         console.error("Failed to load user info:", error);
       });
   }, [userID]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!checkInDate || !checkOutDate) {
-      alert("Please enter both check-in and check-out dates.");
-      return;
-    }
-    if (checkInDate >= checkOutDate) {
-      alert("Check-out date must be after check-in date.");
-      return;
-    }
+  if (!checkInDate || !checkOutDate) {
+    alert("Please enter both check-in and check-out dates.");
+    return;
+  }
+  if (checkInDate >= checkOutDate) {
+    alert("Check-out date must be after check-in date.");
+    return;
+  }
 
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "https://localhost:7117/api/RoomReservations",
-        {
-          roomID: roomId,
-          userID: userID,
-          checkInDate,
-          checkOutDate,
-          specialRequests,
-          reservationStatusID: 1,
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.post(
+      "https://localhost:7117/api/RoomReservation/MakeReservation",
+      {
+        roomID: roomId,
+        userID: userID,
+        checkInDate,
+        checkOutDate,
+        specialRequests,
+        reservationStatusID: 1,
+        firstName,
+        lastName,
+        email,
+        phone,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
 
-          // Optional: send user info if your API supports it
-          firstName,
-          lastName,
-          email,
-          phone,
-          address,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    alert("Reservation successful!");
+    navigate("/rooms");
+  } catch (error) {
+    console.error("Reservation failed:", error.response || error.message || error);
+    alert("Failed to create reservation. Please try again.");
+  }
+};
 
-      alert("Reservation successful!");
-      navigate("/");
-    } catch (error) {
-      console.error("Reservation failed:", error);
-      alert("Failed to create reservation. Please try again.");
-    }
-  };
 
   if (!userID) {
     return null; // or loading spinner
@@ -172,16 +166,6 @@ const ReservationPage = () => {
             className="form-control"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Address</label>
-          <textarea
-            className="form-control"
-            rows="2"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
           />
         </div>
 
