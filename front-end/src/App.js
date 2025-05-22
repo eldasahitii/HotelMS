@@ -9,10 +9,10 @@ import CleaningManagerDashboard from './pages/dashboards/cleaningdashboards/Clea
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import axios from 'axios';
 import CleaningStaffDashboard from './pages/dashboards/cleaningdashboards/CleaningStaffDashboard';
-import RoomManagerDashboard from './pages/dashboards/roomdashboards/RoomManagerDashboard'; 
-import ReservationDashboard from './pages/dashboards/roomdashboards/ReservationDashboard';  
-import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/RoomRecepsionistDashboard';
-import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/RoomRecepsionistManagement'; 
+import RoomManagerDashboard from './pages/dashboards/roomdashboards/managerdashboards/RoomManagerDashboard'; 
+import ReservationDashboard from './pages/dashboards/roomdashboards/managerdashboards/ReservationDashboard';  
+import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RoomRecepsionistDashboard';
+import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/managerdashboards/RoomRecepsionistManagement'; 
 import RoomsPage from './pages/Rooms/RoomsPage';
 import RoomsDetails from './pages/Rooms/RoomsDetails';
 import ReservationPage from './pages/Rooms/ReservationPage';

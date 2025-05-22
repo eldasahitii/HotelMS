@@ -3,10 +3,9 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function RoomsDetails() {
-  const { roomId } = useParams(); // Get roomId from URL
+  const { roomId } = useParams();
   const [room, setRoom] = useState(null);
   const [error, setError] = useState(null);
-
   const backendBaseUrl = "https://localhost:7117/";
   const navigate = useNavigate();
 
@@ -16,52 +15,53 @@ export default function RoomsDetails() {
         setError("Room ID not provided.");
         return;
       }
-
       try {
-        const response = await axios.get(`${backendBaseUrl}api/RoomType/GetRoomType`, {
+        const res = await axios.get(`${backendBaseUrl}api/RoomType/GetRoomType`, {
           params: { id: roomId },
-          withCredentials: true, // ✅ Send cookies (JWT)
+          withCredentials: true,
         });
-
-        const roomData = response.data;
-
+        const data = res.data;
         setRoom({
-          id: roomData.roomTypeID,
-          name: roomData.name,
-          capacity: roomData.capacity,
-          size: roomData.size,
-          price: roomData.price,
-          description: roomData.description,
-          images: (roomData.images || []).map((imgObj) =>
-            backendBaseUrl + (imgObj.imageUrl.startsWith("/") ? imgObj.imageUrl.slice(1) : imgObj.imageUrl)
+          id: data.roomTypeID,
+          name: data.name,
+          capacity: data.capacity,
+          size: data.size,
+          price: data.price,
+          description: data.description,
+          images: (data.images || []).map(img =>
+            backendBaseUrl + (img.imageUrl.startsWith("/") ? img.imageUrl.slice(1) : img.imageUrl)
           ),
         });
       } catch (err) {
-        console.error("Failed to load room details:", err);
-        if (err.response) {
-          if (err.response.status === 404) {
-            setError("Room not found.");
-          } else if (err.response.status === 401) {
-            setError("Unauthorized. Please log in.");
-          } else {
-            setError(`Server error: ${err.response.status} ${err.response.statusText}`);
-          }
-        } else {
-          setError("Network error or server not reachable.");
-        }
+        console.error(err);
+        setError("Failed to load room details.");
       }
     };
-
     fetchRoomDetails();
   }, [roomId]);
 
-  const handleBookNow = () => {
-    if (!room || !room.id) {
-      alert("Room data not loaded yet. Please wait.");
+  const handleBookNow = async () => {
+    if (!room?.id) {
+      alert("Room data not loaded yet.");
       return;
     }
-    // Navigate to reservation page with roomTypeId as query param
-    navigate(`/reserve?roomTypeId=${room.id}`);
+
+    try {
+      // Check if user is logged in before navigating
+      const authCheck = await axios.get(`${backendBaseUrl}api/Auth/me`, {
+        withCredentials: true,
+      });
+      if (authCheck.data.role) {
+        // User logged in - navigate to reservation page
+        navigate(`/reserve?roomTypeId=${room.id}`);
+      } else {
+        // Not logged in - redirect to login
+        navigate("/login");
+      }
+    } catch (err) {
+      // Any error assume not logged in
+      navigate("/login");
+    }
   };
 
   if (error) return <div className="alert alert-danger m-3">{error}</div>;
@@ -75,15 +75,15 @@ export default function RoomsDetails() {
       <p><strong>Price:</strong> ${room.price}</p>
       <p><strong>Description:</strong> {room.description}</p>
 
-      {room.images && room.images.length > 0 ? (
+      {room.images?.length > 0 ? (
         <div className="d-flex flex-wrap gap-3 mt-3">
-          {room.images.map((imgPath, index) => (
+          {room.images.map((img, i) => (
             <img
-              key={index}
-              src={imgPath}
-              alt={`Room image ${index + 1}`}
+              key={i}
+              src={img}
+              alt={`Room image ${i + 1}`}
               className="img-thumbnail"
-              style={{ width: "250px", height: "auto", objectFit: "cover", borderRadius: "8px" }}
+              style={{ width: 250, height: 'auto', objectFit: 'cover', borderRadius: 8 }}
             />
           ))}
         </div>

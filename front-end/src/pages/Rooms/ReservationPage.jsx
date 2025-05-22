@@ -1,66 +1,56 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
 
 const ReservationPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Read roomId from query params
   const queryParams = new URLSearchParams(location.search);
   const roomId = queryParams.get("roomTypeId");
 
   const [userID, setUserID] = useState(null);
 
-  // User info states
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
-  // Reservation states
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [specialRequests, setSpecialRequests] = useState("");
 
-  // On mount: check roomId and token, get userID from token
+  const [loading, setLoading] = useState(true); // Loading user info
+
+  // Get basic user info and userID from auth endpoint
   useEffect(() => {
-    if (!roomId) {
-      navigate("/rooms");
-      return;
-    }
+    axios
+      .get("https://localhost:7117/api/Auth/me", { withCredentials: true })
+      .then((res) => {
+        console.log("User from /me:", res.data);
+        const user = res.data;
+        const userIDFromResponse = user.userId;
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+        if (!userIDFromResponse) {
+          console.error("User ID missing");
+          navigate("/login");
+          return;
+        }
 
-    try {
-      const decoded = jwtDecode(token);
-      const id = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-      if (!id) {
+        setUserID(userIDFromResponse);
+      })
+      .catch(() => {
         navigate("/login");
-        return;
-      }
-      setUserID(id);
-    } catch (err) {
-      console.error("Invalid token:", err);
-      navigate("/login");
-    }
-  }, [navigate, roomId]);
+      });
+  }, [navigate]);
 
-  // Fetch user info once userID is set
   useEffect(() => {
     if (!userID) return;
-
-    const token = localStorage.getItem("token");
 
     axios
       .get("https://localhost:7117/api/User", {
         params: { id: userID },
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       })
       .then((response) => {
         const user = response.data;
@@ -68,56 +58,63 @@ const ReservationPage = () => {
         setLastName(user.lastName || "");
         setEmail(user.email || "");
         setPhone(user.phone || "");
+        setLoading(false); // <-- Set loading to false here after data loaded
       })
       .catch((error) => {
         console.error("Failed to load user info:", error);
+        setLoading(false); // Also stop loading even if error occurred
       });
   }, [userID]);
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!checkInDate || !checkOutDate) {
-    alert("Please enter both check-in and check-out dates.");
-    return;
-  }
-  if (checkInDate >= checkOutDate) {
-    alert("Check-out date must be after check-in date.");
-    return;
-  }
+    if (!checkInDate || !checkOutDate) {
+      alert("Please enter both check-in and check-out dates.");
+      return;
+    }
+    if (checkInDate >= checkOutDate) {
+      alert("Check-out date must be after check-in date.");
+      return;
+    }
 
-  try {
-    const token = localStorage.getItem("token");
-    const res = await axios.post(
-      "https://localhost:7117/api/RoomReservation/MakeReservation",
-      {
-        roomID: roomId,
-        userID: userID,
-        checkInDate,
-        checkOutDate,
-        specialRequests,
-        reservationStatusID: 1,
-        firstName,
-        lastName,
-        email,
-        phone,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
+    try {
+      await axios.post(
+        "https://localhost:7117/api/RoomReservation/MakeReservation",
+        {
+          roomID: roomId,
+          userID,
+          checkInDate,
+          checkOutDate,
+          specialRequests,
+          reservationStatusID: 1,
+          firstName,
+          lastName,
+          email,
+          phone,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      alert("Reservation successful!");
+      navigate("/rooms");
+    } catch (error) {
+      console.error(
+        "Reservation failed:",
+        error.response || error.message || error
+      );
+      alert("Failed to create reservation. Please try again.");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container mt-5">
+        <p>Loading user information...</p>
+      </div>
     );
-
-    alert("Reservation successful!");
-    navigate("/rooms");
-  } catch (error) {
-    console.error("Reservation failed:", error.response || error.message || error);
-    alert("Failed to create reservation. Please try again.");
-  }
-};
-
-
-  if (!userID) {
-    return null; // or loading spinner
   }
 
   return (
