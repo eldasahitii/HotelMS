@@ -233,6 +233,7 @@ import SpaandSauna from '../../Assets/images/spa & sauna.png';
 import SpaSauna from '../../Assets/images/spa&sauna.png';
 
 const galleryImages = [InsidePool, OutsidePool, SpaandSauna, Insidepool];
+
 const galleryTexts = [
   'Tranquil poolside escape',
   'Professional spa ambiance',
@@ -258,10 +259,10 @@ const servicesData = [
 ];
 
 const schedulesData = [
-  { id: 1, date: '2025-06-01', time: '10:00 AM', serviceName: 'Sauna Session' },
-  { id: 2, date: '2025-06-01', time: '12:00 PM', serviceName: 'Full Body Massage' },
-  { id: 3, date: '2025-06-02', time: '02:00 PM', serviceName: 'Sauna Session' },
-  { id: 4, date: '2025-06-02', time: '04:00 PM', serviceName: 'Full Body Massage' },
+  { id: 1, date: 'Monday-Sunday', time: '10:00-10:30 AM', serviceName: 'Sauna Session' },
+  { id: 2, date: 'Monday-Sunday', time: '12:00-13:00 PM', serviceName: 'Full Body Massage' },
+  { id: 3, date: 'Monday-Saturday', time: '14:00-14:30 PM', serviceName: 'Sauna Session' },
+  { id: 4, date: 'Monday-Saturdat', time: '16:00-17:00 PM', serviceName: 'Full Body Massage' },
 ];
 
 export default function PoolSpaPage() {
