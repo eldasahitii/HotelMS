@@ -11,24 +11,29 @@ function RoomsPage() {
   useEffect(() => {
     const backendBaseUrl = "https://localhost:7117/";
 
-    axios.get(`${backendBaseUrl}api/RoomType/GetAllRoomTypes`)
-      .then(res => {
-        const mappedRooms = res.data.map(roomType => ({
+    axios
+      .get(`${backendBaseUrl}api/RoomType/GetAllRoomTypes`, {
+        withCredentials: true // ✅ Ensures cookies (token) are sent
+      })
+      .then((res) => {
+        const mappedRooms = res.data.map((roomType) => ({
           id: roomType.roomTypeID,
           title: roomType.name,
           capacity: roomType.capacity,
           size: roomType.size,
           price: roomType.price,
           description: roomType.description,
-          images: (roomType.images || []).map(imgObj => 
-            // Make sure imageUrl doesn't start with slash before joining with base URL
-            backendBaseUrl + (imgObj.imageUrl.startsWith("/") ? imgObj.imageUrl.slice(1) : imgObj.imageUrl)
+          images: (roomType.images || []).map((imgObj) =>
+            backendBaseUrl +
+            (imgObj.imageUrl.startsWith("/")
+              ? imgObj.imageUrl.slice(1)
+              : imgObj.imageUrl)
           ),
         }));
         setRooms(mappedRooms);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to fetch room types:", err);
         setError("Failed to load rooms. Please try again later.");
         setLoading(false);

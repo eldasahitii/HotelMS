@@ -7,9 +7,7 @@ export default function RoomsDetails() {
   const [room, setRoom] = useState(null);
   const [error, setError] = useState(null);
 
-  const token = localStorage.getItem("token"); // Get JWT from localStorage
   const backendBaseUrl = "https://localhost:7117/";
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,18 +17,10 @@ export default function RoomsDetails() {
         return;
       }
 
-      if (!token) {
-        setError("Unauthorized. Please log in first.");
-        return;
-      }
-
       try {
         const response = await axios.get(`${backendBaseUrl}api/RoomType/GetRoomType`, {
           params: { id: roomId },
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
+          withCredentials: true, // ✅ Send cookies (JWT)
         });
 
         const roomData = response.data;
@@ -52,7 +42,7 @@ export default function RoomsDetails() {
           if (err.response.status === 404) {
             setError("Room not found.");
           } else if (err.response.status === 401) {
-            setError("Unauthorized. Please log in again.");
+            setError("Unauthorized. Please log in.");
           } else {
             setError(`Server error: ${err.response.status} ${err.response.statusText}`);
           }
@@ -63,7 +53,7 @@ export default function RoomsDetails() {
     };
 
     fetchRoomDetails();
-  }, [roomId, token]);
+  }, [roomId]);
 
   const handleBookNow = () => {
     if (!room || !room.id) {

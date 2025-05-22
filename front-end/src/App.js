@@ -21,6 +21,7 @@ import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 import { useEffect, useState } from 'react';
+import React from 'react';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const [authorized, setAuthorized] = useState(null);
@@ -49,6 +50,39 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   return children;
 };
 
+// New ProtectedRoute that also passes userId as a prop to children
+const ProtectedRouteWithUserId = ({ children, allowedRoles }) => {
+  const [authorized, setAuthorized] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await axios.get('https://localhost:7117/api/Auth/me', {
+          withCredentials: true
+        });
+        const role = res.data.role;
+        const id = res.data.userId;
+        if (allowedRoles.includes(role)) {
+          setAuthorized(true);
+          setUserId(id);
+        } else {
+          setAuthorized(false);
+        }
+      } catch {
+        setAuthorized(false);
+      }
+    };
+    checkAuth();
+  }, [allowedRoles]);
+
+  if (authorized === null) return null; // You can add a loading spinner
+  if (authorized === false) return <Navigate to="/login" />;
+  
+  // Pass userId as prop named currentUserId to the child component
+  return React.cloneElement(children, { currentUserId: userId });
+};
+
 function App() {
   return (
     <Router>
@@ -74,10 +108,11 @@ function App() {
             </ProtectedRoute>
           }/>
 
+          {/* UPDATED ROUTE: Pass userId prop here */}
           <Route path="/room-manager-receptionist-management" element={
-            <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
+            <ProtectedRouteWithUserId allowedRoles={['Admin', 'RoomManager']}>
               <RoomRecepsionistManagement />
-            </ProtectedRoute>
+            </ProtectedRouteWithUserId>
           }/>
 
           <Route path="/reservations" element={
