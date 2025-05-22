@@ -315,12 +315,6 @@ public class Seed
             if (!dataContext.HotelServices.Any())
             {
                 var services = new List<HotelService>
-        //Seed HotelService
-        Console.WriteLine("Seeding HotelServices...");
-
-        if (!dataContext.HotelServices.Any())
-        {
-            var services = new List<HotelService>
             {
                 new HotelService
                 {
@@ -351,60 +345,6 @@ public class Seed
                     Price = 400.00m
                 }
             };
-            dataContext.HotelServices.AddRange(services);
-            dataContext.SaveChanges();
-        }
-
-        //Seed HotelServiceSchedule
-        //if (!dataContext.HotelServiceSchedules.Any())
-        //{
-        //    var scheduleEntries = new List<HotelServiceSchedule>();
-
-        //    var allServices = dataContext.HotelServices.ToList();
-        //    foreach (var service in allServices)
-        //    {
-        //        scheduleEntries.Add(new HotelServiceSchedule
-        //        {
-        //            HotelServiceId = service.Id,
-        //            StartTime = DateTime.Today.AddHours(10),
-        //            EndTime = DateTime.Today.AddHours(11),
-        //            IsAvailable = true
-        //        });
-        //        scheduleEntries.Add(new HotelServiceSchedule
-        //        {
-        //            HotelServiceId = service.Id,
-        //            StartTime = DateTime.Today.AddHours(14),
-        //            EndTime = DateTime.Today.AddHours(15),
-        //            IsAvailable = true
-        //        });
-        //    }
-        //    dataContext.HotelServiceSchedules.AddRange(scheduleEntries);
-        //    dataContext.SaveChanges();
-        //}
-        if (!dataContext.HotelServiceSchedules.Any())
-        {
-            var schedules = new List<HotelServiceSchedule>
-            {
-                new HotelServiceSchedule
-                {
-                    HotelServiceId = 1, // make sure this matches an existing HotelService Id
-                    StartTime = DateTime.Today.AddHours(9),
-                    EndTime = DateTime.Today.AddHours(12),
-                    IsAvailable = true
-                },
-                new HotelServiceSchedule
-                {
-                    HotelServiceId = 1,
-                    StartTime = DateTime.Today.AddHours(13),
-                    EndTime = DateTime.Today.AddHours(17),
-                    IsAvailable = false
-                }
-            };
-
-            dataContext.HotelServiceSchedules.AddRange(schedules);
-            dataContext.SaveChanges();
-
-        }
                 dataContext.HotelServices.AddRange(services);
                 dataContext.SaveChanges();
             }
@@ -473,7 +413,7 @@ public class Seed
                 dataContext.SaveChanges();
 
             }
-            
+
             //Seed HotelServiceSchedule
             if (!dataContext.HotelServiceSchedules.Any())
             {
@@ -529,10 +469,9 @@ public class Seed
 
     }
 }
-   
 
 
 
 
-  
+
 
