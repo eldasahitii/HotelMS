@@ -2,7 +2,6 @@
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Services
@@ -28,12 +27,10 @@ namespace HotelMS.Services
                 return "Check-in date cannot be in the past";
             }
 
-            // Correctly determine actualUserID to avoid FK errors
             int actualUserID = (request.CustomerUserID.HasValue && request.CustomerUserID > 0)
                 ? request.CustomerUserID.Value
                 : userID;
 
-            // Verify user exists
             var userExists = await _context.Users.AnyAsync(u => u.UserID == actualUserID);
             if (!userExists)
             {
@@ -52,7 +49,8 @@ namespace HotelMS.Services
             bool isConflicting = await _context.RoomReservations.AnyAsync(res =>
                 res.RoomID == request.RoomID &&
                 res.CheckOutDate > request.CheckInDate &&
-                res.CheckInDate < request.CheckOutDate);
+                res.CheckInDate < request.CheckOutDate &&
+                res.ReservationStatus.ReservationStatusName != "Cancelled");
 
             if (isConflicting)
             {
@@ -65,18 +63,23 @@ namespace HotelMS.Services
                 UserID = actualUserID,
                 CheckInDate = request.CheckInDate,
                 CheckOutDate = request.CheckOutDate,
-                ReservationStatusID = 1, // Assuming 1 means 'Booked' or 'Pending'
+                ReservationStatusID = 1, 
                 SpecialRequests = request.SpecialRequests,
                 CreatedAt = DateTime.Now
             };
 
             _context.RoomReservations.Add(reservation);
+
+            var occupiedStatus = await _context.RoomStatuses.FirstOrDefaultAsync(rs => rs.RoomStatusName == "Occupied");
+            if (occupiedStatus != null)
+            {
+                room.RoomStatusID = occupiedStatus.RoomStatusID;
+            }
+
             await _context.SaveChangesAsync();
 
             return $"Reservation created successfully for room {room.Title}";
         }
-
-
 
         public async Task<IEnumerable<UserReservationResponseDTO>> GetUserReservations(int userID)
         {
@@ -117,20 +120,18 @@ namespace HotelMS.Services
             return reservations;
         }
 
-
-
-
-
         public async Task<string> CancelReservation(int reservationID, int userID, bool isAdminOrStaff = false)
         {
             var reservation = await _context.RoomReservations
                 .Include(r => r.ReservationStatus)
+                .Include(r => r.Room)
                 .FirstOrDefaultAsync(r => r.ReservationID == reservationID);
 
             if (reservation == null)
             {
                 return "Reservation not found";
             }
+
             if (!isAdminOrStaff && reservation.UserID != userID)
             {
                 return "You are not authorized to cancel this reservation";
@@ -147,11 +148,25 @@ namespace HotelMS.Services
             reservation.ReservationStatusID = cancelledStatus.ReservationStatusID;
             reservation.CheckOutDate = DateTime.Now;
 
+            bool hasActiveReservations = await _context.RoomReservations.AnyAsync(r =>
+                r.RoomID == reservation.RoomID &&
+                r.ReservationID != reservation.ReservationID &&
+                r.ReservationStatus.ReservationStatusName != "Cancelled" &&
+                r.CheckOutDate > DateTime.Now);
+
+            if (!hasActiveReservations)
+            {
+                var availableStatus = await _context.RoomStatuses.FirstOrDefaultAsync(rs => rs.RoomStatusName == "Available");
+                if (availableStatus != null)
+                {
+                    reservation.Room.RoomStatusID = availableStatus.RoomStatusID;
+                }
+            }
+
             await _context.SaveChangesAsync();
 
             return "Reservation cancelled successfully";
         }
-
 
         public async Task<string> UpdateReservationStatus(int reservationID, int statusID)
         {
@@ -177,13 +192,13 @@ namespace HotelMS.Services
             await _context.SaveChangesAsync();
 
             return "Reservation status updated successfully";
-
         }
 
         public async Task<string> MarkReservationCompleted(int reservationID, int userID)
         {
             var reservation = await _context.RoomReservations
                 .Include(r => r.ReservationStatus)
+                .Include(r => r.Room)
                 .FirstOrDefaultAsync(r => r.ReservationID == reservationID);
 
             if (reservation == null)
@@ -204,12 +219,10 @@ namespace HotelMS.Services
                 return "User role not found";
             }
 
-
             if (reservation.UserID != userID && role.RoleType != "Admin" && role.RoleType != "RoomRecepsionist")
             {
                 return "You are not authorized to complete this reservation.";
             }
-
 
             var completedStatus = await _context.ReservationStatuses
                 .FirstOrDefaultAsync(rs => rs.ReservationStatusName == "Completed");
@@ -220,10 +233,26 @@ namespace HotelMS.Services
             }
 
             reservation.ReservationStatusID = completedStatus.ReservationStatusID;
+
+            bool hasActiveReservations = await _context.RoomReservations.AnyAsync(r =>
+                r.RoomID == reservation.RoomID &&
+                r.ReservationID != reservation.ReservationID &&
+                r.ReservationStatus.ReservationStatusName != "Cancelled" &&
+                r.ReservationStatus.ReservationStatusName != "Completed" &&
+                r.CheckOutDate > DateTime.Now);
+
+            if (!hasActiveReservations)
+            {
+                var availableStatus = await _context.RoomStatuses.FirstOrDefaultAsync(rs => rs.RoomStatusName == "Available");
+                if (availableStatus != null)
+                {
+                    reservation.Room.RoomStatusID = availableStatus.RoomStatusID;
+                }
+            }
+
             await _context.SaveChangesAsync();
 
             return "Reservation marked as completed";
         }
     }
- }
-
+}

@@ -18,6 +18,7 @@ import RoomsDetails from './pages/Rooms/RoomsDetails';
 import ReservationPage from './pages/Rooms/ReservationPage';
 import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
 import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
+import RecepsionistReservationDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RecepsionistReservationDashboard';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 import { useEffect, useState } from 'react';
@@ -120,6 +121,15 @@ function App() {
               <ReservationPage />
             </ProtectedRoute>
           }/>
+          <Route
+  path="/recepsionist-reservations"
+  element={
+    <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
+      <RecepsionistReservationDashboard />
+    </ProtectedRoute>
+  }
+/>
+
 
           <Route path="/manager/cleaning-staff" element={
             <ProtectedRoute allowedRoles={['CleaningManager']}>
