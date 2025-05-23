@@ -9,7 +9,7 @@ namespace HotelMS.Data.Interfaces
 
         Task<MenuItem> GetMenuItem(int id);
 
-        Task<IEnumerable<MenuItem>> GetAllMenuItems();
+        Task<IEnumerable<MenuItemDTO>> GetAllMenuItems();
 
         Task<MenuItem> UpdateMenuItem(int id, MenuItemCreateDTO request);
 
