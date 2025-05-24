@@ -1,16 +1,14 @@
 import React, { useState, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import EventHall from '../../Assets/images/conferenceroom1.jpg';
-import ConferenceRoom from '../../Assets/images/conferenceroom.jpg';
-import WeddingVenue from '../../Assets/images/weddingvenue.jpg';
-import OutdoorStage from '../../Assets/images/weddingvenue.jpg';
+import ConferenceRoom from '../../Assets/images/conference.png';
+import WeddingVenue from '../../Assets/images/2.png';
 import heroImage from '../../Assets/images/mainevents.jpg';
 
 const timeSlots = ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM'];
 const takenSlots = ['12:00 PM', '4:00 PM'];
 
 const framedImageStyle = {
-  border: '10px solid #e0e0e0',
+  border: '10px solid #ffffff', // changed to white
   boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
   padding: '4px',
   backgroundColor: '#ffffff',
@@ -60,24 +58,16 @@ const Events = () => {
 
   const sections = [
     {
-      img: EventHall,
-      title: 'Grand Event Hall',
-      text: 'Host unforgettable galas, banquets, and receptions in our luxurious event space.'
-    },
-    {
       img: ConferenceRoom,
       title: 'Modern Conference Room',
-      text: 'Perfect for meetings and business events, equipped with the latest technology.'
+      text: 'Host your next meeting or seminar in our fully equipped conference room, featuring high-speed internet, audio-visual equipment, and comfortable seating. Designed for productivity and professionalism, the space is ideal for business gatherings, workshops, or corporate presentations. Catering and technical support services are also available to ensure a seamless experience for you and your attendees.',
+      price: '€200 per session'
     },
     {
       img: WeddingVenue,
       title: 'Elegant Wedding Venue',
-      text: 'Celebrate your special day in a magical setting tailored for weddings.'
-    },
-    {
-      img: OutdoorStage,
-      title: 'Outdoor Stage & Lawn',
-      text: 'Ideal for concerts, ceremonies, and open-air performances.'
+      text: 'Celebrate your special day in our romantic wedding venue, where timeless charm meets modern elegance. Surrounded by beautiful architecture and customizable decor options, the venue provides the perfect setting for ceremonies and receptions. From intimate gatherings to grand celebrations, our team is here to help bring your dream wedding to life.',
+      price: '€1,500 per day'
     }
   ];
 
@@ -99,7 +89,7 @@ const Events = () => {
       >
         <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: '2rem' }}>
           <h1 className="display-4 fw-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Events & Venues
+            Events
           </h1>
           <p className="lead">Discover perfect venues for every occasion.</p>
         </div>
@@ -117,6 +107,10 @@ const Events = () => {
             <div className="col-md-6" ref={el => formRefs.current[idx] = el}>
               <h3 style={{ color: '#333' }}>{section.title}</h3>
               <p className="text-muted">{section.text}</p>
+              <p className="mt-2">
+                <span className="fw-bold text-dark">Price:</span>{' '}
+                <span className="fw-bold text-primary">{section.price}</span>
+              </p>
               <button className="btn btn-dark" onClick={() => openForm(idx)}>Reserve</button>
 
               {activeForm === idx && (
@@ -208,3 +202,6 @@ const Events = () => {
 };
 
 export default Events;
+
+
+
