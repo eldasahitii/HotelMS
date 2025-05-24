@@ -61,8 +61,7 @@ export default function RestaurantHostDashboard() {
       });
       fetchReservations();
     } catch (error) {
-      const serverMSg = error.response?.data || "Failed to add reservations.";
-      setMessage(serverMSg);
+      setMessage("Failed to add reservation");
       setMessageType("danger");
     }
   };

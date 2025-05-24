@@ -90,29 +90,58 @@ namespace HotelMS.Services
             };
         }
 
+
         public async Task<RestaurantReservationDTO> CreateReservationWithGuestAsync(RestaurantReservationGuestDTO dto)
         {
+          
+            if (string.IsNullOrWhiteSpace(dto.FirstName) ||
+                string.IsNullOrWhiteSpace(dto.LastName) ||
+                string.IsNullOrWhiteSpace(dto.Email))
+                throw new Exception("Guest first name, last name, and email are required.");
+
+            var emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(dto.Email, emailPattern))
+                throw new Exception("Invalid email format.");
+
+            if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
+                throw new Exception("Phone number is required");
+
+            if (dto.DateTime <= DateTime.Now)
+                throw new Exception("Reservation must be scheduled for a future date and time.");
+
+     
+            var hour = dto.DateTime.Hour;
+            if (hour < 10 || hour >= 22)
+                throw new Exception("Reservations can only be made between 10:00 and 22:00.");
+
+            var tablee = await _dbContext.RestaurantTables.FirstOrDefaultAsync(t => t.RestaurantTableID == dto.RestaurantTableID);
+            if (tablee == null)
+                throw new Exception("Selected table does not exist.");
+
+       
+            bool isBooked = await _dbContext.RestaurantReservations.AnyAsync(r =>
+                r.RestaurantTableID == dto.RestaurantTableID &&
+                r.date_time == dto.DateTime &&
+                r.status != "Cancelled");
+
+            if (isBooked)
+                throw new Exception("This table is already booked at the selected date and time.");
+
             var existingGuest = await _dbContext.RestaurantGuests
                 .FirstOrDefaultAsync(g => g.Email.ToLower() == dto.Email.ToLower());
 
-            RestaurantGuest guest;
-
-            if (existingGuest != null)
+            RestaurantGuest guest = existingGuest ?? new RestaurantGuest
             {
-                guest = existingGuest;
-            }
-            else
-            {
-                guest = new RestaurantGuest
-                {
-                    FirstName = dto.FirstName,
-                    LastName = dto.LastName,
-                    Email = dto.Email,
-                    PhoneNumber = dto.PhoneNumber
-                };
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber
+            };
 
+            if (existingGuest == null)
+            {
                 _dbContext.RestaurantGuests.Add(guest);
-                await _dbContext.SaveChangesAsync(); 
+                await _dbContext.SaveChangesAsync();
             }
 
             var reservation = new RestaurantReservation
@@ -120,7 +149,7 @@ namespace HotelMS.Services
                 GuestID = guest.GuestID,
                 RestaurantTableID = dto.RestaurantTableID,
                 date_time = dto.DateTime,
-                status = dto.Status ?? "Booked"
+                status = dto.Status
             };
 
             _dbContext.RestaurantReservations.Add(reservation);
@@ -142,6 +171,59 @@ namespace HotelMS.Services
                 Status = reservation.status
             };
         }
+
+        //public async Task<RestaurantReservationDTO> CreateReservationWithGuestAsync(RestaurantReservationGuestDTO dto)
+        //{
+        //    var existingGuest = await _dbContext.RestaurantGuests
+        //        .FirstOrDefaultAsync(g => g.Email.ToLower() == dto.Email.ToLower());
+
+        //    RestaurantGuest guest;
+
+        //    if (existingGuest != null)
+        //    {
+        //        guest = existingGuest;
+        //    }
+        //    else
+        //    {
+        //        guest = new RestaurantGuest
+        //        {
+        //            FirstName = dto.FirstName,
+        //            LastName = dto.LastName,
+        //            Email = dto.Email,
+        //            PhoneNumber = dto.PhoneNumber
+        //        };
+
+        //        _dbContext.RestaurantGuests.Add(guest);
+        //        await _dbContext.SaveChangesAsync(); 
+        //    }
+
+        //    var reservation = new RestaurantReservation
+        //    {
+        //        GuestID = guest.GuestID,
+        //        RestaurantTableID = dto.RestaurantTableID,
+        //        date_time = dto.DateTime,
+        //        status = dto.Status ?? "Booked"
+        //    };
+
+        //    _dbContext.RestaurantReservations.Add(reservation);
+        //    await _dbContext.SaveChangesAsync();
+
+        //    var table = await _dbContext.RestaurantTables
+        //        .FirstOrDefaultAsync(t => t.RestaurantTableID == reservation.RestaurantTableID);
+
+        //    return new RestaurantReservationDTO
+        //    {
+        //        ReservationID = reservation.ReservationID,
+        //        GuestID = guest.GuestID,
+        //        GuestName = $"{guest.FirstName} {guest.LastName}",
+        //        Email = guest.Email,
+        //        PhoneNumber = guest.PhoneNumber,
+        //        RestaurantTableID = reservation.RestaurantTableID,
+        //        TableNumber = table?.TableNumber ?? 0,
+        //        DateTime = reservation.date_time,
+        //        Status = reservation.status
+        //    };
+        //}
 
 
 
