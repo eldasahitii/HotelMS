@@ -472,13 +472,11 @@
 
 import React, { useState, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import InsidePool from '../../Assets/images/inside pool.png';
-import Insidepool from '../../Assets/images/insidepool.png';
-import OutsidePool from '../../Assets/images/outside pool.png';
-import Outsidepool from '../../Assets/images/outsidepool.png';
-import SpaandSauna from '../../Assets/images/spa & sauna.png';
-import SpaSauna from '../../Assets/images/spa&sauna.png';
-import heroImage from '../../Assets/images/hotelpool.PNG';
+import InsidePool from '../../Assets/images/indoorpool3.png';
+import OutsidePool from '../../Assets/images/pool2.jpg';
+import Insidepool from '../../Assets/images/spa.jpg';
+import SpaandSauna from '../../Assets/images/4.png';
+import heroImage from '../../Assets/images/pool6.jpg';
 
 const timeSlots = ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM'];
 const takenSlots = ['12:00 PM', '4:00 PM'];
@@ -542,7 +540,7 @@ const PoolSpa = () => {
     {
       img: OutsidePool,
       title: 'Scenic Outdoor Pool',
-      text: 'Bask in the sun by our expansive outdoor pool with lush surroundings.'
+      text: 'Escape to our breathtaking outdoor pool area, where tranquility meets natural beauty. Surrounded by lush greenery and designed with relaxation in mind, our expansive pool offers the perfect setting to soak up the sun or enjoy a peaceful swim. Lounge on comfortable sunbeds, sip refreshing drinks from our poolside bar, and take in the serene views that create a true resort-style experience.'
     },
     {
       img: Insidepool,
