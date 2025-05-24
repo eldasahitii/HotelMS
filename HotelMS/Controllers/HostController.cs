@@ -11,7 +11,7 @@ namespace HotelMS.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "RestaurantHost")]
+    [Authorize(Roles = "RestaurantHost, RestaurantManager")]
     public class HostController : ControllerBase
     {
        

@@ -21,10 +21,13 @@ export default function RestaurantManagerDashboard() {
   const [newTable, setNewTable] = useState({tableNumber: '', status: 'Available'});
   const [editingTable, setEditingTable] = useState(null);
   const [editTableData, setEditTableData] = useState({tableNumber: '', status: 'Available'});
+
+  const [reservations, setReservations] = useState([]);
  
+  const [tableFilter, setTableFilter] = useState("All");
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const [searchId, setSearchId] = useState('');
+  const [searchName, setSearchName] = useState('');
 
   const fetchHosts = async() => {
     try {
@@ -57,11 +60,30 @@ export default function RestaurantManagerDashboard() {
       setMessageType("danger");
     }
   };
+  const fetchReservations = async () => {
+    try {
+      const response = await axios.get("/api/Host/getAllReservations", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      setReservations(response.data);
+    } catch {
+      setMessage("Failed to fetch reservations.");
+      setMessageType("danger");
+    }
+  };
    useEffect(() => {
     fetchHosts();
     fetchMenuItems();
     fetchTables();
   }, []);
+
+  useEffect(() => {
+    if(activeSection === "reservations") {
+      fetchReservations();
+    }
+  }, [activeSection]);
 
   const handleAddHost = async () => {
     if(!newHost.firstName || !newHost.lastName || !newHost.email || !newHost.password) {
@@ -110,17 +132,6 @@ export default function RestaurantManagerDashboard() {
     setMessageType("danger");
   }
 };
-
-  const handleSearchById = async () => {
-    if (!searchId) return;
-    try {
-      const res = await axios.get(`/api/HostManagement/getHost?id=${searchId}`);
-      setHosts(res.data ? [res.data] : []);
-    } catch (error) {
-      setMessage("Host not found.");
-      setMessageType("danger");
-    }
-  };
 
   const handleAddMenuItem = async () => {
     try {
@@ -252,6 +263,10 @@ export default function RestaurantManagerDashboard() {
             <button className={`nav-link text-white ${activeSection === "tables" ? "fw-bold" : ""}`} onClick={() => setActiveSection("tables")}>
               <i className="bi bi-table me-2"></i>Tables
              </button>
+            <button className={`nav-link text-white ${activeSection === "reservations" ? "fw-bold" : ""}`} onClick={() => setActiveSection("reservations")}>
+              <i className="bi bi-calendar-check me-2"></i> Reservations
+            </button>
+
           </li>
           <hr className="text-white" />
           <button className="btn btn-outline-light w-100" onClick={handleLogout}>
@@ -293,10 +308,7 @@ export default function RestaurantManagerDashboard() {
 
         <div className="card mb-4">
           <div className="card-body d-flex gap-2">
-            <input type="number" className="form-control" placeholder="Search by ID" value={searchId} onChange={e => setSearchId(e.target.value)} />
-            <button className="btn btn-outline-dark" onClick={handleSearchById}>
-              <i className="bi bi-search"></i> Search
-            </button>
+            <input type="text" className="form-control" placeholder="Search by Name" value={searchName} onChange={e => setSearchName(e.target.value)} />
           </div>
         </div>
 
@@ -315,7 +327,9 @@ export default function RestaurantManagerDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {hosts.map((host, index) => (
+                {hosts
+                .filter(h => `${h.firstName} ${h.lastName}`.toLowerCase().includes(searchName.toLowerCase()))
+                .map((host, index) => (
                   <tr key={host.userID}>
                     <td>{index + 1}</td>
                     <td>{host.firstName} {host.lastName}</td>
@@ -479,6 +493,22 @@ export default function RestaurantManagerDashboard() {
     </div>
 
     <div className="card mt-4">
+  <div className="card-body d-flex gap-2 align-items-center">
+    <label className="form-label mb-0">Filter by Status:</label>
+    <select
+      className="form-select w-auto"
+      value={tableFilter}
+      onChange={(e) => setTableFilter(e.target.value)}
+    >
+      <option value="All">All</option>
+      <option value="Available">Available</option>
+      <option value="Booked">Booked</option>
+    </select>
+  </div>
+</div>
+
+
+    <div className="card mt-4">
       <div className="card-header bg-primary text-white">
         <i className="bi bi-list-ul me-2"></i> Tables
       </div>
@@ -493,7 +523,9 @@ export default function RestaurantManagerDashboard() {
             </tr>
           </thead>
           <tbody>
-            {tables.map((table, index) => (
+            {tables
+            .filter(table => tableFilter === "All" ? true : table.status.toLowerCase() === tableFilter.toLowerCase())
+            .map((table, index) => (
               <tr key={table.restaurantTableID}>
                 <td>{index + 1}</td>
                 <td>{table.tableNumber}</td>
@@ -522,6 +554,51 @@ export default function RestaurantManagerDashboard() {
         </div>
       </div>
     )}
+  </>
+)}
+
+
+{activeSection === "reservations" && (
+  <>
+    <h2 className="fw-bold text-primary mb-4">
+      <i className="bi bi-calendar-check me-2"></i>All Reservations
+    </h2>
+
+    {message && (
+      <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+        {message}
+        <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
+      </div>
+    )}
+
+    <div className="card mt-4">
+      <div className="card-body p-0">
+        <table className="table mb-0">
+          <thead className="table-light">
+            <tr>
+              <th>#</th>
+              <th>Guest Name</th>
+              <th>Email</th>
+              <th>Table Number</th>
+              <th>Date & Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reservations.map((res, index) => (
+              <tr key={res.reservationID}>
+                <td>{index + 1}</td>
+                <td>{res.guestName}</td>
+                <td>{res.guestEmail}</td>
+                <td>{res.tableNumber}</td>
+                <td>{new Date(res.dateTime).toLocaleString()}</td>
+                <td>{res.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </>
 )}
 
