@@ -23,11 +23,10 @@ namespace HotelMS.Services
         {
             var room = new Room
             {
-                Title = request.Title,
                 RoomTypeID = request.RoomTypeID,
                 RoomStatusID = request.RoomStatusID,
                 CreatedAt = DateTime.Now,
-                RoomNumber = request.RoomNumber // if you have this in your model and DTO
+                RoomNumber = request.RoomNumber 
             };
 
             _dbContext.Rooms.Add(room);
@@ -49,7 +48,6 @@ namespace HotelMS.Services
             return new RoomDTO
             {
                 RoomID = room.RoomID,
-                Title = room.Title,
                 RoomTypeID = room.RoomTypeID,
                 RoomStatusID = room.RoomStatusID,
                 RoomNumber = room.RoomNumber
@@ -67,7 +65,6 @@ namespace HotelMS.Services
             return rooms.Select(room => new RoomDTO
             {
                 RoomID = room.RoomID,
-                Title = room.Title,
                 RoomTypeID = room.RoomTypeID,
                 RoomStatusID = room.RoomStatusID,
                 RoomNumber = room.RoomNumber
@@ -79,7 +76,6 @@ namespace HotelMS.Services
             var room = await _dbContext.Rooms.FindAsync(id);
             if (room == null) return null;
 
-            room.Title = request.Title;
             room.RoomTypeID = request.RoomTypeID;
             room.RoomStatusID = request.RoomStatusID;
             room.RoomNumber = request.RoomNumber;
@@ -113,7 +109,6 @@ namespace HotelMS.Services
             {
                 RoomID = room.RoomID,
                 RoomNumber = room.RoomNumber,
-                Title = room.Title,
                 CreatedAt = room.CreatedAt,
                 RoomStatusID = room.RoomStatusID,
                 RoomStatusName = room.RoomStatus.RoomStatusName,

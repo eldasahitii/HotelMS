@@ -267,7 +267,6 @@ public class Seed
         new Room()
         {
             RoomNumber="Junior1",
-            Title = "Junior Room",
             CreatedAt = DateTime.Now,
             RoomTypeID = juniorRoomTypeID,
             RoomStatusID = availableStatusID
@@ -275,7 +274,6 @@ public class Seed
         new Room()
         {
             RoomNumber="Deluxe1",
-            Title = "Deluxe Room",
             CreatedAt = DateTime.Now,
             RoomTypeID = deluxeRoomTypeID,
             RoomStatusID = availableStatusID
@@ -283,7 +281,6 @@ public class Seed
         new Room()
         {
             RoomNumber="Double1",
-            Title = "Double Room",
             CreatedAt = DateTime.Now,
             RoomTypeID = doubleRoomTypeID,
             RoomStatusID = availableStatusID
@@ -291,7 +288,6 @@ public class Seed
         new Room()
         {
             RoomNumber="Twin1",
-            Title = "Twin Room",
             CreatedAt = DateTime.Now,
             RoomTypeID = twinRoomTypeID,
             RoomStatusID = availableStatusID
@@ -299,7 +295,6 @@ public class Seed
         new Room()
         {
             RoomNumber="Superior1",
-            Title = "Superior Twin Room",
             CreatedAt = DateTime.Now,
             RoomTypeID = superiorTwinRoomTypeID,
             RoomStatusID = availableStatusID
@@ -363,29 +358,29 @@ public class Seed
 
 
 
-        if (!dataContext.RoomReservations.Any())
-        {
-            var availableRoomID = dataContext.Rooms.First(r => r.Title == "Single Room").RoomID;
-            var customerID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
-            var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Pending").ReservationStatusID;
+        //if (!dataContext.RoomReservations.Any())
+        //{
+        //    var availableRoomID = dataContext.Rooms.First(r => r.Title == "Single Room").RoomID;
+        //    var customerID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
+        //    var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Pending").ReservationStatusID;
 
-            var reservations = new List<RoomReservation>
-            {
-                new RoomReservation()
-                {
-                    RoomID = availableRoomID,
-                    UserID = customerID,
-                    CheckInDate = DateTime.Now.AddDays(1),
-                    CheckOutDate = DateTime.Now.AddDays(5),
-                    ReservationStatusID = reservationStatusID,
-                    CreatedAt = DateTime.Now
+        //    var reservations = new List<RoomReservation>
+        //    {
+        //        new RoomReservation()
+        //        {
+        //            RoomID = availableRoomID,
+        //            UserID = customerID,
+        //            CheckInDate = DateTime.Now.AddDays(1),
+        //            CheckOutDate = DateTime.Now.AddDays(5),
+        //            ReservationStatusID = reservationStatusID,
+        //            CreatedAt = DateTime.Now
 
-                }
-            };
+        //        }
+        //    };
 
-            dataContext.RoomReservations.AddRange(reservations);
-            dataContext.SaveChanges();
-        }
+        //    dataContext.RoomReservations.AddRange(reservations);
+        //    dataContext.SaveChanges();
+        //}
 
         // Seed Reviews
         if (!dataContext.Reviews.Any())
