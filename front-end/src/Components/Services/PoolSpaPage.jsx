@@ -474,8 +474,8 @@ import React, { useState, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InsidePool from '../../Assets/images/indoorpool3.png';
 import OutsidePool from '../../Assets/images/pool2.jpg';
-import Insidepool from '../../Assets/images/spa.jpg';
-import SpaandSauna from '../../Assets/images/4.png';
+import Spa from '../../Assets/images/spa.jpg';
+import Sauna from '../../Assets/images/4.png';
 import heroImage from '../../Assets/images/pool6.jpg';
 
 const timeSlots = ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM'];
@@ -535,22 +535,26 @@ const PoolSpa = () => {
     {
       img: InsidePool,
       title: 'Heated Indoor Pool',
-      text: 'Relax in our temperature-controlled indoor pool, perfect for year-round swims.'
+      text: 'Relax in our temperature-controlled indoor pool, perfect for year-round swims. Ideal for solo visitors or families looking for a calm, refreshing environment regardless of the season. Enjoy clean, modern facilities and a peaceful atmosphere designed for your comfort.',
+      price: '€25 per person'
     },
     {
       img: OutsidePool,
       title: 'Scenic Outdoor Pool',
-      text: 'Escape to our breathtaking outdoor pool area, where tranquility meets natural beauty. Surrounded by lush greenery and designed with relaxation in mind, our expansive pool offers the perfect setting to soak up the sun or enjoy a peaceful swim. Lounge on comfortable sunbeds, sip refreshing drinks from our poolside bar, and take in the serene views that create a true resort-style experience.'
+      text: 'Escape to our breathtaking outdoor pool area, where tranquility meets natural beauty. Surrounded by lush greenery and designed with relaxation in mind, our expansive pool offers the perfect setting to soak up the sun or enjoy a peaceful swim. Lounge on comfortable sunbeds, sip refreshing drinks from our poolside bar, and take in the serene views that create a true resort-style experience.',
+      price: '€35 per person'
     },
     {
-      img: Insidepool,
-      title: 'Family Indoor Area',
-      text: 'Enjoy quality time in our family-friendly indoor section with comfortable amenities.'
+      img: Spa,
+      title: 'Massage & Relaxation Room',
+      text: 'Step into our peaceful massage and relaxation room, where expert therapists help release tension and restore balance. From full-body massages to targeted treatments, each session is tailored to your needs in a calm, private environment. Ideal for guests seeking deep relaxation or relief from stress and fatigue.',
+      price: '€50 per session'
     },
     {
-      img: SpaandSauna,
-      title: 'Spa & Sauna Zone',
-      text: 'Rejuvenate your senses in our luxury spa and authentic sauna environment.'
+      img: Sauna,
+      title: 'Sauna Room',
+      text: 'Experience the soothing warmth of our dedicated sauna room, designed to relax muscles, improve circulation, and promote overall well-being. Enjoy the quiet, wood-lined space as heat gently eases tension and clears your mind. Perfect for unwinding after a swim or simply taking time for yourself in a peaceful setting.',
+      price: '€30 per session'
     }
   ];
 
@@ -590,6 +594,7 @@ const PoolSpa = () => {
             <div className="col-md-6" ref={el => formRefs.current[idx] = el}>
               <h3 style={{ color: '#333' }}>{section.title}</h3>
               <p className="text-muted">{section.text}</p>
+              <p className="fw-semibold mt-2">Price: <span className="text-primary">{section.price}</span></p>
               <button className="btn btn-dark" onClick={() => openForm(idx)}>Reserve</button>
 
               {/* Reservation Form Inline */}
