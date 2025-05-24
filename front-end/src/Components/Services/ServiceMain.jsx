@@ -138,9 +138,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import poolSpaImage from '../../Assets/images/PoolAndSpa.PNG';
+import poolSpaImage from '../../Assets/images/pool1.jpg';
 import EventsImage from '../../Assets/images/Events.jpg';
-import heroImage from '../../Assets/images/hotelpool.PNG'; // Add a high-quality hero image
+import heroImage from '../../Assets/images/pool6.jpg'; // Add a high-quality hero image
 
 const ServiceMain = () => {
   const navigate = useNavigate();
@@ -190,7 +190,10 @@ const ServiceMain = () => {
           <div className="col-md-6">
             <h2 style={{ color: '#333' }}>Pool & Spa</h2>
             <p className="text-muted">
-              Relax and unwind in our luxurious pool and spa facilities.
+              Relax and unwind in our luxurious pool and spa facilities. 
+              Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, 
+              sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. 
+              Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.
             </p>
             <button
               className="btn btn-dark"
@@ -213,7 +216,10 @@ const ServiceMain = () => {
           <div className="col-md-6">
             <h2 style={{ color: '#333' }}>Events</h2>
             <p className="text-muted">
-              Book venues for weddings, conferences, and special occasions.
+              Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations.
+               Our experienced team will help you plan every detail to ensure a seamless and memorable event. 
+               Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized 
+               service to make your occasion truly special.
             </p>
             <button
               className="btn btn-dark"
