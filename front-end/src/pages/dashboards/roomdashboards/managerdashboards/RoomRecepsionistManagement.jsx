@@ -129,23 +129,12 @@ export default function RoomReceptionistManager({ currentUserId }) {
             <i className="bi bi-person-badge me-2"></i> Receptionist Management
           </li>
 
-          <button className="btn btn-outline-light w-100 mt-3 mb-3" onClick={() => navigate("/room-manager-dashboard")}>
-            <i className="bi bi-building me-2"></i> Room Manager
-          </button>
-
           <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/manager/room-dashboard")}>
             <i className="bi bi-house-door me-2"></i> Room Management
           </button>
 
           <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/admin/reservation-dashboard")}>
-            <i className="bi bi-journal-check me-2"></i> Reservation
-          </button>
-
-          <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/room-manager-receptionist-management")}
-          >
-            <i className="bi bi-person-lines-fill me-2"></i> Receptionist Management
+            <i className="bi bi-journal-check me-2"></i> Room Reservation List
           </button>
 
           <button

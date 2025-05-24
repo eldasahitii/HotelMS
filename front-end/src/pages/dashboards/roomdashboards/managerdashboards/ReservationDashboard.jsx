@@ -111,9 +111,16 @@ const ReservationDashboard = () => {
           >
             <i className="bi bi-bookmark-plus me-2"></i> Room Managing
           </button>
+                   <button
+            className="btn btn-outline-light w-100 mb-3"
+            onClick={() => navigate("/room-manager-receptionist-management")}
+          >
+            <i className="bi bi-person-lines-fill me-2"></i> Receptionist Management
+          </button>
           <button className="btn btn-outline-light w-100 mt-2" onClick={handleLogout}>
             <i className="bi bi-box-arrow-right me-2"></i> Logout
           </button>
+          
         </ul>
       </aside>
 
