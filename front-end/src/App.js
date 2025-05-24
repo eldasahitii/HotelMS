@@ -18,6 +18,7 @@ import ServiceMain from './Components/Services/ServiceMain';
 import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
 import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 import PoolSpaPage from './Components/Services/PoolSpaPage';
+import EventsPage from './Components/Services/EventsPage';
 
 axios.interceptors.request.use(
   (config) => {
@@ -174,6 +175,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Receptionist']}>
                 <PoolSpaPage />
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path="/services/event-page"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Receptionist']}>
+                <EventsPage />
               </ProtectedRoute>
             }
           />
