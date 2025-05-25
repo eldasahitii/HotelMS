@@ -1,14 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
 
 namespace HotelMS.Models
 {
-    [Table("Services")] // Matches the DB table name
+    [Table("Services")] // This maps the model to the SQL table named "Services"
     public class HotelService
     {
         [Key]
-        [Column("ServiceId")]
+        [Column("ServiceId")] // This maps to the "ServiceId" column in the table
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
@@ -18,13 +17,9 @@ namespace HotelMS.Models
 
         public string Description { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string Category { get; set; } // Renamed from Type to match SQL column
-
         [MaxLength(255)]
-        public string ImageUrl { get; set; }
-
+        public string HeroImageUrl { get; set; } // Optional hero image
     }
 }
+
 
