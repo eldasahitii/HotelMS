@@ -60,6 +60,8 @@ const ReservationPage = () => {
       });
   }, [userID]);
 
+  const phoneRegex = /^\d{9}$/;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -69,6 +71,11 @@ const ReservationPage = () => {
     }
     if (checkInDate >= checkOutDate) {
       alert("Check-out date must be after check-in date.");
+      return;
+    }
+
+    if (phone && !phoneRegex.test(phone)) {
+      alert("Phone number must be exactly 9 digits.");
       return;
     }
 
@@ -100,8 +107,15 @@ const ReservationPage = () => {
   if (loading) {
     return (
       <div className="container mt-5 text-center">
-        <div className="spinner-border" role="status" style={{ color: "#2c6e49" }} aria-hidden="true"></div>
-        <p className="mt-3" style={{ color: "#2c6e49" }}>Loading user information...</p>
+        <div
+          className="spinner-border"
+          role="status"
+          style={{ color: "#2c6e49" }}
+          aria-hidden="true"
+        ></div>
+        <p className="mt-3" style={{ color: "#2c6e49" }}>
+          Loading user information...
+        </p>
       </div>
     );
   }
@@ -169,7 +183,7 @@ const ReservationPage = () => {
               className="form-control shadow-sm"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="+1 234 567 8900"
+              placeholder="044-111-111"
             />
           </div>
         </section>

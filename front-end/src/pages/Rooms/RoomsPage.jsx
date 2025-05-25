@@ -3,6 +3,12 @@ import RoomCard from "./RoomCard";
 import RoomsHeader from "./RoomsHeader";
 import axios from "axios";
 
+function truncateText(text, maxLength) {
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + "...";
+}
+
 function RoomsPage() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +19,7 @@ function RoomsPage() {
 
     axios
       .get(`${backendBaseUrl}api/RoomType/GetAllRoomTypes`, {
-        withCredentials: true // ✅ Ensures cookies (token) are sent
+        withCredentials: true
       })
       .then((res) => {
         const mappedRooms = res.data.map((roomType) => ({
@@ -68,7 +74,7 @@ function RoomsPage() {
               capacity={room.capacity}
               size={room.size}
               price={room.price}
-              description={room.description}
+              description={truncateText(room.description, 150)}
               images={room.images}
               reverse={idx % 2 === 1}
             />

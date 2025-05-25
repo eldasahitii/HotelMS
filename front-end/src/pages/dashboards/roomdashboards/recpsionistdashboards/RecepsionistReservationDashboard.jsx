@@ -136,16 +136,9 @@ const RecepsionistReservationDashboard = () => {
 
           <button
             className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate('/manager/room-dashboard')}
+            onClick={() => navigate('/recepsionist-dashboard')}
           >
             <i className="bi bi-house-door me-2"></i> Room Management
-          </button>
-
-          <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate('/room-manager-receptionist-management')}
-          >
-            <i className="bi bi-people me-2"></i> Receptionist Management
           </button>
 
           <button className="btn btn-outline-light w-100 mt-2" onClick={handleLogout}>

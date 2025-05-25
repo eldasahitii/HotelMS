@@ -46,12 +46,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     checkAuth();
   }, [allowedRoles]);
 
-  if (authorized === null) return null; // You can add a loading spinner
+  if (authorized === null) return null; 
   if (authorized === false) return <Navigate to="/login" />;
   return children;
 };
 
-// New ProtectedRoute that also passes userId as a prop to children
+
 const ProtectedRouteWithUserId = ({ children, allowedRoles }) => {
   const [authorized, setAuthorized] = useState(null);
   const [userId, setUserId] = useState(null);
@@ -77,10 +77,10 @@ const ProtectedRouteWithUserId = ({ children, allowedRoles }) => {
     checkAuth();
   }, [allowedRoles]);
 
-  if (authorized === null) return null; // You can add a loading spinner
+  if (authorized === null) return null;
   if (authorized === false) return <Navigate to="/login" />;
   
-  // Pass userId as prop named currentUserId to the child component
+
   return React.cloneElement(children, { currentUserId: userId });
 };
 
@@ -109,7 +109,6 @@ function App() {
             </ProtectedRoute>
           }/>
 
-          {/* UPDATED ROUTE: Pass userId prop here */}
           <Route path="/room-manager-receptionist-management" element={
             <ProtectedRouteWithUserId allowedRoles={['Admin', 'RoomManager']}>
               <RoomRecepsionistManagement />
@@ -122,13 +121,11 @@ function App() {
             </ProtectedRoute>
           }/>
           <Route
-  path="/recepsionist-reservations"
-  element={
-    <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
-      <RecepsionistReservationDashboard />
-    </ProtectedRoute>
-  }
-/>
+           path="/recepsionist-reservations" element={
+           <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
+              <RecepsionistReservationDashboard />
+            </ProtectedRoute>
+           }/>
 
 
           <Route path="/manager/cleaning-staff" element={

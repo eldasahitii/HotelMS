@@ -15,7 +15,7 @@ const RoomSlider = ({ images, interval = 2500, alt = "Room image" }) => {
   }, [images, interval]);
 
   return (
-    <div className="room-slider-wrapper position-relative" style={{ height: "300px" }}>
+    <div className="room-slider-wrapper position-relative" style={{ height: "425px" }}>
       {images.map((img, i) => (
         <img
           key={i}

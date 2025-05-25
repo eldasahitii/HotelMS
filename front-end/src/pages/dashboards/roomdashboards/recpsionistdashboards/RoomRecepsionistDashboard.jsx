@@ -37,50 +37,55 @@ const RoomReceptionistDashboard = () => {
     }
   };
 
-  // Helper functions
   const getRoomType = (id) => roomTypes.find((type) => type.roomTypeID === id);
   const getRoomStatus = (id) => roomStatuses.find((status) => status.roomStatusID === id);
 
-  // Filter available rooms by status name === "Available"
-  const availableRooms = rooms.filter(
-    (room) => getRoomStatus(room.roomStatusID)?.roomStatusName === 'Available'
-  );
+  const filteredRooms = showOnlyAvailable
+    ? rooms.filter((room) => getRoomStatus(room.roomStatusID)?.roomStatusName === 'Available')
+    : rooms;
 
-  // Rooms to display based on toggle
-  const displayedRooms = showOnlyAvailable ? availableRooms : rooms;
-
-  // Group displayed rooms by roomTypeID
-  const roomsByType = displayedRooms.reduce((acc, room) => {
-    if (!acc[room.roomTypeID]) acc[room.roomTypeID] = [];
-    acc[room.roomTypeID].push(room);
-    return acc;
-  }, {});
-
-  // Count available rooms by type for summary
-  const availableRoomsCountByType = rooms.reduce((acc, room) => {
-    const status = getRoomStatus(room.roomStatusID);
-    if (status?.roomStatusName === 'Available') {
-      acc[room.roomTypeID] = (acc[room.roomTypeID] || 0) + 1;
-    }
-    return acc;
-  }, {});
+  const groupedRooms = roomTypes.map((type) => {
+    const roomsOfType = filteredRooms.filter((room) => room.roomTypeID === type.roomTypeID);
+    const availableRooms = rooms.filter(
+      (room) =>
+        room.roomTypeID === type.roomTypeID &&
+        getRoomStatus(room.roomStatusID)?.roomStatusName === 'Available'
+    );
+    return { type, rooms: roomsOfType, availableCount: availableRooms.length };
+  });
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
+      {/* Sidebar */}
       <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
         <h4 className="fw-bold mb-4">
           <i className="bi bi-building"></i> HotelMS
         </h4>
-        <ul className="nav flex-column">
-          <li className="nav-item">
-            <i className="bi bi-house-door me-2"></i> Room Managing
+        <ul className="nav flex-column mb-4">
+          <li className="nav-item mb-2">
+          </li>
+          <li className="nav-item mb-2">
+            <button
+              className="btn btn-outline-light w-100 text-start"
+              onClick={() => navigate('/recepsionist-reservations')}
+            >
+              <i className="bi bi-calendar-check me-2"></i> Reservations
+            </button>
           </li>
         </ul>
-        <button className="btn btn-outline-light w-100 mt-2" onClick={() => navigate('/login')}>
-          <i className="bi bi-box-arrow-right me-2"></i> Logout
-        </button>
+         <button
+          className="btn btn-outline-light w-100 text-start"
+          onClick={() => {
+          localStorage.removeItem("token");
+          navigate("/login");
+         }}>
+          
+  <i className="bi bi-box-arrow-right me-2"></i> Logout
+</button>
+
       </aside>
 
+      {/* Main content */}
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-person-lines-fill me-2"></i> Room Receptionist Dashboard
@@ -93,112 +98,64 @@ const RoomReceptionistDashboard = () => {
           </div>
         )}
 
-        {/* Toggle to show only available rooms */}
-        <div className="mb-3">
-          <label>
-            <input
-              type="checkbox"
-              checked={showOnlyAvailable}
-              onChange={() => setShowOnlyAvailable(!showOnlyAvailable)}
-              className="me-2"
-            />
+        <div className="form-check form-switch mb-4">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="availableToggle"
+            checked={showOnlyAvailable}
+            onChange={() => setShowOnlyAvailable(!showOnlyAvailable)}
+          />
+          <label className="form-check-label" htmlFor="availableToggle">
             Show only available rooms
           </label>
         </div>
 
-        {/* Available rooms count summary */}
-        <div className="mb-3">
-          <h5>Available Rooms by Type:</h5>
-          {roomTypes.length === 0 ? (
-            <p>No room types loaded.</p>
-          ) : (
-            <ul className="list-inline">
-              {roomTypes.map((type) => (
-                <li
-                  key={type.roomTypeID}
-                  className="list-inline-item me-3 px-3 py-1 border rounded"
-                  style={{ backgroundColor: '#d1e7dd', color: '#0f5132' }}
-                >
-                  <strong>{type.name}</strong>: {availableRoomsCountByType[type.roomTypeID] || 0} free
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {/* Rooms grouped by type */}
-        <div className="card">
-          <div className="card-header bg-primary text-white">
-            <i className="bi bi-door-open me-2"></i> Rooms Overview
-          </div>
-          <div className="card-body p-0">
-            <table className="table mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>Room Number</th>
-                  <th>Title</th>
-                  <th>Capacity</th>
-                  <th>Status</th>
-                  <th>Type</th>
-                  <th>Price</th>
-                  <th>Images</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(roomsByType).length > 0 ? (
-                  Object.entries(roomsByType).map(([typeID, rooms]) => {
-                    const type = getRoomType(parseInt(typeID));
+        {groupedRooms.map(({ type, rooms, availableCount }) => (
+          <div className="card mb-4 shadow-sm" key={type.roomTypeID}>
+            <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{type.name}</strong> — Capacity: {type.capacity} — Price: ${type.price}
+              </div>
+              <span className="badge bg-success">{availableCount} available</span>
+            </div>
+            <div className="card-body">
+              {type.images && type.images.length > 0 && (
+                <div className="mb-3 d-flex flex-wrap">
+                  {type.images.map((img, index) => (
+                    <img
+                      key={index}
+                      src={img.imageUrl}
+                      alt={`${type.name} ${index}`}
+                      className="me-2 mb-2"
+                      style={{ width: '100px', height: '80px', objectFit: 'cover', borderRadius: '4px' }}
+                    />
+                  ))}
+                </div>
+              )}
+              <h6 className="fw-bold mb-2">Room Numbers:</h6>
+              <div className="d-flex flex-wrap">
+                {rooms.length > 0 ? (
+                  rooms.map((room) => {
+                    const status = getRoomStatus(room.roomStatusID);
+                    const isAvailable = status?.roomStatusName === 'Available';
                     return (
-                      <React.Fragment key={typeID}>
-                        {/* Type Header Row spanning all columns */}
-                        <tr className="table-primary">
-                          <td colSpan="7" className="fw-bold">
-                            {type?.name || 'Unknown Type'} — Capacity: {type?.capacity || 'N/A'} — Price: $
-                            {type?.price || 'N/A'}
-                          </td>
-                        </tr>
-                        {/* Rows for each room under this type */}
-                        {rooms.map((room) => {
-                          const status = getRoomStatus(room.roomStatusID);
-                          return (
-                            <tr key={room.roomID}>
-                              <td>{room.roomNumber}</td>
-                              <td>{room.title}</td>
-                              <td>{type?.capacity || 'N/A'}</td>
-                              <td>{status?.roomStatusName || 'N/A'}</td>
-                              <td>{type?.name || 'N/A'}</td>
-                              <td>{type ? `$${type.price}` : 'N/A'}</td>
-                              <td>
-                                {type?.images && type.images.length > 0 ? (
-                                  type.images.map((img, idx) => (
-                                    <img
-                                      key={idx}
-                                      src={img.imageUrl}
-                                      alt={`${type.name} Image ${idx + 1}`}
-                                      style={{ width: '80px', height: '80px', objectFit: 'cover', marginRight: '5px' }}
-                                    />
-                                  ))
-                                ) : (
-                                  <span>No Images</span>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </React.Fragment>
+                      <span
+                        key={room.roomID}
+                        className={`badge me-2 mb-2 p-2 bg-${isAvailable ? 'success' : 'secondary'}`}
+                        style={{ fontSize: '0.9rem' }}
+                      >
+                        {room.roomNumber} ({status?.roomStatusName})
+                      </span>
                     );
                   })
                 ) : (
-                  <tr>
-                    <td colSpan="7" className="text-center text-muted">
-                      No rooms to display.
-                    </td>
-                  </tr>
+                  <p className="text-muted">No rooms of this type.</p>
                 )}
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
       </main>
     </div>
   );

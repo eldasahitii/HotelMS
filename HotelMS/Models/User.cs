@@ -27,7 +27,10 @@ namespace HotelMS.Models
 
         [Required]
         public byte[] PasswordSalt { get; set; }
+
+        [RegularExpression(@"^\d{9}$", ErrorMessage = "Phone number must be exactly 9 digits.")]
         public string? Phone { get; set; }
+
         public string? Address { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public int RoleID { get; set; }

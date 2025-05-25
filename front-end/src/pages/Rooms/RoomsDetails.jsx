@@ -64,40 +64,87 @@ export default function RoomsDetails() {
   if (!room) return <div className="m-3">Loading room details...</div>;
 
   const selectedImages = room.images.slice(-3);
-
   const customFontFamily = "'Crimson Text', serif";
+
+  const keywordsToBold = ["pool", "breakfast", "wifi", "room service"];
+
+  // Styles for Capacity/Size block (with margin bottom)
+  const capSizeStyle = {
+    fontSize: "1.1rem",
+    lineHeight: 1.2,
+    marginBottom: "1rem", // margin between capacity/size and description
+    whiteSpace: "pre-line",
+  };
+
+  // Styles for description paragraph (no margin, tight line spacing)
+  const descriptionStyle = {
+    fontSize: "1.1rem",
+    lineHeight: 1.2,
+    marginTop: 0,
+    marginBottom: 0,
+    whiteSpace: "pre-line",
+  };
 
   return (
     <>
-      {/* Images with bigger height and slightly bigger gutters */}
+      {/* Images container with no padding, no gutters */}
       {selectedImages.length > 0 && (
-        <div className="row g-4">
-          {selectedImages.map((img, i) => (
-            <div key={i} className="col-4">
+        <div className="container-fluid px-0 mt-4">
+          <div className="row g-0 justify-content-center align-items-center">
+            {/* Left Image - no padding, touches left edge */}
+            <div className="col-12 col-md-3 ps-0 pe-0 pe-md-2">
               <img
-                src={img}
-                alt={`Room ${i + 1}`}
-                className="img-fluid rounded"
-                style={{ height: 400, objectFit: "cover", width: "100%" }}
+                src={selectedImages[0]}
+                alt="Room Left"
+                className="img-fluid w-100 rounded-0"
+                style={{ height: 400, objectFit: "cover" }}
               />
             </div>
-          ))}
+
+            {/* Middle Image with horizontal padding */}
+            <div className="col-12 col-md-6 px-3 my-3 my-md-0">
+              <img
+                src={selectedImages[1]}
+                alt="Room Middle"
+                className="img-fluid w-100 rounded-0"
+                style={{ height: 400, objectFit: "cover" }}
+              />
+            </div>
+
+            {/* Right Image - no padding, touches right edge */}
+            <div className="col-12 col-md-3 pe-0 ps-0 ps-md-2">
+              <img
+                src={selectedImages[2]}
+                alt="Room Right"
+                className="img-fluid w-100 rounded-0"
+                style={{ height: 400, objectFit: "cover" }}
+              />
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Content container with Crimson Text font, left aligned, more top margin */}
-      <div className="container" style={{ fontFamily: customFontFamily, marginTop: '4rem' }}>
+      {/* Room details */}
+      <div
+        className="container"
+        style={{ fontFamily: customFontFamily, marginTop: "4rem" }}
+      >
         <h2 className="display-3 mb-3 text-black">{room.name}</h2>
 
-        <div
-          className="mb-3 fs-6 text-black"
-          style={{ whiteSpace: "pre-line" }}
-        >
-          {`Capacity: ${room.capacity}\nSize: ${room.size}`}
+        <div style={capSizeStyle} className="text-black">
+          <strong>Capacity:</strong> {room.capacity}
+          <br />
+          <strong>Size:</strong> {room.size}
         </div>
 
-        <p className="mb-5 fs-6 text-black" style={{ whiteSpace: "pre-line" }}>
-          {room.description}
+        <p style={descriptionStyle} className="text-black">
+          {room.description.split(new RegExp(`(${keywordsToBold.join("|")})`, "gi")).map((part, i) =>
+            keywordsToBold.includes(part.toLowerCase()) ? (
+              <strong key={i}>{part}</strong>
+            ) : (
+              part
+            )
+          )}
         </p>
 
         <button

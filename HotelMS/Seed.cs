@@ -210,7 +210,7 @@ public class Seed
             Name = "Junior Room",
             Capacity = "1-2 PERSONS",
             Size = "22M2",
-            Description = "Our Junior Room is perfect for solo travelers or couples. Enjoy amenities like free Wi-Fi, a flat-screen TV, complimentary breakfast, a mini bar, and air conditioning—all in a cozy and elegant setting.",
+            Description = "Step into a world of comfort and elegance, where every detail is designed to make your stay truly special. Wake up to a delicious breakfast delivered right to your door, letting you enjoy a leisurely morning without leaving your room.\r\n\r\nStay connected with fast, reliable WiFi, whether you need to catch up on work or share your favorite moments. When it’s time to unwind, take a refreshing swim in the sparkling pool or recharge your energy in the fully equipped gym.\r\n\r\nFor your convenience, your room features a well-stocked mini bar with premium drinks and snacks, and our attentive room service is always ready to bring you whatever you need, anytime.\r\n\r\nWhether you’re here to relax or stay active, you’ll find everything you need for a perfect balance of luxury and ease—all within the comfort of your beautiful room.",
             Price = 120m
         },
         new RoomType()
@@ -218,7 +218,7 @@ public class Seed
             Name = "Deluxe Room",
             Capacity = "1-2 PERSONS",
             Size = "22M2",
-            Description = "The Deluxe Room offers an elevated stay with a plush king-size bed, high-speed Wi-Fi, a coffee machine, 24-hour room service, and a luxurious en-suite bathroom with premium toiletries.",
+            Description = "Enjoy an elevated stay in our Deluxe Room, thoughtfully designed to combine comfort and style. Rest peacefully on a plush king-size bed, and start your mornings right with a complimentary breakfast delivered directly to your room. Stay connected throughout your visit with high-speed Wi-Fi, perfect for both work and leisure.\r\n\r\nIndulge in refreshing swims at the pool or maintain your fitness routine in the fully equipped gym. For your convenience, 24-hour room service is available to attend to your every need, whether it’s a late-night snack or a relaxing coffee brewed with your in-room coffee machine.\r\n\r\nYour room also features a well-stocked mini bar, ideal for unwinding after a day of activities. The luxurious en-suite bathroom includes premium toiletries, adding an extra touch of elegance to your stay.\r\n\r\nExperience the perfect blend of relaxation and convenience in the Deluxe Room — your stylish home away from home.\r\n\r\n",
             Price = 140m
         },
         new RoomType()
@@ -226,7 +226,7 @@ public class Seed
             Name = "Double Room",
             Capacity = "1-2 PERSONS",
             Size = "22M2",
-            Description = "This stylish Double Room includes a comfortable double bed, smart TV, workspace, wardrobe, and essentials like free Wi-Fi, air conditioning, and a safe for your valuables.",
+            Description = "Step into our stylish Double Room, designed for comfort and convenience. Rest easy on a cozy double bed while enjoying modern touches like a smart TV and a dedicated workspace, perfect for both relaxation and productivity. Keep your belongings secure in the in-room safe, and stay comfortable year-round with air conditioning.\r\n\r\nStart your day with a fresh breakfast delivered right to your door, and stay connected with complimentary high-speed Wi-Fi throughout your stay. Take advantage of 24-hour room service to satisfy any craving at any time.\r\n\r\nWhen it’s time to unwind, enjoy access to the refreshing pool or keep up with your fitness routine in the gym. A well-stocked mini bar awaits for you to relax with your favorite drink after a busy day.\r\n\r\nThis room offers everything you need for a seamless and enjoyable stay.",
             Price = 110m
         },
         new RoomType()
@@ -234,7 +234,7 @@ public class Seed
             Name = "Twin Room",
             Capacity = "1-2 PERSONS",
             Size = "30M2",
-            Description = "Our Twin Room is ideal for friends or colleagues traveling together. Features two single beds, private bathroom, complimentary toiletries, Wi-Fi, mini fridge, and daily housekeeping.",
+            Description = "Perfect for friends or colleagues traveling together, the Twin Room offers two comfortable single beds and a private bathroom stocked with complimentary toiletries. Stay connected with high-speed Wi-Fi and enjoy the convenience of a mini fridge for your refreshments.\r\n\r\nStart your day with a delicious breakfast served to your room, and rely on daily housekeeping to keep your space fresh and tidy. When you want to relax or stay active, take a dip in the pool or visit the gym to keep up with your routine.\r\n\r\nRound out your stay with 24-hour room service and a well-stocked mini bar, ensuring everything you need is right at your fingertips.\r\n\r\nExperience comfort and convenience tailored for shared stays in the spacious Twin Room",
             Price = 130m
         },
         new RoomType()
@@ -242,7 +242,7 @@ public class Seed
             Name = "Superior Twin Room",
             Capacity = "2-3 PERSONS",
             Size = "28M2",
-            Description = "The Superior Twin Room accommodates up to three guests with two twin beds and a pull-out sofa. Includes amenities such as a minibar, room service, a flat-screen TV, and complimentary breakfast.",
+            Description = "Designed to comfortably accommodate up to three guests, the Superior Twin Room features two twin beds alongside a convenient pull-out sofa. Relax and unwind with modern amenities including a flat-screen TV and a well-stocked minibar for your favorite refreshments.\r\n\r\nStart each day with a complimentary breakfast, and enjoy the ease of 24-hour room service ready to attend to your needs at any time. Stay connected with high-speed Wi-Fi throughout your stay.\r\n\r\nTake advantage of access to the pool and gym facilities, perfect for both relaxation and staying active. Whether you’re traveling with family or friends, this room offers the perfect balance of space, comfort, and convenience.",
             Price = 160m
         }
     };
