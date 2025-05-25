@@ -5,7 +5,7 @@ namespace HotelMS.Data.Interfaces
 {
     public interface IRoomReservationService
     {
-        Task<string> MakeReservation(int userId, RoomReservationCreateDTO dto);
+        Task<string> MakeReservation(int userId, RoomReservationDTO dto);
         Task<IEnumerable<UserReservationResponseDTO>> GetUserReservations(int userID);
         Task<IEnumerable<RoomReservationDTO>> GetAllReservations();
         Task<string> CancelReservation(int reservationID, int userID, bool isAdminOrStaff = false);
