@@ -71,8 +71,11 @@ namespace HotelMS.Services
             var service = await _dbContext.HotelServices.FindAsync(id);
             if (service == null) return null;
 
-            // Map updated values from DTO
-            request.Adapt(service);
+            // SAFELY update properties (not the ID!)
+            service.Name = request.Name;
+            service.Description = request.Description;
+            service.HeroImageUrl = request.HeroImageUrl;
+
 
             await _dbContext.SaveChangesAsync();
             return service;

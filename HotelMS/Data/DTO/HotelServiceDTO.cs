@@ -7,7 +7,7 @@
         public string HeroImageUrl { get; set; }
 
         // If you want to expose the Id as well (optional)
-        public int? Id { get; set; }
+        //public int? Id { get; set; }
     }
 }
 

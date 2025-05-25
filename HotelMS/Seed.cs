@@ -315,38 +315,23 @@ public class Seed
             if (!dataContext.HotelServices.Any())
             {
                 var services = new List<HotelService>
-            {
-                new HotelService
                 {
-                    Type = "Pool & Spa",
-                    Name = "Sauna Session",
-                    Description = "30-minute sauna to relax your body",
-                    Price = 30.00m
-                },
-                new HotelService
-                {
-                    Type = "Pool & Spa",
-                    Name = "Full Body Massage",
-                    Description = "1-hour relaxing massgae by professionals",
-                    Price = 60.00m
-                },
-                new HotelService
-                {
-                    Type = "Events",
-                    Name = "Wedding Hall Booking",
-                    Description = "Spacious hall for weddings and ceremonies",
-                    Price = 500.00m
-                },
-                new HotelService
-                {
-                    Type = "Events",
-                    Name = "Conference Room Booking",
-                    Description = "Corporate setup with presentation equipment",
-                    Price = 400.00m
-                }
-            };
+                    new HotelService
+                    {
+                        Name = "Pool & Spa",
+                        Description = " Relax and unwind in our luxurious pool and spa facilities. \r\n              Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, \r\n              sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. \r\n              Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.",
+                        HeroImageUrl = "../../Assets/images/pool1.jpg"
+                    },
+                    new HotelService
+                    {
+                        Name = "Events",
+                        Description = " Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations.\r\n               Our experienced team will help you plan every detail to ensure a seamless and memorable event. \r\n               Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized \r\n               service to make your occasion truly special.",
+                        HeroImageUrl = "../../Assets/images/mainevents.jpg"
+                    },
+                };
+
                 dataContext.HotelServices.AddRange(services);
-                dataContext.SaveChanges();
+                dataContext.SaveChangesAsync();
             }
 
             if (!dataContext.MenuCategories.Any())
