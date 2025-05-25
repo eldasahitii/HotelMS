@@ -325,21 +325,7 @@ if (!dataContext.RoomReservations.Any())
             }
         }
 
-        //Seed Review image 
-        if (!dataContext.ReviewImages.Any())
-        {
-            var sampleReview = dataContext.Reviews.FirstOrDefault();
-            if (sampleReview != null)
-            {
-                dataContext.ReviewImages.Add(new ReviewImage
-                {
-                    ReviewID = sampleReview.ReviewID,
-                    ImageUrl = "/uploads/sample.jpg" // Place a sample.jpg manually in wwwroot/uploads
-                });
-
-                dataContext.SaveChanges();
-            }
-        }
+       
 
 
 

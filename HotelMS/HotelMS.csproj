@@ -9,22 +9,16 @@
   <ItemGroup>
     <Compile Remove="front-end\**" />
     <Compile Remove="FrontEnd\**" />
+    <Compile Remove="wwroot\**" />
     <Content Remove="front-end\**" />
     <Content Remove="FrontEnd\**" />
+    <Content Remove="wwroot\**" />
     <EmbeddedResource Remove="front-end\**" />
     <EmbeddedResource Remove="FrontEnd\**" />
+    <EmbeddedResource Remove="wwroot\**" />
     <None Remove="front-end\**" />
     <None Remove="FrontEnd\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="wwroot\uploads\sample..jpg" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="wwroot\uploads\sample..jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Remove="wwroot\**" />
   </ItemGroup>
 
   <ItemGroup>
