@@ -62,7 +62,7 @@ namespace HotelMS.Controllers
             }
         }
 
-        // Note: ID is now a route parameter
+
         [HttpDelete("DeleteRoom/{id}")]
         [Authorize(Roles = "Admin,RoomManager")]
         public async Task<IActionResult> DeleteRoom(int id)
@@ -78,7 +78,7 @@ namespace HotelMS.Controllers
             }
         }
 
-        // Note: ID is now a route parameter
+
         [HttpPut("UpdateRoom/{id}")]
         [Authorize(Roles = "Admin,RoomManager")]
         public async Task<IActionResult> UpdateRoom(int id, [FromBody] RoomDTO request)

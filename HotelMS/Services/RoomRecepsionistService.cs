@@ -30,7 +30,7 @@ namespace HotelMS.Services
             {
                 result.Add(new RoomRecepsionistDTO
                 {
-                    RoomReceptionistID = rr.RoomReceptionistID,  // <-- important
+                    RoomReceptionistID = rr.RoomReceptionistID, 
                     UserID = rr.UserID,
                     FirstName = rr.User.FirstName,
                     LastName = rr.User.LastName,
@@ -62,7 +62,6 @@ namespace HotelMS.Services
             };
         }
 
-        // Changed AddRecepsionist to use UserID directly
         public async Task<RoomRecepsionistDTO> AddRecepsionist(int assignedByUserId, RoomRecepsionistDTO dto)
         {
             var user = await _context.Users.FindAsync(dto.UserID);
@@ -89,7 +88,7 @@ namespace HotelMS.Services
             _context.RoomRecepsionists.Add(recepsionist);
             await _context.SaveChangesAsync();
 
-            dto.RoomReceptionistID = recepsionist.RoomReceptionistID; // set newly created receptionist ID
+            dto.RoomReceptionistID = recepsionist.RoomReceptionistID; 
             dto.Email = user.Email;
             dto.FirstName = user.FirstName;
             dto.LastName = user.LastName;

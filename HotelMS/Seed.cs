@@ -251,7 +251,7 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-        // Seed Rooms
+       // Seed Rooms
         if (!dataContext.Rooms.Any())
         {
             var juniorRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Junior Room").RoomTypeID;

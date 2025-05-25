@@ -29,13 +29,12 @@ const Login = () => {
 
         const { role } = meRes.data;
 
-        //  3. Navigate based on user role
         switch (role) {
           case 'Customer':
             navigate('/rooms');
             break;
           case 'Admin':
-            navigate('/admin-dashboard');
+            navigate('/admin/room-types');
             break;
           case 'RoomManager':
             navigate('/manager/room-dashboard');
