@@ -115,5 +115,23 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("BulkCreateRooms")]
+        [Authorize(Roles = "Admin,RoomManager")]
+        public async Task<IActionResult> BulkCreateRooms([FromBody] BulkRoomCreateDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                await _service.BulkCreateRoomsAsync(dto);
+                return Ok(new { Message = $"{dto.NumberOfRooms} rooms created successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

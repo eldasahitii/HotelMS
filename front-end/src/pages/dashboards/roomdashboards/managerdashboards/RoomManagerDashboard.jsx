@@ -23,6 +23,15 @@ const RoomManagerDashboard = () => {
     roomStatusID: "",
   });
 
+  // Bulk create state
+  const [bulkRoomData, setBulkRoomData] = useState({
+    prefix: "",
+    startingRoomNumber: "",
+    numberOfRooms: "",
+    roomTypeID: "",
+    roomStatusID: "",
+  });
+
   // For error messages
   const [error, setError] = useState("");
 
@@ -65,6 +74,11 @@ const RoomManagerDashboard = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewRoom((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleBulkInputChange = (e) => {
+    const { name, value } = e.target;
+    setBulkRoomData((prev) => ({ ...prev, [name]: value }));
   };
 
   const resetForm = () => {
@@ -158,6 +172,50 @@ const RoomManagerDashboard = () => {
     }
   };
 
+  // Bulk create handler
+  const handleBulkCreate = async () => {
+    setError("");
+    const { prefix, startingRoomNumber, numberOfRooms, roomTypeID, roomStatusID } =
+      bulkRoomData;
+
+    if (
+      prefix.trim() === "" ||
+      startingRoomNumber === "" ||
+      numberOfRooms === "" ||
+      roomTypeID === "" ||
+      roomStatusID === ""
+    ) {
+      setError("Please fill all fields in bulk create.");
+      return;
+    }
+
+    if (isNaN(startingRoomNumber) || isNaN(numberOfRooms)) {
+      setError("Starting room number and number of rooms must be numeric.");
+      return;
+    }
+
+    try {
+      await api.post("/Room/BulkCreateRooms", {
+        Prefix: prefix.trim(),
+        StartingRoomNumber: parseInt(startingRoomNumber, 10),
+        NumberOfRooms: parseInt(numberOfRooms, 10),
+        RoomTypeID: Number(roomTypeID),
+        RoomStatusID: Number(roomStatusID),
+      });
+      alert("Rooms bulk created successfully.");
+      setBulkRoomData({
+        prefix: "",
+        startingRoomNumber: "",
+        numberOfRooms: "",
+        roomTypeID: "",
+        roomStatusID: "",
+      });
+      loadRooms();
+    } catch (err) {
+      setError("Failed to bulk create rooms.");
+    }
+  };
+
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
       {/* Sidebar */}
@@ -177,7 +235,8 @@ const RoomManagerDashboard = () => {
             className="btn btn-outline-light w-100 mb-3"
             onClick={() => navigate("/room-manager-receptionist-management")}
           >
-            <i className="bi bi-person-lines-fill me-2"></i> Receptionist Management
+            <i className="bi bi-person-lines-fill me-2"></i> Receptionist
+            Management
           </button>
 
           <button
@@ -297,54 +356,148 @@ const RoomManagerDashboard = () => {
           )}
         </div>
 
-        {/* Room Table */}
+        {/* BULK CREATE ROOMS FORM */}
+        <div className="card p-3 mb-4 shadow-sm">
+          <h4>Bulk Create Rooms</h4>
+          <div className="row g-3">
+            <div className="col-md-3">
+              <label htmlFor="prefix" className="form-label">
+                Room Prefix
+              </label>
+              <input
+                type="text"
+                id="prefix"
+                name="prefix"
+                className="form-control"
+                value={bulkRoomData.prefix}
+                onChange={handleBulkInputChange}
+                placeholder="e.g. A, B, C"
+              />
+            </div>
+
+            <div className="col-md-3">
+              <label htmlFor="startingRoomNumber" className="form-label">
+                Starting Room Number
+              </label>
+              <input
+                type="number"
+                id="startingRoomNumber"
+                name="startingRoomNumber"
+                className="form-control"
+                value={bulkRoomData.startingRoomNumber}
+                onChange={handleBulkInputChange}
+                min="1"
+              />
+            </div>
+
+            <div className="col-md-3">
+              <label htmlFor="numberOfRooms" className="form-label">
+                Number of Rooms
+              </label>
+              <input
+                type="number"
+                id="numberOfRooms"
+                name="numberOfRooms"
+                className="form-control"
+                value={bulkRoomData.numberOfRooms}
+                onChange={handleBulkInputChange}
+                min="1"
+              />
+            </div>
+
+            <div className="col-md-3">
+              <label htmlFor="roomTypeIDBulk" className="form-label">
+                Room Type
+              </label>
+              <select
+                id="roomTypeIDBulk"
+                name="roomTypeID"
+                className="form-select"
+                value={bulkRoomData.roomTypeID}
+                onChange={handleBulkInputChange}
+              >
+                <option value="">Select Type</option>
+                {roomTypes.map((rt) => (
+                  <option key={rt.roomTypeID} value={rt.roomTypeID}>
+                    {rt.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="col-md-3">
+              <label htmlFor="roomStatusIDBulk" className="form-label">
+                Room Status
+              </label>
+              <select
+                id="roomStatusIDBulk"
+                name="roomStatusID"
+                className="form-select"
+                value={bulkRoomData.roomStatusID}
+                onChange={handleBulkInputChange}
+              >
+                <option value="">Select Status</option>
+                {roomStatuses.map((rs) => (
+                  <option key={rs.roomStatusID} value={rs.roomStatusID}>
+                    {rs.roomStatusName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <button
+            className="btn btn-warning mt-3"
+            onClick={handleBulkCreate}
+            type="button"
+          >
+            Bulk Create Rooms
+          </button>
+        </div>
+
+        {/* Rooms Table */}
         <div className="card p-3 shadow-sm">
-          <h4 className="mb-3">Rooms List</h4>
-          <table className="table table-hover table-bordered">
+          <h4>Existing Rooms</h4>
+          <table className="table table-striped table-hover">
             <thead className="table-primary">
               <tr>
                 <th>Room Number</th>
                 <th>Room Type</th>
-                <th>Room Status</th>
+                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {rooms.map((room) => (
-                <tr key={room.roomID}>
-                  <td>{room.roomNumber}</td>
-                  <td>
-                    {roomTypes.find((t) => t.roomTypeID === room.roomTypeID)
-                      ?.name || "N/A"}
-                  </td>
-                  <td>
-                    {roomStatuses.find(
-                      (s) => s.roomStatusID === room.roomStatusID
-                    )?.roomStatusName || "N/A"}
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-sm btn-warning me-2"
-                      onClick={() => handleEditClick(room)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteRoom(room.roomID)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {rooms.length === 0 && (
-                <tr>
-                  <td colSpan="4" className="text-center">
-                    No rooms found.
-                  </td>
-                </tr>
-              )}
+              {rooms.map((room) => {
+                const roomType = roomTypes.find(
+                  (rt) => rt.roomTypeID === room.roomTypeID
+                );
+                const roomStatus = roomStatuses.find(
+                  (rs) => rs.roomStatusID === room.roomStatusID
+                );
+
+                return (
+                  <tr key={room.roomID}>
+                    <td>{room.roomNumber}</td>
+                    <td>{roomType ? roomType.name : "-"}</td>
+                    <td>{roomStatus ? roomStatus.roomStatusName : "-"}</td>
+                    <td>
+                      <button
+                        className="btn btn-sm btn-outline-primary me-2"
+                        onClick={() => handleEditClick(room)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => handleDeleteRoom(room.roomID)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

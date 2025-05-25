@@ -132,6 +132,29 @@ namespace HotelMS.Services
 
             };
         }
+        public async Task BulkCreateRoomsAsync(BulkRoomCreateDTO dto)
+        {
+            var rooms = new List<Room>();
+
+            for (int i = 0; i < dto.NumberOfRooms; i++)
+            {
+                var roomNumber = $"{dto.Prefix} {dto.StartingRoomNumber + i}";
+
+                var room = new Room
+                {
+                    RoomNumber = roomNumber,
+                    RoomTypeID = dto.RoomTypeID,
+                    RoomStatusID = dto.RoomStatusID
+                };
+
+                rooms.Add(room);
+            }
+
+            _dbContext.Rooms.AddRange(rooms);
+            await _dbContext.SaveChangesAsync();
+        }
+
+
 
     }
 }
