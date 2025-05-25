@@ -12,6 +12,8 @@ import imageRoom from '../Assets/images/room.png';
 import imageSpa from '../Assets/images/spa.png';
 import imageRestaurant from '../Assets/images/restaurant.png';
 
+
+
 export default function AboutUs() {
   const [reviews, setReviews] = useState([]);
   const [formData, setFormData] = useState({ comment: '', rating: 0, reviewCategoryID: '' });
@@ -96,12 +98,11 @@ export default function AboutUs() {
   
 
 
-{/* Owner Section */}
-{/* Owner Section */}
-<div className="bg-light rounded shadow p-4 my-5">
-  
+<div 
+  className="rounded shadow p-4 my-5" 
 
-  <div className="row align-items-center">
+>
+  <div className="row align-items-center bg-white bg-opacity-75 rounded p-3">
     <div className="col-md-5 mb-3 mb-md-0">
       <img src={imageOwner} alt="Hotel Owner" className="img-fluid rounded shadow-sm" />
     </div>
