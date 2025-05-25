@@ -18,6 +18,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="wwroot\uploads\sample..jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="wwroot\uploads\sample..jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
