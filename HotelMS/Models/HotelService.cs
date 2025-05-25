@@ -19,6 +19,8 @@ namespace HotelMS.Models
 
         [MaxLength(255)]
         public string HeroImageUrl { get; set; } // Optional hero image
+        public ICollection<HotelServiceDetail> HotelServiceDetails { get; set; }
+
     }
 }
 
