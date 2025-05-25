@@ -78,8 +78,7 @@ namespace HotelMS.Controllers
             }
             catch (Exception ex)
             {
-                var fullError = ex.ToString();
-                return BadRequest("FULL ERROR: " + fullError);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -93,8 +92,7 @@ namespace HotelMS.Controllers
             }
             catch (Exception ex)
             {
-                var fullError = ex.ToString();
-                return BadRequest("FULL ERROR: " + fullError);
+                return BadRequest(ex.Message);
             }
         }
 

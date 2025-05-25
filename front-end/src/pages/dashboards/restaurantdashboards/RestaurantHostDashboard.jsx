@@ -19,6 +19,7 @@ export default function RestaurantHostDashboard() {
   const [newStatus, setNewStatus] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredReservations, setFilteredReservations] = useState([]);
+  const [tables, setTables] = useState([]);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
@@ -36,35 +37,79 @@ export default function RestaurantHostDashboard() {
       setMessageType("danger");
     }
   };
-
+  const fetchTables = async () => {
+    try {
+      const res = await axios.get("/api/RestaurantTable/getAllTables");
+      setTables(res.data);
+    } catch (err) {
+      console.error("Failed to fetch tables", err);
+    }
+  };
+ 
   useEffect(() => {
     fetchReservations();
+    fetchTables();
   }, []);
 
   const handleAddReservation = async () => {
-    try {
-      await axios.post("/api/Host/createReservationWithGuest", newReservation, {
-         headers: {
-         Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      });
-      setMessage("Reservation added successfully.");
-      setMessageType("success");
-      setNewReservation({ 
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: '',
-        restaurantTableID: '',
-        dateTime: '',
-        status: 'Booked'
-      });
-      fetchReservations();
-    } catch (error) {
-      setMessage("Failed to add reservation");
-      setMessageType("danger");
-    }
-  };
+  if (
+    !newReservation.firstName.trim() ||
+    !newReservation.lastName.trim() ||
+    !newReservation.email.trim() ||
+    !newReservation.phoneNumber.trim() ||
+    !newReservation.dateTime ||
+    !newReservation.restaurantTableID
+  ) {
+    setMessage("Please fill in all fields before submitting.");
+    setMessageType("danger");
+    return;
+  }
+
+  try {
+    const payload = {
+      ...newReservation,
+      restaurantTableID: parseInt(newReservation.restaurantTableID),
+    };
+
+    await axios.post("/api/Host/createReservationWithGuest", payload, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    });
+
+    setMessage("Reservation added successfully.");
+    setMessageType("success");
+
+    setNewReservation({ 
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      restaurantTableID: '',
+      dateTime: '',
+      status: 'Booked'
+    });
+
+    fetchReservations();
+  } catch (error) {
+    const validationErrors = error.response?.data?.errors;
+
+  if (validationErrors) {
+    const allMessages = Object.values(validationErrors).flat().join(" ");
+    setMessage(allMessages);
+  } else if (typeof error.response?.data === 'string') {
+    
+    setMessage(error.response.data);
+  } else if (error.response?.data?.title) {
+    setMessage(error.response.data.title);
+  } else {
+    setMessage("Something went wrong. Please try again.");
+  }
+
+  setMessageType("danger");
+  }
+};
+
 
   const handleCancelReservation = async (id) => {
     try {
@@ -189,7 +234,7 @@ const handleSearch = () => {
                 </tr>
               </thead>
               <tbody>
-                {reservations.map((res, index) => (
+                {reservationList.map((res, index) => (
                   <tr key={res.reservationID}>
                     <td>{index + 1}</td>
                     <td>{res.guestName}</td>
@@ -235,6 +280,35 @@ const handleSearch = () => {
     </div>
   </div>
 )}
+
+<div className="card mt-5">
+  <div className="card-header bg-info text-white">
+    <i className="bi bi-table me-2"></i>Table Availability
+  </div>
+  <div className="card-body p-0">
+    <table className="table mb-0">
+      <thead className="table-light">
+        <tr>
+          <th>#</th>
+          <th>Table Number</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {tables.map((table, index) => (
+          <tr key={table.restaurantTableID}>
+            <td>{index + 1}</td>
+            <td>{table.tableNumber}</td>
+            <td className={table.status === "Booked" ? "text-danger" : "text-success"}>
+              {table.status}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
           </div>
         </div>

@@ -13,8 +13,6 @@ namespace HotelMS.Models
 
         public int TableNumber { get; set; }
 
-        public string Status { get; set; }
-
         public ICollection<RestaurantReservation> Reservations { get; set; }
         
 

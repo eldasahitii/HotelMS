@@ -26,7 +26,6 @@ namespace HotelMS.Controllers
                 var entity = new RestaurantTableDTO
                 {
                     TableNumber = dto.TableNumber,
-                    Status = dto.Status
                 };
 
                 var result = await _service.AddTable(entity);
@@ -101,7 +100,6 @@ namespace HotelMS.Controllers
                 var entity = new RestaurantTableDTO
                 {
                     TableNumber = dto.TableNumber,
-                    Status = dto.Status
                 };
 
                 var result = await _service.UpdateTable(id, entity);

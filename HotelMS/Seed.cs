@@ -497,9 +497,9 @@ public class Seed
             {
                 var tables = new List<RestaurantTable>
     {
-        new RestaurantTable { TableNumber = 1,  Status = "Available" },
-        new RestaurantTable { TableNumber = 2,  Status = "Available" },
-        new RestaurantTable { TableNumber = 3,  Status = "Available" }
+        new RestaurantTable { TableNumber = 1 },
+        new RestaurantTable { TableNumber = 2 },
+        new RestaurantTable { TableNumber = 3 }
     };
 
                 dataContext.RestaurantTables.AddRange(tables);
