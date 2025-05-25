@@ -22,7 +22,7 @@ namespace HotelMS.Data
         public DbSet<ReservationStatus> ReservationStatuses { get; set; }
         public DbSet<HotelService> HotelServices { get; set; }
         public DbSet<HotelServiceDetail> HotelServiceDetails { get; set; }
-        public DbSet<HotelServiceReservation> HotelServiceReservations { get; set; }
+        //public DbSet<HotelServiceReservation> HotelServiceReservations { get; set; }
         public DbSet<RoomImage> RoomImages { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<RoomRecepsionist> RoomRecepsionists { get; set; }
@@ -167,11 +167,11 @@ namespace HotelMS.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             //HotelServiceReservation -> HotelServiceSchedule
-            modelBuilder.Entity<HotelServiceReservation>()
-                .HasOne(r => r.Schedule)
-                .WithMany()
-                .HasForeignKey(r => r.ScheduleId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<HotelServiceReservation>()
+            //    .HasOne(r => r.Schedule)
+            //    .WithMany()
+            //    .HasForeignKey(r => r.ScheduleId)
+            //    .OnDelete(DeleteBehavior.Restrict);
             //Restaurant
             modelBuilder.Entity<MenuItem>()
                 .HasOne(mi => mi.MenuCategory)

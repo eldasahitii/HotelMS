@@ -23,7 +23,7 @@ namespace HotelMS.Models
         public int? ScheduleId { get; set; }
 
         [ForeignKey("ScheduleId")]
-        public HotelServiceSchedule Schedule { get; set; }
+        //public HotelServiceSchedule Schedule { get; set; }
 
         [Required]
         public DateTime ReservationTime { get; set; }
