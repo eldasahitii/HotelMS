@@ -28,31 +28,30 @@ const SignupPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const emailRegex = /^\S+@\S+\.\S+$/;
-    const errors = {
-      FirstName: !user.FirstName.trim(),
-      LastName: !user.LastName.trim(),
-      Email: !user.Email.trim() || !emailRegex.test(user.Email),
-      Password: !user.Password.trim()
-    };
-    setFormErrors(errors);
-    if (Object.values(errors).some(Boolean)) return;
-
-    try {
-      const response = await axios.post('/api/Auth/register', user);
-      const { token, isLoggedIn } = response.data;
-      if (token && isLoggedIn) {
-        localStorage.setItem('token', `Bearer ${token}`);
-        navigate('/login');
-      }
-    } catch (err) {
-      const message = err.response?.data?.message || err.message;
-      setError(message.includes("already exists")
-        ? "An account with this email already exists."
-        : "Registration failed: " + message);
-    }
+  e.preventDefault();
+  const emailRegex = /^\S+@\S+\.\S+$/;
+  const errors = {
+    FirstName: !user.FirstName.trim(),
+    LastName: !user.LastName.trim(),
+    Email: !user.Email.trim() || !emailRegex.test(user.Email),
+    Password: !user.Password.trim()
   };
+  setFormErrors(errors);
+  if (Object.values(errors).some(Boolean)) return;
+
+  try {
+    const response = await axios.post('/api/Auth/register', user, { withCredentials: true });
+
+    if (response.data.isLoggedIn) {
+      navigate('/login');
+    }
+  } catch (err) {
+    const message = err.response?.data?.message || err.message;
+    setError(message.includes("already exists")
+      ? "An account with this email already exists."
+      : "Registration failed: " + message);
+  }
+};
 
   return (
     <div className="container-fluid vh-100 p-0" style={{ fontFamily: "'Playfair Display', serif" }}>

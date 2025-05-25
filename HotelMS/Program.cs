@@ -12,33 +12,38 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+//  Load appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-
-var jwtSecret = builder.Configuration["AppSettings:JwtSecretKey"];
+//  Consistent key loading from Jwt section (not AppSettings)
+var jwtSecret = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtSecret))
 {
     throw new Exception("JWT secret key is missing in appsettings.json!");
 }
 var jwtKeyBytes = Encoding.UTF8.GetBytes(jwtSecret);
 
+//  JWT Authentication Setup
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,
-            ValidateAudience = false,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(jwtKeyBytes),
             ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha512 },
-            RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-            NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = ClaimTypes.NameIdentifier
         };
+
         options.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>
@@ -48,70 +53,55 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
     });
-   
 
-
+//Proper CORS policy for cookie-based auth
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
-        builder.AllowAnyOrigin()
+    options.AddPolicy("AllowFrontend", builder =>
+        builder.WithOrigins("https://localhost:3000") //  Your React app origin
                .AllowAnyMethod()
-               .AllowAnyHeader());
+               .AllowAnyHeader()
+               .AllowCredentials()); //Required for sending cookies
 });
 
+
+//  Database setup
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-
+//JSON handling to prevent reference loops
 builder.Services.AddControllers()
     .AddJsonOptions(x =>
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
-
+// Service registrations (cleaned duplicates)
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
 builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
-
 builder.Services.AddScoped<IHotelServiceService, HotelServiceService>();
 builder.Services.AddScoped<IHotelServiceScheduleService, HotelServiceScheduleService>();
 builder.Services.AddScoped<IHotelServiceReservationService, HotelServiceReservationService>();
-
-
-
-builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
-builder.Services.AddControllers();
-
-builder.Services.AddScoped<IAdminService, AdminService>();
-
 builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 builder.Services.AddScoped<IReservationStatusService, ReservationStatusService>();
-builder.Services.AddScoped<IRoomReservationService,RoomReservationService>();
+builder.Services.AddScoped<IRoomReservationService, RoomReservationService>();
 builder.Services.AddScoped<IRoomImageService, RoomImageService>();
-builder.Services.AddControllers();
-builder.Services.AddScoped<IAdminService, AdminService>(); 
-builder.Services.AddScoped<IRoomService, RoomService>();
-
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
 builder.Services.AddScoped<IRestaurantReservationService, RestaurantReservationService>();
 builder.Services.AddScoped<IRestaurantTableService, RestaurantTableService>();
 builder.Services.AddScoped<IHostManagementService, HostManagementService>();
 builder.Services.AddScoped<IHostService, HostService>();
-
 builder.Services.AddScoped<IRoomRecepsionistService, RoomRecepsionistService>();
-
-builder.Services.AddScoped<IMenuService, MenuService>();
-builder.Services.AddScoped<IRestaurantReservationService, RestaurantReservationService>();
-builder.Services.AddScoped<IRestaurantTableService, RestaurantTableService>();
-builder.Services.AddScoped<IHostManagementService, HostManagementService>();
-builder.Services.AddScoped<IHostService, HostService>();
 builder.Services.AddTransient<Seed>();
 
 builder.Services.AddEndpointsApiExplorer();
+
+// Swagger + Auth UI config
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -148,18 +138,40 @@ void SeedData(IHost app)
     var service = scope.ServiceProvider.GetRequiredService<Seed>();
     service.SeedDataContext();
 }
-app.UseCors("AllowAll");
+
+//  Use proper CORS policy for frontend
+app.UseCors("AllowFrontend");
+// Middleware to inject JWT from cookie into Authorization header
+//app.Use(async (context, next) =>
+//{
+//    var token = context.Request.Cookies["jwt"];
+//    if (!string.IsNullOrEmpty(token) && !context.Request.Headers.ContainsKey("Authorization"))
+//    {
+//        context.Request.Headers.Append("Authorization", $"Bearer {token}");
+//    }
+//    await next();
+//});
+app.Use(async (context, next) =>
+{
+    var token = context.Request.Cookies["jwt"];
+    Console.WriteLine("[Middleware] Cookie token found: " + (token != null));
+    if (!string.IsNullOrEmpty(token) && !context.Request.Headers.ContainsKey("Authorization"))
+    {
+        Console.WriteLine("[Middleware] Injecting Authorization header from cookie...");
+        context.Request.Headers.Append("Authorization", $"Bearer {token}");
+    }
+    await next();
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}      
+}
 
 app.MapControllers();
 app.Run();
