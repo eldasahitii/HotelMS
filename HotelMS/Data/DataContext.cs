@@ -146,18 +146,18 @@ namespace HotelMS.Data
               .HasConversion<string>();
 
             //HotelService -> HotelServiceSchedule
-            modelBuilder.Entity<HotelServiceSchedule>()
-                .HasOne(s => s.Service)
-                .WithMany(h => h.HotelServiceSchedules)
-                .HasForeignKey(s => s.HotelServiceId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<HotelServiceSchedule>()
+            //    .HasOne(s => s.Service)
+            //    //.WithMany(h => h.HotelServiceSchedules)
+            //    .HasForeignKey(s => s.HotelServiceId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
-            //HotelService -> HotelReservation
-            modelBuilder.Entity<HotelServiceReservation>()
-                .HasOne(r => r.Service)
-                .WithMany(s => s.HotelServiceReservations)
-                .HasForeignKey(r => r.HotelServiceId)
-                .OnDelete(DeleteBehavior.Cascade);
+            ////HotelService -> HotelReservation
+            //modelBuilder.Entity<HotelServiceReservation>()
+            //    .HasOne(r => r.Service)
+            //    .WithMany(s => s.HotelServiceReservations)
+            //    .HasForeignKey(r => r.HotelServiceId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             //HotelReservation -> User
             modelBuilder.Entity<HotelServiceReservation>()
