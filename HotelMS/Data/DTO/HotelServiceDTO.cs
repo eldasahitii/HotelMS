@@ -1,31 +1,13 @@
-﻿//using HotelMS.Models;
-//using HotelMS.Models.DTOs;
-
-//namespace HotelMS.Data.DTO
-//{
-//    public class HotelServiceDTO
-//    {
-//        public string Type { get; set; }
-//        public string Name { get; set; }
-//        public string Description { get; set; }
-//        public decimal Price { get; set; }
-//        public bool IsActive { get; set; }
-
-//        public ICollection<HotelServiceScheduleDTO> HotelServiceSchedules { get; set; }
-//        public ICollection<HotelServiceScheduleCreateUpdateDTO> HotelServiceScheduleCreateUpdates { get; set; }
-//        public ICollection<HotelServiceReservationDTO> HotelServiceReservations { get; set; }
-
-//    }
-//}
-namespace HotelMS.Data.DTO
+﻿namespace HotelMS.Data.DTO
 {
     public class HotelServiceDTO
     {
-        public string Type { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public decimal Price { get; set; }
-        public bool IsActive { get; set; }
+        public string HeroImageUrl { get; set; }
+
+        // If you want to expose the Id as well (optional)
+        public int? Id { get; set; }
     }
 }
 
