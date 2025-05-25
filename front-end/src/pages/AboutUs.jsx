@@ -4,9 +4,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Carousel from 'react-bootstrap/Carousel';
 
-import imageRoom from '../Assets/images/hotel1.png';
-import imageLobby from '../Assets/images/hotel2.png';
-import imageSpa from '../Assets/images/hotel3.png';
+import imageCarousel1 from '../Assets/images/hotel1.png';
+import imageCarousel2 from '../Assets/images/hotel2.png';
+import imageCarousel3 from '../Assets/images/hotel3.png';
+import imageOwner from '../Assets/images/owner.png';
+import imageRoom from '../Assets/images/room.png';
+import imageSpa from '../Assets/images/spa.png';
+import imageRestaurant from '../Assets/images/restaurant.png';
 
 export default function AboutUs() {
   const [reviews, setReviews] = useState([]);
@@ -84,18 +88,89 @@ export default function AboutUs() {
   };
 
   return (
-    <div className="container py-4" style={{ fontFamily: "'Playfair Display', serif" }}>
-      <Carousel className="mb-5">
-        {[imageRoom, imageLobby, imageSpa].map((img, idx) => (
-          <Carousel.Item key={idx}>
-            <img className="d-block w-100" src={img} alt={`Slide ${idx + 1}`} style={{ height: '450px', objectFit: 'cover' }} />
-            <Carousel.Caption>
-              <h3 className="fw-bold bg-dark p-2 rounded">Welcome to Our Hotel</h3>
-              <p className="bg-dark p-1 rounded">Luxury, Comfort & Exceptional Service</p>
-            </Carousel.Caption>
-          </Carousel.Item>
-        ))}
-      </Carousel>
+
+
+
+
+ <div className="container py-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+  
+
+
+{/* Owner Section */}
+<div className="row align-items-center my-5">
+  <div className="col-md-5">
+    <img src={imageOwner} alt="Hotel Owner" className="img-fluid rounded shadow" />
+  </div>
+  <div className="col-md-7">
+    <h2 className="fw-bold">Meet Our Founder</h2>
+    <p>
+      Mr. Totani, the visionary behind Hotel ROLVE, built this sanctuary for guests who value comfort, class, and personalized service. His passion is reflected in every detail of your stay.
+    </p>
+    <p>
+      “Every guest deserves to feel not just welcomed—but remembered.”
+    </p>
+  </div>
+</div>
+
+{/* Room Types */}
+<hr className="my-5" />
+<div className="text-center mb-4">
+  <h2 className="fw-bold">Room Types</h2>
+</div>
+<div className="row text-center g-4 mb-5">
+  <div className="col-md-4">
+    <i className="bi bi-door-closed display-4 text-dark mb-3"></i>
+    <h5>Deluxe Rooms</h5>
+    <p>Spacious rooms with elegant decor and modern comforts.</p>
+  </div>
+  <div className="col-md-4">
+    <i className="bi bi-house-check display-4 text-dark mb-3"></i>
+    <h5>Suites</h5>
+    <p>Our suites offer premium space, privacy, and city views.</p>
+  </div>
+  <div className="col-md-4">
+    <i className="bi bi-people-fill display-4 text-dark mb-3"></i>
+    <h5>Family Rooms</h5>
+    <p>Ideal for families, with extra beds and ample space.</p>
+  </div>
+</div>
+
+<div className="my-5">
+  <h2 className="fw-bold text-center mb-4">Our Services</h2>
+  <div className="row text-center g-4">
+    <div className="col-md-4">
+      <img src={imageSpa} alt="Spa & Wellness" className="img-fluid rounded shadow mb-3" />
+      <h5>Spa & Wellness</h5>
+      <p>Relax in our spa with massages, sauna, and treatments.</p>
+    </div>
+    <div className="col-md-4">
+      <img src={imageRoom} alt="Luxurious Rooms" className="img-fluid rounded shadow mb-3" />
+      <h5>Luxurious Rooms</h5>
+      <p>Modern rooms with top-class amenities and comfort.</p>
+    </div>
+    <div className="col-md-4">
+      <img src={imageRestaurant} alt="Restaurant & Pool" className="img-fluid rounded shadow mb-3" />
+      <h5>Restaurant & Pool</h5>
+      <p>Dine by the pool or enjoy fine cuisine in our restaurant.</p>
+    </div>
+  </div>
+
+  <div className="row mt-5 text-center g-4">
+    <div className="col-md-6">
+      <i className="bi bi-person-check display-4 text-success mb-3"></i>
+      <h5>Professional Cleaning Staff</h5>
+      <p>Our team guarantees top hygiene and freshness daily.</p>
+    </div>
+    <div className="col-md-6">
+      <i className="bi bi-gem display-4 text-primary mb-3"></i>
+      <h5>Premium Guest Services</h5>
+      <p>24/7 concierge, fast room service, and tailored attention.</p>
+    </div>
+  </div>
+</div>
+
+
+
 
       <div className="row g-4">
         <div className="col-md-6">
