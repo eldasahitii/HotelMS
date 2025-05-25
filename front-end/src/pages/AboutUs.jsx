@@ -97,20 +97,37 @@ export default function AboutUs() {
 
 
 {/* Owner Section */}
-<div className="row align-items-center my-5">
-  <div className="col-md-5">
-    <img src={imageOwner} alt="Hotel Owner" className="img-fluid rounded shadow" />
-  </div>
-  <div className="col-md-7">
-    <h2 className="fw-bold">Meet Our Founder</h2>
-    <p>
-      Mr. Totani, the visionary behind Hotel ROLVE, built this sanctuary for guests who value comfort, class, and personalized service. His passion is reflected in every detail of your stay.
-    </p>
-    <p>
-      “Every guest deserves to feel not just welcomed—but remembered.”
-    </p>
+{/* Owner Section */}
+<div className="bg-light rounded shadow p-4 my-5">
+  
+
+  <div className="row align-items-center">
+    <div className="col-md-5 mb-3 mb-md-0">
+      <img src={imageOwner} alt="Hotel Owner" className="img-fluid rounded shadow-sm" />
+    </div>
+    <div className="col-md-7">
+      <h2 className="fw-bold mb-3">Meet Our Founder</h2>
+      <p>
+        Mr. Totani, the visionary behind Hotel ROLVE, dreamt of creating more than just a hotel — he envisioned a 
+        sanctuary where every guest feels personally valued, pampered, and remembered. With decades of experience 
+        in hospitality and a deep appreciation for culture and elegance, his legacy lives through every detail of the guest experience.
+      </p>
+      <p>
+        From handcrafted interiors to bespoke services tailored for every traveler, Mr. Totani’s leadership has 
+        shaped Hotel ROLVE into a beacon of luxury and warmth in the heart of the city.
+      </p>
+      <p className="fst-italic">
+        “Every guest deserves to feel not just welcomed—but remembered.”
+      </p>
+      <p>
+        Today, his commitment continues to inspire our team to deliver world-class service with a personal touch. Whether you're 
+        staying for one night or an extended holiday, we welcome you to experience the soul of Hotel ROLVE — a place where elegance 
+        meets emotion.
+      </p>
+    </div>
   </div>
 </div>
+
 
 {/* Room Types */}
 <hr className="my-5" />
@@ -171,28 +188,31 @@ export default function AboutUs() {
 
 
 
+<div className="container py-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+  {/* About Us Section */}
+  <div className="bg-white shadow rounded p-4 mb-5">
+    <h2 className="fw-bold mb-3">About Us</h2>
+    <p>
+      Welcome to Hotel ROLVE, where timeless elegance meets modern luxury. Nestled in the heart of the city, 
+      our hotel offers an unforgettable experience for travelers seeking both comfort and style. Whether you're here 
+      for a relaxing vacation, a romantic escape, or a productive business trip, our attentive team is committed 
+      to making your stay exceptional.
+    </p>
+    <p>
+      From the moment you step through our doors, you'll be greeted with warm hospitality and refined service. 
+      Enjoy beautifully designed rooms with plush bedding, unwind in our tranquil spa, or savor exquisite cuisine 
+      at our on-site restaurant curated by world-class chefs.
+    </p>
+    <p>
+      At Hotel ROLVE, we believe that true luxury lies in the details—thoughtful amenities, personalized service, 
+      and an environment that feels like home.
+    </p>
+  </div>
 
-      <div className="row g-4">
-        <div className="col-md-6">
-          <div className="bg-light p-4 rounded shadow">
-            <h2 className="fw-bold mb-3">About Us</h2>
-            <p>
-  Welcome to Hotel ROLVE, where timeless elegance meets modern luxury. Nestled in the heart of the city, our hotel offers an unforgettable experience for travelers seeking both comfort and style. Whether you're here for a relaxing vacation, a romantic escape, or a productive business trip, our attentive team is committed to making your stay exceptional.
-</p>
 
-<p>
-  From the moment you step through our doors, you'll be greeted with warm hospitality and refined service. Enjoy beautifully designed rooms with plush bedding, unwind in our tranquil spa, or savor exquisite cuisine at our on-site restaurant curated by world-class chefs.
-</p>
+       <div className="bg-white shadow rounded p-4">
+    <h2 className="fw-bold mb-3">Leave a Review</h2>
 
-<p>
-  At Hotel ROLVE, we believe that true luxury lies in the details— thoughtful amenities, personalized service, and an environment that feels like home.  </p>
-
-          </div>
-        </div>
-
-        <div className="col-md-6">
-          <div className="bg-white p-4 rounded shadow border">
-            <h3 className="fw-bold mb-3">Leave a Review</h3>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label className="form-label">Comment</label>
@@ -232,7 +252,7 @@ export default function AboutUs() {
             </form>
           </div>
         </div>
-      </div>
+      
 
       <div className="mt-5">
         <h3 className="fw-bold mb-3">All Reviews</h3>
