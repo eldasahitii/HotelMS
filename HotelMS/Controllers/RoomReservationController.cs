@@ -70,8 +70,14 @@ namespace HotelMS.Controllers
         {
             var result = await roomReservationService.CancelReservation(id, 0, true);
 
-            return Ok(result);
+            if (result != "Reservation cancelled successfully")
+            {
+                return BadRequest(new { message = result });
+            }
+
+            return Ok(new { message = result });
         }
+
 
         [HttpPost("MarkReservationCompleted")]
         [Authorize(Roles = "Admin,RoomRecepsionist")] 

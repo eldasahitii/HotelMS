@@ -173,10 +173,7 @@ function App() {
           }/>
 
           {/* Admin */}
-          <Route
-  path="/admin"
-  element={<Navigate to="/admin/room-types" replace />}
-/>
+          
           <Route path="/admin/room-types" element={
             <ProtectedRoute allowedRoles={['Admin']}>
            <AdminRoomTypeDashboard />

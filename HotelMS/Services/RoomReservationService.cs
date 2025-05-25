@@ -131,6 +131,11 @@ namespace HotelMS.Services
                 return "Reservation not found";
             }
 
+            if (reservation.ReservationStatus.ReservationStatusName == "Completed")
+            {
+                return "Cannot cancel a reservation that is already completed.";
+            }
+
             if (!isAdminOrStaff && reservation.UserID != userID)
             {
                 return "You are not authorized to cancel this reservation";
@@ -166,6 +171,7 @@ namespace HotelMS.Services
 
             return "Reservation cancelled successfully";
         }
+
 
         public async Task<string> UpdateReservationStatus(int reservationID, int statusID)
         {

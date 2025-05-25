@@ -124,6 +124,35 @@ namespace HotelMS.Services
 
             }
         }
+        public async Task<IEnumerable<UserDTO>> GetAllCustomers()
+        {
+            try
+            {
+                var customers = await _dbContext.Users
+                    .Include(u => u.Role)
+                    .Where(u => u.Role.RoleType == "Customer")
+                    .Select(u => new UserDTO
+                    {
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        Email = u.Email,
+                        Phone = u.Phone,
+                        Address = u.Address,
+                        CreatedAt = u.CreatedAt,
+                        RoleType = u.Role.RoleType,
+                        UserID = u.UserID
+                    })
+                    .ToListAsync();
+
+                return customers;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error occurred while fetching customers.");
+            }
+        }
+
 
     }
 }
