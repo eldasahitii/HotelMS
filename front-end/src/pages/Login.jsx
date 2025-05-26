@@ -14,7 +14,6 @@ const Login = () => {
     setError('');
 
     try {
-      //  1. Login request with credentials
       const loginRes = await axios.post(
         'https://localhost:7117/api/Auth/login',
         { email, password },
@@ -22,14 +21,16 @@ const Login = () => {
       );
 
       if (loginRes.data.isLoggedIn) {
-        //  2. After login, fetch user info from secure /me endpoint
+        // Fetch role securely after login
         const meRes = await axios.get('https://localhost:7117/api/Auth/me', {
           withCredentials: true,
         });
 
         const { role } = meRes.data;
 
-        //  3. Navigate based on user role
+        console.log(" Logged in as:", role);
+
+        // Navigate based on role
         switch (role) {
           case 'Customer':
             navigate('/rooms');
@@ -56,6 +57,7 @@ const Login = () => {
             navigate('/host/dashboard');
             break;
           default:
+            console.log("Unknown role:", role);
             setError("Unknown role. Access denied.");
             break;
         }
