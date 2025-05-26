@@ -27,7 +27,9 @@ const [message, setMessage] = useState('');
 
 const fetchSettings = async () => {
   try {
-    const res = await axios.get('/api/RestaurantSettings/get');
+    const res = await axios.get('/api/RestaurantSettings/get', {
+      withCredentials: true
+    });
     setSettings(res.data);
   } catch (err) {
     console.error("Error loading settings: ", err);
@@ -36,7 +38,9 @@ const fetchSettings = async () => {
 
 const fetchMenuItems = async () => {
   try {
-    const res = await axios.get('/api/MenuItem/getAllMenuItems');
+    const res = await axios.get('/api/MenuItem/getAllMenuItems', {
+      withCredentials: true
+    });
     setMenuItems(res.data);
   } catch (err) {
     console.error("Failed to load menu items: ", err);
@@ -55,7 +59,9 @@ const handleChange = (e) => {
 const handleSubmit = async(e) => {
   e.preventDefault();
   try {
-    await axios.post('/api/PublicRestaurantRes/make', formData);
+    await axios.post('/api/PublicRestaurantRes/make', formData, {
+      withCredentials: true
+    });
     setMessage('Reservation submitted successfully!');
     setFormData({
       firstName: '',

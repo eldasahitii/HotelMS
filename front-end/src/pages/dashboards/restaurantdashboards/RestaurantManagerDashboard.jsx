@@ -41,9 +41,7 @@ export default function RestaurantManagerDashboard() {
   const fetchMenuItems = async () => {
     try {
       const response = await axios.get("/api/MenuItem/getAllMenuItems", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+        withCredentials: true
       });
       setMenuItems(response.data);
     } catch {
@@ -63,9 +61,7 @@ export default function RestaurantManagerDashboard() {
   const fetchReservations = async () => {
     try {
       const response = await axios.get("/api/Host/getAllReservations", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+        withCredentials: true
       });
       setReservations(response.data);
     } catch {
@@ -136,9 +132,7 @@ export default function RestaurantManagerDashboard() {
   const handleAddMenuItem = async () => {
     try {
       await axios.post("/api/MenuItem/addMenuItem", newMenuItem, {
-        headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
+        withCredentials: true
       });
       setMessage("Menu item added successfully.");
       setMessageType("success");
@@ -164,9 +158,7 @@ export default function RestaurantManagerDashboard() {
   const handleUpdateMenuItem = async () => {
     try {
       await axios.put(`/api/MenuItem/updateMenuItem?id=${editingMenuItem.menuItemID}`, editMenuData, {
-        headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
+        withCredentials: true
       });
 
       const updated = menuItems.map(item =>
@@ -188,9 +180,7 @@ export default function RestaurantManagerDashboard() {
   const handleDeleteMenuItem = async(id) => {
     try {
       await axios.delete(`/api/MenuItem/deleteMenuItem?id=${id}`, {
-        headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
+        withCredentials: true
       });
       setMessage("Menu Item deleted.");
       setMessageType("success");

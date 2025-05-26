@@ -36,7 +36,9 @@ const RestaurantMenuPage = () => {
 
   const fetchMenuItems = async () => {
     try {
-      const res = await axios.get('/api/MenuItem/getAllMenuItems');
+      const res = await axios.get('/api/MenuItem/getAllMenuItems', {
+        withCredentials: true
+      });
       const items = res.data;
 
       const grouped = items.reduce((acc, item) => {

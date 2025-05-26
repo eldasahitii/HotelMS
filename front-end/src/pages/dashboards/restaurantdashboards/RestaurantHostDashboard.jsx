@@ -27,9 +27,7 @@ export default function RestaurantHostDashboard() {
   const fetchReservations = async () => {
     try {
       const res = await axios.get("/api/Host/getAllReservations",{
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+       withCredentials: true
       });
       setReservations(res.data);
     } catch (err) {
@@ -39,7 +37,9 @@ export default function RestaurantHostDashboard() {
   };
   const fetchTables = async () => {
     try {
-      const res = await axios.get("/api/RestaurantTable/getAllTables");
+      const res = await axios.get("/api/RestaurantTable/getAllTables", {
+        withCredentials: true
+      });
       setTables(res.data);
     } catch (err) {
       console.error("Failed to fetch tables", err);
@@ -72,9 +72,7 @@ export default function RestaurantHostDashboard() {
     };
 
     await axios.post("/api/Host/createReservationWithGuest", payload, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
+      withCredentials: true
     });
 
     setMessage("Reservation added successfully.");
@@ -113,7 +111,9 @@ export default function RestaurantHostDashboard() {
 
   const handleCancelReservation = async (id) => {
     try {
-      await axios.delete(`/api/Host/cancelReservation?id=${id}`);
+      await axios.delete(`/api/Host/cancelReservation?id=${id}`, {
+        withCredentials: true
+      });
       setMessage("Reservation cancelled.");
       setMessageType("success");
       fetchReservations();
@@ -127,8 +127,8 @@ export default function RestaurantHostDashboard() {
       await axios.put(`/api/Host/updateReservationStatus?id=${id}`, JSON.stringify(newStatus), {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+        },
+        withCredentials: true
       });
       setMessage("Status updated.");
       setMessageType("success");
