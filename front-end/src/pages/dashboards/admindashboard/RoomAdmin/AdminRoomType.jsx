@@ -18,9 +18,9 @@ const AdminRoomTypeDashboard = () => {
     size: "",
     description: "",
     price: "",
-    imageFiles: [], // changed to array for multiple files
+    imageFiles: [],
   });
-  const [imagePreviews, setImagePreviews] = useState([]); // to preview multiple images
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [error, setError] = useState("");
   const [expandedDescriptions, setExpandedDescriptions] = useState({});
 
@@ -28,30 +28,28 @@ const AdminRoomTypeDashboard = () => {
     loadRoomTypes();
   }, []);
 
-// Change GET endpoint URL to match swagger if needed:
-const loadRoomTypes = async () => {
-  try {
-    const res = await api.get("/RoomType/GetAllRoomTypes"); // confirm this exists in your API
+  const loadRoomTypes = async () => {
+    try {
+      const res = await api.get("/RoomType/GetAllRoomTypes");
 
-    const roomTypesWithImages = res.data.map((rt) => {
-      const imagesWithFullUrl =
-        rt.images?.map((img) => ({
-          ...img,
-          fullImageUrl: BASE_URL + img.imageUrl,
-        })) || [];
+      const roomTypesWithImages = res.data.map((rt) => {
+        const imagesWithFullUrl =
+          rt.images?.map((img) => ({
+            ...img,
+            fullImageUrl: BASE_URL + img.imageUrl,
+          })) || [];
 
-      return {
-        ...rt,
-        images: imagesWithFullUrl,
-      };
-    });
+        return {
+          ...rt,
+          images: imagesWithFullUrl,
+        };
+      });
 
-    setRoomTypes(roomTypesWithImages);
-  } catch (err) {
-    setError("Failed to load room types.");
-  }
-};
-
+      setRoomTypes(roomTypesWithImages);
+    } catch (err) {
+      setError("Failed to load room types.");
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -62,7 +60,6 @@ const loadRoomTypes = async () => {
     const files = Array.from(e.target.files);
     setNewRoomType((prev) => ({ ...prev, imageFiles: files }));
 
-    // Preview multiple images
     const previews = files.map((file) => URL.createObjectURL(file));
     setImagePreviews(previews);
   };
@@ -96,25 +93,43 @@ const loadRoomTypes = async () => {
     }
 
     try {
-      const formData = new FormData();
-      formData.append("roomTypeID", 0);
-      formData.append("name", name.trim());
-      formData.append("capacity", capacity.trim());
-      formData.append("size", size.trim());
-      formData.append("description", description.trim());
-      formData.append("price", Number(price));
+      const roomTypePayload = {
+        roomTypeID: 0,
+        name: name.trim(),
+        capacity: capacity.trim(),
+        size: size.trim(),
+        description: description.trim(),
+        price: Number(price),
+        images: [],
+      };
 
-      imageFiles.forEach((file) => {
-        formData.append("images", file); // key "images" for multiple files
-      });
+      const response = await api.post("/RoomType/AddRoomType", roomTypePayload);
 
-      await api.post("/RoomType/AddRoomType", formData /* no manual content-type */);
+      const newRoomTypeID = response.data.roomTypeID || response.data.id || response.data;
 
-      alert("Room type added successfully.");
+      console.log("RoomType created with ID:", newRoomTypeID);
+
+      if (imageFiles.length > 0) {
+        for (let i = 0; i < imageFiles.length; i++) {
+          const formData = new FormData();
+          formData.append("RoomTypeID", newRoomTypeID);
+          formData.append("Image", imageFiles[i]);
+          formData.append("IsPreview", i < 2);
+
+          await api.post("/RoomImage/AddRoomImage", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+          console.log(`Image ${i + 1} uploaded`);
+        }
+      }
+
+      alert("Room type and images added successfully!");
       resetForm();
       loadRoomTypes();
     } catch (err) {
-      setError("Failed to add room type.");
+      console.error("Failed to add room type or upload images:", err);
+      setError("Something went wrong. Check your inputs and try again.");
     }
   };
 
@@ -124,6 +139,19 @@ const loadRoomTypes = async () => {
       [id]: !prev[id],
     }));
   };
+
+const handleDeleteRoomType = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this room type?")) return;
+  try {
+    await api.delete(`/RoomType/DeleteRoomType?id=${id}`);
+
+    loadRoomTypes();
+  } catch (err) {
+    console.error("Failed to delete room type:", err);
+    alert("Failed to delete room type.");
+  }
+};
+
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
@@ -273,6 +301,7 @@ const loadRoomTypes = async () => {
                   <th>Description</th>
                   <th>Price</th>
                   <th>Images</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -324,11 +353,19 @@ const loadRoomTypes = async () => {
                           "No image"
                         )}
                       </td>
+                      <td>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDeleteRoomType(rt.roomTypeID)}
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="text-center">
+                    <td colSpan={7} className="text-center">
                       No room types found.
                     </td>
                   </tr>

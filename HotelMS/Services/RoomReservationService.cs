@@ -146,31 +146,24 @@ namespace HotelMS.Services
                 .FirstOrDefaultAsync(r => r.ReservationID == reservationID);
 
             if (reservation == null)
-            {
                 return "Reservation not found";
-            }
 
             if (reservation.ReservationStatus.ReservationStatusName == "Completed")
-            {
                 return "Cannot cancel a reservation that is already completed.";
-            }
 
             if (!isAdminOrStaff && reservation.UserID != userID)
-            {
                 return "You are not authorized to cancel this reservation";
-            }
 
             var cancelledStatus = await _context.ReservationStatuses
                 .FirstOrDefaultAsync(rs => rs.ReservationStatusName == "Cancelled");
 
             if (cancelledStatus == null)
-            {
                 return "Cancelled status not found";
-            }
 
             reservation.ReservationStatusID = cancelledStatus.ReservationStatusID;
             reservation.CheckOutDate = DateTime.Now;
 
+            // Check if other active reservations exist for the same room
             bool hasActiveReservations = await _context.RoomReservations.AnyAsync(r =>
                 r.RoomID == reservation.RoomID &&
                 r.ReservationID != reservation.ReservationID &&
@@ -182,7 +175,11 @@ namespace HotelMS.Services
                 var availableStatus = await _context.RoomStatuses.FirstOrDefaultAsync(rs => rs.RoomStatusName == "Available");
                 if (availableStatus != null)
                 {
-                    reservation.Room.RoomStatusID = availableStatus.RoomStatusID;
+                    var room = await _context.Rooms.FirstOrDefaultAsync(r => r.RoomID == reservation.RoomID);
+                    if (room != null)
+                    {
+                        room.RoomStatusID = availableStatus.RoomStatusID;
+                    }
                 }
             }
 
@@ -190,6 +187,7 @@ namespace HotelMS.Services
 
             return "Reservation cancelled successfully";
         }
+
 
         public async Task<string> UpdateReservation(int reservationID, RoomReservationUpdateDTO request, int userID, List<string> roles)
         {

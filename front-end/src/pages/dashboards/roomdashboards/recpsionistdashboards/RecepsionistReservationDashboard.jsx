@@ -299,276 +299,324 @@ const RecepsionistReservationDashboard = () => {
   };
 
   return (
-    <div className="container my-4">
-      <h2 className="mb-4">Receptionist Reservation Dashboard</h2>
-
-      {message && (
-        <div className={`alert alert-${messageType}`} role="alert">
-          {message}
-        </div>
-      )}
-
-      {/* Filters */}
-      <div className="row mb-3">
-        <div className="col-md-4">
-          <label htmlFor="filterRoomType" className="form-label">
-            Filter by Room Type:
-          </label>
-          <select
-            id="filterRoomType"
-            className="form-select"
-            value={filterRoomType}
-            onChange={(e) => setFilterRoomType(e.target.value)}
-          >
-            <option value="">All</option>
-            {roomTypes.map((rt) => (
-              <option key={rt} value={rt}>
-                {rt}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-md-4">
-          <label htmlFor="filterReservationStatus" className="form-label">
-            Filter by Reservation Status:
-          </label>
-          <select
-            id="filterReservationStatus"
-            className="form-select"
-            value={filterReservationStatus}
-            onChange={(e) => setFilterReservationStatus(e.target.value)}
-          >
-            <option value="">All</option>
-            {reservationStatuses.map((rs) => (
-              <option key={rs} value={rs}>
-                {rs}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Add New Reservation Form */}
-      <div className="card mb-4">
-        <div className="card-header">Add New Reservation</div>
-        <div className="card-body">
-          <form onSubmit={handleAddReservation}>
-            <div className="row g-3">
-              <div className="col-md-3">
-                <label htmlFor="roomID" className="form-label">
-                  Room:
-                </label>
-                <select
-                  id="roomID"
-                  className="form-select"
-                  value={newReservation.roomID}
-                  onChange={(e) =>
-                    setNewReservation({ ...newReservation, roomID: e.target.value })
-                  }
-                  required
-                >
-                  <option value="">Select Room</option>
-                  {rooms.map((room) => (
-                    <option key={room.roomID} value={room.roomID}>
-                      {room.title} (ID: {room.roomID})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-3">
-                <label htmlFor="customerUserID" className="form-label">
-                  Customer:
-                </label>
-                <select
-                  id="customerUserID"
-                  className="form-select"
-                  value={newReservation.customerUserID}
-                  onChange={(e) =>
-                    setNewReservation({ ...newReservation, customerUserID: e.target.value })
-                  }
-                  required
-                >
-                  <option value="">Select Customer</option>
-                  {customers.map((customer) => (
-                    <option key={customer.userID} value={customer.userID}>
-                      {customer.firstName} {customer.lastName} ({customer.email})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-3">
-                <label htmlFor="checkInDate" className="form-label">
-                  Check-In Date:
-                </label>
-                <input
-                  type="date"
-                  id="checkInDate"
-                  className="form-control"
-                  value={newReservation.checkInDate}
-                  onChange={(e) =>
-                    setNewReservation({ ...newReservation, checkInDate: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div className="col-md-3">
-                <label htmlFor="checkOutDate" className="form-label">
-                  Check-Out Date:
-                </label>
-                <input
-                  type="date"
-                  id="checkOutDate"
-                  className="form-control"
-                  value={newReservation.checkOutDate}
-                  onChange={(e) =>
-                    setNewReservation({ ...newReservation, checkOutDate: e.target.value })
-                  }
-                  required
-                />
-              </div>
-            </div>
-            <div className="mt-3">
-              <label htmlFor="specialRequests" className="form-label">
-                Special Requests:
-              </label>
-              <textarea
-                id="specialRequests"
-                className="form-control"
-                rows="2"
-                value={newReservation.specialRequests}
-                onChange={(e) =>
-                  setNewReservation({ ...newReservation, specialRequests: e.target.value })
-                }
-              />
-            </div>
-            <button type="submit" className="btn btn-primary mt-3">
-              Add Reservation
+    <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
+      {/* Sidebar */}
+      <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
+        <h4 className="fw-bold mb-4">
+          <i className="bi bi-building"></i> HotelMS
+        </h4>
+        <ul className="nav flex-column mb-4">
+          <li className="nav-item mb-2">
+            <button
+              className="btn btn-outline-light w-100 text-start"
+              onClick={() => navigate('/recepsionist-dashboard')}
+            >
+              <i className="bi bi-calendar-check me-2"></i> Rooms
             </button>
-          </form>
-        </div>
-      </div>
+          </li>
+        </ul>
+        <button
+          className="btn btn-outline-light w-100 text-start"
+          onClick={() => {
+            localStorage.removeItem('token');
+            navigate('/login');
+          }}
+        >
+          <i className="bi bi-box-arrow-right me-2"></i> Logout
+        </button>
+      </aside>
 
-      {/* Reservations Table */}
-      <h4>Reservations List</h4>
-      {loading ? (
-        <p>Loading reservations...</p>
-      ) : (
-        <table className="table table-striped table-bordered">
-          <thead className="table-dark">
-            <tr>
-              <th>ID</th>
-              <th>Room Type</th>
-              <th>Status</th>
-              <th>Check-In Date</th>
-              <th>Check-Out Date</th>
-              <th>Special Requests</th>
-              <th>Customer</th>
-              <th>Receptionist</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredReservations.length === 0 && (
+      {/* Main content */}
+      <main className="flex-grow-1 p-4">
+        <h2 className="fw-bold text-primary mb-4">
+          <i className="bi bi-calendar-check me-2"></i> Receptionist Reservation Dashboard
+        </h2>
+
+        {message && (
+          <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+            {message}
+            <button type="button" className="btn-close" onClick={() => { /* You can add a setMessage('') here if you track it */ }}></button>
+          </div>
+        )}
+
+        {/* Filters */}
+        <div className="row mb-4">
+          <div className="col-md-4">
+            <label htmlFor="filterRoomType" className="form-label">
+              Filter by Room Type:
+            </label>
+            <select
+              id="filterRoomType"
+              className="form-select"
+              value={filterRoomType}
+              onChange={(e) => setFilterRoomType(e.target.value)}
+            >
+              <option value="">All</option>
+              {roomTypes.map((rt) => (
+                <option key={rt} value={rt}>
+                  {rt}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-md-4">
+            <label htmlFor="filterReservationStatus" className="form-label">
+              Filter by Reservation Status:
+            </label>
+            <select
+              id="filterReservationStatus"
+              className="form-select"
+              value={filterReservationStatus}
+              onChange={(e) => setFilterReservationStatus(e.target.value)}
+            >
+              <option value="">All</option>
+              {reservationStatuses.map((rs) => (
+                <option key={rs} value={rs}>
+                  {rs}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Add New Reservation Form */}
+        <div className="card mb-4 shadow-sm">
+          <div className="card-header bg-primary text-white">Add New Reservation</div>
+          <div className="card-body">
+            <form onSubmit={handleAddReservation}>
+              <div className="row g-3">
+                <div className="col-md-3">
+                  <label htmlFor="roomID" className="form-label">
+                    Room:
+                  </label>
+                  <select
+                    id="roomID"
+                    className="form-select"
+                    value={newReservation.roomID}
+                    onChange={(e) =>
+                      setNewReservation({ ...newReservation, roomID: e.target.value })
+                    }
+                    required
+                  >
+                    <option value="">Select Room</option>
+                    {rooms.map((room) => (
+                      <option key={room.roomID} value={room.roomID}>
+                        Room {room.roomNumber}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <label htmlFor="customerUserID" className="form-label">
+                    Customer:
+                  </label>
+                  <select
+                    id="customerUserID"
+                    className="form-select"
+                    value={newReservation.customerUserID}
+                    onChange={(e) =>
+                      setNewReservation({ ...newReservation, customerUserID: e.target.value })
+                    }
+                    required
+                  >
+                    <option value="">Select Customer</option>
+                    {customers.map((customer) => (
+                      <option key={customer.userID} value={customer.userID}>
+                        {customer.firstName} {customer.lastName} ({customer.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <label htmlFor="checkInDate" className="form-label">
+                    Check-In Date:
+                  </label>
+                  <input
+                    type="date"
+                    id="checkInDate"
+                    className="form-control"
+                    value={newReservation.checkInDate}
+                    onChange={(e) =>
+                      setNewReservation({ ...newReservation, checkInDate: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div className="col-md-3">
+                  <label htmlFor="checkOutDate" className="form-label">
+                    Check-Out Date:
+                  </label>
+                  <input
+                    type="date"
+                    id="checkOutDate"
+                    className="form-control"
+                    value={newReservation.checkOutDate}
+                    onChange={(e) =>
+                      setNewReservation({ ...newReservation, checkOutDate: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+              </div>
+              <div className="mt-3">
+                <label htmlFor="specialRequests" className="form-label">
+                  Special Requests:
+                </label>
+                <textarea
+                  id="specialRequests"
+                  className="form-control"
+                  rows="2"
+                  value={newReservation.specialRequests}
+                  onChange={(e) =>
+                    setNewReservation({ ...newReservation, specialRequests: e.target.value })
+                  }
+                />
+              </div>
+              <button type="submit" className="btn btn-primary mt-3">
+                Add Reservation
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Reservations Table */}
+        <h4>Reservations List</h4>
+        {loading ? (
+          <p>Loading reservations...</p>
+        ) : (
+          <table className="table table-striped table-bordered shadow-sm">
+            <thead className="bg-primary text-white">
+
               <tr>
-                <td colSpan="9" className="text-center">
-                  No reservations found.
-                </td>
+                <th>ID</th>
+                <th>Room Type</th>
+                <th>Status</th>
+                <th>Check-In Date</th>
+                <th>Check-Out Date</th>
+                <th>Special Requests</th>
+                <th>Customer</th>
+                <th>Receptionist</th>
+                <th>Actions</th>
               </tr>
-            )}
-            {filteredReservations.map((resv) => (
-              <tr key={resv.reservationID}>
-                <td>{resv.reservationID}</td>
-                <td>{resv.roomTypeName}</td>
-                <td>{resv.reservationStatusName}</td>
-                <td>{resv.checkInDate}</td>
-                <td>{resv.checkOutDate}</td>
-                <td>{resv.specialRequests}</td>
-                <td>
-                  {resv.firstName} {resv.lastName} <br />
-                  <small>{resv.email}</small>
-                </td>
-                <td>
-                  {resv.receptionistFirstName} {resv.receptionistLastName} <br />
-                  <small>{resv.receptionistEmail}</small>
-                </td>
-                <td>
-                  {/* If editing this reservation, show edit form inline */}
-                  {editReservationID === resv.reservationID ? (
-                    <form onSubmit={handleUpdateReservation}>
-                      <div className="mb-2">
-                        <label className="form-label">Check-In:</label>
-                        <input
-                          type="date"
-                          name="checkInDate"
-                          className="form-control"
-                          value={editReservationData.checkInDate}
-                          onChange={handleEditChange}
-                          required
-                        />
-                      </div>
-                      <div className="mb-2">
-                        <label className="form-label">Check-Out:</label>
-                        <input
-                          type="date"
-                          name="checkOutDate"
-                          className="form-control"
-                          value={editReservationData.checkOutDate}
-                          onChange={handleEditChange}
-                          required
-                        />
-                      </div>
-                      <div className="mb-2">
-                        <label className="form-label">Special Requests:</label>
-                        <textarea
-                          name="specialRequests"
-                          className="form-control"
-                          rows="2"
-                          value={editReservationData.specialRequests}
-                          onChange={handleEditChange}
-                        />
-                      </div>
-                      <button type="submit" className="btn btn-success btn-sm me-2">
-                        Save
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-sm"
-                        onClick={cancelEdit}
-                      >
-                        Cancel
-                      </button>
-                    </form>
-                  ) : (
-                    <>
-                      <button
-                        className="btn btn-primary btn-sm me-1"
-                        onClick={() => startEditReservation(resv)}
-                        title="Edit Reservation"
-                      >
-                        <i className="bi bi-pencil-square"></i>
-                      </button>
-                      <button
-                        className="btn btn-warning btn-sm me-1"
-                        onClick={() => handleCancel(resv.reservationID)}
-                        title="Cancel Reservation"
-                      >
-                        <i className="bi bi-x-circle"></i>
-                      </button>
-                      <button
-                        className="btn btn-success btn-sm"
-                        onClick={() => handleComplete(resv.reservationID)}
-                        title="Mark Completed"
-                      >
-                        <i className="bi bi-check-circle"></i>
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {filteredReservations.length === 0 && (
+                <tr>
+                  <td colSpan="9" className="text-center">
+                    No reservations found.
+                  </td>
+                </tr>
+              )}
+              {filteredReservations.map((resv) => (
+                <tr key={resv.reservationID}>
+                  <td>{resv.reservationID}</td>
+                  <td>{resv.roomTypeName}</td>
+                  <td>{resv.reservationStatusName}</td>
+                  <td>{resv.checkInDate}</td>
+                  <td>{resv.checkOutDate}</td>
+                  <td>{resv.specialRequests}</td>
+                  <td>
+                    {resv.firstName} {resv.lastName} <br />
+                    <small>{resv.email}</small>
+                  </td>
+                  <td>
+                    {resv.receptionistFirstName} {resv.receptionistLastName} <br />
+                    <small>{resv.receptionistEmail}</small>
+                  </td>
+                  <td>
+                    {editReservationID === resv.reservationID ? (
+                      <form onSubmit={handleUpdateReservation}>
+                        <div className="mb-2">
+                          <label className="form-label">Check-In:</label>
+                          <input
+                            type="date"
+                            name="checkInDate"
+                            className="form-control"
+                            value={editReservationData.checkInDate}
+                            onChange={handleEditChange}
+                            required
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label">Check-Out:</label>
+                          <input
+                            type="date"
+                            name="checkOutDate"
+                            className="form-control"
+                            value={editReservationData.checkOutDate}
+                            onChange={handleEditChange}
+                            required
+                          />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label">Special Requests:</label>
+                          <textarea
+                            name="specialRequests"
+                            className="form-control"
+                            rows="2"
+                            value={editReservationData.specialRequests}
+                            onChange={handleEditChange}
+                          />
+                        </div>
+                        <button type="submit" className="btn btn-success btn-sm me-2">
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={cancelEdit}
+                        >
+                          Cancel
+                        </button>
+                      </form>
+                    ) : (
+                      <>
+{!(resv.reservationStatusName === "Cancelled" || resv.reservationStatusName === "Completed") && (
+  <button
+    className="btn btn-primary btn-sm me-1"
+    onClick={() => startEditReservation(resv)}
+    title="Edit Reservation"
+  >
+    Edit
+  </button>
+)}
+
+
+<button
+  className="btn btn-danger btn-sm me-1"
+  onClick={() => handleCancel(resv.reservationID)}
+  title="Cancel Reservation"
+  disabled={
+    resv.reservationStatusName === "Cancelled" ||
+    resv.reservationStatusName === "Completed"
+  }
+>
+  Cancel
+</button>
+
+
+<button
+  className="btn btn-success btn-sm"
+  onClick={() => handleComplete(resv.reservationID)}
+  title="Mark Completed"
+  disabled={
+    resv.reservationStatusName === "Cancelled" ||
+    resv.reservationStatusName === "Completed"
+  }
+>
+  Complete
+</button>
+
+
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </main>
     </div>
   );
 };

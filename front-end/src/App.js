@@ -18,7 +18,7 @@ import ReservationPage from './pages/Rooms/ReservationPage';
 import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
 import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 import RecepsionistReservationDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RecepsionistReservationDashboard';
-import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/AdminRoomType';
+import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/RoomAdmin/AdminRoomType';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 import { useEffect, useState } from 'react';
