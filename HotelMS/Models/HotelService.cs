@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HotelMS.Models
 {
-    [Table("Services")] // This maps the model to the SQL table named "Services"
+    //[Table("Services") This maps the model to the SQL table named "Services"
     public class HotelService
     {
         [Key]
