@@ -23,11 +23,10 @@ namespace HotelMS.Services
         {
             var room = new Room
             {
-                Title = request.Title,
                 RoomTypeID = request.RoomTypeID,
                 RoomStatusID = request.RoomStatusID,
                 CreatedAt = DateTime.Now,
-                RoomNumber = request.RoomNumber // if you have this in your model and DTO
+                RoomNumber = request.RoomNumber 
             };
 
             _dbContext.Rooms.Add(room);
@@ -48,7 +47,7 @@ namespace HotelMS.Services
 
             return new RoomDTO
             {
-                Title = room.Title,
+                RoomID = room.RoomID,
                 RoomTypeID = room.RoomTypeID,
                 RoomStatusID = room.RoomStatusID,
                 RoomNumber = room.RoomNumber
@@ -66,7 +65,6 @@ namespace HotelMS.Services
             return rooms.Select(room => new RoomDTO
             {
                 RoomID = room.RoomID,
-                Title = room.Title,
                 RoomTypeID = room.RoomTypeID,
                 RoomStatusID = room.RoomStatusID,
                 RoomNumber = room.RoomNumber
@@ -78,7 +76,6 @@ namespace HotelMS.Services
             var room = await _dbContext.Rooms.FindAsync(id);
             if (room == null) return null;
 
-            room.Title = request.Title;
             room.RoomTypeID = request.RoomTypeID;
             room.RoomStatusID = request.RoomStatusID;
             room.RoomNumber = request.RoomNumber;
@@ -112,7 +109,6 @@ namespace HotelMS.Services
             {
                 RoomID = room.RoomID,
                 RoomNumber = room.RoomNumber,
-                Title = room.Title,
                 CreatedAt = room.CreatedAt,
                 RoomStatusID = room.RoomStatusID,
                 RoomStatusName = room.RoomStatus.RoomStatusName,
@@ -136,6 +132,29 @@ namespace HotelMS.Services
 
             };
         }
+        public async Task BulkCreateRoomsAsync(BulkRoomCreateDTO dto)
+        {
+            var rooms = new List<Room>();
+
+            for (int i = 0; i < dto.NumberOfRooms; i++)
+            {
+                var roomNumber = $"{dto.Prefix} {dto.StartingRoomNumber + i}";
+
+                var room = new Room
+                {
+                    RoomNumber = roomNumber,
+                    RoomTypeID = dto.RoomTypeID,
+                    RoomStatusID = dto.RoomStatusID
+                };
+
+                rooms.Add(room);
+            }
+
+            _dbContext.Rooms.AddRange(rooms);
+            await _dbContext.SaveChangesAsync();
+        }
+
+
 
     }
 }

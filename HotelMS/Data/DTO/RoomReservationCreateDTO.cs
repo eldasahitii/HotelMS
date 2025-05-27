@@ -1,7 +1,7 @@
-﻿namespace HotelMS.Data.DTO
-{
-    using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
+namespace HotelMS.Data.DTO
+{
     public class RoomReservationCreateDTO
     {
         [Required]
@@ -14,7 +14,9 @@
         public DateTime CheckOutDate { get; set; }
 
         public string? SpecialRequests { get; set; }
-        public int? CustomerUserID { get; set; }
-    }
 
+        public int? CustomerUserID { get; set; }  
+
+        //public int? ReceptionistID { get; set; }
+    }
 }

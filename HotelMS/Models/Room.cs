@@ -11,9 +11,6 @@ namespace HotelMS.Models
         [Required]
         public string RoomNumber { get; set; }
 
-        [Required]
-        public string Title { get; set; }
-
         //[Required]
         //public string Capacity { get; set; }
 

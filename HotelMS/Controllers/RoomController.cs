@@ -1,12 +1,11 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelMS.Controllers
 {
-    [Microsoft.AspNetCore.Mvc.Route("api/[Controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class RoomController : ControllerBase
     {
@@ -39,18 +38,12 @@ namespace HotelMS.Controllers
             {
                 var result = await _service.GetRoom(id);
                 if (result == null)
-                {
                     return NotFound();
-                }
-                else
-                {
-                    return Ok(result);
-                }
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-
             }
         }
 
@@ -69,7 +62,8 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpDelete("DeleteRoom")]
+
+        [HttpDelete("DeleteRoom/{id}")]
         [Authorize(Roles = "Admin,RoomManager")]
         public async Task<IActionResult> DeleteRoom(int id)
         {
@@ -85,26 +79,19 @@ namespace HotelMS.Controllers
         }
 
 
-        [HttpPut("UpdateRoom")]
+        [HttpPut("UpdateRoom/{id}")]
         [Authorize(Roles = "Admin,RoomManager")]
         public async Task<IActionResult> UpdateRoom(int id, [FromBody] RoomDTO request)
         {
             try
             {
                 if (request.RoomTypeID <= 0 || request.RoomStatusID <= 0)
-                {
                     return BadRequest("Invalid RoomTypeID or RoomStatusID.");
-                }
 
                 var result = await _service.UpdateRoom(id, request);
                 if (result == null)
-                {
                     return NotFound();
-                }
-                else
-                {
-                    return Ok(result);
-                }
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -120,9 +107,7 @@ namespace HotelMS.Controllers
             {
                 var result = await _service.GetRoomDetails(id);
                 if (result == null)
-                {
                     return NotFound();
-                }
                 return Ok(result);
             }
             catch (Exception ex)
@@ -131,6 +116,22 @@ namespace HotelMS.Controllers
             }
         }
 
+        [HttpPost("BulkCreateRooms")]
+        [Authorize(Roles = "Admin,RoomManager")]
+        public async Task<IActionResult> BulkCreateRooms([FromBody] BulkRoomCreateDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
+            try
+            {
+                await _service.BulkCreateRoomsAsync(dto);
+                return Ok(new { Message = $"{dto.NumberOfRooms} rooms created successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

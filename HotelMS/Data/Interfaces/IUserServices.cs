@@ -10,6 +10,8 @@ namespace HotelMS.Data.Interfaces
        
         Task DeleteUser(int id);
         Task<User> UpdateUser(int id, UserDTO request);
+        Task<IEnumerable<UserDTO>> GetAllCustomers();
+
 
     }
 }

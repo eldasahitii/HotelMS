@@ -33,7 +33,7 @@ namespace HotelMS.Services
                 };
 
                 _dbContext.RoomTypes.Add(roomType);
-                await _dbContext.SaveChangesAsync(); 
+                await _dbContext.SaveChangesAsync();
 
                 if (request.Images != null && request.Images.Any())
                 {
@@ -142,7 +142,6 @@ namespace HotelMS.Services
                     throw new KeyNotFoundException("Room type not found.");
                 }
 
-                // Optionally: remove related RoomImages if cascade delete not configured
                 var images = _dbContext.RoomImages.Where(img => img.RoomTypeID == id);
                 _dbContext.RoomImages.RemoveRange(images);
 
