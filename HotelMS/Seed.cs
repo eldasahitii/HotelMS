@@ -150,6 +150,59 @@ public class Seed
             }
         }
 
+        if (!dataContext.ManagerTypes.Any())
+        {
+            var managerTypes = new List<ManagerType>
+    {
+        new ManagerType() { Name = "Room Manager" },
+        new ManagerType() { Name = "Cleaning Manager" },
+        new ManagerType() { Name = "Restaurant Manager" },
+        // Add other manager types as needed
+    };
+
+            dataContext.ManagerTypes.AddRange(managerTypes);
+            dataContext.SaveChanges();
+        }
+
+        if (!dataContext.Managers.Any())
+        {
+            var roomManagerTypeID = dataContext.ManagerTypes.First(mt => mt.Name == "Room Manager").ManagerTypeID;
+            var cleaningManagerTypeID = dataContext.ManagerTypes.First(mt => mt.Name == "Cleaning Manager").ManagerTypeID;
+            var restaurantManagerTypeID = dataContext.ManagerTypes.First(mt => mt.Name == "Restaurant Manager").ManagerTypeID;
+
+            var lirandaUserID = dataContext.Users.First(u => u.Email == "liranda@gmail.com").UserID;
+            var velsaUserID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
+            var eldaUserID = dataContext.Users.First(u => u.Email == "elda@gmail.com").UserID;
+
+            var managers = new List<Manager>
+    {
+        new Manager()
+        {
+            UserID = lirandaUserID,
+            ManagerTypeID = roomManagerTypeID,
+            AssignedAt = DateTime.UtcNow
+        },
+        new Manager()
+        {
+            UserID = velsaUserID,
+            ManagerTypeID = cleaningManagerTypeID,
+            AssignedAt = DateTime.UtcNow
+        },
+        new Manager()
+        {
+            UserID = eldaUserID,
+            ManagerTypeID = restaurantManagerTypeID,
+            AssignedAt = DateTime.UtcNow
+        }
+    };
+
+            dataContext.Managers.AddRange(managers);
+            dataContext.SaveChanges();
+        }
+
+
+
+
         //Seed CleaningStaff
         if (!dataContext.CleaningStaff.Any())
         {

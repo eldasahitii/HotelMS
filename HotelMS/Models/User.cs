@@ -36,6 +36,7 @@ namespace HotelMS.Models
         public int RoleID { get; set; }
         public Role Role { get; set; }
         public RoomRecepsionist RoomRecepsionist { get; set; }
+        public Manager Manager { get; set; }
         public ICollection<RoomReservation> RoomReservations { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiry { get; set; }

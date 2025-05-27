@@ -169,9 +169,9 @@ const handleDeleteRoomType = async (id) => {
           </li>
           <button
             className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/room-manager-dashboard")}
+            onClick={() => navigate("/admin/add-manager")}
           >
-            <i className="bi bi-building me-2"></i> Room Manager Dashboard
+            <i className="bi bi-building me-2"></i> Add Manager
           </button>
           <button
             className="btn btn-outline-light w-100 mb-3"
