@@ -40,13 +40,13 @@ namespace HotelMS.Controllers
                 if (user == null)
                     return BadRequest(new { message = "User registration failed" });
 
-                string token = await _service.CreateToken(user);
+                var token = await _service.CreateToken(user);
 
                 Response.Cookies.Append("jwt", token, new CookieOptions
                 {
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.Strict,
+                    SameSite = SameSiteMode.None,//Required for cookies to be sent across different ports (React on 3000, API on 7117) or domains.
                     Expires = DateTime.UtcNow.AddHours(2)
                 });
 
@@ -71,24 +71,19 @@ namespace HotelMS.Controllers
                 var accessToken = split[0];
                 var refreshToken = split[1];
 
-                //  Detect if in development (http) or production (https)
-                var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-
-                // Set access token cookie
                 Response.Cookies.Append("jwt", accessToken, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = !isDevelopment, //  Only secure in production
-                    SameSite = SameSiteMode.Strict,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
                     Expires = DateTime.UtcNow.AddHours(2)
                 });
 
-                //  Set refresh token cookie
                 Response.Cookies.Append("refresh", refreshToken, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = !isDevelopment, // Only secure in production
-                    SameSite = SameSiteMode.Strict,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
                     Expires = DateTime.UtcNow.AddDays(7)
                 });
 
@@ -100,13 +95,25 @@ namespace HotelMS.Controllers
             }
         }
 
-
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            var refreshToken = Request.Cookies["refresh"];
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+                if (user != null)
+                {
+                    user.RefreshToken = null;
+                    user.RefreshTokenExpiry = null;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             Response.Cookies.Delete("jwt");
-    Response.Cookies.Delete("refresh");
-    return Ok(new { message = "Logged out successfully." });
+            Response.Cookies.Delete("refresh");
+
+            return Ok(new { message = "Logged out successfully." });
         }
 
         [HttpPost("changePassword")]
@@ -161,28 +168,41 @@ namespace HotelMS.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken()
         {
-            var refreshToken = Request.Cookies["refresh"];
-            if (string.IsNullOrEmpty(refreshToken))
+            var oldRefreshToken = Request.Cookies["refresh"];
+            if (string.IsNullOrEmpty(oldRefreshToken))
                 return Unauthorized(new { message = "No refresh token found." });
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
-
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == oldRefreshToken);
             if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
                 return Unauthorized(new { message = "Invalid or expired refresh token." });
 
+            //  ROTATE refresh token
+            var newRefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            await _context.SaveChangesAsync();
+
             var newAccessToken = await _service.CreateToken(user);
 
+            //  Set new cookies
             Response.Cookies.Append("jwt", newAccessToken, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = !(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"),
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddHours(2)
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddMinutes(15)
+            });
+
+            Response.Cookies.Append("refresh", newRefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(7)
             });
 
             return Ok(new { refreshed = true });
         }
-
 
 
 

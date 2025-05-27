@@ -58,10 +58,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", builder =>
-        builder.WithOrigins("https://localhost:3000") //  Your React app origin
-               .AllowAnyMethod()
+        builder.WithOrigins("https://localhost:3000")
                .AllowAnyHeader()
-               .AllowCredentials()); //Required for sending cookies
+               .AllowAnyMethod()
+               .AllowCredentials());
 });
 
 
@@ -76,7 +76,7 @@ builder.Services.AddControllers()
     .AddJsonOptions(x =>
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
-// Service registrations (cleaned duplicates)
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
@@ -97,11 +97,11 @@ builder.Services.AddScoped<IRestaurantTableService, RestaurantTableService>();
 builder.Services.AddScoped<IHostManagementService, HostManagementService>();
 builder.Services.AddScoped<IHostService, HostService>();
 builder.Services.AddScoped<IRoomRecepsionistService, RoomRecepsionistService>();
+builder.Services.AddHostedService<RefreshTokenCleanupService>();
 builder.Services.AddTransient<Seed>();
 
 builder.Services.AddEndpointsApiExplorer();
 
-// Swagger + Auth UI config
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -139,32 +139,21 @@ void SeedData(IHost app)
     service.SeedDataContext();
 }
 
-//  Use proper CORS policy for frontend
+app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
-// Middleware to inject JWT from cookie into Authorization header
-//app.Use(async (context, next) =>
-//{
-//    var token = context.Request.Cookies["jwt"];
-//    if (!string.IsNullOrEmpty(token) && !context.Request.Headers.ContainsKey("Authorization"))
-//    {
-//        context.Request.Headers.Append("Authorization", $"Bearer {token}");
-//    }
-//    await next();
-//});
+
 app.Use(async (context, next) =>
 {
     var token = context.Request.Cookies["jwt"];
-    Console.WriteLine("[Middleware] Cookie token found: " + (token != null));
     if (!string.IsNullOrEmpty(token) && !context.Request.Headers.ContainsKey("Authorization"))
     {
-        Console.WriteLine("[Middleware] Injecting Authorization header from cookie...");
         context.Request.Headers.Append("Authorization", $"Bearer {token}");
     }
     await next();
 });
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())

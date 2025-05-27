@@ -165,6 +165,24 @@ namespace HotelMS.Services
                 hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
         }
+        public async Task<(string accessToken, string refreshToken)> RotateRefreshToken(string oldRefreshToken)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == oldRefreshToken);
+            if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
+                return (null, null);
+
+            // Generate new refresh token
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+
+            // Generate new access token
+            var newAccessToken = await CreateToken(user);
+
+            await _context.SaveChangesAsync();
+
+            return (newAccessToken, newRefreshToken);
+        }
 
         private bool VerifyingPasswordHash(string password, byte[] hash, byte[] salt)
         {
