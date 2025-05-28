@@ -365,7 +365,6 @@ namespace HotelMS.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-<<<<<<< HEAD
                     b.Property<string>("ManagerReply")
                         .HasColumnType("nvarchar(max)");
 
@@ -378,27 +377,21 @@ namespace HotelMS.Migrations
                     b.Property<int>("ReviewCategoryID")
                         .HasColumnType("int");
 
-=======
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
->>>>>>> origin/master
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
                     b.HasKey("ReviewID");
 
-<<<<<<< HEAD
                     b.HasIndex("ReviewCategoryID");
 
-=======
->>>>>>> origin/master
                     b.HasIndex("UserID");
 
                     b.ToTable("Reviews");
                 });
 
-<<<<<<< HEAD
             modelBuilder.Entity("HotelMS.Models.ReviewCategory", b =>
                 {
                     b.Property<int>("ReviewCategoryID")
@@ -416,8 +409,6 @@ namespace HotelMS.Migrations
                     b.ToTable("ReviewCategories");
                 });
 
-=======
->>>>>>> origin/master
             modelBuilder.Entity("HotelMS.Models.Role", b =>
                 {
                     b.Property<int>("RoleID")
@@ -754,8 +745,6 @@ namespace HotelMS.Migrations
                     b.Navigation("Service");
                 });
 
-<<<<<<< HEAD
-=======
             modelBuilder.Entity("HotelMS.Models.Manager", b =>
                 {
                     b.HasOne("HotelMS.Models.ManagerType", "ManagerType")
@@ -775,7 +764,6 @@ namespace HotelMS.Migrations
                     b.Navigation("User");
                 });
 
->>>>>>> origin/master
             modelBuilder.Entity("HotelMS.Models.MenuItem", b =>
                 {
                     b.HasOne("HotelMS.Models.MenuCategory", "MenuCategory")
@@ -800,26 +788,20 @@ namespace HotelMS.Migrations
 
             modelBuilder.Entity("HotelMS.Models.Review", b =>
                 {
-<<<<<<< HEAD
                     b.HasOne("HotelMS.Models.ReviewCategory", "Category")
                         .WithMany("Reviews")
                         .HasForeignKey("ReviewCategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-=======
->>>>>>> origin/master
                     b.HasOne("HotelMS.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-<<<<<<< HEAD
                     b.Navigation("Category");
 
-=======
->>>>>>> origin/master
                     b.Navigation("User");
                 });
 
