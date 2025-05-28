@@ -23,7 +23,7 @@ namespace HotelMS.Controllers
 
         [HttpPost("MakeReservation")]
         [Authorize(Roles = "Admin,RoomRecepsionist,Customer")]
-        public async Task<IActionResult> MakeReservation([FromBody] RoomReservationDTO request)
+        public async Task<IActionResult> MakeReservation([FromBody] RoomReservationCreateDTO request)
         {
             int userID = GetUserIDFromClaims();
             var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();

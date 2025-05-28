@@ -33,6 +33,26 @@ namespace HotelMS.Controllers
             }
         }
 
+        [HttpPost("assignHostRole")]
+        public async Task<IActionResult> AssignHostRole([FromBody] AssignHostDTO dto)
+        {
+            try
+            {
+                var result = await _service.AssignHostRoleByEmailAsync(dto.Email);
+                if (result == "User not found." || result == "RestaurantHost role not found.")
+                    return NotFound(result);
+                if (result == "User is already a host.")
+                    return BadRequest(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
         [HttpGet("getHost")]
         public async Task<IActionResult> GetHost(int id)
         {
@@ -78,7 +98,7 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpDelete("deleteHost")]
+        [HttpDelete("deleteHost/{id}")]
         public async Task<IActionResult> DeleteHost(int id)
         {
             try

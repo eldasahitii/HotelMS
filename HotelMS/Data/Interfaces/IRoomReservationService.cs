@@ -6,7 +6,6 @@ namespace HotelMS.Data.Interfaces
     public interface IRoomReservationService
     {
 
-        Task<string> MakeReservation(int userId, RoomReservationDTO dto);
 
         Task<string> MakeReservation(int userID, RoomReservationCreateDTO request, List<string> roles);
 

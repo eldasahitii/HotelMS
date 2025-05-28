@@ -119,5 +119,25 @@ namespace HotelMS.Services
             passwordSalt = hmac.Key;
             passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
+
+        public async Task<string> AssignHostRoleByEmailAsync(string email)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                return "User not found.";
+
+            var hostRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "RestaurantHost");
+            if (hostRole == null)
+                return "RestaurantHost role not found.";
+
+            if (user.RoleID == hostRole.RoleID)
+                return "User is already a host.";
+
+            user.RoleID = hostRole.RoleID;
+            await _dbContext.SaveChangesAsync();
+
+            return "Host role assigned successfully.";
+        }
+
     }
 }

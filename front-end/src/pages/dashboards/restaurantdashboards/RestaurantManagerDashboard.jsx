@@ -12,6 +12,9 @@ export default function RestaurantManagerDashboard() {
   const [editingHost, setEditingHost] = useState(null);
   const [editData, setEditData] = useState({firstName: '', lastName: '', email: '' });
  
+
+  const [users, setUsers] = useState([]);
+  const [selectedUserEmail, setSelectedUserEmail] = useState("");
   const [menuItems, setMenuItems] = useState([]);
   const [newMenuItem, setNewMenuItem] = useState({name: '', description: '', price: '', image_url:'',is_available:true, menuCategoryID: 1});
   const [editingMenuItem, setEditingMenuItem] = useState(null);
@@ -35,6 +38,18 @@ export default function RestaurantManagerDashboard() {
       setHosts(response.data);
     } catch {
       setMessage("Failed to fetch hosts");
+      setMessageType("danger");
+    }
+  };
+
+   const fetchUsers = async () => {
+    try {
+      const res = await axios.get("/api/User/GetAllCustomers", {
+        withCredentials: true
+      });
+      setUsers(res.data);
+    } catch {
+      setMessage("Failed to fetch users.");
       setMessageType("danger");
     }
   };
@@ -71,6 +86,7 @@ export default function RestaurantManagerDashboard() {
   };
    useEffect(() => {
     fetchHosts();
+    fetchUsers();
     fetchMenuItems();
     fetchTables();
   }, []);
@@ -98,10 +114,25 @@ export default function RestaurantManagerDashboard() {
       setMessageType("danger");
     }
   };
+  const handleAssignHostRole = async () => {
+    if (!selectedUserEmail) return;
+    try {
+      await axios.post("/api/HostManagement/assignHostRole", { email: selectedUserEmail });
+      setMessage("Host role assigned successfully.");
+      setMessageType("success");
+      setSelectedUserEmail("");
+      fetchHosts(); 
+    } catch (err) {
+      setMessage(err.response?.data || "Failed to assign host role.");
+      setMessageType("danger");
+    }
+  };
 
   const handleDeleteHost = async (id) => {
     try {
-      await axios.delete(`/api/HostManagement/deleteHost?id=${id}`);
+      await axios.delete(`/api/HostManagement/deleteHost/${id}`, {
+        withCredentials: true
+      });
       setMessage("Host deleted successfully.");
       setMessageType("success");
       fetchHosts();
@@ -269,7 +300,45 @@ export default function RestaurantManagerDashboard() {
           <i className="bi bi-people-fill me-2"></i>Restaurant Manager
         </h2>
 
-        {activeSection === "hosts" && (
+        <div className="card mb-4">
+  <div className="card-header bg-info text-white">
+    <i className="bi bi-person-plus-fill me-2"></i>Assign Host Role to Existing User
+  </div>
+  <div className="card-body">
+    <select
+      className="form-select mb-3"
+      value={selectedUserEmail}
+      onChange={(e) => setSelectedUserEmail(e.target.value)}
+    >
+      <option value="">Select User</option>
+      {users.map((user) => (
+        <option key={user.userID} value={user.email}>
+          {user.firstName} {user.lastName} ({user.email})
+        </option>
+      ))}
+    </select>
+    <button
+      className="btn btn-info w-100"
+      disabled={!selectedUserEmail}
+      onClick={async () => {
+        try {
+          await axios.post("/api/HostManagement/assignHostRole", { email: selectedUserEmail });
+          setMessage("Host role assigned successfully.");
+          setMessageType("success");
+          fetchHosts(); // Refresh the list
+        } catch (err) {
+          setMessage(err.response?.data || "Failed to assign host role.");
+          setMessageType("danger");
+        }
+      }}
+    >
+      Assign Host Role
+    </button>
+  </div>
+</div>
+
+
+        {/* {activeSection === "hosts" && (
          <>
             <h2 className="fw-bold text-primary mb-4">
                <i className="bi bi-people-fill me-2"></i>Restaurant Hosts
@@ -294,7 +363,7 @@ export default function RestaurantManagerDashboard() {
             <input className="form-control mb-2" placeholder="Password" type="password" value={newHost.password} onChange={e => setNewHost({ ...newHost, password: e.target.value })} />
             <button className="btn btn-success w-100" onClick={handleAddHost}><i className="bi bi-check-circle me-2"></i>Add Host</button>
           </div>
-        </div>
+        </div> */}
 
         <div className="card mb-4">
           <div className="card-body d-flex gap-2">
@@ -334,8 +403,8 @@ export default function RestaurantManagerDashboard() {
             </table>
           </div>
         </div>
-        </>
-        )}
+        {/* </> */}
+        {/* )} */}
 
        {editingHost && (
   <div className="card mt-4">
