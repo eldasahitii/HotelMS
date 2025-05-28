@@ -11,5 +11,6 @@ namespace HotelMS.Data.Interfaces
         Task<RoomTypeDTO> UpdateRoomType(int id, RoomTypeDTO request);
         Task DeleteRoomType(int id);
 
+
     }
 }

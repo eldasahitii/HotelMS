@@ -23,7 +23,7 @@ namespace HotelMS.Models
         public string Description { get; set; }   
 
         [Required]
-        public decimal Price { get; set; }         
+        public decimal Price { get; set; }
 
         public ICollection<Room> Rooms { get; set; }
 

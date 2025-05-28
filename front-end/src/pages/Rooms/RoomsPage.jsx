@@ -3,6 +3,12 @@ import RoomCard from "./RoomCard";
 import RoomsHeader from "./RoomsHeader";
 import axios from "axios";
 
+function truncateText(text, maxLength) {
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + "...";
+}
+
 function RoomsPage() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,24 +17,29 @@ function RoomsPage() {
   useEffect(() => {
     const backendBaseUrl = "https://localhost:7117/";
 
-    axios.get(`${backendBaseUrl}api/RoomType/GetAllRoomTypes`)
-      .then(res => {
-        const mappedRooms = res.data.map(roomType => ({
+    axios
+      .get(`${backendBaseUrl}api/RoomType/GetAllRoomTypes`, {
+        withCredentials: true
+      })
+      .then((res) => {
+        const mappedRooms = res.data.map((roomType) => ({
           id: roomType.roomTypeID,
           title: roomType.name,
           capacity: roomType.capacity,
           size: roomType.size,
           price: roomType.price,
           description: roomType.description,
-          images: (roomType.images || []).map(imgObj => 
-            // Make sure imageUrl doesn't start with slash before joining with base URL
-            backendBaseUrl + (imgObj.imageUrl.startsWith("/") ? imgObj.imageUrl.slice(1) : imgObj.imageUrl)
+          images: (roomType.images || []).map((imgObj) =>
+            backendBaseUrl +
+            (imgObj.imageUrl.startsWith("/")
+              ? imgObj.imageUrl.slice(1)
+              : imgObj.imageUrl)
           ),
         }));
         setRooms(mappedRooms);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to fetch room types:", err);
         setError("Failed to load rooms. Please try again later.");
         setLoading(false);
@@ -63,7 +74,7 @@ function RoomsPage() {
               capacity={room.capacity}
               size={room.size}
               price={room.price}
-              description={room.description}
+              description={truncateText(room.description, 150)}
               images={room.images}
               reverse={idx % 2 === 1}
             />

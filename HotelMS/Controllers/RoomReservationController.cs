@@ -26,9 +26,34 @@ namespace HotelMS.Controllers
         public async Task<IActionResult> MakeReservation([FromBody] RoomReservationDTO request)
         {
             int userID = GetUserIDFromClaims();
-            var result = await roomReservationService.MakeReservation(userID, request);
+            var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+
+            var result = await roomReservationService.MakeReservation(userID, request, roles);
+
             return Ok(result);
         }
+        [HttpPut("UpdateReservation/{reservationID}")]
+        [Authorize(Roles ="Admin,RoomRecepsionist")] 
+        public async Task<IActionResult> UpdateReservation(int reservationID, [FromBody] RoomReservationUpdateDTO request)
+        {
+ 
+            int userID = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var roles = new List<string>();
+            foreach (var claim in User.FindAll(ClaimTypes.Role))
+            {
+                roles.Add(claim.Value);
+            }
+
+            var result = await roomReservationService.UpdateReservation(reservationID, request, userID, roles);
+
+            if (result == "Reservation updated successfully")
+                return Ok(new { message = result });
+
+            return BadRequest(new { error = result });
+        }
+
+
 
         [HttpGet("GetUserReservations")]
         [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,Customer")]
@@ -67,8 +92,14 @@ namespace HotelMS.Controllers
         {
             var result = await roomReservationService.CancelReservation(id, 0, true);
 
-            return Ok(result);
+            if (result != "Reservation cancelled successfully")
+            {
+                return BadRequest(new { message = result });
+            }
+
+            return Ok(new { message = result });
         }
+
 
         [HttpPost("MarkReservationCompleted")]
         [Authorize(Roles = "Admin,RoomRecepsionist")] 

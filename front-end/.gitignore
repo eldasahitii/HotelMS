@@ -21,4 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-certs/
+
+# Ignore local SSL certs
+certs/localhost.pem
+certs/localhost-key.pem

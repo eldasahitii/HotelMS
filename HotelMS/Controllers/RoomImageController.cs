@@ -75,21 +75,18 @@ namespace HotelMS.Controllers
         [Authorize(Roles = "Admin,RoomManager")]
         public async Task<IActionResult> DeleteImage(int imageId)
         {
-            // First get the image record (to know the file path)
             var image = await _roomImageService.GetImageById(imageId);
             if (image == null)
                 return NotFound();
 
-            // Build the physical path
             var filePath = Path.Combine(_environment.WebRootPath, image.ImageUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
 
-            // Delete file if exists
             if (System.IO.File.Exists(filePath))
             {
                 System.IO.File.Delete(filePath);
             }
 
-            // Delete DB record
+       
             await _roomImageService.DeleteImage(imageId);
 
             return NoContent();
