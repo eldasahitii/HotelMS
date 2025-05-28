@@ -13,10 +13,30 @@ export default function AssignmentsDashboard() {
   const [editRoomID, setEditRoomID] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
+  const [userID, setUserID] = useState(null);  // <--- Add state for logged-in user ID
+
+  const navigate = useNavigate();
+
+  // Fetch current logged-in user info on mount
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await axios.get('/api/Auth/me', { withCredentials: true });
+        setUserID(parseInt(response.data.userId)); // store userId from backend
+      } catch (err) {
+        console.error('Failed to fetch current user', err);
+        setMessage("You must be logged in.");
+        setMessageType("danger");
+        navigate('/login');
+      }
+    };
+
+    fetchCurrentUser();
+  }, [navigate]);
 
   const fetchAssignments = async () => {
     try {
-      const res = await axios.get("/api/CleaningAssignment/getAllAssignments");
+      const res = await axios.get("/api/CleaningAssignment/getAllAssignments", { withCredentials: true });
       setAssignments(res.data);
     } catch (err) {
       console.error(err);
@@ -25,7 +45,7 @@ export default function AssignmentsDashboard() {
 
   const fetchCleaningStaff = async () => {
     try {
-      const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
+      const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff", { withCredentials: true });
       setCleaningStaffList(res.data);
     } catch (err) {
       console.error(err);
@@ -34,7 +54,7 @@ export default function AssignmentsDashboard() {
 
   const fetchRooms = async () => {
     try {
-      const res = await axios.get("/api/Room/getAllRooms");
+      const res = await axios.get("/api/Room/getAllRooms", { withCredentials: true });
       const usedRoomIDs = new Set(assignments.filter(a => a.status === 'Pending' || a.status === 'InProgress').map(a => a.roomID));
       const availableRooms = res.data.filter(r =>
         (r.roomStatusID === 1 || r.roomStatusID === 2) &&
@@ -57,13 +77,12 @@ export default function AssignmentsDashboard() {
   }, [assignments]);
 
   const handleAddAssignment = async () => {
-    const loggedInUserID = localStorage.getItem("userID");
     if (!newAssignment.roomID || !newAssignment.cleaningStaffID) {
       setMessage("Please select both a Room and a Cleaning Staff.");
       setMessageType("danger");
       return;
     }
-    if (!loggedInUserID) {
+    if (!userID) {
       setMessage("User ID not found. Please log in again.");
       setMessageType("danger");
       return;
@@ -72,10 +91,10 @@ export default function AssignmentsDashboard() {
       roomID: parseInt(newAssignment.roomID),
       cleaningStaffID: parseInt(newAssignment.cleaningStaffID),
       status: newAssignment.status,
-      assignedByUserID: parseInt(loggedInUserID)
+      assignedByUserID: userID  // <--- use userID from state here
     };
     try {
-      await axios.post("/api/CleaningAssignment/addAssignment", parsedAssignment);
+      await axios.post("/api/CleaningAssignment/addAssignment", parsedAssignment, { withCredentials: true });
       setMessage("Assignment added successfully.");
       setMessageType("success");
       setNewAssignment({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: null });
@@ -87,29 +106,30 @@ export default function AssignmentsDashboard() {
     }
   };
 
- const handleConfirmUpdate = async () => {
-  const updated = {
-    roomID: parseInt(editRoomID),
-    status: editingAssignment.status || "Pending",  
-    startedAt: editingAssignment.startedAt || null,
-    finishedAt: editingAssignment.finishedAt || null
+  const handleConfirmUpdate = async () => {
+    const updated = {
+      roomID: parseInt(editRoomID),
+      status: editingAssignment.status || "Pending",  
+      startedAt: editingAssignment.startedAt || null,
+      finishedAt: editingAssignment.finishedAt || null
+    };
+
+    try {
+      await axios.put(`/api/CleaningAssignment/updateAssignment?id=${editingAssignment.cleaningAssignmentID}`, updated, { withCredentials: true });
+      setMessage("Assignment updated successfully.");
+      setMessageType("success");
+      setEditingAssignment(null);
+      fetchAssignments();
+    } catch (err) {
+      const error = err.response?.data?.message || "Failed to update assignment.";
+      setMessage(error);
+      setMessageType("danger");
+    }
   };
 
-  try {
-    await axios.put(`/api/CleaningAssignment/updateAssignment?id=${editingAssignment.cleaningAssignmentID}`, updated);
-    setMessage("Assignment updated successfully.");
-    setMessageType("success");
-    setEditingAssignment(null);
-    fetchAssignments();
-  } catch (err) {
-    const error = err.response?.data?.message || "Failed to update assignment.";
-    setMessage(error);
-    setMessageType("danger");
-  }
-};
   const handleCancelAssignment = async (id) => {
     try {
-      await axios.put(`/api/CleaningAssignment/cancelAssignment?id=${id}`);
+      await axios.put(`/api/CleaningAssignment/cancelAssignment?id=${id}`, {}, { withCredentials: true });
       fetchAssignments();
     } catch (err) {
       setMessage("Failed to cancel assignment.");
@@ -119,7 +139,7 @@ export default function AssignmentsDashboard() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/CleaningAssignment/deleteAssignment?id=${id}`);
+      await axios.delete(`/api/CleaningAssignment/deleteAssignment?id=${id}`, { withCredentials: true });
       fetchAssignments();
     } catch (err) {
       setMessage("Failed to delete assignment.");
@@ -131,11 +151,11 @@ export default function AssignmentsDashboard() {
     setEditingAssignment(assignment);
     setEditRoomID(assignment.roomID);
   };
-   const navigate = useNavigate();
-    const handleLogout = () => {
-      localStorage.clear();
-      navigate('/login');
-    };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
 
   return (
     <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
@@ -205,7 +225,6 @@ export default function AssignmentsDashboard() {
             </button>
           </div>
         </div>
-    
 
         <div className="card">
           <div className="card-header" style={{ backgroundColor: '#7ca8d8', color: '#fff' }}>

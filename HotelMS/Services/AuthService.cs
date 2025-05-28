@@ -69,8 +69,11 @@ namespace HotelMS.Services
         public async Task<string> Login(UserLoginDTO request)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (user == null || !VerifyingPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-                return null;
+            if (user == null)
+                throw new ArgumentException("User with this email does not exist.");
+
+            if (!VerifyingPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+                throw new ArgumentException("Incorrect password.");
 
             // Create Refresh Token
             string refreshToken = GenerateRefreshToken();
@@ -81,7 +84,6 @@ namespace HotelMS.Services
             // Create Access Token
             var accessToken = await CreateToken(user);
 
-            // Return both
             return $"{accessToken}|||{refreshToken}";
         }
 
@@ -164,6 +166,24 @@ namespace HotelMS.Services
                 salt = hmac.Key;
                 hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
+        }
+        public async Task<(string accessToken, string refreshToken)> RotateRefreshToken(string oldRefreshToken)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == oldRefreshToken);
+            if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
+                return (null, null);
+
+            // Generate new refresh token
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+
+            // Generate new access token
+            var newAccessToken = await CreateToken(user);
+
+            await _context.SaveChangesAsync();
+
+            return (newAccessToken, newRefreshToken);
         }
 
         private bool VerifyingPasswordHash(string password, byte[] hash, byte[] salt)
