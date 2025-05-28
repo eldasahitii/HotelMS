@@ -14,7 +14,6 @@ import AboutUs from './pages/AboutUs';
 import RoomsPage from './pages/Rooms/RoomsPage';
 import RoomsDetails from './pages/Rooms/RoomsDetails';
 import ReservationPage from './pages/Rooms/ReservationPage';
-import AdminDashboard from './pages/dashboards/AdminDashboard';
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import RoomManagerDashboard from './pages/dashboards/roomdashboards/managerdashboards/RoomManagerDashboard';
 import ReservationDashboard from './pages/dashboards/roomdashboards/managerdashboards/ReservationDashboard';
@@ -76,12 +75,7 @@ function App() {
               </ProtectedRoute>
             }/>
 
-            {/* Dashboards */}
-            <Route path="/admin-dashboard" element={
-              <ProtectedRoute allowedRoles={['Admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }/>
+            
 
             <Route path="/manager/cleaning-staff" element={
               <ProtectedRoute allowedRoles={['CleaningManager']}>

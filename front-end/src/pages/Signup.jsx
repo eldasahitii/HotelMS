@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import signupImage from '../Assets/images/signup.jpg';
+
 
 const SignupPage = () => {
   const [user, setUser] = useState({
