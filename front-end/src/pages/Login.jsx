@@ -1,17 +1,29 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [formErrors, setFormErrors] = useState({});
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    const errors = {
+      email: !email.trim() || !emailRegex.test(email),
+      password: !password.trim()
+    };
+
+    setFormErrors(errors);
+    if (Object.values(errors).some(Boolean)) return;
 
     try {
       const loginRes = await axios.post(
@@ -21,43 +33,22 @@ const Login = () => {
       );
 
       if (loginRes.data.isLoggedIn) {
-        // Fetch role securely after login
         const meRes = await axios.get('https://localhost:7117/api/Auth/me', {
           withCredentials: true,
         });
 
         const { role } = meRes.data;
 
-        console.log(" Logged in as:", role);
-
-        // Navigate based on role
         switch (role) {
-          case 'Customer':
-            navigate('/rooms');
-            break;
-          case 'Admin':
-            navigate('/admin-dashboard');
-            break;
-          case 'RoomManager':
-            navigate('/manager/room-dashboard');
-            break;
-          case 'RoomRecepsionist':
-            navigate('/recepsionist-dashboard');
-            break;
-          case 'CleaningManager':
-            navigate('/manager/cleaning-staff');
-            break;
-          case 'CleaningStaff':
-            navigate('/cleaningstaff/dashboard');
-            break;
-          case 'RestaurantManager':
-            navigate('/restaurant-manager/dashboard');
-            break;
-          case 'RestaurantHost':
-            navigate('/host/dashboard');
-            break;
+          case 'Customer': navigate('/rooms'); break;
+          case 'Admin': navigate('/admin-dashboard'); break;
+          case 'RoomManager': navigate('/manager/room-dashboard'); break;
+          case 'RoomRecepsionist': navigate('/recepsionist-dashboard'); break;
+          case 'CleaningManager': navigate('/manager/cleaning-staff'); break;
+          case 'CleaningStaff': navigate('/cleaningstaff/dashboard'); break;
+          case 'RestaurantManager': navigate('/restaurant-manager/dashboard'); break;
+          case 'RestaurantHost': navigate('/host/dashboard'); break;
           default:
-            console.log("Unknown role:", role);
             setError("Unknown role. Access denied.");
             break;
         }
@@ -65,43 +56,86 @@ const Login = () => {
     } catch (err) {
       const message = err.response?.data?.message || err.message;
       console.error('Login error:', message);
-      setError("Login failed. Please check your credentials or try again.");
+
+      if (message.toLowerCase().includes("email")) {
+        setFormErrors(prev => ({ ...prev, email: true }));
+        setError("No account found with this email.");
+      } else if (message.toLowerCase().includes("password")) {
+        setFormErrors(prev => ({ ...prev, password: true }));
+        setError("Incorrect password.");
+      } else {
+        setError("Login failed. Please check your credentials.");
+      }
     }
   };
 
   return (
     <div
-      className="container d-flex flex-column align-items-center mt-5 p-4 bg-white rounded shadow"
-      style={{ maxWidth: '500px' }}
+      className="container-fluid d-flex align-items-center justify-content-center py-5"
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#e6f3fb',
+        fontFamily: "'Playfair Display', serif"
+      }}
     >
-      <h2 className="fw-bold mb-4">Log In</h2>
-      <form onSubmit={handleLogin} className="w-100">
-        <div className="mb-3">
-          <input
-            type="email"
-            className="form-control"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+      <div className="w-100 px-3" style={{ maxWidth: '500px' }}>
+        <form
+          onSubmit={handleLogin}
+          className="bg-white p-4 p-md-5 rounded shadow-lg"
+        >
+          <h3 className="fw-bold text-center mb-3">Hotel Amé</h3>
+          <h2 className="fw-bold text-center mb-3">Welcome Back</h2>
+          <p className="text-center text-muted mb-4">
+            Log in to access your account and explore your next stay.
+            Don’t have an account?{' '}
+            <a href="/signup" className="text-decoration-none" style={{ color: '#2a52be' }}>Sign Up</a>
+          </p>
 
-        <div className="mb-3">
-          <input
-            type="password"
-            className="form-control"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+          <div className="mb-3">
+            <label className="form-label">Email <span className="text-danger">*</span></label>
+            <input
+              type="email"
+              className={`form-control ${formErrors.email ? 'is-invalid border-danger' : ''}`}
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setFormErrors(prev => ({ ...prev, email: false }));
+              }}
+            />
+            {formErrors.email && <div className="invalid-feedback d-block">Enter a valid email.</div>}
+          </div>
 
-        {error && <div className="text-danger mb-3">{error}</div>}
+          <div className="mb-3">
+            <label className="form-label">Password <span className="text-danger">*</span></label>
+            <div className="input-group">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className={`form-control ${formErrors.password ? 'is-invalid border-danger' : ''}`}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setFormErrors(prev => ({ ...prev, password: false }));
+                }}
+              />
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+              </button>
+            </div>
+            {formErrors.password && <div className="invalid-feedback d-block">Password is required.</div>}
+          </div>
 
-        <button type="submit" className="btn btn-dark w-100">Log In</button>
-      </form>
+          {error && <div className="alert alert-danger">{error}</div>}
+
+          <button type="submit" className="btn btn-dark w-100">Log In</button>
+        </form>
+      </div>
     </div>
   );
 };

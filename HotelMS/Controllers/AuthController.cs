@@ -64,9 +64,6 @@ namespace HotelMS.Controllers
             try
             {
                 var tokens = await _service.Login(request);
-                if (tokens == null)
-                    return Unauthorized(new { message = "Invalid credentials" });
-
                 var split = tokens.Split("|||");
                 var accessToken = split[0];
                 var refreshToken = split[1];
@@ -89,9 +86,15 @@ namespace HotelMS.Controllers
 
                 return Ok(new { isLoggedIn = true });
             }
+            catch (ArgumentException ex)
+            {
+                // Specific errors like: email doesn't exist / wrong password
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                // For unexpected internal errors
+                return StatusCode(500, new { message = "An internal server error occurred." });
             }
         }
 
