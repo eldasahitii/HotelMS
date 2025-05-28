@@ -181,12 +181,12 @@ export default function RestaurantManagerDashboard() {
   const openEditMenuItem = (item) => {
     setEditingMenuItem(item);
     setEditMenuData({
-      Name: item.name,
-      Description: item.description,
-      Price: item.price,
+      name: item.name,
+      description: item.description,
+      price: item.price,
       image_url: item.image_url,
       is_available: item.is_available,
-      MenuCategoryID: item.menuCategoryID
+      menuCategoryID: item.menuCategoryID
     });
   };
 
@@ -194,7 +194,7 @@ export default function RestaurantManagerDashboard() {
     try {
      await axios.put(`/api/MenuItem/updateMenuItem?id=${editingMenuItem.menuItemID}`, {
   ...editMenuData,
-  Price: Number(editMenuData.price),
+  price: Number(editMenuData.price),
 }, {
   withCredentials: true
 });
@@ -638,11 +638,11 @@ export default function RestaurantManagerDashboard() {
       <i className="bi bi-pencil-square me-2"></i>Edit Menu Item
     </div>
     <div className="card-body">
-      <input className="form-control mb-2" value={editMenuData.Name} onChange={e => setEditMenuData({ ...editMenuData, Name: e.target.value })} />
-      <input className="form-control mb-2" value={editMenuData.Description} onChange={e => setEditMenuData({ ...editMenuData, Description: e.target.value })} />
-      <input className="form-control mb-2" type="number" value={editMenuData.Price} onChange={e => setEditMenuData({ ...editMenuData, Price: e.target.value })} />
+      <input className="form-control mb-2" value={editMenuData.name} onChange={e => setEditMenuData({ ...editMenuData, name: e.target.value })} />
+      <input className="form-control mb-2" value={editMenuData.description} onChange={e => setEditMenuData({ ...editMenuData, description: e.target.value })} />
+      <input className="form-control mb-2" type="number" value={editMenuData.price} onChange={e => setEditMenuData({ ...editMenuData, price: e.target.value })} />
       <input className="form-control mb-2" value={editMenuData.image_url} onChange={e => setEditMenuData({ ...editMenuData, image_url: e.target.value })} />
-      <input className="form-control mb-2" type="number" value={editMenuData.MenuCategoryID} onChange={e => setEditMenuData({ ...editMenuData, MenuCategoryID: e.target.value })} />
+      <input className="form-control mb-2" type="number" value={editMenuData.menuCategoryID} onChange={e => setEditMenuData({ ...editMenuData, menuCategoryID: e.target.value })} />
       <div className="form-check mb-2">
         <input className="form-check-input" type="checkbox" checked={editMenuData.is_available} onChange={e => setEditMenuData({ ...editMenuData, is_available: e.target.checked })} />
         <label className="form-check-label">Available</label>
@@ -778,7 +778,7 @@ export default function RestaurantManagerDashboard() {
               <tr key={res.reservationID}>
                 <td>{index + 1}</td>
                 <td>{res.guestName}</td>
-                <td>{res.guestEmail}</td>
+                <td>{res.email}</td>
                 <td>{res.tableNumber}</td>
                 <td>{new Date(res.dateTime).toLocaleString()}</td>
                 <td>{res.status}</td>
