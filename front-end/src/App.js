@@ -20,7 +20,8 @@ import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/
 import RecepsionistReservationDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RecepsionistReservationDashboard';
 import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/RoomAdmin/AdminRoomType';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager'
+import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
+import AdminRoomStatus from './pages/dashboards/admindashboard/AdminRoomStatus';
 
 import { useEffect, useState } from 'react';
 import React from 'react';
@@ -186,6 +187,14 @@ function App() {
              element={
             <ProtectedRoute allowedRoles={['Admin']}>
             <AdminAddManager />
+            </ProtectedRoute>
+  }
+/>
+           <Route
+             path="/admin/roomstatus"
+             element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+            <AdminRoomStatus />
             </ProtectedRoute>
   }
 />
