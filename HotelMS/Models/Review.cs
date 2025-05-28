@@ -33,8 +33,11 @@ namespace HotelMS.Models
 
         public DateTime Date { get; set; } = DateTime.Now;
 
+      
 
-     
+
+
+
 
     }
 }
