@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // Static imports
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
 import RoomManagerDashboard from './pages/dashboards/roomdashboards/managerdashboards/RoomManagerDashboard'; 
 import ReservationDashboard from './pages/dashboards/roomdashboards/managerdashboards/ReservationDashboard';  
 import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RoomRecepsionistDashboard';
@@ -23,7 +24,6 @@ import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
 
 // Lazy imports
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
-const AssignmentsDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/AssignmentsDashboard'));
 const CleaningStaffDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningStaffDashboard'));
 
 // Protected Route
@@ -54,7 +54,8 @@ function App() {
   return (
     <Router>
       <div>
-        {window.location.pathname === "/signup" && <Header />}
+     {!["/login"].includes(window.location.pathname) && <Header />}
+
         <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
           <Routes>
             <Route path="/" element={<Navigate to="/signup" />} />

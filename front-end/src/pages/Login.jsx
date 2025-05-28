@@ -37,8 +37,9 @@ const Login = () => {
           withCredentials: true,
         });
 
-        const { role } = meRes.data;
+        const { role, userId, userName } = meRes.data;
 
+        //  3. Navigate based on user role
         switch (role) {
           case "Customer": navigate("/rooms"); break;
           case "Admin": navigate("/admin/room-types"); break;
@@ -141,4 +142,3 @@ const Login = () => {
 };
 
 export default Login;
-
