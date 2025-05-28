@@ -27,8 +27,10 @@ namespace HotelMS.Services
                 {
                     RestaurantTableID = t.RestaurantTableID,
                     TableNumber = t.TableNumber,
+                    Capacity = t.Capacity,
                     Status = t.Reservations.Any(r => r.status != "Canceled") ? "Booked" : "Available"
                 });
+
             }
             catch (Exception ex)
             {
@@ -69,13 +71,21 @@ namespace HotelMS.Services
                 var entity = new RestaurantTable
                 {
                     TableNumber = dto.TableNumber,
+                    Capacity = dto.Capacity
                 };
+
 
                 _dbContext.RestaurantTables.Add(entity);
                 await _dbContext.SaveChangesAsync();
 
-                dto.RestaurantTableID = entity.RestaurantTableID;
-                return dto;
+                return new RestaurantTableDTO
+                {
+                    RestaurantTableID = entity.RestaurantTableID,
+                    TableNumber = entity.TableNumber,
+                    Capacity = entity.Capacity,
+                    Status = "Available"
+                };
+
             }
             catch (Exception ex)
             {
@@ -108,6 +118,8 @@ namespace HotelMS.Services
                 if (entity == null) return null;
 
                 entity.TableNumber = dto.TableNumber;
+                entity.Capacity = dto.Capacity;
+
 
                 await _dbContext.SaveChangesAsync();
 
@@ -115,7 +127,10 @@ namespace HotelMS.Services
                 {
                     RestaurantTableID = entity.RestaurantTableID,
                     TableNumber = entity.TableNumber,
+                    Capacity = entity.Capacity,
+                    Status = "Available"
                 };
+
             }
             catch (Exception ex)
             {

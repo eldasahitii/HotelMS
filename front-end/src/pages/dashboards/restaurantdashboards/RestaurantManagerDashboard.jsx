@@ -21,9 +21,9 @@ export default function RestaurantManagerDashboard() {
   const [editMenuData, setEditMenuData] = useState({name: '', description: '', price: '', image_url: '', is_available: true, menuCategoryID: 1});
 
   const [tables, setTables] = useState([]);
-  const [newTable, setNewTable] = useState({tableNumber: '', status: 'Available'});
+  const [newTable, setNewTable] = useState({tableNumber: '', capacity: ''});
   const [editingTable, setEditingTable] = useState(null);
-  const [editTableData, setEditTableData] = useState({tableNumber: '', status: 'Available'});
+  const [editTableData, setEditTableData] = useState({tableNumber: '', capacity: ''});
 
   const [reservations, setReservations] = useState([]);
  
@@ -162,9 +162,13 @@ export default function RestaurantManagerDashboard() {
 
   const handleAddMenuItem = async () => {
     try {
-      await axios.post("/api/MenuItem/addMenuItem", newMenuItem, {
-        withCredentials: true
-      });
+      await axios.post("/api/MenuItem/addMenuItem", {
+  ...newMenuItem,
+  price: Number(newMenuItem.price),
+}, {
+  withCredentials: true
+});
+
       setMessage("Menu item added successfully.");
       setMessageType("success");
       setNewMenuItem({ name: '', description: '', price: '', image_url: '', is_available: true, menuCategoryID: 1});
@@ -177,20 +181,24 @@ export default function RestaurantManagerDashboard() {
   const openEditMenuItem = (item) => {
     setEditingMenuItem(item);
     setEditMenuData({
-      name: item.name,
-      description: item.description,
-      price: item.price,
+      Name: item.name,
+      Description: item.description,
+      Price: item.price,
       image_url: item.image_url,
       is_available: item.is_available,
-      menuCategoryID: item.menuCategoryID
+      MenuCategoryID: item.menuCategoryID
     });
   };
 
   const handleUpdateMenuItem = async () => {
     try {
-      await axios.put(`/api/MenuItem/updateMenuItem?id=${editingMenuItem.menuItemID}`, editMenuData, {
-        withCredentials: true
-      });
+     await axios.put(`/api/MenuItem/updateMenuItem?id=${editingMenuItem.menuItemID}`, {
+  ...editMenuData,
+  Price: Number(editMenuData.price),
+}, {
+  withCredentials: true
+});
+
 
       const updated = menuItems.map(item =>
       item.menuItemID === editingMenuItem.menuItemID
@@ -223,11 +231,17 @@ export default function RestaurantManagerDashboard() {
   };
 
   const handleAddTable = async () => {
+
+    const tableNumber = parseInt(newTable.tableNumber);
+    const capacity = parseInt(newTable.capacity);
     try {
-      await axios.post("/api/RestaurantTable/addTable", newTable);
+      await axios.post("/api/RestaurantTable/addTable",  {
+        tableNumber,
+        capacity
+      });
       setMessage("Table added successfully.");
       setMessageType("success");
-      setNewTable({tableNumber: '', status: 'Available'});
+      setNewTable({tableNumber: '', capacity: ''});
       fetchTables();
     } catch {
       setMessage("Failed to add table.");
@@ -248,11 +262,16 @@ export default function RestaurantManagerDashboard() {
   };
   const openEditTable = (table) => {
     setEditingTable(table);
-    setEditTableData({ tableNumber: table.tableNumber, status: table.status});
+    setEditTableData({ tableNumber: table.tableNumber, capacity: table.capacity});
   };
   const handleUpdateTable = async () => {
+    const tableNumber = parseInt(editTableData.tableNumber);
+    const capacity = parseInt(editTableData.capacity);
     try {
-      await axios.put(`/api/RestaurantTable/updateTable?id=${editingTable.restaurantTableID}`, editTableData);
+      await axios.put(`/api/RestaurantTable/updateTable?id=${editingTable.restaurantTableID}`, {
+        tableNumber,
+        capacity
+      });
       setMessage("Table updated successfully");
       setMessageType("success");
       setEditingTable(null);
@@ -588,6 +607,7 @@ export default function RestaurantManagerDashboard() {
           <th>Name</th>
           <th>Price</th>
           <th>Available</th>
+          <th>Image</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -596,8 +616,11 @@ export default function RestaurantManagerDashboard() {
           <tr key={item.menuItemID}>
             <td>{index + 1}</td>
             <td>{item.name}</td>
-            <td>${item.price.toFixed(2)}</td>
+            <td>${Number(item.price).toFixed(2)}</td>
             <td>{item.is_available ? "Yes" : "No"}</td>
+            <td>
+              <img src={item.image_url} alt={item.name}  style={{ width: "80px", height: "auto", borderRadius: "8px", objectFit: "cover" }}/>
+            </td>
             <td>
               <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteMenuItem(item.menuItemID)}><i className="bi bi-trash"></i></button>
               <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditMenuItem(item)}><i className="bi bi-pencil-square"></i></button>
@@ -615,11 +638,11 @@ export default function RestaurantManagerDashboard() {
       <i className="bi bi-pencil-square me-2"></i>Edit Menu Item
     </div>
     <div className="card-body">
-      <input className="form-control mb-2" value={editMenuData.name} onChange={e => setEditMenuData({ ...editMenuData, name: e.target.value })} />
-      <input className="form-control mb-2" value={editMenuData.description} onChange={e => setEditMenuData({ ...editMenuData, description: e.target.value })} />
-      <input className="form-control mb-2" type="number" value={editMenuData.price} onChange={e => setEditMenuData({ ...editMenuData, price: e.target.value })} />
+      <input className="form-control mb-2" value={editMenuData.Name} onChange={e => setEditMenuData({ ...editMenuData, Name: e.target.value })} />
+      <input className="form-control mb-2" value={editMenuData.Description} onChange={e => setEditMenuData({ ...editMenuData, Description: e.target.value })} />
+      <input className="form-control mb-2" type="number" value={editMenuData.Price} onChange={e => setEditMenuData({ ...editMenuData, Price: e.target.value })} />
       <input className="form-control mb-2" value={editMenuData.image_url} onChange={e => setEditMenuData({ ...editMenuData, image_url: e.target.value })} />
-      <input className="form-control mb-2" type="number" value={editMenuData.menuCategoryID} onChange={e => setEditMenuData({ ...editMenuData, menuCategoryID: e.target.value })} />
+      <input className="form-control mb-2" type="number" value={editMenuData.MenuCategoryID} onChange={e => setEditMenuData({ ...editMenuData, MenuCategoryID: e.target.value })} />
       <div className="form-check mb-2">
         <input className="form-check-input" type="checkbox" checked={editMenuData.is_available} onChange={e => setEditMenuData({ ...editMenuData, is_available: e.target.checked })} />
         <label className="form-check-label">Available</label>
@@ -651,7 +674,7 @@ export default function RestaurantManagerDashboard() {
       </div>
       <div className="card-body">
         <input className="form-control mb-2" type="number" placeholder="Table Number" value={newTable.tableNumber} onChange={e => setNewTable({ ...newTable, tableNumber: e.target.value })} />
-        <input className="form-control mb-2" placeholder="Status" value={newTable.status} onChange={e => setNewTable({ ...newTable, status: e.target.value })} />
+        <input className="form-control mb-2" placeholder="Capacity" value={newTable.capacity} onChange={e => setNewTable({ ...newTable, capacity: e.target.value })} />
         <button className="btn btn-success w-100" onClick={handleAddTable}>Add Table</button>
       </div>
     </div>
@@ -683,6 +706,7 @@ export default function RestaurantManagerDashboard() {
               <th>#</th>
               <th>Table Number</th>
               <th>Status</th>
+              <th>Capacity</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -694,6 +718,7 @@ export default function RestaurantManagerDashboard() {
                 <td>{index + 1}</td>
                 <td>{table.tableNumber}</td>
                 <td>{table.status}</td>
+                <td>{table.capacity}</td>
                 <td>
                   <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteTable(table.restaurantTableID)}><i className="bi bi-trash"></i></button>
                   <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditTable(table)}><i className="bi bi-pencil-square"></i></button>
@@ -712,7 +737,7 @@ export default function RestaurantManagerDashboard() {
         </div>
         <div className="card-body">
           <input className="form-control mb-2" type="number" value={editTableData.tableNumber} onChange={e => setEditTableData({ ...editTableData, tableNumber: e.target.value })} />
-          <input className="form-control mb-2" value={editTableData.status} onChange={e => setEditTableData({ ...editTableData, status: e.target.value })} />
+          <input className="form-control mb-2" value={editTableData.capacity} onChange={e => setEditTableData({ ...editTableData, capacity: e.target.value })} />
           <button className="btn btn-primary me-2" onClick={handleUpdateTable}>Save</button>
           <button className="btn btn-secondary" onClick={() => setEditingTable(null)}>Cancel</button>
         </div>
