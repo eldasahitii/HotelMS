@@ -66,23 +66,27 @@ namespace HotelMS.Services
                 throw;
             }
         }
-
         public async Task<string> Login(UserLoginDTO request)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (user == null)
-            {
-                Console.WriteLine($"No user found with email{request.Email}");
-                return null;
-            }
+                throw new ArgumentException("User with this email does not exist.");
+
             if (!VerifyingPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-            {
-                Console.WriteLine($"Invalid password for user {request.Email}");
-                return null;
-            }
-            Console.WriteLine($"User{request.Email} logged in successfully.");
-            return await CreateToken(user);
+                throw new ArgumentException("Incorrect password.");
+
+            // Create Refresh Token
+            string refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            await _context.SaveChangesAsync();
+
+            // Create Access Token
+            var accessToken = await CreateToken(user);
+
+            return $"{accessToken}|||{refreshToken}";
         }
+
 
         public async Task<UserDTO> ChangePassword(int UserID, ChangePasswordDTO request)
         {
@@ -113,51 +117,46 @@ namespace HotelMS.Services
         }
         public async Task<string> CreateToken(User user)
         {
-            Console.WriteLine(" CreateToken called");
+            Console.WriteLine("CreateToken called");
 
             var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
             if (role == null)
-            {
-                Console.WriteLine(" Role not found for user: " + user.RoleID);
                 throw new Exception("Role not found for the user.");
-            }
-
-            Console.WriteLine(" Role found: " + role.RoleType);
 
             var claims = new List<Claim>
-{
-    new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", user.Email ?? ""),
-    new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", user.UserID.ToString()),
-    new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", role.RoleType ?? "")
-};
- 
-            var secretKey = _configuration["AppSettings:JwtSecretKey"];
-            Console.WriteLine(" JWT Secret Loaded: " + (secretKey ?? "NULL"));
+    {
+        new Claim(ClaimTypes.Email, user.Email ?? ""),
+        new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+        new Claim(ClaimTypes.Role, role.RoleType ?? "")
+    };
 
+            var secretKey = _configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(secretKey))
-            {
-                Console.WriteLine(" JWT secret is null or empty");
                 throw new Exception("JWT secret key is missing in configuration.");
-            }
 
             var keyBytes = Encoding.UTF8.GetBytes(secretKey);
-            Console.WriteLine(" Key bytes length: " + keyBytes.Length);
-
             var key = new SymmetricSecurityKey(keyBytes);
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
-            Console.WriteLine(" Creating token...");
             var token = new JwtSecurityToken(
-                issuer: null,
-                audience: null,
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(7),
+                expires: DateTime.UtcNow.AddHours(2),
                 signingCredentials: credentials
             );
 
-            var writtenToken = new JwtSecurityTokenHandler().WriteToken(token);
-            Console.WriteLine("Token created");
-            return writtenToken;
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[64];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomBytes);
+                return Convert.ToBase64String(randomBytes);
+            }
         }
 
         public void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
@@ -167,6 +166,24 @@ namespace HotelMS.Services
                 salt = hmac.Key;
                 hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
+        }
+        public async Task<(string accessToken, string refreshToken)> RotateRefreshToken(string oldRefreshToken)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == oldRefreshToken);
+            if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
+                return (null, null);
+
+            // Generate new refresh token
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+
+            // Generate new access token
+            var newAccessToken = await CreateToken(user);
+
+            await _context.SaveChangesAsync();
+
+            return (newAccessToken, newRefreshToken);
         }
 
         private bool VerifyingPasswordHash(string password, byte[] hash, byte[] salt)

@@ -1,13 +1,12 @@
-﻿ using HotelMS.Data;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using HotelMS.Data;
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
-using HotelMS.Services;
-
-
-//using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace HotelMS.Controllers
 {
@@ -22,7 +21,6 @@ namespace HotelMS.Controllers
         {
             _service = service;
             _context = context;
-
         }
 
         [HttpPost("register")]
@@ -34,18 +32,17 @@ namespace HotelMS.Controllers
                 if (user == null)
                     return BadRequest(new { message = "User registration failed" });
 
-                string token;
-                try
-                {
-                    token = await _service.CreateToken(user);
-                } 
-                catch (Exception ex)
-                {
-                    Console.WriteLine("[Token Creation Failed]: " + ex.ToString());
-                    return StatusCode(500, new { message = "Token generation failed" });
-                }
+                var token = await _service.CreateToken(user);
 
-                return Ok(new { token, isLoggedIn = true });
+                Response.Cookies.Append("jwt", token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddHours(2)
+                });
+
+                return Ok(new { isLoggedIn = true });
             }
             catch (Exception ex)
             {
@@ -54,24 +51,63 @@ namespace HotelMS.Controllers
             }
         }
 
-
         [HttpPost("login")]
-
         public async Task<IActionResult> Login(UserLoginDTO request)
         {
             try
             {
-                var token = await _service.Login(request);
-                if (token == null)
+                var tokens = await _service.Login(request);
+                var split = tokens.Split("|||");
+                var accessToken = split[0];
+                var refreshToken = split[1];
+
+                Response.Cookies.Append("jwt", accessToken, new CookieOptions
                 {
-                    return Unauthorized();
-                }
-                return Ok(new { token, isLoggedIn = true });
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddHours(2)
+                });
+
+                Response.Cookies.Append("refresh", refreshToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                });
+
+                return Ok(new { isLoggedIn = true });
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "An internal server error occurred." });
+            }
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var refreshToken = Request.Cookies["refresh"];
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+                if (user != null)
+                {
+                    user.RefreshToken = null;
+                    user.RefreshTokenExpiry = null;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            Response.Cookies.Delete("jwt");
+            Response.Cookies.Delete("refresh");
+
+            return Ok(new { message = "Logged out successfully." });
         }
 
         [HttpPost("changePassword")]
@@ -81,26 +117,47 @@ namespace HotelMS.Controllers
             {
                 var result = await _service.ChangePassword(UserID, request);
                 if (result == null)
-                {
                     return NotFound();
-                }
-                else
-                {
-                    return Ok(result);
-                }
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> Me()
+        {
+            try
+            {
+                var jwt = Request.Cookies["jwt"];
+                if (string.IsNullOrEmpty(jwt))
+                    return Unauthorized(new { message = "JWT not found" });
 
+                var handler = new JwtSecurityTokenHandler();
+                var token = handler.ReadJwtToken(jwt);
+
+                var userId = token.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                var email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+                var role = token.Claims.First(c => c.Type == ClaimTypes.Role).Value;
+
+                var user = await _context.Users.FindAsync(int.Parse(userId));
+                var fullName = $"{user.FirstName} {user.LastName}";
+
+                return Ok(new
+                {
+                    userID = userId,
+                    email,
+                    role,
+                    userName = fullName
+                });
+            }
+            catch
+            {
+                return Unauthorized(new { message = "Invalid token or user not found" });
+            }
+        }
     }
 }
-
-
-
-
-
-

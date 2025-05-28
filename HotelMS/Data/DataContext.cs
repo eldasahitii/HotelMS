@@ -41,6 +41,8 @@ namespace HotelMS.Data
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<RestaurantTable> RestaurantTables { get; set; }
         public DbSet<RestaurantReservation> RestaurantReservations { get; set; }
+        public DbSet<Manager> Managers { get; set; }
+        public DbSet<ManagerType> ManagerTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -58,6 +60,26 @@ namespace HotelMS.Data
                 .WithOne(rr => rr.User)
                 .HasForeignKey<RoomRecepsionist>(rr => rr.UserID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // User ↔ Manager
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Manager)
+                .WithOne(m => m.User)
+                .HasForeignKey<Manager>(m => m.UserID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Manager>()
+                .HasOne(m => m.ManagerType)
+                .WithMany(mt => mt.Managers)  
+                .HasForeignKey(m => m.ManagerTypeID)
+                .IsRequired()
+                 .OnDelete(DeleteBehavior.Restrict); 
+
+            modelBuilder.Entity<ManagerType>()
+                .Property(mt => mt.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+
 
             // RoomReservation ↔ User
             modelBuilder.Entity<RoomReservation>()
@@ -87,12 +109,12 @@ namespace HotelMS.Data
                 .HasForeignKey(r => r.RoomStatusID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Room ↔ RoomImages (one-to-many)
             modelBuilder.Entity<RoomImage>()
                 .HasOne(ri => ri.Room)
                 .WithMany(r => r.RoomImages)
                 .HasForeignKey(ri => ri.RoomID)
                 .OnDelete(DeleteBehavior.Cascade);
+
 
             // RoomReservation ↔ ReservationStatus
             modelBuilder.Entity<RoomReservation>()

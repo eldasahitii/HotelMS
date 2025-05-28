@@ -20,13 +20,15 @@ namespace HotelMS.Services
             var room = await _dbContext.Rooms
                 .Include(r => r.RoomStatus)
                 .FirstOrDefaultAsync(r => r.RoomID == request.RoomID);
+            if (room == null)
+                throw new Exception("Room not found.");
 
-            if (room.RoomStatus?.RoomStatusName != "Available" && room.RoomStatus?.RoomStatusName != "Occupied")
+            await _dbContext.Entry(room).ReloadAsync();
+            if (room.RoomStatusID != 1 && room.RoomStatusID != 2)
                 throw new Exception("Cannot assign task unless room is Available or Occupied.");
-
             var cleaningStatus = await _dbContext.RoomStatuses
                 .FirstOrDefaultAsync(rs => rs.RoomStatusName == "Cleaning");
-
+                
             if (cleaningStatus == null)
                 throw new Exception("Cleaning status not defined in RoomStatuses table.");
 
@@ -52,7 +54,7 @@ namespace HotelMS.Services
         {
             var assignment = await _dbContext.CleaningAssignments
                 .Include(a => a.Room)
-                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
+                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User).Include(a => a.AssignedBy)
                 .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
 
             if (assignment == null) return null;
@@ -61,13 +63,14 @@ namespace HotelMS.Services
             {
                 CleaningAssignmentID = assignment.CleaningAssignmentID,
                 RoomID = assignment.RoomID,
-                RoomName = assignment.Room.Name,
+                RoomNumber = assignment.Room.RoomNumber,
                 CleaningStaffID = assignment.CleaningStaffID,
                 StaffName = assignment.CleaningStaff.User.FirstName + " " + assignment.CleaningStaff.User.LastName,
                 Status = assignment.Status,
                 AssignedAt = assignment.AssignedAt,
                 StartedAt = assignment.StartedAt,
-                FinishedAt = assignment.FinishedAt
+                FinishedAt = assignment.FinishedAt,
+                AssignedByName = assignment.AssignedBy != null ? assignment.AssignedBy.FirstName + " " + assignment.AssignedBy.LastName : "N/A"
             };
         }
 
@@ -75,20 +78,22 @@ namespace HotelMS.Services
         {
             var assignments = await _dbContext.CleaningAssignments
                 .Include(a => a.Room)
-                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
+                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User).Include(a => a.AssignedBy)
                 .ToListAsync();
 
             return assignments.Select(a => new CleaningAssignmentDTO
             {
                 CleaningAssignmentID = a.CleaningAssignmentID,
                 RoomID = a.RoomID,
-                RoomName = a.Room.Name,
+
+                RoomNumber = a.Room.RoomNumber,
                 CleaningStaffID = a.CleaningStaffID,
                 StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
                 Status = a.Status,
                 AssignedAt = a.AssignedAt,
                 StartedAt = a.StartedAt,
-                FinishedAt = a.FinishedAt
+                FinishedAt = a.FinishedAt,
+                 AssignedByName = a.AssignedBy != null ? a.AssignedBy.FirstName + " " + a.AssignedBy.LastName : "N/A"
             });
         }
 
@@ -107,13 +112,25 @@ namespace HotelMS.Services
 
         public async Task DeleteAssignment(int id)
         {
-            var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
+            var assignment = await _dbContext.CleaningAssignments
+                .Include(a => a.Room)
+                .FirstOrDefaultAsync(a => a.CleaningAssignmentID == id);
+
             if (assignment != null)
             {
+                var availableStatus = await _dbContext.RoomStatuses
+                    .FirstOrDefaultAsync(rs => rs.RoomStatusName == "Available");
+
+                if (availableStatus != null && assignment.Room != null)
+                {
+                    assignment.Room.RoomStatusID = availableStatus.RoomStatusID;
+                }
+
                 _dbContext.CleaningAssignments.Remove(assignment);
                 await _dbContext.SaveChangesAsync();
             }
         }
+
         public async Task<bool> MarkAssignmentCompleted(int id)
         {
             var assignment = await _dbContext.CleaningAssignments
@@ -198,7 +215,7 @@ namespace HotelMS.Services
 
             var assignments = await _dbContext.CleaningAssignments
                 .Include(a => a.Room)
-                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User)
+                .Include(a => a.CleaningStaff).ThenInclude(cs => cs.User).Include(a => a.AssignedBy)
                 .Where(a => a.CleaningStaffID == staff.CleaningStaffID)
                 .ToListAsync();
 
@@ -206,14 +223,15 @@ namespace HotelMS.Services
             {
                 CleaningAssignmentID = a.CleaningAssignmentID,
                 RoomID = a.RoomID,
-                RoomName = a.Room.Name,
+                RoomNumber = a.Room.RoomNumber,
                 RoomStatus = a.Room.RoomStatus?.RoomStatusName ?? "Unknown",
                 CleaningStaffID = a.CleaningStaffID,
                 StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
                 Status = a.Status,
                 AssignedAt = a.AssignedAt,
                 StartedAt = a.StartedAt,
-                FinishedAt = a.FinishedAt
+                FinishedAt = a.FinishedAt,
+                AssignedByName = a.AssignedBy != null ? a.AssignedBy.FirstName + " " + a.AssignedBy.LastName : "N/A"
             });
         }
 

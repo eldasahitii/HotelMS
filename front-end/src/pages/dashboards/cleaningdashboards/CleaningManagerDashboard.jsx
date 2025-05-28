@@ -10,7 +10,6 @@ export default function CleaningManagerDashboard() {
   const [users, setUsers] = useState([]);
   const [newStaff, setNewStaff] = useState({ userID: '', shift: '', isActive: true, assignedByUserID: 1 });
   const [shiftFilter, setShiftFilter] = useState('');
-  const [searchId, setSearchId] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [editingStaff, setEditingStaff] = useState(null);
@@ -19,10 +18,10 @@ export default function CleaningManagerDashboard() {
 
   const fetchData = async () => {
     try {
-      const staffRes = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
+      const staffRes = await axios.get("/api/CleaningStaff/getAllCleaningStaff", { withCredentials: true });
       setStaff(staffRes.data);
 
-      const usersRes = await axios.get("/api/User/getAll");
+      const usersRes = await axios.get("/api/User/getAll", { withCredentials: true });
       setUsers(usersRes.data);
     } catch (err) {
       console.error(err);
@@ -33,7 +32,7 @@ export default function CleaningManagerDashboard() {
 
   const handleDeleteStaff = async (id) => {
     try {
-      await axios.delete(`/api/CleaningStaff/deleteCleaningStaff?id=${id}`);
+      await axios.delete(`/api/CleaningStaff/deleteCleaningStaff?id=${id}`, { withCredentials: true });
       setMessage("Staff deleted successfully.");
       setMessageType("success");
       fetchData();
@@ -51,11 +50,15 @@ export default function CleaningManagerDashboard() {
 
   const handleConfirmUpdate = async () => {
     try {
-      await axios.put(`/api/CleaningStaff/updateCleaningStaff?id=${editingStaff.cleaningStaffID}`, {
-        ...editingStaff,
-        shift: editShift,
-        isActive: editIsActive
-      });
+      await axios.put(
+        `/api/CleaningStaff/updateCleaningStaff?id=${editingStaff.cleaningStaffID}`,
+        {
+          ...editingStaff,
+          shift: editShift,
+          isActive: editIsActive
+        },
+        { withCredentials: true }
+      );
       setMessage("Staff updated successfully.");
       setMessageType("success");
       setEditingStaff(null);
@@ -73,12 +76,16 @@ export default function CleaningManagerDashboard() {
       return;
     }
     try {
-      await axios.post("/api/CleaningStaff/addCleaningStaff", {
-        userID: parseInt(newStaff.userID),
-        shift: newStaff.shift,
-        isActive: newStaff.isActive,
-        assignedByUserID: newStaff.assignedByUserID
-      });
+      await axios.post(
+        "/api/CleaningStaff/addCleaningStaff",
+        {
+          userID: parseInt(newStaff.userID),
+          shift: newStaff.shift,
+          isActive: newStaff.isActive,
+          assignedByUserID: newStaff.assignedByUserID
+        },
+        { withCredentials: true }
+      );
       setNewStaff({ userID: '', shift: '', isActive: true, assignedByUserID: 1 });
       setMessage("Staff added successfully.");
       setMessageType("success");
@@ -91,24 +98,25 @@ export default function CleaningManagerDashboard() {
 
   const handleGetByShift = async () => {
     if (!shiftFilter) return;
-    const result = await axios.get(`/api/CleaningStaff/getByShift?shift=${shiftFilter}`);
-    setStaff(result.data);
-  };
-
-  const handleSearchById = async () => {
-    if (!searchId) return;
     try {
-      const res = await axios.get(`/api/CleaningStaff/getCleaningStaff?id=${searchId}`);
-      setStaff(res.data ? [res.data] : []);
-    } catch {
-      setMessage("Staff not found.");
+      const result = await axios.get(`/api/CleaningStaff/getByShift?shift=${shiftFilter}`, { withCredentials: true });
+      setStaff(result.data);
+    } catch (err) {
+      console.error(err);
+      setMessage("Failed to filter by shift.");
       setMessageType("danger");
     }
   };
 
   const handleShowActive = async () => {
-    const res = await axios.get("/api/CleaningStaff/getAllActive");
-    setStaff(res.data);
+    try {
+      const res = await axios.get("/api/CleaningStaff/getAllActive", { withCredentials: true });
+      setStaff(res.data);
+    } catch (err) {
+      console.error(err);
+      setMessage("Failed to load active staff.");
+      setMessageType("danger");
+    }
   };
 
   const navigate = useNavigate();
@@ -117,26 +125,36 @@ export default function CleaningManagerDashboard() {
     navigate('/login');
   };
 
-  const selectedUser = users.find(u => u?.userID?.toString() === newStaff.userID);
-
   return (
     <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
       <aside className="text-white p-4" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
         <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
         <ul className="nav flex-column">
-          <li className="nav-item"><i className="bi bi-people-fill me-2"></i>Cleaning Staff</li>
-          <Link to="/manager/assignments" className="nav-link text-white"><i className="bi bi-list-task me-2"></i>Assignments</Link>
+          <li className="nav-item">
+            <Link to="/manager/cleaning-staff" className="nav-link text-white">
+              <i className="bi bi-people-fill me-2"></i>Cleaning Staff
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/manager/assignments" className="nav-link text-white">
+              <i className="bi bi-list-task me-2"></i>Assignments
+            </Link>
+          </li>
           <hr className="text-white" />
-          <button className="btn btn-outline-light w-100" onClick={handleLogout}><i className="bi bi-box-arrow-right me-2"></i> Logout</button>
+          <button className="btn btn-outline-light w-100" onClick={handleLogout}>
+            <i className="bi bi-box-arrow-right me-2"></i> Logout
+          </button>
         </ul>
       </aside>
       <main className="flex-grow-1 p-3">
         <h2 className="fw-bold text-primary mb-4"><i className="bi bi-people-fill me-2"></i>Cleaning Manager</h2>
 
-        {message && <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-          {message}
-          <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-        </div>}
+        {message && (
+          <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+            {message}
+            <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
+          </div>
+        )}
 
         <div className="card mb-4">
           <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
@@ -145,34 +163,33 @@ export default function CleaningManagerDashboard() {
           <div className="card-body">
             <div className="row g-2">
               <div className="col-md-6">
-          <Select options={users
-          .filter(u => u.roleType === "Customer")
-          .map(user => ({
-          value: user.userID,
-          label: `${user.firstName} ${user.lastName}`
-          }))}
-         value={users
-         .filter(u => u.roleType === "Customer")
-        .map(user => ({
-        value: user.userID,
-        label: `${user.firstName} ${user.lastName}`
-      }))
-      .find(option => option.value.toString() === newStaff.userID)
-  }
-         onChange={(selectedOption) => {
-         setNewStaff({ ...newStaff, userID: selectedOption?.value.toString() });
-  }}
-        placeholder="Select Customer..."
-       isClearable
-/>
-
- {newStaff.userID && (
-  <div className="mt-2">
-    <strong>Email: </strong> {users.find(u => u.userID.toString() === newStaff.userID)?.email}
-  </div>
-)}
-
-</div>
+                <Select
+                  options={users
+                    .filter(u => u.roleType === "Customer")
+                    .map(user => ({
+                      value: user.userID,
+                      label: `${user.firstName} ${user.lastName}`
+                    }))}
+                  value={users
+                    .filter(u => u.roleType === "Customer")
+                    .map(user => ({
+                      value: user.userID,
+                      label: `${user.firstName} ${user.lastName}`
+                    }))
+                    .find(option => option.value.toString() === newStaff.userID)
+                  }
+                  onChange={(selectedOption) => {
+                    setNewStaff({ ...newStaff, userID: selectedOption?.value.toString() });
+                  }}
+                  placeholder="Select User..."
+                  isClearable
+                />
+                {newStaff.userID && (
+                  <div className="mt-2">
+                    <strong>Email: </strong> {users.find(u => u.userID.toString() === newStaff.userID)?.email}
+                  </div>
+                )}
+              </div>
               <div className="col-md-6">
                 <select
                   className="form-control"
@@ -195,23 +212,26 @@ export default function CleaningManagerDashboard() {
         <div className="card mb-4">
           <div className="card-body">
             <div className="row g-2 mb-2">
-              <div className="col-md-4">
-                <input type="number" className="form-control" placeholder="Search by Staff ID" value={searchId} onChange={e => setSearchId(e.target.value)} />
-              </div>
-              <div className="col-md-4">
-                <button className="btn btn-outline-dark w-100" onClick={handleSearchById}><i className="bi bi-search"></i> Search</button>
-              </div>
-              <div className="col-md-4">
-                <button className="btn btn-outline-success w-100" onClick={handleShowActive}><i className="bi bi-person-check"></i> Show Active</button>
-              </div>
-            </div>
-            <div className="row g-2">
               <div className="col-md-9">
-                <input className="form-control" placeholder="Filter by shift..." value={shiftFilter} onChange={e => setShiftFilter(e.target.value)} />
+                <input
+                  className="form-control"
+                  placeholder="Filter by shift..."
+                  value={shiftFilter}
+                  onChange={e => setShiftFilter(e.target.value)}
+                />
               </div>
               <div className="col-md-3">
-                <button className="btn btn-outline-primary w-100" onClick={handleGetByShift}><i className="bi bi-filter me-2"></i>Filter</button>
+                <button className="btn btn-outline-primary w-100" onClick={handleGetByShift}>
+                  <i className="bi bi-filter me-2"></i>Filter
+                </button>
               </div>
+              <button
+                className="btn btn-outline-success w-100 mt-2 py-2"
+                style={{ height: '48px', fontWeight: 500 }}
+                onClick={handleShowActive}
+              >
+                <i className="bi bi-person-check me-2"></i> Show Active
+              </button>
             </div>
           </div>
         </div>

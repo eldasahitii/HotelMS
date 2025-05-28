@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using HotelMS.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelMS.Controllers
 {
@@ -15,9 +17,8 @@ namespace HotelMS.Controllers
             _service = service;
         }
 
-        //koment
         [HttpGet]
-
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
 
         public async Task<IActionResult> GetUser(int id)
         {
@@ -40,8 +41,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAll")]
-
-
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, CleaningManager")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -56,6 +56,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpDelete("deleteUser")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -69,6 +70,7 @@ namespace HotelMS.Controllers
             }
         }
         [HttpPut("updateUser")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
         public async Task<IActionResult> Update(int id, [FromBody] UserDTO request)
         {
             try
@@ -83,6 +85,28 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("GetAllCustomers")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllCustomers()
+        {
+            try
+            {
+                var customers = await _service.GetAllCustomers();
+
+                if (customers == null || !customers.Any())
+                {
+                    return NotFound("No customers found.");
+                }
+
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, "An error occurred while retrieving customers.");
+            }
+        }
+
 
     }
 }

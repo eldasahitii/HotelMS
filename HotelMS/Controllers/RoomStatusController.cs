@@ -54,7 +54,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAllRoomsStatuses")]
-        [Authorize(Roles = "Admin,RoomManager,RoomReceptionist,CleaningManager")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,CleaningManager")]
         public async Task<IActionResult> GetAllRoomStatus([FromQuery] string role)
         {
             try
