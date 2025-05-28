@@ -110,9 +110,9 @@ namespace HotelMS.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RoomImage>()
-                .HasOne(ri => ri.Room)
+                .HasOne(ri => ri.RoomType)
                 .WithMany(r => r.RoomImages)
-                .HasForeignKey(ri => ri.RoomID)
+                .HasForeignKey(ri => ri.RoomTypeID)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
