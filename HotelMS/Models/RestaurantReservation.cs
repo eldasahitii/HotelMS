@@ -11,11 +11,15 @@ namespace HotelMS.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 
         public int ReservationID { get; set; }
-        [Required]
+      
 
         [ForeignKey("RestaurantGuest")]
-        public int GuestID { get; set; }
+        public int? GuestID { get; set; }
         public RestaurantGuest RestaurantGuest { get; set; }
+
+        public int? UserID { get; set; }
+        [ForeignKey("UserID")]
+        public User User { get; set; }
 
         public DateTime date_time { get; set; }
 

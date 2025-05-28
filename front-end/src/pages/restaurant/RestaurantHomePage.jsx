@@ -71,8 +71,16 @@ const handleSubmit = async(e) => {
       dateTime: ''
     });
   } catch (error) {
-    setMessage(error.response?.data || 'Error creating reservation');
-      console.error(error);
+    const errorData = error.response?.data;
+
+if (typeof errorData === 'string') {
+  setMessage(errorData);
+} else if (errorData?.error || errorData?.details) {
+  setMessage(`${errorData.error ?? 'Error'}: ${errorData.details ?? ''}`);
+} else {
+  setMessage('Error creating reservation');
+}
+
   }
 
   if(!settings) return <div>Loading...</div>

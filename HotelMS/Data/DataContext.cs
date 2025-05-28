@@ -182,11 +182,19 @@ namespace HotelMS.Data
                 .HasForeignKey(mi => mi.MenuCategoryID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+
             modelBuilder.Entity<RestaurantReservation>()
                 .HasOne(rr => rr.RestaurantTable)
                 .WithMany(rt => rt.Reservations)
                 .HasForeignKey(rr => rr.RestaurantTableID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RestaurantReservation>()
+                .HasOne(rr => rr.User)
+                .WithMany()
+                .HasForeignKey(rr => rr.UserID)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
 
 

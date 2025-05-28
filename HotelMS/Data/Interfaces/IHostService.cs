@@ -14,6 +14,8 @@ namespace HotelMS.Data.Interfaces
 
         Task<RestaurantReservationDTO> CreateReservationWithGuestAsync(RestaurantReservationGuestDTO dto);
 
+        Task<RestaurantReservationDTO> CreateReservationForUserByEmailAsync(RestaurantReservationUserDTO dto);
+
         Task<bool> CancelReservationAsync(int reservationId);
 
         Task<bool> UpdateReservationAsync(int reservationId, string newStatus);

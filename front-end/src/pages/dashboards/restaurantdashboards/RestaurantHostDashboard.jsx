@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -15,6 +15,12 @@ export default function RestaurantHostDashboard() {
     dateTime: '',
     status: 'Booked'
   });
+  const [userReservation, setUserReservation] = useState({
+  email: '',
+  restaurantTableID: '',
+  dateTime: '',
+  status: 'Booked'
+});
   const [editingReservation, setEditingReservation] = useState(null);
   const [newStatus, setNewStatus] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -71,9 +77,13 @@ export default function RestaurantHostDashboard() {
       restaurantTableID: parseInt(newReservation.restaurantTableID),
     };
 
+
+
     await axios.post("/api/Host/createReservationWithGuest", payload, {
       withCredentials: true
     });
+
+
 
     setMessage("Reservation added successfully.");
     setMessageType("success");
@@ -100,6 +110,61 @@ export default function RestaurantHostDashboard() {
     setMessage(error.response.data);
   } else if (error.response?.data?.title) {
     setMessage(error.response.data.title);
+  } else {
+    setMessage("Something went wrong. Please try again.");
+  }
+
+  setMessageType("danger");
+  }
+};
+
+const handleUserEmailReservation = async () => {
+  const tableID = parseInt(userReservation.restaurantTableID);
+
+  if (
+    !userReservation.email.trim() ||
+    !userReservation.dateTime ||
+    !tableID
+  ) {
+    setMessage("Email, date/time and table are required.");
+    setMessageType("danger");
+    return;
+  }
+
+  const payload = {
+    email: userReservation.email,
+    restaurantTableID: tableID,
+    dateTime: userReservation.dateTime,
+    status: userReservation.status
+  };
+
+
+  try {
+    const response = await axios.post("/api/Host/createReservationByEmail", payload, {
+      withCredentials: true
+    });
+
+    console.log("Success:", response.data);
+    setMessage("Reservation for user created successfully.");
+    setMessageType("success");
+
+       setUserReservation({
+      email: '',
+      restaurantTableID: '',
+      dateTime: '',
+      status: 'Booked'
+    });
+    fetchReservations();
+  } catch (error) {
+      const errorData = error.response?.data;
+
+  if (typeof errorData === 'string') {
+    setMessage(errorData);
+  } else if (errorData?.errors) {
+    const allMessages = Object.values(errorData.errors).flat().join(" ");
+    setMessage(allMessages);
+  } else if (errorData?.title) {
+    setMessage(`${errorData.title}: ${errorData.detail || ''}`);
   } else {
     setMessage("Something went wrong. Please try again.");
   }
@@ -185,22 +250,98 @@ const handleSearch = () => {
         )}
 
         <div className="card mb-4">
-          <div className="card-header bg-primary text-white">
-            <i className="bi bi-plus-circle me-2"></i>Add Reservation
-          </div>
-          <div className="card-body">
-            <input className="form-control mb-2" placeholder="First Name" value={newReservation.firstName} onChange={e => setNewReservation({ ...newReservation, firstName: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Last Name" value={newReservation.lastName} onChange={e => setNewReservation({ ...newReservation, lastName: e.target.value })} />
-            <input className="form-control mb-2" type="email" placeholder="Email" value={newReservation.email} onChange={e => setNewReservation({ ...newReservation, email: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Phone Number" value={newReservation.phoneNumber} onChange={e => setNewReservation({ ...newReservation, phoneNumber: e.target.value })} />
-            <input className="form-control mb-2" type="datetime-local" value={newReservation.dateTime} onChange={e => setNewReservation({ ...newReservation, dateTime: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Table ID" value={newReservation.restaurantTableID} onChange={e => setNewReservation({ ...newReservation, restaurantTableID: e.target.value })} />
-            <button className="btn btn-primary w-100" onClick={handleAddReservation}><i className="bi bi-check2-circle me-2"></i>Add</button>
-          </div>
-        </div>
+  <div className="card-header bg-primary text-white">
+    <i className="bi bi-plus-circle me-2"></i>Add Reservation
+  </div>
+  <div className="card-body">
+    <input
+      className="form-control mb-2"
+      placeholder="First Name"
+      value={newReservation.firstName}
+      onChange={e => setNewReservation({ ...newReservation, firstName: e.target.value })}
+    />
+    <input
+      className="form-control mb-2"
+      placeholder="Last Name"
+      value={newReservation.lastName}
+      onChange={e => setNewReservation({ ...newReservation, lastName: e.target.value })}
+    />
+    <input
+      className="form-control mb-2"
+      type="email"
+      placeholder="Email"
+      value={newReservation.email}
+      onChange={e => setNewReservation({ ...newReservation, email: e.target.value })}
+    />
+    <input
+      className="form-control mb-2"
+      placeholder="Phone Number"
+      value={newReservation.phoneNumber}
+      onChange={e => setNewReservation({ ...newReservation, phoneNumber: e.target.value })}
+    />
+    <input
+      className="form-control mb-2"
+      type="datetime-local"
+      value={newReservation.dateTime}
+      onChange={e => setNewReservation({ ...newReservation, dateTime: e.target.value })}
+    />
 
+    <select
+      className="form-control mb-2"
+      value={newReservation.restaurantTableID}
+      onChange={e => setNewReservation({ ...newReservation, restaurantTableID: e.target.value })}
+      required
+    >
+      <option value="">Select Table</option>
+      {tables.map(table => (
+        <option key={table.restaurantTableID} value={table.restaurantTableID}>
+          Table {table.tableNumber} {table.status === "Booked" ? "(Booked)" : ""}
+        </option>
+      ))}
+    </select>
 
-        
+    <button className="btn btn-primary w-100" onClick={handleAddReservation}>
+      <i className="bi bi-check2-circle me-2"></i>Add
+    </button>
+  </div>
+</div>
+
+<div className="card mt-4">
+  <div className="card-header bg-success text-white">
+    <i className="bi bi-envelope-check me-2"></i>Reserve for Existing User
+  </div>
+  <div className="card-body">
+    <input
+      className="form-control mb-2"
+      type="email"
+      placeholder="User Email"
+      value={userReservation.email}
+      onChange={e => setUserReservation({ ...userReservation, email: e.target.value })}
+    />
+    <input
+      className="form-control mb-2"
+      type="datetime-local"
+      value={userReservation.dateTime}
+      onChange={e => setUserReservation({ ...userReservation, dateTime: e.target.value })}
+    />
+    <select
+      className="form-control mb-2"
+      value={userReservation.restaurantTableID}
+      onChange={e => setUserReservation({ ...userReservation, restaurantTableID: e.target.value })}
+    >
+      <option value="">Select Table</option>
+      {tables.map(table => (
+        <option key={table.restaurantTableID} value={table.restaurantTableID}>
+          Table {table.tableNumber} {table.status === "Booked" ? "(Booked)" : ""}
+        </option>
+      ))}
+    </select>
+    <button className="btn btn-success w-100" onClick={handleUserEmailReservation}>
+      <i className="bi bi-person-plus me-2"></i>Reserve for User
+    </button>
+  </div>
+</div><br /><br />
+    
         <div className="row mb-3">
               <div className="col-md-6">
                 <input

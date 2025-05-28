@@ -97,6 +97,25 @@ namespace HotelMS.Controllers
         }
 
 
+        [HttpPost("createReservationByEmail")]
+        [Authorize(Roles = "RestaurantHost")]
+        public async Task<IActionResult> CreateReservationByEmail([FromBody] RestaurantReservationUserDTO dto)
+        {
+            try
+            {
+                var result = await _service.CreateReservationForUserByEmailAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
+
+
         [HttpDelete("cancelReservation")]
             public async Task<IActionResult> CancelReservation(int id)
             {

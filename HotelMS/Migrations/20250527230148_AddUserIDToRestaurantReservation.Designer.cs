@@ -4,6 +4,7 @@ using HotelMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelMS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250527230148_AddUserIDToRestaurantReservation")]
+    partial class AddUserIDToRestaurantReservation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -294,7 +297,7 @@ namespace HotelMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationID"));
 
-                    b.Property<int?>("GuestID")
+                    b.Property<int>("GuestID")
                         .HasColumnType("int");
 
                     b.Property<int>("RestaurantTableID")
@@ -753,7 +756,9 @@ namespace HotelMS.Migrations
                 {
                     b.HasOne("HotelMS.Models.RestaurantGuest", "RestaurantGuest")
                         .WithMany("RestaurantReservations")
-                        .HasForeignKey("GuestID");
+                        .HasForeignKey("GuestID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HotelMS.Models.RestaurantTable", "RestaurantTable")
                         .WithMany("Reservations")

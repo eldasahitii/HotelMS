@@ -5,7 +5,7 @@
 
         public int ReservationID { get; set; }
 
-        public int GuestID { get; set; }
+        public int? GuestID { get; set; }
 
         public string GuestName { get; set; }
 
