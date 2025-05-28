@@ -300,6 +300,139 @@ export default function RestaurantManagerDashboard() {
           <i className="bi bi-people-fill me-2"></i>Restaurant Manager
         </h2>
 
+
+        {activeSection === "hosts" && (
+  <>
+    <div className="card mb-4">
+      <div className="card-header bg-info text-white">
+        <i className="bi bi-person-plus-fill me-2"></i>Assign Host Role to Existing User
+      </div>
+      <div className="card-body">
+        <select
+          className="form-select mb-3"
+          value={selectedUserEmail}
+          onChange={(e) => setSelectedUserEmail(e.target.value)}
+        >
+          <option value="">Select User</option>
+          {users.map((user) => (
+            <option key={user.userID} value={user.email}>
+              {user.firstName} {user.lastName} ({user.email})
+            </option>
+          ))}
+        </select>
+        <button
+          className="btn btn-info w-100"
+          disabled={!selectedUserEmail}
+          onClick={handleAssignHostRole}
+        >
+          Assign Host Role
+        </button>
+      </div>
+    </div>
+
+    <div className="card mb-4">
+  <div className="card-body d-flex gap-2 align-items-center">
+    <input
+      type="text"
+      className="form-control"
+      placeholder="Search by Name"
+      value={searchName}
+      onChange={e => setSearchName(e.target.value)}
+    />
+    <button
+      className="btn btn-primary"
+      onClick={() => fetchHosts()} // re-fetches hosts, or just triggers UI update
+    >
+      Search
+    </button>
+  </div>
+</div>
+
+
+    <div className="card">
+      <div className="card-header bg-primary text-white">
+        <i className="bi bi-people-fill me-2"></i>All Hosts
+      </div>
+      <div className="card-body p-0">
+        <table className="table mb-0">
+          <thead className="table-light">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {hosts
+              .filter((h) =>
+                `${h.firstName} ${h.lastName}`
+                  .toLowerCase()
+                  .includes(searchName.toLowerCase())
+              )
+              .map((host, index) => (
+                <tr key={host.userID}>
+                  <td>{index + 1}</td>
+                  <td>{host.firstName} {host.lastName}</td>
+                  <td>{host.email}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-outline-danger me-2"
+                      onClick={() => handleDeleteHost(host.userID)}
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={() => openEditForm(host)}
+                    >
+                      <i className="bi bi-pencil-square"></i>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {editingHost && (
+      <div className="card mt-4">
+        <div className="card-header bg-warning text-dark">
+          <i className="bi bi-pencil-square me-2"></i>Edit Host
+        </div>
+        <div className="card-body">
+          <input
+            className="form-control mb-2"
+            placeholder="First Name"
+            value={editData.firstName}
+            onChange={(e) => setEditData({ ...editData, firstName: e.target.value })}
+          />
+          <input
+            className="form-control mb-2"
+            placeholder="Last Name"
+            value={editData.lastName}
+            onChange={(e) => setEditData({ ...editData, lastName: e.target.value })}
+          />
+          <input
+            className="form-control mb-2"
+            placeholder="Email"
+            value={editData.email}
+            onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+          />
+          <button className="btn btn-primary me-2" onClick={handleConfirmUpdate}>
+            <i className="bi bi-check2"></i> Save
+          </button>
+          <button className="btn btn-secondary" onClick={() => setEditingHost(null)}>
+            <i className="bi bi-x"></i> Cancel
+          </button>
+        </div>
+      </div>
+    )}
+  </>
+)}
+
+        {/* { activeSection === "hosts" && (
         <div className="card mb-4">
   <div className="card-header bg-info text-white">
     <i className="bi bi-person-plus-fill me-2"></i>Assign Host Role to Existing User
@@ -337,33 +470,6 @@ export default function RestaurantManagerDashboard() {
   </div>
 </div>
 
-
-        {/* {activeSection === "hosts" && (
-         <>
-            <h2 className="fw-bold text-primary mb-4">
-               <i className="bi bi-people-fill me-2"></i>Restaurant Hosts
-            </h2>
-
-        {message && (
-          <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-            {message}
-            <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-          </div>
-        )}
-
-        
-        <div className="card mb-4">
-          <div className="card-header bg-success text-white">
-            <i className="bi bi-person-plus-fill me-2"></i>Add New Host
-          </div>
-          <div className="card-body">
-            <input className="form-control mb-2" placeholder="First Name" value={newHost.firstName} onChange={e => setNewHost({ ...newHost, firstName: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Last Name" value={newHost.lastName} onChange={e => setNewHost({ ...newHost, lastName: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Email" value={newHost.email} onChange={e => setNewHost({ ...newHost, email: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Password" type="password" value={newHost.password} onChange={e => setNewHost({ ...newHost, password: e.target.value })} />
-            <button className="btn btn-success w-100" onClick={handleAddHost}><i className="bi bi-check-circle me-2"></i>Add Host</button>
-          </div>
-        </div> */}
 
         <div className="card mb-4">
           <div className="card-body d-flex gap-2">
@@ -403,8 +509,6 @@ export default function RestaurantManagerDashboard() {
             </table>
           </div>
         </div>
-        {/* </> */}
-        {/* )} */}
 
        {editingHost && (
   <div className="card mt-4">
@@ -438,9 +542,10 @@ export default function RestaurantManagerDashboard() {
       </button>
     </div>
   </div>
+       )}
+       </>
 
-
-        )}
+        )} */}
         {activeSection === "menu" && (
         <>
          <h2 className="fw-bold text-primary mb-4">

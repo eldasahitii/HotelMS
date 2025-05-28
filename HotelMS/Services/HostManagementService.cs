@@ -103,15 +103,21 @@ namespace HotelMS.Services
 
         public async Task<bool> DeleteHostAsync(int userId)
         {
-            var user = await _dbContext.Users.FindAsync(userId);
-            if (user == null) return false;
+            try
+            {
+                var user = await _dbContext.Users.FindAsync(userId);
+                if (user == null) return false;
 
-            var role = await _dbContext.Roles.FindAsync(user.RoleID);
-            if (role?.RoleType != "RestaurantHost") return false;
+                var role = await _dbContext.Roles.FindAsync(user.RoleID);
+                if (role?.RoleType != "RestaurantHost") return false;
 
-            _dbContext.Users.Remove(user);
-            await _dbContext.SaveChangesAsync();
-            return true;
+                _dbContext.Users.Remove(user);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            } catch (Exception ex)
+            {
+                throw new Exception("Failed to delete user due to related data: " + ex.Message);
+            }
         }
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {

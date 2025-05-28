@@ -41,8 +41,10 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAll")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, CleaningManager")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager")]
+
+
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, CleaningManager, RestaurantManager")]
+
         public async Task<IActionResult> GetAll()
         {
             try

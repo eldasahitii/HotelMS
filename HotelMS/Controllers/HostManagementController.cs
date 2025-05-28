@@ -110,7 +110,8 @@ namespace HotelMS.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                //return BadRequest(ex.Message);
+                return StatusCode(500, "Delete failed: " + ex.Message);
             }
         }
 

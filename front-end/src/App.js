@@ -20,7 +20,7 @@ import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/Res
 import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 import RecepsionistReservationDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RecepsionistReservationDashboard';
 import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/RoomAdmin/AdminRoomType';
-import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
+// import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager'
 import RestaurantHomePage from './pages/restaurant/RestaurantHomePage';
