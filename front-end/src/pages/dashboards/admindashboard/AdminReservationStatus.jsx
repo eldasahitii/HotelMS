@@ -2,26 +2,24 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function AdminRoomStatus() {
+export default function AdminRoomReservationStatus() {
   const navigate = useNavigate();
 
   const [statuses, setStatuses] = useState([]);
-  const [form, setForm] = useState({ roomStatusName: "" });
+  const [form, setForm] = useState({ reservationStatusName: "" });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch all room statuses
+  // Fetch all reservation statuses
   const fetchStatuses = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get("/api/RoomStatus/getAllRoomsStatuses", {
-        params: { role: "Admin" },
-      });
+      const res = await axios.get("/api/ReservationStatus/getAllReservationStatuses");
       setStatuses(res.data);
     } catch (err) {
-      setError("Failed to load room statuses.");
+      setError("Failed to load reservation statuses.");
     } finally {
       setLoading(false);
     }
@@ -38,7 +36,7 @@ export default function AdminRoomStatus() {
 
   // Clear form and editing state
   const clearForm = () => {
-    setForm({ roomStatusName: "" });
+    setForm({ reservationStatusName: "" });
     setEditingId(null);
     setError("");
   };
@@ -48,47 +46,48 @@ export default function AdminRoomStatus() {
     e.preventDefault();
     setError("");
 
-    if (!form.roomStatusName.trim()) {
+    if (!form.reservationStatusName.trim()) {
       setError("Status Name is required.");
       return;
     }
 
     try {
       if (editingId) {
-        // Update existing status
-        await axios.put(`/api/RoomStatus/updateRoomStatus?id=${editingId}`, form);
-        alert("Room status updated successfully.");
+        await axios.put(
+          `/api/ReservationStatus/updateReservationStatus?id=${editingId}`,
+          form
+        );
+        alert("Reservation status updated successfully.");
       } else {
-        // Add new status
-        await axios.post("/api/RoomStatus/addRoomStatus", form);
-        alert("Room status added successfully.");
+        await axios.post("/api/ReservationStatus/addReservationStatus", form);
+        alert("Reservation status added successfully.");
       }
       clearForm();
       fetchStatuses();
     } catch (err) {
       setError(
         err.response?.data?.title ||
-          err.response?.data?.errors ||
-          err.message ||
-          "Submit failed"
+        err.response?.data?.errors ||
+        err.message ||
+        "Submit failed"
       );
     }
   };
 
   // Edit button click
   const handleEditClick = (status) => {
-    setEditingId(status.roomStatusID);
+    setEditingId(status.reservationStatusID);
     setForm({
-      roomStatusName: status.roomStatusName || "",
+      reservationStatusName: status.reservationStatusName || "",
     });
     setError("");
   };
 
   // Delete button click
   const handleDeleteClick = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this room status?")) return;
+    if (!window.confirm("Are you sure you want to delete this reservation status?")) return;
     try {
-      await axios.delete(`/api/RoomStatus/deleteRoomStatus?id=${id}`);
+      await axios.delete(`/api/ReservationStatus/deleteReservationStatus?id=${id}`);
       fetchStatuses();
     } catch (err) {
       alert("Delete failed: " + (err.response?.data || err.message));
@@ -97,12 +96,17 @@ export default function AdminRoomStatus() {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-      <aside className="text-white p-4" style={{ width: "240px", backgroundColor: "#324b6b" }}>
+      <aside
+        className="text-white p-4"
+        style={{ width: "240px", backgroundColor: "#324b6b" }}
+      >
         <h4 className="fw-bold mb-4">
           <i className="bi bi-gear"></i> HotelMS
         </h4>
         <ul className="nav flex-column">
-          <li className="nav-item mb-3 text-white">Room Status Management</li>
+          <li className="nav-item mb-3 text-white">
+            Reservation Status Management
+          </li>
 
           <button
             className="btn btn-outline-light w-100 mb-3"
@@ -111,13 +115,7 @@ export default function AdminRoomStatus() {
             <i className="bi bi-house-door me-2"></i> Add Manager
           </button>
 
-          {/* <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/manager/room-receptionist-manager")}
-          >
-            <i className="bi bi-people me-2"></i> Receptionist Management
-          </button> */}
-                          <button
+          <button
             className="btn btn-outline-light w-100 mb-3"
             onClick={() => navigate("/admin/room-types")}
           >
@@ -138,7 +136,7 @@ export default function AdminRoomStatus() {
 
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
-          <i className="bi bi-gear-fill me-2"></i> Room Status Management
+          <i className="bi bi-gear-fill me-2"></i> Reservation Status Management
         </h2>
 
         {error && (
@@ -149,17 +147,17 @@ export default function AdminRoomStatus() {
 
         <form onSubmit={handleSubmit} className="mb-4" style={{ maxWidth: "480px" }}>
           <div className="mb-3">
-            <label htmlFor="roomStatusName" className="form-label">
+            <label htmlFor="reservationStatusName" className="form-label">
               Status Name
             </label>
             <input
               type="text"
-              id="roomStatusName"
-              name="roomStatusName"
+              id="reservationStatusName"
+              name="reservationStatusName"
               className="form-control"
-              value={form.roomStatusName}
+              value={form.reservationStatusName}
               onChange={handleChange}
-              placeholder="e.g. Available, Occupied"
+              placeholder="e.g. Pending, Confirmed, Completed"
             />
           </div>
 
@@ -178,12 +176,12 @@ export default function AdminRoomStatus() {
           )}
         </form>
 
-        <h3>Existing Room Statuses</h3>
+        <h3>Existing Reservation Statuses</h3>
 
         {loading ? (
           <p>Loading...</p>
         ) : statuses.length === 0 ? (
-          <p>No room statuses found.</p>
+          <p>No reservation statuses found.</p>
         ) : (
           <table className="table table-bordered" style={{ maxWidth: "680px" }}>
             <thead>
@@ -195,9 +193,9 @@ export default function AdminRoomStatus() {
             </thead>
             <tbody>
               {statuses.map((status) => (
-                <tr key={status.roomStatusID}>
-                  <td>{status.roomStatusID}</td>
-                  <td>{status.roomStatusName}</td>
+                <tr key={status.reservationStatusID}>
+                  <td>{status.reservationStatusID}</td>
+                  <td>{status.reservationStatusName}</td>
                   <td>
                     <button
                       className="btn btn-sm btn-info me-2"
@@ -207,7 +205,7 @@ export default function AdminRoomStatus() {
                     </button>
                     <button
                       className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteClick(status.roomStatusID)}
+                      onClick={() => handleDeleteClick(status.reservationStatusID)}
                     >
                       Delete
                     </button>

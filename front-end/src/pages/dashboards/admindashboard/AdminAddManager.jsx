@@ -173,19 +173,32 @@ export default function AddManager() {
           <li className="nav-item mb-3 text-white">
             <i className="bi bi-person-badge me-2"></i> Manager Management
           </li>
-          <button
+          {/* <button
             type="button"
             className="btn btn-outline-light w-100 mb-3"
             onClick={() => navigate("/manager/room-dashboard")}
           >
             <i className="bi bi-house-door me-2"></i> Room Management
-          </button>
-          <button
+          </button> */}
+          
+          {/* <button
             type="button"
             className="btn btn-outline-light w-100 mb-3"
             onClick={() => navigate("/admin/reservation-dashboard")}
           >
             <i className="bi bi-journal-check me-2"></i> Room Reservation List
+          </button> */}
+           <button
+            className="btn btn-outline-light w-100 mb-3"
+            onClick={() => navigate("/admin/room-types")}
+          >
+            <i className="bi bi-house-door me-2"></i> Add Room Type
+          </button>
+               <button
+            className="btn btn-outline-light w-100 mb-3"
+            onClick={() => navigate("/admin/roomstatus")}
+          >
+            <i className="bi bi-house-door me-2"></i> Add Room Status
           </button>
           <button
             type="button"

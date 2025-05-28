@@ -4,7 +4,7 @@
     {
         public DateTime? CheckInDate { get; set; }
         public DateTime? CheckOutDate { get; set; }
-        public string SpecialRequests { get; set; }
+        public string? SpecialRequests { get; set; }
     }
 
 }

@@ -236,8 +236,14 @@ const handleDeleteImage = async (imageId) => {
           <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/admin/add-manager")}>
             <i className="bi bi-building me-2"></i> Add Manager
           </button>
-          <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/admin/reservation-dashboard")}>
+          {/* <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/admin/reservation-dashboard")}>
             <i className="bi bi-journal-check me-2"></i> Reservation Dashboard
+          </button> */}
+                       <button
+            className="btn btn-outline-light w-100 mb-3"
+            onClick={() => navigate("/admin/roomstatus")}
+          >
+            <i className="bi bi-house-door me-2"></i> Add Room Status
           </button>
           <button className="btn btn-outline-light w-100 mt-2" onClick={() => {
             localStorage.removeItem("token");

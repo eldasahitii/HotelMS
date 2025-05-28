@@ -92,6 +92,7 @@ namespace HotelMS.Services
         {
             return await _context.RoomReservations
                 .Include(r => r.Room)
+                .ThenInclude(room => room.RoomType) 
                 .Include(r => r.ReservationStatus)
                 .Where(r => r.UserID == userID)
                 .Select(r => new UserReservationResponseDTO
@@ -99,10 +100,12 @@ namespace HotelMS.Services
                     ReservationID = r.ReservationID,
                     CheckInDate = r.CheckInDate,
                     CheckOutDate = r.CheckOutDate,
-                    Status = r.ReservationStatus.ReservationStatusName
+                    Status = r.ReservationStatus.ReservationStatusName,
+                    RoomName = r.Room.RoomType.Name 
                 })
                 .ToListAsync();
         }
+
 
         public async Task<IEnumerable<RoomReservationDTO>> GetAllReservations()
         {

@@ -23,6 +23,9 @@ import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/RoomAdmin/
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
 import AdminRoomStatus from './pages/dashboards/admindashboard/AdminRoomStatus';
+import AdminRoomReservationStatus from './pages/dashboards/admindashboard/AdminReservationStatus';
+import UserInfo from './pages/dashboards/userdashboard/UserInfo';
+import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReservations';
 
 // Lazy imports
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
@@ -157,6 +160,33 @@ function App() {
              element={
             <ProtectedRoute allowedRoles={['Admin']}>
             <AdminRoomStatus />
+            </ProtectedRoute>
+  }
+/>
+           <Route
+             path="/admin/reservationstatus"
+             element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+            <AdminRoomReservationStatus />
+            </ProtectedRoute>
+  }
+/>
+
+
+
+           <Route
+             path="/user/profile"
+             element={
+            <ProtectedRoute allowedRoles={['Customer']}>
+            <UserInfo />
+            </ProtectedRoute>
+  }
+/>
+           <Route
+             path="/user/userroomreservation"
+             element={
+            <ProtectedRoute allowedRoles={['Customer']}>
+            <UserRoomReservations />
             </ProtectedRoute>
   }
 />

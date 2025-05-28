@@ -33,7 +33,7 @@ namespace HotelMS.Controllers
             return Ok(result);
         }
         [HttpPut("UpdateReservation/{reservationID}")]
-        [Authorize(Roles ="Admin,RoomRecepsionist")] 
+        [Authorize(Roles ="Admin,RoomRecepsionist,Customer")] 
         public async Task<IActionResult> UpdateReservation(int reservationID, [FromBody] RoomReservationUpdateDTO request)
         {
  
@@ -65,7 +65,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetAllReservations")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,Customer")]
 
         public async Task<IActionResult> GetAllReservations()
         {
