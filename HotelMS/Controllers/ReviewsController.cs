@@ -117,6 +117,36 @@ namespace HotelMS.Controllers
         }
 
 
+        [HttpPut("reply/{id}")]
+        public async Task<IActionResult> AddManagerReply(int id, [FromBody] string replyText)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var roleIdClaim = User.FindFirst("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(roleIdClaim))
+                return Unauthorized("Missing user or role information.");
+
+            int roleId = int.Parse(roleIdClaim);
+
+            // Allow only these manager roles to reply
+            var allowedRoles = new List<int> { 2, 4, 5, 7 }; // RoomManager, CleaningManager, RestaurantManager, ServiceManager
+
+            if (!allowedRoles.Contains(roleId))
+                return Forbid("Only managers can reply to reviews.");
+
+            var review = await _context.Reviews.FindAsync(id);
+            if (review == null)
+                return NotFound("Review not found.");
+
+            review.ManagerReply = replyText;
+            review.ReplyDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return Ok(review);
+        }
+
+
+
 
 
 
