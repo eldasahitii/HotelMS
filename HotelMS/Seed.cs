@@ -263,15 +263,15 @@ public class Seed
         {
             new HotelService
             {
-                Name = "Spa & Wellness",
-                Description = "Relaxing services including massage and sauna.",
-                HeroImageUrl = "/images/services/spa.jpg"
+                Name = "Pool & Spa",
+                Description = " Relax and unwind in our luxurious pool and spa facilities. \r\n              Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, \r\n              sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. \r\n              Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.",
+                HeroImageUrl = "../../Assets/images/pool1.jpg"
             },
             new HotelService
             {
-                Name = "Events & Banquets",
-                Description = "Spacious halls for special occasions and corporate events.",
-                HeroImageUrl = "/images/services/events.jpg"
+                Name = "Events",
+                Description = " Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations.\r\n               Our experienced team will help you plan every detail to ensure a seamless and memorable event. \r\n               Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized \r\n               service to make your occasion truly special.",
+                HeroImageUrl = "../../Assets/images/mainevents.jpg"
             }
         };
 
@@ -292,17 +292,33 @@ public class Seed
                 new HotelServiceDetail
                 {
                     ServiceId = spaService.Id,
-                    Title = "Full Body Massage",
-                    Description = "1-hour professional massage session.",
-                    ImageUrl = "/images/services/massage.jpg",
-                    Price = 60.00m
+                    Title = "Heated Indoor Pool",
+                    Description = "Relax in our temperature-controlled indoor pool, perfect for year-round swims. Ideal for solo visitors or families looking for a calm, refreshing environment regardless of the season. Enjoy clean, modern facilities and a peaceful atmosphere designed for your comfort.",
+                    ImageUrl = "../../Assets/images/indoorpool3.png",
+                    Price = 25.00m
                 },
                 new HotelServiceDetail
                 {
                     ServiceId = spaService.Id,
-                    Title = "Sauna",
-                    Description = "30-minute sauna session to detox and relax.",
-                    ImageUrl = "/images/services/sauna.jpg",
+                    Title = "Scenic Outdoor Pool",
+                    Description = "Escape to our breathtaking outdoor pool area, where tranquility meets natural beauty. Surrounded by lush greenery and designed with relaxation in mind, our expansive pool offers the perfect setting to soak up the sun or enjoy a peaceful swim. Lounge on comfortable sunbeds, sip refreshing drinks from our poolside bar, and take in the serene views that create a true resort-style experience.",
+                    ImageUrl = "../../Assets/images/pool2.jpg",
+                    Price = 35.00m
+                },
+                 new HotelServiceDetail
+                {
+                    ServiceId = spaService.Id,
+                    Title = "Massage & Relaxation Room",
+                    Description = "Step into our peaceful massage and relaxation room, where expert therapists help release tension and restore balance. From full-body massages to targeted treatments, each session is tailored to your needs in a calm, private environment. Ideal for guests seeking deep relaxation or relief from stress and fatigue.",
+                    ImageUrl = "../../Assets/images/spa.jpg",
+                    Price = 50.00m
+                },
+                  new HotelServiceDetail
+                {
+                    ServiceId = spaService.Id,
+                    Title = "Sauna Room",
+                    Description = "Experience the soothing warmth of our dedicated sauna room, designed to relax muscles, improve circulation, and promote overall well-being. Enjoy the quiet, wood-lined space as heat gently eases tension and clears your mind. Perfect for unwinding after a swim or simply taking time for yourself in a peaceful setting.",
+                    ImageUrl = "../../Assets/images/pool2.jpg",
                     Price = 30.00m
                 },
                 new HotelServiceDetail
