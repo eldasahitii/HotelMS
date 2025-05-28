@@ -9,10 +9,24 @@ export default function AssignmentsByName() {
   const [staffName, setStaffName] = useState("");
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const loggedInUserID = parseInt(localStorage.getItem("userID"));
+  
+  const [loggedInUserID, setLoggedInUserID] = useState(null);
   const [currentCleaningStaffID, setCurrentCleaningStaffID] = useState(null);
+  
   const inputRef = useRef(null);
   const navigate = useNavigate();
+
+  const fetchCurrentUser = async () => {
+    try {
+      const res = await axios.get('/api/Auth/me', { withCredentials: true });
+      setLoggedInUserID(parseInt(res.data.userId || res.data.userID)); // adjust key as per your API response
+    } catch (error) {
+      console.error("Failed to get current user info", error);
+      setMessage("You must be logged in to view assignments.");
+      setMessageType("danger");
+      navigate('/login');
+    }
+  };
 
   const fetchAllAssignments = async () => {
     try {
@@ -23,34 +37,42 @@ export default function AssignmentsByName() {
       setMessageType("danger");
     }
   };
-const resolveCurrentCleaningStaffID = async () => {
-  try {
-    const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
-    const userID = parseInt(localStorage.getItem("userID"));
 
-    const match = res.data.find(s => s.userID === userID);
-    if (match) {
-      setCurrentCleaningStaffID(match.cleaningStaffID);
-    }
-  } catch (err) {
-    console.error("Failed to resolve cleaningStaffID", err);
-  }
-};
+  // Resolve cleaning staff id once loggedInUserID is known
+  useEffect(() => {
+    if (!loggedInUserID) return;
+
+    const resolveCurrentCleaningStaffID = async () => {
+      try {
+        const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
+        const match = res.data.find(s => s.userID === loggedInUserID);
+        if (match) {
+          setCurrentCleaningStaffID(match.cleaningStaffID);
+        }
+      } catch (err) {
+        console.error("Failed to resolve cleaningStaffID", err);
+      }
+    };
+
+    resolveCurrentCleaningStaffID();
+  }, [loggedInUserID]);
 
   useEffect(() => {
+    fetchCurrentUser();
     fetchAllAssignments();
-     resolveCurrentCleaningStaffID(); 
     if (inputRef.current) inputRef.current.focus();
   }, []);
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!staffName.trim()) {
+    const trimmedName = staffName.trim();
+    if (!trimmedName) {
+      // If input empty after trimming, fetch all assignments
       fetchAllAssignments();
       return;
     }
     try {
-      const res = await axios.get(`/api/CleaningAssignment/getAssignmentsByStaffName?name=${encodeURIComponent(staffName)}`);
+      const res = await axios.get(`/api/CleaningAssignment/getAssignmentsByStaffName?name=${encodeURIComponent(trimmedName)}`);
       setAssignments(res.data);
       setMessage(res.data.length ? '' : "No assignments found.");
       setMessageType(res.data.length ? '' : "info");
@@ -63,7 +85,7 @@ const resolveCurrentCleaningStaffID = async () => {
   const handleStart = async (id) => {
     try {
       await axios.put(`/api/CleaningAssignment/startAssignment?id=${id}`);
-      handleSearch({ preventDefault: () => {} });
+      handleSearch({ preventDefault: () => { } });
     } catch {
       setMessage("Failed to start assignment.");
       setMessageType("danger");
@@ -73,7 +95,7 @@ const resolveCurrentCleaningStaffID = async () => {
   const handleComplete = async (id) => {
     try {
       await axios.put(`/api/CleaningAssignment/markAssignmentCompleted?id=${id}`);
-      handleSearch({ preventDefault: () => {} });
+      handleSearch({ preventDefault: () => { } });
     } catch {
       setMessage("Failed to complete assignment.");
       setMessageType("danger");
@@ -118,10 +140,10 @@ const resolveCurrentCleaningStaffID = async () => {
                   onChange={(e) => setStaffName(e.target.value)}
                 />
               </div>
-            <div className="col-12 col-md-4">
-               <button type="submit" className="btn w-100" style={{ color: '#000000', border: '1px solid' }}>
-                <i className="bi bi-search me-2"></i> Search
-              </button>
+              <div className="col-12 col-md-4">
+                <button type="submit" className="btn w-100" style={{ color: '#000000', border: '1px solid' }}>
+                  <i className="bi bi-search me-2"></i> Search
+                </button>
               </div>
             </form>
           </div>
@@ -153,7 +175,7 @@ const resolveCurrentCleaningStaffID = async () => {
                   {assignments.map((a, index) => (
                     <tr key={a.cleaningAssignmentID}>
                       <td>{index + 1}</td>
-                     <td>{a.roomName} (#{a.roomNumber})</td>
+                      <td>{a.roomName} (#{a.roomNumber})</td>
                       <td>{a.staffName}</td>
                       <td>
                         <span className={`badge ${a.status === 'Completed' ? 'bg-success' : a.status === 'InProgress' ? 'bg-info' : 'bg-secondary'}`}>
@@ -169,16 +191,16 @@ const resolveCurrentCleaningStaffID = async () => {
                           <button
                             className="btn btn-sm btn-outline-secondary"
                             onClick={() => handleStart(a.cleaningAssignmentID)}
-                            disabled={a.status !== 'Pending'||  a.cleaningStaffID !== currentCleaningStaffID}
-                              title={a.cleaningStaffID !== loggedInUserID ? "You cannot start another staff's assignment" : ""}
+                            disabled={a.status !== 'Pending' || a.cleaningStaffID !== currentCleaningStaffID}
+                            title={a.cleaningStaffID !== loggedInUserID ? "You cannot start another staff's assignment" : ""}
                           >
                             <i className="bi bi-play-fill"></i>
                           </button>
                           <button
                             className="btn btn-sm btn-outline-success"
                             onClick={() => handleComplete(a.cleaningAssignmentID)}
-                            disabled={a.status !== 'InProgress'||  a.cleaningStaffID !== currentCleaningStaffID}
-                              title={a.cleaningStaffID !== loggedInUserID ? "You cannot start another staff's assignment" : ""}
+                            disabled={a.status !== 'InProgress' || a.cleaningStaffID !== currentCleaningStaffID}
+                            title={a.cleaningStaffID !== loggedInUserID ? "You cannot complete another staff's assignment" : ""}
                           >
                             <i className="bi bi-check-circle"></i>
                           </button>
