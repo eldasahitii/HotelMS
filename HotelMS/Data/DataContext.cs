@@ -34,6 +34,8 @@ namespace HotelMS.Data
         public DbSet<RestaurantTable> RestaurantTables { get; set; }
 
         public DbSet<RestaurantReservation> RestaurantReservations { get; set; }
+        public DbSet<Manager> Managers { get; set; }
+        public DbSet<ManagerType> ManagerTypes { get; set; }
 
 
 
@@ -55,6 +57,25 @@ namespace HotelMS.Data
                 .WithOne(rr => rr.User)
                 .HasForeignKey<RoomRecepsionist>(rr => rr.UserID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // User ↔ Manager
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Manager)
+                .WithOne(m => m.User)
+                .HasForeignKey<Manager>(m => m.UserID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Manager>()
+                .HasOne(m => m.ManagerType)
+                .WithMany(mt => mt.Managers)  
+                .HasForeignKey(m => m.ManagerTypeID)
+                .IsRequired()
+                 .OnDelete(DeleteBehavior.Restrict); 
+
+            modelBuilder.Entity<ManagerType>()
+                .Property(mt => mt.Name)
+                .IsRequired()
+                .HasMaxLength(50);
 
 
             // RoomReservation ↔ User

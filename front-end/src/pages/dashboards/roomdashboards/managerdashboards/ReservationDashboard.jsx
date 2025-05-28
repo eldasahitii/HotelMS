@@ -12,29 +12,67 @@ const ReservationDashboard = () => {
   const [filterRoomType, setFilterRoomType] = useState('');
   const [filterReservationStatus, setFilterReservationStatus] = useState('');
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
+  const [messageType, setMessageType] = useState('success');
   const navigate = useNavigate();
 
-  const token = localStorage.getItem('token');
-  let userRole = '';
-  if (token) {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const decodedToken = JSON.parse(atob(base64));
-      userRole = decodedToken['role'] || '';
-    } catch {
-      userRole = '';
-    }
-  }
+  const api = axios.create({
+    baseURL: 'https://localhost:7117/api/RoomReservation',
+    withCredentials: true,
+  });
 
   useEffect(() => {
-    fetchReservations();
+    const checkAuth = async () => {
+      try {
+        await axios.get('https://localhost:7117/api/Auth/me', { withCredentials: true });
+        fetchReservations();
+      } catch (error) {
+        setMessage('You must be logged in to view reservations.');
+        setMessageType('danger');
+        navigate('/login');
+      }
+    };
+    checkAuth();
   }, []);
+
+  const fetchReservations = async () => {
+    try {
+      const response = await api.get('/GetAllReservations');
+      const data = response.data.map((r) => ({
+        reservationID: r.reservationID,
+        roomTypeName: r.roomTypeName || 'Unknown',
+        reservationStatusName: r.reservationStatusName || 'Unknown',
+        checkInDate: r.checkInDate ? new Date(r.checkInDate).toLocaleDateString() : 'N/A',
+        checkOutDate: r.checkOutDate ? new Date(r.checkOutDate).toLocaleDateString() : 'N/A',
+        specialRequests: r.specialRequests || '',
+      }));
+
+      setReservations(data);
+      setFilteredReservations(data);
+
+      setRoomTypes([...new Set(data.map((r) => r.roomTypeName).filter(Boolean))]);
+      setReservationStatuses([...new Set(data.map((r) => r.reservationStatusName).filter(Boolean))]);
+
+      setMessage('');
+    } catch (error) {
+      console.error('Error fetching reservations:', error);
+      if (error.response) {
+        if (error.response.status === 401) {
+          setMessage('Unauthorized. Please log in again.');
+          setMessageType('danger');
+          navigate('/login');
+        } else {
+          setMessage(`Server error: ${error.response.status} ${error.response.statusText}`);
+          setMessageType('danger');
+        }
+      } else {
+        setMessage('Network error or server not reachable.');
+        setMessageType('danger');
+      }
+    }
+  };
 
   useEffect(() => {
     let filtered = reservations;
-
     if (filterRoomType) {
       filtered = filtered.filter(
         (r) => r.roomTypeName && r.roomTypeName.toLowerCase() === filterRoomType.toLowerCase()
@@ -42,54 +80,18 @@ const ReservationDashboard = () => {
     }
     if (filterReservationStatus) {
       filtered = filtered.filter(
-        (r) =>
-          r.reservationStatusName &&
-          r.reservationStatusName.toLowerCase() === filterReservationStatus.toLowerCase()
+        (r) => r.reservationStatusName && r.reservationStatusName.toLowerCase() === filterReservationStatus.toLowerCase()
       );
     }
-
     setFilteredReservations(filtered);
   }, [filterRoomType, filterReservationStatus, reservations]);
 
-  const fetchReservations = async () => {
-    if (!token) return;
+  const handleLogout = async () => {
     try {
-      const response = await axios.get(
-        'https://localhost:7117/api/RoomReservation/GetAllReservations',
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const normalizedData = response.data.map((r) => ({
-        reservationID: r.reservationID,
-        roomTypeName: r.roomTypeName || '',
-        reservationStatusName: r.reservationStatusName || '',
-        checkInDate: r.checkInDate ? new Date(r.checkInDate).toLocaleDateString() : '',
-        checkOutDate: r.checkOutDate ? new Date(r.checkOutDate).toLocaleDateString() : '',
-        specialRequests: r.specialRequests || '',
-      }));
-
-      setReservations(normalizedData);
-
-      const typesSet = new Set();
-      const statusesSet = new Set();
-
-      normalizedData.forEach((r) => {
-        if (r.roomTypeName) typesSet.add(r.roomTypeName);
-        if (r.reservationStatusName) statusesSet.add(r.reservationStatusName);
-      });
-
-      setRoomTypes(Array.from(typesSet));
-      setReservationStatuses(Array.from(statusesSet));
-      setFilteredReservations(normalizedData);
-    } catch (error) {
-      console.error('Error fetching reservations:', error);
+      await axios.post('https://localhost:7117/api/Auth/logout', null, { withCredentials: true });
+    } catch {
+      // ignore errors
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
     navigate('/login');
   };
 
@@ -101,7 +103,7 @@ const ReservationDashboard = () => {
         </h4>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <i className="bi bi-house-door me-2"></i> ReservationManaging
+            <i className="bi bi-house-door me-2"></i> Reservation Managing
           </li>
           <button
             className="btn btn-outline-light w-100 mt-3 mb-3"
@@ -109,10 +111,16 @@ const ReservationDashboard = () => {
           >
             <i className="bi bi-bookmark-plus me-2"></i> Room Managing
           </button>
-
+                   <button
+            className="btn btn-outline-light w-100 mb-3"
+            onClick={() => navigate("/room-manager-receptionist-management")}
+          >
+            <i className="bi bi-person-lines-fill me-2"></i> Receptionist Management
+          </button>
           <button className="btn btn-outline-light w-100 mt-2" onClick={handleLogout}>
             <i className="bi bi-box-arrow-right me-2"></i> Logout
           </button>
+          
         </ul>
       </aside>
 
@@ -147,7 +155,7 @@ const ReservationDashboard = () => {
             value={filterReservationStatus}
             onChange={(e) => setFilterReservationStatus(e.target.value)}
           >
-            <option value="">All Reservation Statuses</option>
+            <option value="">All Statuses</option>
             {reservationStatuses.map((status) => (
               <option key={status} value={status}>
                 {status}
@@ -165,24 +173,26 @@ const ReservationDashboard = () => {
               <thead className="table-light">
                 <tr>
                   <th>Room Type</th>
-                  <th>Reservation Status</th>
+                  <th>Status</th>
                   <th>Check-In</th>
                   <th>Check-Out</th>
+                  <th>Requests</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredReservations.length > 0 ? (
-                  filteredReservations.map((reservation) => (
-                    <tr key={reservation.reservationID}>
-                      <td>{reservation.roomTypeName}</td>
-                      <td>{reservation.reservationStatusName || 'N/A'}</td>
-                      <td>{reservation.checkInDate}</td>
-                      <td>{reservation.checkOutDate}</td>
+                  filteredReservations.map((r) => (
+                    <tr key={r.reservationID}>
+                      <td>{r.roomTypeName}</td>
+                      <td>{r.reservationStatusName}</td>
+                      <td>{r.checkInDate}</td>
+                      <td>{r.checkOutDate}</td>
+                      <td>{r.specialRequests}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="text-center text-muted">
+                    <td colSpan="5" className="text-center">
                       No reservations found.
                     </td>
                   </tr>

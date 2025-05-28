@@ -14,7 +14,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     const emailRegex = /^\S+@\S+\.\S+$/;
     const errors = {
@@ -27,7 +27,7 @@ const Login = () => {
 
     try {
       const loginRes = await axios.post(
-        'https://localhost:7117/api/Auth/login',
+        "https://localhost:7117/api/Auth/login",
         { email, password },
         { withCredentials: true }
       );
@@ -37,17 +37,17 @@ const Login = () => {
           withCredentials: true,
         });
 
-        const { role } = meRes.data;
+        const { role, userId, userName } = meRes.data;
 
         switch (role) {
-          case 'Customer': navigate('/rooms'); break;
-          case 'Admin': navigate('/admin-dashboard'); break;
-          case 'RoomManager': navigate('/manager/room-dashboard'); break;
-          case 'RoomRecepsionist': navigate('/recepsionist-dashboard'); break;
-          case 'CleaningManager': navigate('/manager/cleaning-staff'); break;
-          case 'CleaningStaff': navigate('/cleaningstaff/dashboard'); break;
-          case 'RestaurantManager': navigate('/restaurant-manager/dashboard'); break;
-          case 'RestaurantHost': navigate('/host/dashboard'); break;
+          case "Customer": navigate("/rooms"); break;
+          case "Admin": navigate("/admin/room-types"); break;
+          case "RoomManager": navigate("/manager/room-dashboard"); break;
+          case "RoomRecepsionist": navigate("/recepsionist-dashboard"); break;
+          case "CleaningManager": navigate("/manager/cleaning-staff"); break;
+          case "CleaningStaff": navigate("/cleaningstaff/dashboard"); break;
+          case "RestaurantManager": navigate("/restaurant-manager/dashboard"); break;
+          case "RestaurantHost": navigate("/host/dashboard"); break;
           default:
             setError("Unknown role. Access denied.");
             break;

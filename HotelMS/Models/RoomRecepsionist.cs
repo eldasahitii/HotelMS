@@ -18,5 +18,6 @@ namespace HotelMS.Models
         [ForeignKey("AssignedByUser")]
         public int AssignedByUserID { get; set; }
         public User AssignedByUser { get; set; }
+        public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
     }
 }

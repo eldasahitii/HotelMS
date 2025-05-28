@@ -1,67 +1,51 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
 
 const ReservationPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Read roomTypeId from query params
   const queryParams = new URLSearchParams(location.search);
   const roomId = queryParams.get("roomTypeId");
 
   const [userID, setUserID] = useState(null);
 
-  // User info states
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
 
-  // Reservation states
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [specialRequests, setSpecialRequests] = useState("");
 
-  // On mount: check roomId and token, get userID from token
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    if (!roomId) {
-      navigate("/rooms");
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      const decoded = jwtDecode(token);
-      const id = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-      if (!id) {
+    axios
+      .get("https://localhost:7117/api/Auth/me", { withCredentials: true })
+      .then((res) => {
+        const user = res.data;
+        const userIDFromResponse = user.userId;
+        if (!userIDFromResponse) {
+          navigate("/login");
+          return;
+        }
+        setUserID(userIDFromResponse);
+      })
+      .catch(() => {
         navigate("/login");
-        return;
-      }
-      setUserID(id);
-    } catch (err) {
-      console.error("Invalid token:", err);
-      navigate("/login");
-    }
-  }, [navigate, roomId]);
+      });
+  }, [navigate]);
 
-  // Fetch user info once userID is set
   useEffect(() => {
     if (!userID) return;
-
-    const token = localStorage.getItem("token");
 
     axios
       .get("https://localhost:7117/api/User", {
         params: { id: userID },
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       })
       .then((response) => {
         const user = response.data;
@@ -69,12 +53,14 @@ const ReservationPage = () => {
         setLastName(user.lastName || "");
         setEmail(user.email || "");
         setPhone(user.phone || "");
-        setAddress(user.address || "");
+        setLoading(false);
       })
-      .catch((error) => {
-        console.error("Failed to load user info:", error);
+      .catch(() => {
+        setLoading(false);
       });
   }, [userID]);
+
+  const phoneRegex = /^\d{9}$/;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,139 +74,177 @@ const ReservationPage = () => {
       return;
     }
 
+    if (phone && !phoneRegex.test(phone)) {
+      alert("Phone number must be exactly 9 digits.");
+      return;
+    }
+
     try {
-      const token = localStorage.getItem("token");
       await axios.post(
-        "https://localhost:7117/api/RoomReservations",
+        "https://localhost:7117/api/RoomReservation/MakeReservation",
         {
           roomID: roomId,
-          userID: userID,
+          userID,
           checkInDate,
           checkOutDate,
           specialRequests,
           reservationStatusID: 1,
-
-          // Optional: send user info if your API supports it
           firstName,
           lastName,
           email,
           phone,
-          address,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { withCredentials: true }
       );
 
       alert("Reservation successful!");
-      navigate("/");
+      navigate("/rooms");
     } catch (error) {
-      console.error("Reservation failed:", error);
       alert("Failed to create reservation. Please try again.");
     }
   };
 
-  if (!userID) {
-    return null; // or loading spinner
+  if (loading) {
+    return (
+      <div className="container mt-5 text-center">
+        <div
+          className="spinner-border"
+          role="status"
+          style={{ color: "#2c6e49" }}
+          aria-hidden="true"
+        ></div>
+        <p className="mt-3" style={{ color: "#2c6e49" }}>
+          Loading user information...
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="container mt-5">
-      <h2 className="mb-4">Room Reservation</h2>
-      <form onSubmit={handleSubmit} style={{ maxWidth: "600px" }}>
-        <h5>User Information</h5>
-        <div className="row mb-3">
-          <div className="col">
-            <label className="form-label">First Name</label>
+    <div
+      className="container my-5 p-4"
+      style={{
+        maxWidth: "700px",
+        backgroundColor: "#fff",
+        borderRadius: "10px",
+        boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+      }}
+    >
+      <h2 className="mb-4 text-center" style={{ color: "#2c6e49" }}>
+        Room Reservation
+      </h2>
+      <form onSubmit={handleSubmit}>
+        <section className="mb-4">
+          <h5 className="mb-3 border-bottom pb-2" style={{ color: "#4a6f59" }}>
+            User Information
+          </h5>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">First Name</label>
+              <input
+                type="text"
+                className="form-control shadow-sm"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                placeholder="Enter your first name"
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">Last Name</label>
+              <input
+                type="text"
+                className="form-control shadow-sm"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                placeholder="Enter your last name"
+              />
+            </div>
+          </div>
+
+          <div className="mt-3">
+            <label className="form-label fw-semibold">Email</label>
             <input
-              type="text"
-              className="form-control"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              type="email"
+              className="form-control shadow-sm"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
+              placeholder="example@example.com"
             />
           </div>
-          <div className="col">
-            <label className="form-label">Last Name</label>
+
+          <div className="mt-3">
+            <label className="form-label fw-semibold">Phone Number</label>
             <input
-              type="text"
-              className="form-control"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              required
+              type="tel"
+              className="form-control shadow-sm"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="044-111-111"
             />
           </div>
-        </div>
+        </section>
 
-        <div className="mb-3">
-          <label className="form-label">Email</label>
-          <input
-            type="email"
-            className="form-control"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+        <section className="mb-4">
+          <h5 className="mb-3 border-bottom pb-2" style={{ color: "#4a6f59" }}>
+            Reservation Details
+          </h5>
 
-        <div className="mb-3">
-          <label className="form-label">Phone Number</label>
-          <input
-            type="tel"
-            className="form-control"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </div>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">Check-In Date</label>
+              <input
+                type="date"
+                className="form-control shadow-sm"
+                value={checkInDate}
+                onChange={(e) => setCheckInDate(e.target.value)}
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">Check-Out Date</label>
+              <input
+                type="date"
+                className="form-control shadow-sm"
+                value={checkOutDate}
+                onChange={(e) => setCheckOutDate(e.target.value)}
+                required
+              />
+            </div>
+          </div>
 
-        <div className="mb-3">
-          <label className="form-label">Address</label>
-          <textarea
-            className="form-control"
-            rows="2"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-          />
-        </div>
+          <div className="mt-3">
+            <label className="form-label fw-semibold">Special Requests</label>
+            <textarea
+              className="form-control shadow-sm"
+              rows="3"
+              value={specialRequests}
+              onChange={(e) => setSpecialRequests(e.target.value)}
+              placeholder="Anything we should know?"
+            ></textarea>
+          </div>
+        </section>
 
-        <h5>Reservation Details</h5>
-        <div className="mb-3">
-          <label className="form-label">Check-In Date</label>
-          <input
-            type="date"
-            className="form-control"
-            value={checkInDate}
-            onChange={(e) => setCheckInDate(e.target.value)}
-            required
-          />
+        <div className="d-grid mt-4">
+          <button
+            type="submit"
+            className="btn shadow-sm"
+            style={{
+              backgroundColor: "#2c6e49",
+              color: "#fff",
+              fontWeight: "600",
+              fontSize: "1.1rem",
+              borderRadius: "6px",
+              border: "none",
+              padding: "12px",
+            }}
+          >
+            Submit Reservation
+          </button>
         </div>
-
-        <div className="mb-3">
-          <label className="form-label">Check-Out Date</label>
-          <input
-            type="date"
-            className="form-control"
-            value={checkOutDate}
-            onChange={(e) => setCheckOutDate(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Special Requests</label>
-          <textarea
-            className="form-control"
-            rows="3"
-            value={specialRequests}
-            onChange={(e) => setSpecialRequests(e.target.value)}
-          />
-        </div>
-
-        <button type="submit" className="btn btn-primary">
-          Submit Reservation
-        </button>
       </form>
     </div>
   );
