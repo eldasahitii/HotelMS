@@ -37,7 +37,7 @@ const Login = () => {
           withCredentials: true,
         });
 
-        const { role, userId, userName } = meRes.data;
+        const { role } = meRes.data;
 
         switch (role) {
           case "Customer": navigate("/rooms"); break;
@@ -141,3 +141,4 @@ const Login = () => {
 };
 
 export default Login;
+
