@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// Axios instance
+
 const api = axios.create({
   baseURL: "https://localhost:7117/api",
   withCredentials: true,
@@ -14,7 +14,6 @@ const RoomManagerDashboard = () => {
   const [rooms, setRooms] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
   const [roomStatuses, setRoomStatuses] = useState([]);
-
   const [editingRoomID, setEditingRoomID] = useState(null);
 
   const [newRoom, setNewRoom] = useState({
@@ -23,7 +22,7 @@ const RoomManagerDashboard = () => {
     roomStatusID: "",
   });
 
-  // Bulk create state
+ 
   const [bulkRoomData, setBulkRoomData] = useState({
     prefix: "",
     startingRoomNumber: "",
@@ -32,24 +31,28 @@ const RoomManagerDashboard = () => {
     roomStatusID: "",
   });
 
-  // For error messages
   const [error, setError] = useState("");
 
-  // Load rooms, types, statuses
+
   useEffect(() => {
     loadRooms();
     loadRoomTypes();
     loadRoomStatuses();
   }, []);
 
-  const loadRooms = async () => {
-    try {
-      const response = await api.get("/Room/GetAllRooms");
-      setRooms(response.data);
-    } catch (err) {
-      setError("Failed to load rooms.");
-    }
-  };
+ const [loading, setLoading] = useState(false);
+
+const loadRooms = async () => {
+  try {
+    setLoading(true);
+    const response = await api.get("/Room/GetAllRooms");
+    setRooms(response.data);
+  } catch {
+    setError("Failed to load rooms.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const loadRoomTypes = async () => {
     try {
@@ -218,7 +221,6 @@ const RoomManagerDashboard = () => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-      {/* Sidebar */}
       <aside
         className="text-white p-4"
         style={{ width: "240px", backgroundColor: "#324b6b" }}
@@ -258,20 +260,18 @@ const RoomManagerDashboard = () => {
         </ul>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-building me-2"></i> Room Manager Dashboard
         </h2>
 
-        {/* Error alert */}
         {error && (
           <div className="alert alert-danger" role="alert">
             {error}
           </div>
         )}
+        
 
-        {/* Add/Edit form */}
         <div className="card p-3 mb-4 shadow-sm">
           <h4>{editingRoomID ? "Edit Room" : "Add New Room"}</h4>
           <div className="mb-3">
@@ -308,25 +308,40 @@ const RoomManagerDashboard = () => {
             </select>
           </div>
 
-          <div className="mb-3">
-            <label htmlFor="roomStatusID" className="form-label">
-              Room Status
-            </label>
-            <select
-              id="roomStatusID"
-              name="roomStatusID"
-              className="form-select"
-              value={newRoom.roomStatusID}
-              onChange={handleInputChange}
-            >
-              <option value="">Select Status</option>
-              {roomStatuses.map((rs) => (
-                <option key={rs.roomStatusID} value={rs.roomStatusID}>
-                  {rs.roomStatusName}
-                </option>
-              ))}
-            </select>
-          </div>
+<div className="mb-3">
+  <label htmlFor="roomStatusID" className="form-label">
+    Room Status
+  </label>
+  {editingRoomID ? (
+    // Show readonly text during edit
+    <input
+      type="text"
+      className="form-control"
+      value={
+        roomStatuses.find(rs => rs.roomStatusID.toString() === newRoom.roomStatusID)?.roomStatusName || ''
+      }
+      readOnly
+      disabled
+    />
+  ) : (
+    // Editable dropdown when adding
+    <select
+      id="roomStatusID"
+      name="roomStatusID"
+      className="form-select"
+      value={newRoom.roomStatusID}
+      onChange={handleInputChange}
+    >
+      <option value="">Select Status</option>
+      {roomStatuses.map((rs) => (
+        <option key={rs.roomStatusID} value={rs.roomStatusID}>
+          {rs.roomStatusName}
+        </option>
+      ))}
+    </select>
+  )}
+</div>
+
 
           {editingRoomID ? (
             <>
@@ -455,7 +470,6 @@ const RoomManagerDashboard = () => {
           </button>
         </div>
 
-        {/* Rooms Table */}
         <div className="card p-3 shadow-sm">
           <h4>Existing Rooms</h4>
           <table className="table table-striped table-hover">

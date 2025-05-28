@@ -62,47 +62,60 @@ const ReservationPage = () => {
 
   const phoneRegex = /^\d{9}$/;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!checkInDate || !checkOutDate) {
-      alert("Please enter both check-in and check-out dates.");
-      return;
-    }
-    if (checkInDate >= checkOutDate) {
-      alert("Check-out date must be after check-in date.");
-      return;
-    }
+  if (!checkInDate || !checkOutDate) {
+    alert("Please enter both check-in and check-out dates.");
+    return;
+  }
+  if (checkInDate >= checkOutDate) {
+    alert("Check-out date must be after check-in date.");
+    return;
+  }
 
-    if (phone && !phoneRegex.test(phone)) {
-      alert("Phone number must be exactly 9 digits.");
-      return;
-    }
+  if (phone && !phoneRegex.test(phone)) {
+    alert("Phone number must be exactly 9 digits.");
+    return;
+  }
 
-    try {
-      await axios.post(
-        "https://localhost:7117/api/RoomReservation/MakeReservation",
-        {
-          roomID: roomId,
-          userID,
-          checkInDate,
-          checkOutDate,
-          specialRequests,
-          reservationStatusID: 1,
-          firstName,
-          lastName,
-          email,
-          phone,
-        },
-        { withCredentials: true }
-      );
+  try {
+    const response = await axios.post(
+      "https://localhost:7117/api/RoomReservation/MakeReservation",
+      {
+        roomID: roomId,
+        userID,
+        checkInDate,
+        checkOutDate,
+        specialRequests,
+        reservationStatusID: 1,
+        firstName,
+        lastName,
+        email,
+        phone,
+      },
+      { withCredentials: true }
+    );
 
-      alert("Reservation successful!");
-      navigate("/rooms");
-    } catch (error) {
+    console.log("Reservation response:", response.data);
+
+    alert("Reservation successful!");
+    navigate("/rooms");
+  } catch (error) {
+    console.error("Reservation error:", error.response || error.message);
+
+    // Check if backend sent a specific error message
+    if (
+      error.response &&
+      error.response.data &&
+      typeof error.response.data.message === "string"
+    ) {
+      alert(error.response.data.message); // show backend error message like "Room occupied"
+    } else {
       alert("Failed to create reservation. Please try again.");
     }
-  };
+  }
+};
 
   if (loading) {
     return (

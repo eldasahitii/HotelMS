@@ -319,35 +319,35 @@ public class Seed
     {
         new Room()
         {
-            RoomNumber="100A",
+            RoomNumber="Junior1",
             CreatedAt = DateTime.Now,
             RoomTypeID = juniorRoomTypeID,
             RoomStatusID = availableStatusID
         },
         new Room()
         {
-            RoomNumber="101A",
+            RoomNumber="Deluxe1",
             CreatedAt = DateTime.Now,
             RoomTypeID = deluxeRoomTypeID,
             RoomStatusID = availableStatusID
         },
         new Room()
         {
-            RoomNumber="102A",
+            RoomNumber="Double1",
             CreatedAt = DateTime.Now,
             RoomTypeID = doubleRoomTypeID,
             RoomStatusID = availableStatusID
         },
         new Room()
         {
-            RoomNumber="103A",
+            RoomNumber="Twin1",
             CreatedAt = DateTime.Now,
             RoomTypeID = twinRoomTypeID,
             RoomStatusID = availableStatusID
         },
         new Room()
         {
-            RoomNumber="104A",
+            RoomNumber="SuperiorTwin1",
             CreatedAt = DateTime.Now,
             RoomTypeID = superiorTwinRoomTypeID,
             RoomStatusID = availableStatusID
