@@ -15,15 +15,52 @@ import imageRestaurant from '../Assets/images/restaurant.png';
 
 
 export default function AboutUs() {
+  const [userId, setUserId] = useState(null);
+
   const [reviews, setReviews] = useState([]);
   const [formData, setFormData] = useState({ comment: '', rating: 0, reviewCategoryID: '' });
   const [categories, setCategories] = useState([]);
   const [editingReview, setEditingReview] = useState(null);
+  const [replyText, setReplyText] = useState('');
+const [selectedReviewId, setSelectedReviewId] = useState(null);
+const [roleId, setRoleId] = useState(null);
+
 
   useEffect(() => {
     fetchReviews();
     fetchCategories();
+     fetchRole();
   }, []);
+
+ const fetchRole = async () => {
+  try {
+    const res = await axios.get("/api/Auth/me", { withCredentials: true });
+    setRoleId(parseInt(res.data.roleID || res.data.roleId));
+    setUserId(parseInt(res.data.userID || res.data.userId)); // 👈 add this
+  } catch (err) {
+    console.error("Error fetching role/user:", err);
+  }
+};
+
+
+const submitReply = async () => {
+  if (!selectedReviewId || !replyText) return;
+
+  try {
+    await axios.put(`/api/reviews/reply/${selectedReviewId}`, JSON.stringify(replyText), {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true
+    });
+    setReplyText('');
+    setSelectedReviewId(null);
+    fetchReviews(); // refresh with new reply
+  } catch (err) {
+    console.error("Error submitting manager reply:", err);
+  }
+};
+
+
+
 
   const fetchReviews = async () => {
     try {
@@ -53,7 +90,7 @@ export default function AboutUs() {
         rating: formData.rating,
         reviewCategoryID: parseInt(formData.reviewCategoryID)
       }, {
-        headers: { Authorization: token }
+       withCredentials: true
       });
       fetchReviews();
       setFormData({ comment: '', rating: 0, reviewCategoryID: '' });
@@ -80,7 +117,10 @@ export default function AboutUs() {
         comment: editingReview.comment,
         rating: editingReview.rating
       }, {
-        headers: { Authorization: token }
+        //headers: { Authorization: token }
+        withCredentials: true
+
+        
       });
       setEditingReview(null);
       fetchReviews();
@@ -261,7 +301,38 @@ export default function AboutUs() {
           {reviews.map(review => (
             <div className="col-md-6" key={review.reviewID}>
               <div className="card shadow-sm border">
-                <div className="card-body">
+                <div className="card-body">{review.managerReply && (
+  <div className="mt-3 border-start ps-3">
+    <strong>Manager Reply:</strong>
+    <p className="mb-1">{review.managerReply}</p>
+    <small className="text-muted">{new Date(review.replyDate).toLocaleDateString()}</small>
+  </div>
+)}
+
+// Allow only manager roles to reply
+{[2, 4, 5, 7].includes(roleId) && (
+  <div className="mt-3">
+    {selectedReviewId !== review.reviewID ? (
+      <button className="btn btn-sm btn-outline-success" onClick={() => setSelectedReviewId(review.reviewID)}>
+        Reply as Manager
+      </button>
+    ) : (
+      <>
+        <textarea
+          className="form-control mb-2"
+          rows="2"
+          value={replyText}
+          onChange={(e) => setReplyText(e.target.value)}
+        />
+        <button className="btn btn-sm btn-success me-2" onClick={submitReply}>Submit Reply</button>
+        <button className="btn btn-sm btn-secondary" onClick={() => setSelectedReviewId(null)}>Cancel</button>
+      </>
+    )}
+  </div>
+)}
+
+
+
                   <h5 className="card-title">{review.user?.firstName} {review.user?.lastName}</h5>
                   <h6 className="card-subtitle mb-2 text-muted">{review.category?.categoryName}</h6>
                   {editingReview?.reviewID === review.reviewID ? (
@@ -294,8 +365,13 @@ export default function AboutUs() {
                             className={`bi ${review.rating >= star ? "bi-star-fill" : "bi-star"} text-warning me-1`}
                           />
                         ))}
-                        <button className="btn btn-sm btn-outline-primary me-2" onClick={() => setEditingReview(review)}>Edit</button>
-                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(review.reviewID)}>Delete</button>
+                        {review.userID === userId && (
+  <>
+    <button className="btn btn-sm btn-outline-primary me-2" onClick={() => setEditingReview(review)}>Edit</button>
+    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(review.reviewID)}>Delete</button>
+  </>
+)}
+
                       </div>
                     </>
                   )}

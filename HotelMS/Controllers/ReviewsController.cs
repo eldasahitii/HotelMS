@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using HotelMS.DTO; // or HotelMS.DTOs, depending on your folder's namespace
+
 
 namespace HotelMS.Controllers
 {
@@ -60,7 +62,13 @@ namespace HotelMS.Controllers
             if (string.IsNullOrEmpty(userIdClaim))
                 return Unauthorized("User ID not found in token.");
 
-            review.UserID = int.Parse(userIdClaim);
+            //  review.UserID = int.Parse(userIdClaim);
+            if (!int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Invalid user ID in token.");
+
+            review.UserID = userId; // ✅ safe assignment
+
+
             review.Date = DateTime.Now;
 
             _context.Reviews.Add(review);
@@ -95,7 +103,12 @@ namespace HotelMS.Controllers
                 return Unauthorized("User ID not found in token.");
             }
 
-            int userId = int.Parse(userIdClaim.Value);
+            //int userId = int.Parse(userIdClaim.Value);
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized("Invalid user ID in token.");
+
+
+
 
             var review = await _context.Reviews.FindAsync(updatedReview.ReviewID);
             if (review == null)
@@ -105,7 +118,7 @@ namespace HotelMS.Controllers
 
             if (review.UserID != userId)
             {
-                return Forbid("Only the creator of the review can edit it.");
+                return Forbid(); // ❗Don't pass a string here
             }
 
             review.Comment = updatedReview.Comment;
@@ -118,27 +131,25 @@ namespace HotelMS.Controllers
 
 
         [HttpPut("reply/{id}")]
-        public async Task<IActionResult> AddManagerReply(int id, [FromBody] string replyText)
+        public async Task<IActionResult> AddManagerReply(int id, [FromBody] ManagerReplyDTO dto)
+
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var roleIdClaim = User.FindFirst("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            var roleClaim = User.FindFirst("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            var allowedRoles = new List<string> { "RoomManager", "CleaningManager", "RestaurantManager", "ServiceManager" };
 
-            if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(roleIdClaim))
-                return Unauthorized("Missing user or role information.");
-
-            int roleId = int.Parse(roleIdClaim);
-
-            // Allow only these manager roles to reply
-            var allowedRoles = new List<int> { 2, 4, 5, 7 }; // RoomManager, CleaningManager, RestaurantManager, ServiceManager
-
-            if (!allowedRoles.Contains(roleId))
+            if (string.IsNullOrEmpty(roleClaim) || !allowedRoles.Contains(roleClaim))
                 return Forbid("Only managers can reply to reviews.");
+
+
+
 
             var review = await _context.Reviews.FindAsync(id);
             if (review == null)
                 return NotFound("Review not found.");
 
-            review.ManagerReply = replyText;
+            review.ManagerReply = dto.ReplyText;
+
             review.ReplyDate = DateTime.Now;
 
             await _context.SaveChangesAsync();

@@ -28,15 +28,20 @@ const Login = () => {
 
     try {
       const loginRes = await axios.post(
+      
         "https://localhost:7117/api/Auth/login",
         { email, password },
         { withCredentials: true }
       );
 
       if (loginRes.data.isLoggedIn) {
-        const meRes = await axios.get('https://localhost:7117/api/Auth/me', {
+       const meRes = await axios.get('https://localhost:7117/api/Auth/me', {
           withCredentials: true,
         });
+
+  
+
+
 
         const { role, userId } = meRes.data;
 
@@ -54,6 +59,7 @@ const Login = () => {
             break;
         }
       }
+      
     } catch (err) {
       const message = err.response?.data?.message || err.message;
       console.error('Login error:', message);
