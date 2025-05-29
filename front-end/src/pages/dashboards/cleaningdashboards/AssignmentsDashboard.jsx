@@ -115,6 +115,11 @@ export default function AssignmentsDashboard() {
     }
   };
 
+  const openEditForm = (assignment) => {
+    setEditingAssignment(assignment);
+    setEditRoomID(assignment.roomID);
+  };
+
   const handleConfirmUpdate = async () => {
     const updated = {
       roomID: parseInt(editRoomID),
@@ -156,16 +161,18 @@ export default function AssignmentsDashboard() {
     }
   };
 
-  const openEditForm = (assignment) => {
-    setEditingAssignment(assignment);
-    setEditRoomID(assignment.roomID);
-  };
-
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
+  };
+
+  // Helper to format date and time nicely
+  const formatDateTime = (datetimeString) => {
+    if (!datetimeString) return '-';
+    const dateObj = new Date(datetimeString);
+    return dateObj.toLocaleString();  // Shows date and time in local format
   };
 
   return (
@@ -327,24 +334,36 @@ export default function AssignmentsDashboard() {
                       <td>
                         <span className={`badge ${
                           a.status === 'Completed' ? 'bg-success' :
-                          a.status === 'InProgress' ? 'bg-info' :
-                          a.status === 'Pending' ? 'bg-secondary' :
-                          'bg-light text-dark'}`}>
+                            a.status === 'InProgress' ? 'bg-info' :
+                              a.status === 'Pending' ? 'bg-secondary' :
+                                'bg-light text-dark'}`}>
                           {a.status}
                         </span>
                       </td>
-                      <td>{a.assignedAt?.split('T')[0]}</td>
-                      <td>{a.startedAt?.split('T')[0] || '-'}</td>
-                      <td>{a.finishedAt?.split('T')[0] || '-'}</td>
+                      <td>{formatDateTime(a.assignedAt)}</td>
+                      <td>{formatDateTime(a.startedAt)}</td>
+                      <td>{formatDateTime(a.finishedAt)}</td>
                       <td>
                         <div className="btn-group">
-                          <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(a)}>
+                          <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => openEditForm(a)}
+                            disabled={a.status !== 'Pending'}
+                          >
                             <i className="bi bi-pencil"></i>
                           </button>
-                          <button className="btn btn-sm btn-outline-warning" onClick={() => handleCancelAssignment(a.cleaningAssignmentID)}>
+                          <button
+                            className="btn btn-sm btn-outline-warning"
+                            onClick={() => handleCancelAssignment(a.cleaningAssignmentID)}
+                            disabled={a.status !== 'Pending'}
+                          >
                             <i className="bi bi-x-circle"></i>
                           </button>
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.cleaningAssignmentID)}>
+                          <button
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => handleDelete(a.cleaningAssignmentID)}
+                            disabled={a.status === 'InProgress'}
+                          >
                             <i className="bi bi-trash"></i>
                           </button>
                         </div>
