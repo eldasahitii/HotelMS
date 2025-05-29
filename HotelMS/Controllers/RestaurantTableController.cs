@@ -26,7 +26,7 @@ namespace HotelMS.Controllers
                 var entity = new RestaurantTableDTO
                 {
                     TableNumber = dto.TableNumber,
-                    Status = dto.Status
+                    Capacity = dto.Capacity
                 };
 
                 var result = await _service.AddTable(entity);
@@ -62,6 +62,7 @@ namespace HotelMS.Controllers
             {
                 RestaurantTableID = t.RestaurantTableID,
                 TableNumber = t.TableNumber,
+                Capacity = t.Capacity,
                 Status = t.Status
             });
         }
@@ -101,7 +102,7 @@ namespace HotelMS.Controllers
                 var entity = new RestaurantTableDTO
                 {
                     TableNumber = dto.TableNumber,
-                    Status = dto.Status
+                    Capacity = dto.Capacity
                 };
 
                 var result = await _service.UpdateTable(id, entity);

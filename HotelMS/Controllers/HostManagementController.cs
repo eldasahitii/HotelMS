@@ -8,7 +8,7 @@ namespace HotelMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "RestaurantManager")]
+    [Authorize(Roles = "RestaurantManager, Admin")]
 
     public class HostManagementController : ControllerBase
     {
@@ -32,6 +32,26 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("assignHostRole")]
+        public async Task<IActionResult> AssignHostRole([FromBody] AssignHostDTO dto)
+        {
+            try
+            {
+                var result = await _service.AssignHostRoleByEmailAsync(dto.Email);
+                if (result == "User not found." || result == "RestaurantHost role not found.")
+                    return NotFound(result);
+                if (result == "User is already a host.")
+                    return BadRequest(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
 
         [HttpGet("getHost")]
         public async Task<IActionResult> GetHost(int id)
@@ -78,7 +98,7 @@ namespace HotelMS.Controllers
             }
         }
 
-        [HttpDelete("deleteHost")]
+        [HttpDelete("deleteHost/{id}")]
         public async Task<IActionResult> DeleteHost(int id)
         {
             try
@@ -90,7 +110,8 @@ namespace HotelMS.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                //return BadRequest(ex.Message);
+                return StatusCode(500, "Delete failed: " + ex.Message);
             }
         }
 

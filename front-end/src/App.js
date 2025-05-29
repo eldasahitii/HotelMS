@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Header from './Components/Header';
 import Footer from './Components/Footer';
 
-
-
 import axios from 'axios';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -22,16 +20,19 @@ import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/manage
 import RoomsPage from './pages/Rooms/RoomsPage';
 import RoomsDetails from './pages/Rooms/RoomsDetails';
 import ReservationPage from './pages/Rooms/ReservationPage';
-import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
-import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 import RecepsionistReservationDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RecepsionistReservationDashboard';
 import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/RoomAdmin/AdminRoomType';
 import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
 import ReviewDashboard from './pages/dashboards/roomdashboards/managerdashboards/ReviewDashboard';
+import RestaurantHomePage from './pages/restaurant/RestaurantHomePage';
+import RestaurantMenuPage from './pages/restaurant/RestaurantMenuPage';
+import RestaurantAdmin from './pages/dashboards/admindashboard/RestaurantAdmin/AdminRestaurant';
 
 // Lazy imports
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
 const CleaningStaffDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningStaffDashboard'));
+const RestaurantManagerDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/RestaurantManagerDashboard'));
+const RestaurantHostDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/RestaurantHostDashboard'));
 
 // Protected Route
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -61,7 +62,7 @@ function App() {
   return (
     <Router>
       <div>
-     {!["/login"].includes(window.location.pathname) && <Header />}
+        {!["/login"].includes(window.location.pathname) && <Header />}
 
         <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
           <Routes>
@@ -73,12 +74,18 @@ function App() {
             <Route path="/about" element={<AboutUs />} />
             <Route path="/room-manager/review-dashboard" element={<ReviewDashboard />} />
 
-
+            {/* Room Reservation route */}
             <Route path="/reserve" element={
               <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
                 <ReservationPage />
               </ProtectedRoute>
             } />
+
+            {/* Restaurant nested route */}
+            <Route path="/restaurant">
+              <Route index element={<RestaurantHomePage />} />
+              <Route path="menu" element={<RestaurantMenuPage />} />
+            </Route>
 
             <Route path="/room-manager-receptionist-management" element={
               <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
@@ -158,16 +165,20 @@ function App() {
               </ProtectedRoute>
             }/>
 
-            <Route path="*" element={<div>Page Not Found</div>} />
-                 </Routes>
-      </Suspense>
+            <Route path="/admin/restaurant-dashboard" element={
+              <ProtectedRoute allowedRoles={['Admin']}>
+                <RestaurantAdmin />
+              </ProtectedRoute>
+            }/>
 
-      <Footer /> {/* ✅ Shows on all pages except login if needed */}
-    </div>
-  </Router>
+            <Route path="*" element={<div>Page Not Found</div>} />
+          </Routes>
+        </Suspense>
+
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
 export default App;
-
-

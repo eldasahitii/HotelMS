@@ -580,9 +580,9 @@ public class Seed
             {
                 var tables = new List<RestaurantTable>
     {
-        new RestaurantTable { TableNumber = 1,  Status = "Available" },
-        new RestaurantTable { TableNumber = 2,  Status = "Available" },
-        new RestaurantTable { TableNumber = 3,  Status = "Available" }
+        new RestaurantTable { TableNumber = 1 },
+        new RestaurantTable { TableNumber = 2 },
+        new RestaurantTable { TableNumber = 3 }
     };
 
                 dataContext.RestaurantTables.AddRange(tables);
@@ -660,6 +660,24 @@ public class Seed
                     dataContext.HotelServiceReservations.Add(reservation);
                     dataContext.SaveChanges();
                 }
+            }
+
+            if (!dataContext.RestaurantSettings.Any())
+            {
+                var homepageSettings = new RestaurantSettings
+                {
+                    WelcomeTitle = "Welcome to Rolve Restaurant",
+                    WelcomeMessage = "Discover the essence of fine dining at Rolve Restaurant, where every dish is crafted with organic ingredients, timeless flavors, and a passion for culinary excellence.",
+                    WelcomeImageUrl = "/images/restaurant.jpg", // Path should match your frontend assets or be publicly hosted
+
+                    AboutTitle = "About Rolve Restaurant",
+                    AboutMessage = "At Rolve Restaurant, we believe food should not only taste amazing but also be nourishing. Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring every dish to life.",
+                    AboutImageUrl1 = "/images/restaurantTerrace.jpg",
+                    AboutImageUrl2 = "/images/restaurantInterior.jpg"
+                };
+
+                dataContext.RestaurantSettings.Add(homepageSettings);
+                dataContext.SaveChanges();
             }
         }
 

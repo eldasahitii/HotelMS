@@ -103,15 +103,21 @@ namespace HotelMS.Services
 
         public async Task<bool> DeleteHostAsync(int userId)
         {
-            var user = await _dbContext.Users.FindAsync(userId);
-            if (user == null) return false;
+            try
+            {
+                var user = await _dbContext.Users.FindAsync(userId);
+                if (user == null) return false;
 
-            var role = await _dbContext.Roles.FindAsync(user.RoleID);
-            if (role?.RoleType != "RestaurantHost") return false;
+                var role = await _dbContext.Roles.FindAsync(user.RoleID);
+                if (role?.RoleType != "RestaurantHost") return false;
 
-            _dbContext.Users.Remove(user);
-            await _dbContext.SaveChangesAsync();
-            return true;
+                _dbContext.Users.Remove(user);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            } catch (Exception ex)
+            {
+                throw new Exception("Failed to delete user due to related data: " + ex.Message);
+            }
         }
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
@@ -119,5 +125,25 @@ namespace HotelMS.Services
             passwordSalt = hmac.Key;
             passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
+
+        public async Task<string> AssignHostRoleByEmailAsync(string email)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                return "User not found.";
+
+            var hostRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "RestaurantHost");
+            if (hostRole == null)
+                return "RestaurantHost role not found.";
+
+            if (user.RoleID == hostRole.RoleID)
+                return "User is already a host.";
+
+            user.RoleID = hostRole.RoleID;
+            await _dbContext.SaveChangesAsync();
+
+            return "Host role assigned successfully.";
+        }
+
     }
 }

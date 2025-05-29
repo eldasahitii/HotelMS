@@ -9,7 +9,6 @@ const Header = () => {
   const navLinkStyle = (path) =>
     `nav-link px-3 fw-semibold fs-6 ${location.pathname === path ? 'text-dark border-bottom border-2 border-dark' : 'text-secondary'}`;
 
-
   if (location.pathname === '/login') {
     return null;
   }
@@ -26,7 +25,6 @@ const Header = () => {
             style={{ height: '120px' }}
             className="img-fluid"
           />
-          
         </Link>
 
         {/* Hamburger button */}
@@ -68,4 +66,5 @@ const Header = () => {
 };
 
 export default Header;
+
 
