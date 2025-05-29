@@ -21,8 +21,7 @@ export default function AboutUs() {
   const [formData, setFormData] = useState({ comment: '', rating: 0, reviewCategoryID: '' });
   const [categories, setCategories] = useState([]);
   const [editingReview, setEditingReview] = useState(null);
-  const [replyText, setReplyText] = useState('');
-const [selectedReviewId, setSelectedReviewId] = useState(null);
+
 const [roleId, setRoleId] = useState(null);
 
 
@@ -48,21 +47,7 @@ const fetchRole = async () => {
 
 
 
-const submitReply = async () => {
-  if (!selectedReviewId || !replyText) return;
 
-  try {
-    await axios.put(`/api/reviews/reply/${selectedReviewId}`, JSON.stringify(replyText), {
-      headers: { "Content-Type": "application/json" },
-      withCredentials: true
-    });
-    setReplyText('');
-    setSelectedReviewId(null);
-    fetchReviews(); // refresh with new reply
-  } catch (err) {
-    console.error("Error submitting manager reply:", err);
-  }
-};
 
 
 
@@ -315,39 +300,6 @@ const submitReply = async () => {
 )}
 
 
-{([2, 4, 5, 7].includes(roleId) && (!review.managerReply || review.managerReply.trim() === "")) && (
-  <div className="mt-3">
-    {selectedReviewId !== review.reviewID ? (
-      <button
-        className="btn btn-sm btn-outline-success"
-        onClick={() => setSelectedReviewId(review.reviewID)}
-      >
-        Reply as Manager
-      </button>
-    ) : (
-      <>
-        <textarea
-          className="form-control mb-2"
-          rows="2"
-          value={replyText}
-          onChange={(e) => setReplyText(e.target.value)}
-        />
-        <button
-          className="btn btn-sm btn-success me-2"
-          onClick={submitReply}
-        >
-          Submit Reply
-        </button>
-        <button
-          className="btn btn-sm btn-secondary"
-          onClick={() => setSelectedReviewId(null)}
-        >
-          Cancel
-        </button>
-      </>
-    )}
-  </div>
-)}
 
 
 
