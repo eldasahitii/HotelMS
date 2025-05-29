@@ -11,6 +11,9 @@ namespace HotelMS.Data.Interfaces
 
         Task<HostDTO> UpdateHostAsync(int id, HostDTO updatedHost);
 
+        Task<string> AssignHostRoleByEmailAsync(string email);
+
+
 
         Task<HostDTO> CreateHostAsync(HostDTO hostDto);
 

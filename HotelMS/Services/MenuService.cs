@@ -53,18 +53,45 @@ namespace HotelMS.Services
                 throw new Exception("Error retrieving menu item.");
             }
         }
-        public async Task<IEnumerable<MenuItem>> GetAllMenuItems()
+
+        public async Task<IEnumerable<MenuItemDTO>> GetAllMenuItems()
         {
             try
             {
-                return await _dbContext.MenuItems.ToListAsync();
+                return await _dbContext.MenuItems
+                    .Include(mi => mi.MenuCategory)
+                    .Select(mi => new MenuItemDTO
+                    {
+                        MenuItemID = mi.MenuItemID,
+                        Name = mi.Name,
+                        Description = mi.Description,
+                        Price = mi.Price, // Frontend can choose to ignore this
+                        image_url = mi.image_url,
+                        is_available = mi.is_available,
+                        CategoryName = mi.MenuCategory.Name
+                    })
+                    .ToListAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 throw new Exception("Error retrieving menu items.");
             }
         }
+
+
+        //public async Task<IEnumerable<MenuItem>> GetAllMenuItems()
+        //{
+        //    try
+        //    {
+        //        return await _dbContext.MenuItems.ToListAsync();
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //        throw new Exception("Error retrieving menu items.");
+        //    }
+        //}
 
         public async Task<MenuItem> UpdateMenuItem(int id, MenuItemCreateDTO request)
         {

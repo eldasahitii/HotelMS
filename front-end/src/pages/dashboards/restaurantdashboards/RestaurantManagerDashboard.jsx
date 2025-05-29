@@ -12,19 +12,25 @@ export default function RestaurantManagerDashboard() {
   const [editingHost, setEditingHost] = useState(null);
   const [editData, setEditData] = useState({firstName: '', lastName: '', email: '' });
  
+
+  const [users, setUsers] = useState([]);
+  const [selectedUserEmail, setSelectedUserEmail] = useState("");
   const [menuItems, setMenuItems] = useState([]);
   const [newMenuItem, setNewMenuItem] = useState({name: '', description: '', price: '', image_url:'',is_available:true, menuCategoryID: 1});
   const [editingMenuItem, setEditingMenuItem] = useState(null);
   const [editMenuData, setEditMenuData] = useState({name: '', description: '', price: '', image_url: '', is_available: true, menuCategoryID: 1});
 
   const [tables, setTables] = useState([]);
-  const [newTable, setNewTable] = useState({tableNumber: '', status: 'Available'});
+  const [newTable, setNewTable] = useState({tableNumber: '', capacity: ''});
   const [editingTable, setEditingTable] = useState(null);
-  const [editTableData, setEditTableData] = useState({tableNumber: '', status: 'Available'});
+  const [editTableData, setEditTableData] = useState({tableNumber: '', capacity: ''});
+
+  const [reservations, setReservations] = useState([]);
  
+  const [tableFilter, setTableFilter] = useState("All");
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const [searchId, setSearchId] = useState('');
+  const [searchName, setSearchName] = useState('');
 
   const fetchHosts = async() => {
     try {
@@ -35,12 +41,22 @@ export default function RestaurantManagerDashboard() {
       setMessageType("danger");
     }
   };
+
+   const fetchUsers = async () => {
+    try {
+      const res = await axios.get("/api/User/GetAllCustomers", {
+        withCredentials: true
+      });
+      setUsers(res.data);
+    } catch {
+      setMessage("Failed to fetch users.");
+      setMessageType("danger");
+    }
+  };
   const fetchMenuItems = async () => {
     try {
       const response = await axios.get("/api/MenuItem/getAllMenuItems", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+        withCredentials: true
       });
       setMenuItems(response.data);
     } catch {
@@ -57,33 +73,76 @@ export default function RestaurantManagerDashboard() {
       setMessageType("danger");
     }
   };
+  const fetchReservations = async () => {
+    try {
+      const response = await axios.get("/api/Host/getAllReservations", {
+        withCredentials: true
+      });
+      setReservations(response.data);
+    } catch {
+      setMessage("Failed to fetch reservations.");
+      setMessageType("danger");
+    }
+  };
    useEffect(() => {
     fetchHosts();
+    fetchUsers();
     fetchMenuItems();
     fetchTables();
   }, []);
 
-  const handleAddHost = async () => {
-    if(!newHost.firstName || !newHost.lastName || !newHost.email || !newHost.password) {
-      setMessage("Please fill all fields.");
-      setMessageType("danger");
-      return;
+    useEffect(() => {
+    if (message) {
+      const timeout = setTimeout(() => setMessage(''), 3000);
+      return () => clearTimeout(timeout);
     }
+  }, [message]);
+
+  
+
+  useEffect(() => {
+    if(activeSection === "reservations") {
+      fetchReservations();
+    }
+  }, [activeSection]);
+
+  // const handleAddHost = async () => {
+  //   if(!newHost.firstName || !newHost.lastName || !newHost.email || !newHost.password) {
+  //     setMessage("Please fill all fields.");
+  //     setMessageType("danger");
+  //     return;
+  //   }
+  //   try {
+  //     await axios.post("/api/HostManagement/addHost", newHost);
+  //     setMessage("Host added successfully.");
+  //      setMessageType("success");
+  //     setNewHost({ firstName: '', lastName: '', email: '', password: '' });
+  //     fetchHosts();
+  //   } catch (error) {
+  //     setMessage("Failed to add host.");
+  //     setMessageType("danger");
+  //   }
+  // };
+  const handleAssignHostRole = async () => {
+    if (!selectedUserEmail) return;
     try {
-      await axios.post("/api/HostManagement/addHost", newHost);
-      setMessage("Host added successfully.");
-       setMessageType("success");
-      setNewHost({ firstName: '', lastName: '', email: '', password: '' });
-      fetchHosts();
-    } catch (error) {
-      setMessage("Failed to add host.");
+      await axios.post("/api/HostManagement/assignHostRole", { email: selectedUserEmail });
+      setMessage("Host role assigned successfully.");
+      setMessageType("success");
+      setSelectedUserEmail("");
+      fetchHosts(); 
+    } catch (err) {
+      setMessage(err.response?.data || "Failed to assign host role.");
       setMessageType("danger");
     }
   };
 
   const handleDeleteHost = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this host?")) return;
     try {
-      await axios.delete(`/api/HostManagement/deleteHost?id=${id}`);
+      await axios.delete(`/api/HostManagement/deleteHost/${id}`, {
+        withCredentials: true
+      });
       setMessage("Host deleted successfully.");
       setMessageType("success");
       fetchHosts();
@@ -111,24 +170,15 @@ export default function RestaurantManagerDashboard() {
   }
 };
 
-  const handleSearchById = async () => {
-    if (!searchId) return;
-    try {
-      const res = await axios.get(`/api/HostManagement/getHost?id=${searchId}`);
-      setHosts(res.data ? [res.data] : []);
-    } catch (error) {
-      setMessage("Host not found.");
-      setMessageType("danger");
-    }
-  };
-
   const handleAddMenuItem = async () => {
     try {
-      await axios.post("/api/MenuItem/addMenuItem", newMenuItem, {
-        headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
-      });
+      await axios.post("/api/MenuItem/addMenuItem", {
+  ...newMenuItem,
+  price: Number(newMenuItem.price),
+}, {
+  withCredentials: true
+});
+
       setMessage("Menu item added successfully.");
       setMessageType("success");
       setNewMenuItem({ name: '', description: '', price: '', image_url: '', is_available: true, menuCategoryID: 1});
@@ -151,35 +201,39 @@ export default function RestaurantManagerDashboard() {
   };
 
   const handleUpdateMenuItem = async () => {
-    try {
-      await axios.put(`/api/MenuItem/updateMenuItem?id=${editingMenuItem.menuItemID}`, editMenuData, {
-        headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
+  try {
+    await axios.put(
+      `/api/MenuItem/updateMenuItem?id=${editingMenuItem.menuItemID}`,
+      {
+        name: editMenuData.name,
+        description: editMenuData.description,
+        price: Number(editMenuData.price),
+        image_url: editMenuData.image_url,          
+        is_available: editMenuData.is_available,  
+        menuCategoryID: Number(editMenuData.menuCategoryID)
+      },
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       }
-      });
-
-      const updated = menuItems.map(item =>
-      item.menuItemID === editingMenuItem.menuItemID
-        ? { ...item, ...editMenuData }
-        : item
     );
-    setMenuItems(updated);
 
-      setMessage("Menu item updated successfully.");
-      setMessageType("success");
-      setEditingMenuItem(null);
-      fetchMenuItems();
-    } catch(error) {
-      setMessage("Failed to update menu item.");
-      setMessageType("danger");
-    }
-  };
+    setMessage("Menu item updated successfully.");
+    setMessageType("success");
+    setEditingMenuItem(null);
+    fetchMenuItems();
+  } catch (error) {
+    setMessage("Failed to update menu item.");
+    setMessageType("danger");
+    console.error("Update error:", error.response?.data || error.message);
+  }
+};
+
   const handleDeleteMenuItem = async(id) => {
+    if (!window.confirm("Are you sure you want to delete this menu item?")) return;
     try {
       await axios.delete(`/api/MenuItem/deleteMenuItem?id=${id}`, {
-        headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
+        withCredentials: true
       });
       setMessage("Menu Item deleted.");
       setMessageType("success");
@@ -191,11 +245,17 @@ export default function RestaurantManagerDashboard() {
   };
 
   const handleAddTable = async () => {
+
+    const tableNumber = parseInt(newTable.tableNumber);
+    const capacity = parseInt(newTable.capacity);
     try {
-      await axios.post("/api/RestaurantTable/addTable", newTable);
+      await axios.post("/api/RestaurantTable/addTable",  {
+        tableNumber,
+        capacity
+      });
       setMessage("Table added successfully.");
       setMessageType("success");
-      setNewTable({tableNumber: '', status: 'Available'});
+      setNewTable({tableNumber: '', capacity: ''});
       fetchTables();
     } catch {
       setMessage("Failed to add table.");
@@ -204,6 +264,7 @@ export default function RestaurantManagerDashboard() {
   };
 
   const handleDeleteTable = async (id) => {
+     if (!window.confirm("Are you sure you want to delete this table?")) return;
     try {
       await axios.delete(`/api/RestaurantTable/deleteTable?id=${id}`);
       setMessage("Table deleted.");
@@ -216,11 +277,16 @@ export default function RestaurantManagerDashboard() {
   };
   const openEditTable = (table) => {
     setEditingTable(table);
-    setEditTableData({ tableNumber: table.tableNumber, status: table.status});
+    setEditTableData({ tableNumber: table.tableNumber, capacity: table.capacity});
   };
   const handleUpdateTable = async () => {
+    const tableNumber = parseInt(editTableData.tableNumber);
+    const capacity = parseInt(editTableData.capacity);
     try {
-      await axios.put(`/api/RestaurantTable/updateTable?id=${editingTable.restaurantTableID}`, editTableData);
+      await axios.put(`/api/RestaurantTable/updateTable?id=${editingTable.restaurantTableID}`, {
+        tableNumber,
+        capacity
+      });
       setMessage("Table updated successfully");
       setMessageType("success");
       setEditingTable(null);
@@ -232,9 +298,42 @@ export default function RestaurantManagerDashboard() {
   };
 
   const navigate = useNavigate();
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
+ const handleLogout = async () => {
+  try {
+    await axios.get("/api/Auth/logout", { withCredentials: true });
+  } catch (err) {
+    console.error("Logout error", err);
+  }
+
+  localStorage.clear();
+
+ 
+  navigate("/login");
+
+  setTimeout(() => {
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+  }, 0);
+};
+
+const safeInputValue = (value) => value ?? '';
+  const safeNumberValue = (value) => value === '' || value === null || value === undefined ? '' : Number(value);
+  
+
+  const sanitizeObjectFields = (obj, schema) => {
+    const safe = {};
+    for (const key in schema) {
+      if (typeof schema[key] === 'number') {
+        safe[key] = Number(obj[key] ?? schema[key]);
+      } else if (typeof schema[key] === 'boolean') {
+        safe[key] = obj[key] ?? schema[key];
+      } else {
+        safe[key] = obj[key] ?? '';
+      }
+    }
+    return safe;
   };
 
   return (
@@ -252,6 +351,10 @@ export default function RestaurantManagerDashboard() {
             <button className={`nav-link text-white ${activeSection === "tables" ? "fw-bold" : ""}`} onClick={() => setActiveSection("tables")}>
               <i className="bi bi-table me-2"></i>Tables
              </button>
+            <button className={`nav-link text-white ${activeSection === "reservations" ? "fw-bold" : ""}`} onClick={() => setActiveSection("reservations")}>
+              <i className="bi bi-calendar-check me-2"></i> Reservations
+            </button>
+
           </li>
           <hr className="text-white" />
           <button className="btn btn-outline-light w-100" onClick={handleLogout}>
@@ -264,110 +367,152 @@ export default function RestaurantManagerDashboard() {
           <i className="bi bi-people-fill me-2"></i>Restaurant Manager
         </h2>
 
+
         {activeSection === "hosts" && (
-         <>
-            <h2 className="fw-bold text-primary mb-4">
-               <i className="bi bi-people-fill me-2"></i>Restaurant Hosts
-            </h2>
+  <>
+      {message && (
+      <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+        {message}
+        <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
+      </div>
+    )}
+    <div className="card mb-4">
+      <div className="card-header bg-info text-white">
+        <i className="bi bi-person-plus-fill me-2"></i>Assign Host Role to Existing User
+      </div>
 
-        {message && (
-          <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-            {message}
-            <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-          </div>
-        )}
-
-        
-        <div className="card mb-4">
-          <div className="card-header bg-success text-white">
-            <i className="bi bi-person-plus-fill me-2"></i>Add New Host
-          </div>
-          <div className="card-body">
-            <input className="form-control mb-2" placeholder="First Name" value={newHost.firstName} onChange={e => setNewHost({ ...newHost, firstName: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Last Name" value={newHost.lastName} onChange={e => setNewHost({ ...newHost, lastName: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Email" value={newHost.email} onChange={e => setNewHost({ ...newHost, email: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Password" type="password" value={newHost.password} onChange={e => setNewHost({ ...newHost, password: e.target.value })} />
-            <button className="btn btn-success w-100" onClick={handleAddHost}><i className="bi bi-check-circle me-2"></i>Add Host</button>
-          </div>
-        </div>
-
-        <div className="card mb-4">
-          <div className="card-body d-flex gap-2">
-            <input type="number" className="form-control" placeholder="Search by ID" value={searchId} onChange={e => setSearchId(e.target.value)} />
-            <button className="btn btn-outline-dark" onClick={handleSearchById}>
-              <i className="bi bi-search"></i> Search
-            </button>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-header bg-primary text-white">
-            <i className="bi bi-people-fill me-2"></i>All Hosts
-          </div>
-          <div className="card-body p-0">
-            <table className="table mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {hosts.map((host, index) => (
-                  <tr key={host.userID}>
-                    <td>{index + 1}</td>
-                    <td>{host.firstName} {host.lastName}</td>
-                    <td>{host.email}</td>
-                    <td>
-                      <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteHost(host.userID)}><i className="bi bi-trash"></i></button>
-                      <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(host)}><i className="bi bi-pencil-square"></i></button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        </>
-        )}
-
-       {editingHost && (
-  <div className="card mt-4">
-    <div className="card-header bg-warning text-dark">
-      <i className="bi bi-pencil-square me-2"></i>Edit Host
+      <div className="card-body">
+        <select
+          className="form-select mb-3"
+          value={selectedUserEmail}
+          onChange={(e) => setSelectedUserEmail(e.target.value)}
+        >
+          <option value="">Select User</option>
+          {users.map((user) => (
+            <option key={user.userID} value={user.email}>
+              {user.firstName} {user.lastName} ({user.email})
+            </option>
+          ))}
+        </select>
+        <button
+          className="btn btn-info w-100"
+          disabled={!selectedUserEmail}
+          onClick={handleAssignHostRole}
+        >
+          Assign Host Role
+        </button>
+      </div>
     </div>
-    <div className="card-body">
-      <input
-        className="form-control mb-2"
-        placeholder="First Name"
-        value={editData.firstName}
-        onChange={e => setEditData({ ...editData, firstName: e.target.value })}
-      />
-      <input
-        className="form-control mb-2"
-        placeholder="Last Name"
-        value={editData.lastName}
-        onChange={e => setEditData({ ...editData, lastName: e.target.value })}
-      />
-      <input
-        className="form-control mb-2"
-        placeholder="Email"
-        value={editData.email}
-        onChange={e => setEditData({ ...editData, email: e.target.value })}
-      />
-      <button className="btn btn-primary me-2" onClick={handleConfirmUpdate}>
-        <i className="bi bi-check2"></i> Save
-      </button>
-      <button className="btn btn-secondary" onClick={() => setEditingHost(null)}>
-        <i className="bi bi-x"></i> Cancel
-      </button>
-    </div>
+
+    <div className="card mb-4">
+  <div className="card-body d-flex gap-2 align-items-center">
+    <input
+      type="text"
+      className="form-control"
+      placeholder="Search by Name"
+      value={searchName}
+      onChange={e => setSearchName(e.target.value)}
+    />
+    <button
+      className="btn btn-primary"
+      onClick={() => fetchHosts()} 
+    >
+      Search
+    </button>
   </div>
+</div>
 
 
-        )}
+    <div className="card">
+      <div className="card-header bg-primary text-white">
+        <i className="bi bi-people-fill me-2"></i>All Hosts
+      </div>
+      <div className="card-body p-0">
+        <table className="table mb-0">
+          <thead className="table-light">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {hosts
+              .filter((h) =>
+                `${h.firstName} ${h.lastName}`
+                  .toLowerCase()
+                  .includes(searchName.toLowerCase())
+              )
+              .map((host, index) => (
+                <tr key={host.userID}>
+                  <td>{index + 1}</td>
+                  <td>{host.firstName} {host.lastName}</td>
+                  <td>{host.email}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-outline-danger me-2"
+                      onClick={() => handleDeleteHost(host.userID)}
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={() => openEditForm(host)}
+                    >
+                      <i className="bi bi-pencil-square"></i>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {editingHost && (
+      <div className="card mt-4">
+        <div className="card-header bg-warning text-dark">
+          <i className="bi bi-pencil-square me-2"></i>Edit Host
+        </div>
+
+         {message && (
+      <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+        {message}
+        <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
+      </div>
+    )}
+        <div className="card-body">
+          <input
+            className="form-control mb-2"
+            placeholder="First Name"
+            value={safeInputValue(editData.firstName)}
+            onChange={(e) => setEditData({ ...editData, firstName: e.target.value })}
+          />
+          <input
+            className="form-control mb-2"
+            placeholder="Last Name"
+            value={safeInputValue(editData.lastName)}
+            onChange={(e) => setEditData({ ...editData, lastName: e.target.value })}
+          />
+          <input
+            className="form-control mb-2"
+            placeholder="Email"
+            value={safeInputValue(editData.email)}
+            onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+          />
+          <button className="btn btn-primary me-2" onClick={handleConfirmUpdate}>
+            <i className="bi bi-check2"></i> Save
+          </button>
+          <button className="btn btn-secondary" onClick={() => setEditingHost(null)}>
+            <i className="bi bi-x"></i> Cancel
+          </button>
+        </div>
+      </div>
+    )}
+  </>
+)}
+
         {activeSection === "menu" && (
         <>
          <h2 className="fw-bold text-primary mb-4">
@@ -385,11 +530,11 @@ export default function RestaurantManagerDashboard() {
     <i className="bi bi-plus-circle me-2"></i> Add Menu Item
   </div>
   <div className="card-body">
-    <input className="form-control mb-2" placeholder="Name" value={newMenuItem.name} onChange={e => setNewMenuItem({ ...newMenuItem, name: e.target.value })} />
-    <input className="form-control mb-2" placeholder="Description" value={newMenuItem.description} onChange={e => setNewMenuItem({ ...newMenuItem, description: e.target.value })} />
-    <input className="form-control mb-2" placeholder="Price" type="number" value={newMenuItem.price} onChange={e => setNewMenuItem({ ...newMenuItem, price: e.target.value })} />
-    <input className="form-control mb-2" placeholder="Image URL" value={newMenuItem.image_url} onChange={e => setNewMenuItem({ ...newMenuItem, image_url: e.target.value })} />
-    <input className="form-control mb-2" placeholder="Category ID" type="number" value={newMenuItem.menuCategoryID} onChange={e => setNewMenuItem({ ...newMenuItem, menuCategoryID: e.target.value })} />
+    <input className="form-control mb-2" placeholder="Name" value={safeInputValue(newMenuItem.name)} onChange={e => setNewMenuItem({ ...newMenuItem, name: e.target.value })} />
+    <input className="form-control mb-2" placeholder="Description" value={safeInputValue(newMenuItem.description)} onChange={e => setNewMenuItem({ ...newMenuItem, description: e.target.value })} />
+    <input className="form-control mb-2" placeholder="Price" type="number" value={safeNumberValue(newMenuItem.price)} onChange={e => setNewMenuItem({ ...newMenuItem, price: e.target.value })} />
+    <input className="form-control mb-2" placeholder="Image URL" value={safeInputValue(newMenuItem.image_url)} onChange={e => setNewMenuItem({ ...newMenuItem, image_url: e.target.value })} />
+    <input className="form-control mb-2" placeholder="Category ID" type="number" value={safeNumberValue(newMenuItem.menuCategoryID)} onChange={e => setNewMenuItem({ ...newMenuItem, menuCategoryID: e.target.value })} />
     <div className="form-check mb-2">
       <input className="form-check-input" type="checkbox" checked={newMenuItem.is_available} onChange={e => setNewMenuItem({ ...newMenuItem, is_available: e.target.checked })} />
       <label className="form-check-label">Available</label>
@@ -410,6 +555,7 @@ export default function RestaurantManagerDashboard() {
           <th>Name</th>
           <th>Price</th>
           <th>Available</th>
+          <th>Image</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -418,8 +564,11 @@ export default function RestaurantManagerDashboard() {
           <tr key={item.menuItemID}>
             <td>{index + 1}</td>
             <td>{item.name}</td>
-            <td>${item.price.toFixed(2)}</td>
+            <td>${Number(item.price).toFixed(2)}</td>
             <td>{item.is_available ? "Yes" : "No"}</td>
+            <td>
+              <img src={item.image_url} alt={item.name} loading="lazy" style={{ width: "80px", height: "auto", borderRadius: "8px", objectFit: "cover" }}/>
+            </td>
             <td>
               <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteMenuItem(item.menuItemID)}><i className="bi bi-trash"></i></button>
               <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditMenuItem(item)}><i className="bi bi-pencil-square"></i></button>
@@ -437,13 +586,13 @@ export default function RestaurantManagerDashboard() {
       <i className="bi bi-pencil-square me-2"></i>Edit Menu Item
     </div>
     <div className="card-body">
-      <input className="form-control mb-2" value={editMenuData.name} onChange={e => setEditMenuData({ ...editMenuData, name: e.target.value })} />
-      <input className="form-control mb-2" value={editMenuData.description} onChange={e => setEditMenuData({ ...editMenuData, description: e.target.value })} />
-      <input className="form-control mb-2" type="number" value={editMenuData.price} onChange={e => setEditMenuData({ ...editMenuData, price: e.target.value })} />
-      <input className="form-control mb-2" value={editMenuData.image_url} onChange={e => setEditMenuData({ ...editMenuData, image_url: e.target.value })} />
-      <input className="form-control mb-2" type="number" value={editMenuData.menuCategoryID} onChange={e => setEditMenuData({ ...editMenuData, menuCategoryID: e.target.value })} />
+      <input className="form-control mb-2" value={safeInputValue(editMenuData.name)} onChange={e => setEditMenuData({ ...editMenuData, name: e.target.value })} />
+      <input className="form-control mb-2" value={safeInputValue(editMenuData.description)} onChange={e => setEditMenuData({ ...editMenuData, description: e.target.value })} />
+      <input className="form-control mb-2" type="number" value={safeNumberValue(editMenuData.price)} onChange={e => setEditMenuData({ ...editMenuData, price: e.target.value })} />
+      <input className="form-control mb-2" value={safeInputValue(editMenuData.image_url)} onChange={e => setEditMenuData({ ...editMenuData, image_url: e.target.value })} />
+      <input className="form-control mb-2" type="number" value={safeNumberValue(editMenuData.menuCategoryID)} onChange={e => setEditMenuData({ ...editMenuData, menuCategoryID: e.target.value })} />
       <div className="form-check mb-2">
-        <input className="form-check-input" type="checkbox" checked={editMenuData.is_available} onChange={e => setEditMenuData({ ...editMenuData, is_available: e.target.checked })} />
+        <input className="form-check-input" type="checkbox" checked={editMenuData.is_available || ''} onChange={e => setEditMenuData({ ...editMenuData, is_available: e.target.checked })} />
         <label className="form-check-label">Available</label>
       </div>
       <button className="btn btn-primary me-2" onClick={handleUpdateMenuItem}>Save</button>
@@ -472,11 +621,27 @@ export default function RestaurantManagerDashboard() {
         <i className="bi bi-plus-circle me-2"></i> Add Table
       </div>
       <div className="card-body">
-        <input className="form-control mb-2" type="number" placeholder="Table Number" value={newTable.tableNumber} onChange={e => setNewTable({ ...newTable, tableNumber: e.target.value })} />
-        <input className="form-control mb-2" placeholder="Status" value={newTable.status} onChange={e => setNewTable({ ...newTable, status: e.target.value })} />
+        <input className="form-control mb-2" type="number" placeholder="Table Number" value={safeNumberValue(newTable.tableNumber)} onChange={e => setNewTable({ ...newTable, tableNumber: e.target.value })} />
+        <input className="form-control mb-2" placeholder="Capacity" value={safeNumberValue(newTable.capacity)} onChange={e => setNewTable({ ...newTable, capacity: e.target.value })} />
         <button className="btn btn-success w-100" onClick={handleAddTable}>Add Table</button>
       </div>
     </div>
+
+    <div className="card mt-4">
+  <div className="card-body d-flex gap-2 align-items-center">
+    <label className="form-label mb-0">Filter by Status:</label>
+    <select
+      className="form-select w-auto"
+      value={tableFilter}
+      onChange={(e) => setTableFilter(e.target.value)}
+    >
+      <option value="All">All</option>
+      <option value="Available">Available</option>
+      <option value="Booked">Booked</option>
+    </select>
+  </div>
+</div>
+
 
     <div className="card mt-4">
       <div className="card-header bg-primary text-white">
@@ -489,15 +654,19 @@ export default function RestaurantManagerDashboard() {
               <th>#</th>
               <th>Table Number</th>
               <th>Status</th>
+              <th>Capacity</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {tables.map((table, index) => (
+            {tables
+            .filter(table => tableFilter === "All" ? true : table.status.toLowerCase() === tableFilter.toLowerCase())
+            .map((table, index) => (
               <tr key={table.restaurantTableID}>
                 <td>{index + 1}</td>
                 <td>{table.tableNumber}</td>
                 <td>{table.status}</td>
+                <td>{table.capacity}</td>
                 <td>
                   <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteTable(table.restaurantTableID)}><i className="bi bi-trash"></i></button>
                   <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditTable(table)}><i className="bi bi-pencil-square"></i></button>
@@ -515,13 +684,58 @@ export default function RestaurantManagerDashboard() {
           <i className="bi bi-pencil-square me-2"></i>Edit Table
         </div>
         <div className="card-body">
-          <input className="form-control mb-2" type="number" value={editTableData.tableNumber} onChange={e => setEditTableData({ ...editTableData, tableNumber: e.target.value })} />
-          <input className="form-control mb-2" value={editTableData.status} onChange={e => setEditTableData({ ...editTableData, status: e.target.value })} />
+          <input className="form-control mb-2" type="number" value={safeNumberValue(editTableData.tableNumber)} onChange={e => setEditTableData({ ...editTableData, tableNumber: e.target.value })} />
+          <input className="form-control mb-2" value={safeNumberValue(editTableData.capacity)} onChange={e => setEditTableData({ ...editTableData, capacity: e.target.value })} />
           <button className="btn btn-primary me-2" onClick={handleUpdateTable}>Save</button>
           <button className="btn btn-secondary" onClick={() => setEditingTable(null)}>Cancel</button>
         </div>
       </div>
     )}
+  </>
+)}
+
+
+{activeSection === "reservations" && (
+  <>
+    <h2 className="fw-bold text-primary mb-4">
+      <i className="bi bi-calendar-check me-2"></i>All Reservations
+    </h2>
+
+    {message && (
+      <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+        {message}
+        <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
+      </div>
+    )}
+
+    <div className="card mt-4">
+      <div className="card-body p-0">
+        <table className="table mb-0">
+          <thead className="table-light">
+            <tr>
+              <th>#</th>
+              <th>Guest Name</th>
+              <th>Email</th>
+              <th>Table Number</th>
+              <th>Date & Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reservations.map((res, index) => (
+              <tr key={res.reservationID}>
+                <td>{index + 1}</td>
+                <td>{res.guestName}</td>
+                <td>{res.email}</td>
+                <td>{res.tableNumber}</td>
+                <td>{new Date(res.dateTime).toLocaleString()}</td>
+                <td>{res.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </>
 )}
 
