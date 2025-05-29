@@ -2,72 +2,101 @@
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HotelMS.Services
 {
-    public class HotelServiceService : IHotelServiceService
+    public class HotelServiceService : IHotelService
     {
-        private readonly DataContext _context;
+        private readonly DataContext _dbContext;
 
-            public HotelServiceService(DataContext context)
+        public HotelServiceService(DataContext dbContext)
         {
-            _context = context;
-
+            _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<HotelService>> GetServicesByTypeAsync(string type)
+        public async Task<HotelService> AddService(HotelServiceDTO request)
         {
-            return await _context.HotelServices
-                .Where(s => s.Type == type && s.IsActive)
-                .Include(s => s.HotelServiceSchedules)
-                .ToListAsync();
+            try
+            {
+                // Map DTO to Entity
+                var service = request.Adapt<HotelService>();
+
+                _dbContext.HotelServices.Add(service);
+                await _dbContext.SaveChangesAsync();
+
+                return service;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                throw new Exception("An error occurred while adding the service.");
+            }
         }
 
-        public async Task<HotelService> GetServiceByIdAsync(int id)
+        public async Task<HotelService> GetService(int id)
         {
-            return await _context.HotelServices
-                .Include(s => s.HotelServiceSchedules)
-                .FirstOrDefaultAsync(s => s.Id == id);
+            try
+            {
+                var service = await _dbContext.HotelServices.FindAsync(id);
+                return service;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error occurred while retrieving the service.");
+            }
         }
 
-        public async Task<IEnumerable<HotelServiceDetail>> GetSchedulesByServiceIdAsync(int serviceId)
+        public async Task<IEnumerable<HotelService>> GetAllServices()
         {
-            return await _context.HotelServiceSchedules
-                .Where(s => s.HotelServiceId == serviceId && s.IsAvailable)
-                .ToListAsync();
+            try
+            {
+                return await _dbContext.HotelServices.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error occurred while retrieving all services.");
+            }
         }
 
-        public async Task<HotelServiceReservation> ReserveServiceAsync (HotelServiceReservation reservation)
+        public async Task<HotelService> UpdateService(int id, HotelServiceDTO request)
         {
-            _context.HotelServiceReservations.Add(reservation);
-            await _context.SaveChangesAsync();
-            return reservation;
-        }
-
-        public async Task<HotelService> UpdateServiceAsync(int id, HotelService updatedService)
-        {
-            var service = await _context.HotelServices.FindAsync(id);
+            var service = await _dbContext.HotelServices.FindAsync(id);
             if (service == null) return null;
 
-            service.Name = updatedService.Name;
-            service.Description = updatedService.Description;
-            
+            // SAFELY update properties (not the ID!)
+            service.Name = request.Name;
+            service.Description = request.Description;
+            service.HeroImageUrl = request.HeroImageUrl;
 
-            await _context.SaveChangesAsync();
+
+            await _dbContext.SaveChangesAsync();
             return service;
         }
 
-        public async Task<bool> DeleteServiceAsync(int id)
+        public async Task DeleteService(int id)
         {
-            var service = await _context.HotelServices.FindAsync(id);
-            if (service == null) return false;
-
-            _context.HotelServices.Remove(service);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                var service = await _dbContext.HotelServices.FindAsync(id);
+                if (service != null)
+                {
+                    _dbContext.HotelServices.Remove(service);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("An error occurred while deleting the service.");
+            }
         }
-
     }
 }
