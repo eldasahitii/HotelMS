@@ -2,7 +2,6 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './Components/Header';
 import Footer from './Components/Footer';
-
 import axios from 'axios';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -62,11 +61,12 @@ function App() {
   return (
     <Router>
       <div>
-        {!["/login"].includes(window.location.pathname) && <Header />}
+        {!["/login"].includes(window.location.pathname) && <Header /> }
+
 
         <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
           <Routes>
-            <Route path="/" element={<Navigate to="/signup" />} />
+            <Route path="/" element={<Navigate to="/about" />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/rooms" element={<RoomsPage />} />

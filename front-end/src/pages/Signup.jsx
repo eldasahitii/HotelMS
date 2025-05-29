@@ -65,11 +65,11 @@ const SignupPage = () => {
         <form className="bg-white p-4 p-md-5 shadow-lg rounded" onSubmit={handleSubmit}>
           <h3 className="fw-bold text-center mb-3">Hotel Amé</h3>
           <h2 className="fw-bold text-center mb-3">Join the Experience</h2>
-          <p className="text-center text-muted mb-4">
+          {/* <p className="text-center text-muted mb-4">
             Enjoy personalized experiences when you create your account and tell us more about yourself.
             Already have an account?{' '}
             <Link to="/login" className="text-decoration-none" style={{ color: '#2a52be' }}>Log In</Link>
-          </p>
+          </p> */}
 
           <div className="row">
             <div className="col-md-6 mb-3">
@@ -164,6 +164,11 @@ const SignupPage = () => {
           </div>
 
           {error && <div className="alert alert-danger">{error}</div>}
+           <p className="text-center text-muted mb-4">
+            Enjoy personalized experiences when you create your account and tell us more about yourself.
+            Already have an account?{' '}
+            <Link to="/login" className="text-decoration-none" style={{ color: '#2a52be' }}>Log In</Link>
+          </p>
 
           <button type="submit" className="btn btn-dark w-100">Sign Up</button>
         </form>
