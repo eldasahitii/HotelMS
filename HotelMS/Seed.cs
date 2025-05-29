@@ -559,6 +559,63 @@ public class Seed
                     };
                 }
             }
+        // Seed HotelServiceDetails
+        if (!dataContext.HotelServiceDetails.Any())
+        {
+            var spaService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Spa & Wellness");
+            var eventService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Events & Banquets");
+
+            if (spaService != null && eventService != null)
+            {
+                var serviceDetails = new List<HotelServiceDetail>
+                {
+                    new HotelServiceDetail
+                    {
+                         ServiceId = spaService.Id,
+                         Title = "Heated Indoor Pool",
+                         Description = "Relax in our temperature-controlled indoor pool, perfect for year-round swims. Ideal for solo visitors or families looking for a calm, refreshing environment regardless of the season. Enjoy clean, modern facilities and a peaceful atmosphere designed for your comfort.",
+                         ImageUrl = "../../Assets/images/indoorpool3.png",
+                         Price = 25.00m
+                    },
+                    new HotelServiceDetail
+                    {
+                        ServiceId = spaService.Id,
+                        Title = "Scenic Outdoor Pool",
+                        Description = "Escape to our breathtaking outdoor pool area, where tranquility meets natural beauty. Surrounded by lush greenery and designed with relaxation in mind, our expansive pool offers the perfect setting to soak up the sun or enjoy a peaceful swim. Lounge on comfortable sunbeds, sip refreshing drinks from our poolside bar, and take in the serene views that create a true resort-style experience.",
+                        ImageUrl = "../../Assets/images/spa.jpg",
+                        Price = 50.00m
+                    },
+                    new HotelServiceDetail
+                    {
+                        ServiceId = spaService.Id,
+                        Title = "Sauna Room",
+                        Description = "Experience the soothing warmth of our dedicated sauna room, designed to relax muscles, improve circulation, and promote overall well-being. Enjoy the quiet, wood-lined space as heat gently eases tension and clears your mind. Perfect for unwinding after a swim or simply taking time for yourself in a peaceful setting.",
+                        ImageUrl = "../../Assets/images/pool2.jpg",
+                        Price = 30.00m
+                    },
+                    new HotelServiceDetail
+                    {
+                        ServiceId = eventService.Id,
+                        Title = "Wedding Hall",
+                        Description = "Elegant hall suitable for weddings up to 300 guests.",
+                        ImageUrl = "/images/services/wedding.jpg",
+                        Price = 500.00m
+                    },
+                    new HotelServiceDetail
+                    {
+                        ServiceId = eventService.Id,
+                        Title = "Conference Room",
+                         Description = "Fully-equipped room for business meetings and seminars.",
+                        ImageUrl = "/images/services/conference.jpg",
+                        Price = 400.00m
+                    }
+
+                };
+                dataContext.HotelServiceDetails.AddRange(serviceDetails);
+                dataContext.SaveChanges();
+            }
+
+        }
 
 
 
@@ -570,7 +627,11 @@ public class Seed
 
 
 
-        
+
+
+
+
+
 
     }
 }
