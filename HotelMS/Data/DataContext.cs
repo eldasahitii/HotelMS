@@ -166,32 +166,32 @@ namespace HotelMS.Data
               .HasConversion<string>();
 
             //HotelService -> HotelServiceSchedule
-            modelBuilder.Entity<HotelServiceDetail>()
-                .HasOne(s => s.Service)
-                .WithMany(h => h.HotelServiceSchedules)
-                .HasForeignKey(s => s.HotelServiceId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<HotelServiceDetail>()
+            //    .HasOne(s => s.Service)
+            //    .WithMany(h => h.HotelServiceSchedules)
+            //    .HasForeignKey(s => s.HotelServiceId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
-            //HotelService -> HotelReservation
-            modelBuilder.Entity<HotelServiceReservation>()
-                .HasOne(r => r.Service)
-                .WithMany(s => s.HotelServiceReservations)
-                .HasForeignKey(r => r.HotelServiceId)
-                .OnDelete(DeleteBehavior.Cascade);
+            ////HotelService -> HotelReservation
+            //modelBuilder.Entity<HotelServiceReservation>()
+            //    .HasOne(r => r.Service)
+            //    .WithMany(s => s.HotelServiceReservations)
+            //    .HasForeignKey(r => r.HotelServiceId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
-            //HotelReservation -> User
-            modelBuilder.Entity<HotelServiceReservation>()
-                .HasOne(r => r.User)
-                .WithMany()
-                .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            ////HotelReservation -> User
+            //modelBuilder.Entity<HotelServiceReservation>()
+            //    .HasOne(r => r.User)
+            //    .WithMany()
+            //    .HasForeignKey(r => r.UserId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             //HotelServiceReservation -> HotelServiceSchedule
-            modelBuilder.Entity<HotelServiceReservation>()
-                .HasOne(r => r.Schedule)
-                .WithMany()
-                .HasForeignKey(r => r.ScheduleId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<HotelServiceReservation>()
+            //    .HasOne(r => r.Schedule)
+            //    .WithMany()
+            //    .HasForeignKey(r => r.ScheduleId)
+            //    .OnDelete(DeleteBehavior.Restrict);
             //Restaurant
             modelBuilder.Entity<MenuItem>()
                 .HasOne(mi => mi.MenuCategory)
