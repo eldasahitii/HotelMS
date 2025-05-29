@@ -8,7 +8,7 @@ export default function UserRoomReservations() {
   const [formData, setFormData] = useState({
     checkInDate: "",
     checkOutDate: "",
-    specialRequests: "", // added specialRequests
+    specialRequests: "", 
   });
 
   const [error, setError] = useState("");
@@ -59,8 +59,6 @@ export default function UserRoomReservations() {
   }
 
   function toISOStringWithTime(dateStr) {
-    // Converts "YYYY-MM-DD" to ISO string with zero time in UTC
-    // E.g. "2025-05-28" -> "2025-05-28T00:00:00.000Z"
     return new Date(dateStr + "T00:00:00Z").toISOString();
   }
 
