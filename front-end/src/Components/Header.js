@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import logo from '../Assets/images/logoo.png';
+import logo from '../Assets/images/logo.png';
 
 const Header = () => {
   const location = useLocation();
@@ -18,7 +18,7 @@ const Header = () => {
           <img
             src={logo}
             alt="Hotel Amé Logo"
-            style={{ height: '130px' }}
+            style={{ height: '150px' }}
             className="img-fluid"
           />
           
