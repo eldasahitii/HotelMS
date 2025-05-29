@@ -1,6 +1,10 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './Components/Header';
+import Footer from './Components/Footer';
+
+
+
 import axios from 'axios';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -155,10 +159,12 @@ function App() {
             }/>
 
             <Route path="*" element={<div>Page Not Found</div>} />
-          </Routes>
-        </Suspense>
-      </div>
-    </Router>
+                 </Routes>
+      </Suspense>
+
+      <Footer /> {/* ✅ Shows on all pages except login if needed */}
+    </div>
+  </Router>
   );
 }
 

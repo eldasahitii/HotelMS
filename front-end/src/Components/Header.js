@@ -9,7 +9,7 @@ const Header = () => {
   const navLinkStyle = (path) =>
     `nav-link px-3 fw-semibold fs-6 ${location.pathname === path ? 'text-dark border-bottom border-2 border-dark' : 'text-secondary'}`;
 
-  // ❌ Hide header ONLY on /login
+
   if (location.pathname === '/login') {
     return null;
   }
