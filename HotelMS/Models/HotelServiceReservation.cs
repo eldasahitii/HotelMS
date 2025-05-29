@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HotelMS.Models
@@ -7,59 +8,41 @@ namespace HotelMS.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int ReservationID { get; set; }
 
         [Required]
-        public int UserId { get; set; }
-
-        [ForeignKey("UserId")]
-        public User User { get; set; }
-
-        [Required]
-        public int HotelServiceId { get; set; }
-
-        [ForeignKey("HotelServiceId")]
-        public HotelService Service { get; set; }
-        public int? ScheduleId { get; set; }
-
-        [ForeignKey("ScheduleId")]
-        public HotelServiceSchedule Schedule { get; set; }
+        [ForeignKey("HotelService")]
+        public int ServiceId { get; set; }
+        public HotelService HotelService { get; set; }
 
         [Required]
-        public DateTime ReservationTime { get; set; }
+        public string FirstName { get; set; }
 
         [Required]
-        [MaxLength(50)]
-        [RegularExpression("^(Confirmed|Pending|Cancelled)$", ErrorMessage = "Status msut be 'Confirmed', 'Pending', or 'Cancelled'.")]
-        public string Status { get; set; } = "Confirmed";
+        public string LastName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [Phone]
+        public string Phone { get; set; }
+
+        [Required]
+        public DateTime ReservationDate { get; set; }
+
+        [Required]
+        public TimeSpan StartTime { get; set; }
+
+        [Required]
+        public TimeSpan EndTime { get; set; }
+
+        // Link to ReservationStatus table/entity
+        [Required]
+        public int ReservationStatusID { get; set; }
+        public ReservationStatus ReservationStatus { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
-    //public class HotelServiceReservation
-    //{
-    //    [Key]
-    //    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    //    public int Id { get; set; }
-
-    //    [Required]
-    //    public int UserId { get; set; }
-
-    //    public User User { get; set; } // ✅ no [Required] here
-
-    //    [Required]
-    //    public int HotelServiceId { get; set; }
-
-    //    public HotelService Service { get; set; } // ✅ no [Required]
-
-    //    public int? ScheduleId { get; set; }
-
-    //    public HotelServiceSchedule Schedule { get; set; } // ✅ no [Required]
-
-    //    [Required]
-    //    public DateTime ReservationTime { get; set; }
-
-    //    [Required]
-    //    [MaxLength(50)]
-    //    [RegularExpression("^(Confirmed|Pending|Cancelled)$", ErrorMessage = "Status must be 'Confirmed', 'Pending', or 'Cancelled'.")]
-    //    public string Status { get; set; } = "Confirmed";
-    //}
-
 }
