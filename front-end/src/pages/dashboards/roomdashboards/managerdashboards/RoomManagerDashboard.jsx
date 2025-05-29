@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+
 
 
 const api = axios.create({
@@ -48,7 +50,7 @@ const loadRooms = async () => {
     const response = await api.get("/Room/GetAllRooms");
     setRooms(response.data);
   } catch {
-    setError("Failed to load rooms.");
+    toast.error("Failed to load rooms.");
   } finally {
     setLoading(false);
   }
@@ -70,7 +72,7 @@ const loadRooms = async () => {
       });
       setRoomStatuses(response.data);
     } catch (err) {
-      setError("Failed to load room statuses.");
+      toast.error("Failed to load room statuses.");
     }
   };
 
@@ -101,7 +103,7 @@ const loadRooms = async () => {
       !newRoom.roomTypeID ||
       !newRoom.roomStatusID
     ) {
-      setError("Please fill all fields.");
+      toast.warn("Please fill all fields.");
       return;
     }
 
@@ -113,11 +115,11 @@ const loadRooms = async () => {
         roomStatusID: Number(newRoom.roomStatusID),
       };
       await api.post("/Room/AddRoom", payload);
-      alert("Room added successfully.");
+      toast.success("Room added successfully.");
       resetForm();
       loadRooms();
     } catch (err) {
-      setError("Failed to add room.");
+      toast.error("Failed to add room.");
     }
   };
 
@@ -150,11 +152,11 @@ const loadRooms = async () => {
         roomStatusID: Number(newRoom.roomStatusID),
       };
       await api.put(`/Room/UpdateRoom/${editingRoomID}`, payload);
-      alert("Room updated successfully.");
+      toast.success("Room updated successfully.");
       resetForm();
       loadRooms();
     } catch (err) {
-      setError("Failed to update room.");
+      toast.error("Failed to update room.");
     }
   };
 
@@ -167,15 +169,15 @@ const loadRooms = async () => {
     setError("");
     try {
       await api.delete(`/Room/DeleteRoom/${roomID}`);
-      alert("Room deleted successfully.");
+      toast.success("Room deleted successfully.");
       if (editingRoomID === roomID) resetForm();
       loadRooms();
     } catch (err) {
-      setError("Failed to delete room.");
+      toast.error("Failed to delete room.");
     }
   };
 
-  // Bulk create handler
+  
   const handleBulkCreate = async () => {
     setError("");
     const { prefix, startingRoomNumber, numberOfRooms, roomTypeID, roomStatusID } =
@@ -188,12 +190,12 @@ const loadRooms = async () => {
       roomTypeID === "" ||
       roomStatusID === ""
     ) {
-      setError("Please fill all fields in bulk create.");
+      toast.warn("Please fill all fields in bulk create.");
       return;
     }
 
     if (isNaN(startingRoomNumber) || isNaN(numberOfRooms)) {
-      setError("Starting room number and number of rooms must be numeric.");
+      toast.error("Starting room number and number of rooms must be numeric.");
       return;
     }
 
@@ -205,7 +207,7 @@ const loadRooms = async () => {
         RoomTypeID: Number(roomTypeID),
         RoomStatusID: Number(roomStatusID),
       });
-      alert("Rooms bulk created successfully.");
+      toast.success("Rooms bulk created successfully.");
       setBulkRoomData({
         prefix: "",
         startingRoomNumber: "",
@@ -215,7 +217,7 @@ const loadRooms = async () => {
       });
       loadRooms();
     } catch (err) {
-      setError("Failed to bulk create rooms.");
+      toast.error("Failed to bulk create rooms.");
     }
   };
 
@@ -313,7 +315,7 @@ const loadRooms = async () => {
     Room Status
   </label>
   {editingRoomID ? (
-    // Show readonly text during edit
+
     <input
       type="text"
       className="form-control"

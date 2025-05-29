@@ -26,6 +26,8 @@ import AdminRoomStatus from './pages/dashboards/admindashboard/AdminRoomStatus';
 import AdminRoomReservationStatus from './pages/dashboards/admindashboard/AdminReservationStatus';
 import UserInfo from './pages/dashboards/userdashboard/UserInfo';
 import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReservations';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Lazy imports
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
@@ -57,9 +59,11 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 function App() {
   return (
+    
     <Router>
       <div>
      {!["/login"].includes(window.location.pathname) && <Header />}
+     <ToastContainer position="top-right" autoClose={4000} />
 
         <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
           <Routes>

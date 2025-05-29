@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 const shifts = ["Morning", "Afternoon", "Night"];
 
@@ -26,7 +27,7 @@ export default function RoomReceptionistManager() {
       setCurrentUserId(res.data.userId);
       setCurrentUserName(`${res.data.firstName} ${res.data.lastName}`);
     } catch (err) {
-      setError("Failed to fetch logged-in user info.");
+      toast.error("Failed to fetch logged-in user info.");
     }
   };
 
@@ -35,7 +36,7 @@ export default function RoomReceptionistManager() {
       const res = await axios.get("/api/User/getAllCustomers");
       setUsers(res.data);
     } catch (err) {
-      setError("Failed to load customers.");
+      toast.error("Failed to load customers.");
     }
   };
 
@@ -45,7 +46,7 @@ export default function RoomReceptionistManager() {
       const res = await axios.get("/api/RoomRecepsionist/getAllRoomRecepsionists");
       setReceps(res.data);
     } catch (err) {
-      setError("Failed to load receptionists.");
+      toast.error("Failed to load receptionists.");
     } finally {
       setLoading(false);
     }
@@ -74,9 +75,10 @@ export default function RoomReceptionistManager() {
     if (!window.confirm("Are you sure you want to delete this receptionist?")) return;
     try {
       await axios.delete(`/api/RoomRecepsionist/deleteRoomRecepsionist/${id}`);
+      toast.success("Receptionist deleted successfully");
       fetchRecepsionists();
     } catch (err) {
-      alert("Delete failed: " + (err.response?.data || err.message));
+      toast.error("Delete failed: " + (err.response?.data || err.message));
     }
   };
 
@@ -103,10 +105,10 @@ export default function RoomReceptionistManager() {
         };
 
         await axios.put(`/api/RoomRecepsionist/updateRoomRecepsionist/${existingRecep.roomReceptionistID}`, updateDto);
-        alert("Receptionist updated successfully");
+        toast.success("Receptionist updated successfully");
       } else {
         const selectedUser = users.find((u) => u.userID.toString() === form.userID);
-        if (!selectedUser) return setError("Selected user not found.");
+        if (!selectedUser) return toast.error("Selected user not found.");
 
         const dto = {
           roomReceptionistID: 0,
@@ -121,7 +123,7 @@ export default function RoomReceptionistManager() {
         };
 
         await axios.post(`/api/RoomRecepsionist/addRoomRecepsionist/${currentUserId}`, dto);
-        alert("Receptionist added successfully");
+        toast.success("Receptionist added successfully");
       }
 
       setForm({ userID: "", shift: "" });
@@ -129,7 +131,7 @@ export default function RoomReceptionistManager() {
       fetchRecepsionists();
     } catch (err) {
       const msg = err.response?.data?.title || err.response?.data?.errors || err.message || "Submit failed";
-      setError(JSON.stringify(msg));
+      toast.error(JSON.stringify(msg));
     }
   };
 

@@ -4,6 +4,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from 'react-router-dom';
 
+const MessageBox = ({ type, message, onClose }) => {
+  if (!message) return null;
+  return (
+    <div className={`alert alert-${type} alert-dismissible`} role="alert">
+      {message}
+      <button type="button" className="btn-close" onClick={onClose}></button>
+    </div>
+  );
+};
+
 const ReservationDashboard = () => {
   const [reservations, setReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
@@ -111,7 +121,7 @@ const ReservationDashboard = () => {
           >
             <i className="bi bi-bookmark-plus me-2"></i> Room Managing
           </button>
-                   <button
+          <button
             className="btn btn-outline-light w-100 mb-3"
             onClick={() => navigate("/room-manager-receptionist-management")}
           >
@@ -120,7 +130,6 @@ const ReservationDashboard = () => {
           <button className="btn btn-outline-light w-100 mt-2" onClick={handleLogout}>
             <i className="bi bi-box-arrow-right me-2"></i> Logout
           </button>
-          
         </ul>
       </aside>
 
@@ -129,12 +138,7 @@ const ReservationDashboard = () => {
           <i className="bi bi-house-door me-2"></i> Reservation Dashboard
         </h2>
 
-        {message && (
-          <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-            {message}
-            <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-          </div>
-        )}
+        <MessageBox type={messageType} message={message} onClose={() => setMessage('')} />
 
         <div className="mb-3 d-flex gap-3">
           <select
