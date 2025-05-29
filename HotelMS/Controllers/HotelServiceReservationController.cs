@@ -1,84 +1,109 @@
-﻿//using HotelMS.Data.DTO;
-//using HotelMS.Data.Interfaces;
-//using HotelMS.Models;
-//using HotelMS.Services;
-//using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using HotelMS.Data.DTO;
+using HotelMS.Data.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-//namespace HotelMS.Controllers
-//{
-//    [ApiController]
-//    [Route("api/[controller]")]
-//    public class HotelServiceReservationController : ControllerBase
-//    {
-//        private readonly IHotelServiceReservationService _reservationService;
+namespace HotelMS.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class HotelServiceReservationController : ControllerBase
+    {
+        private readonly IHotelServiceReservationService hotelServiceReservationService;
 
-//        public HotelServiceReservationController (IHotelServiceReservationService reservationService )
-//        {
-//            _reservationService = reservationService;
-//        }
+        public HotelServiceReservationController(IHotelServiceReservationService hotelServiceReservationService)
+        {
+            this.hotelServiceReservationService = hotelServiceReservationService;
+        }
 
-//        [HttpGet]
-//        public async Task<ActionResult<IEnumerable<HotelServiceReservation>>> GetAllReservations()
-//        {
-//            var reservations = await _reservationService.GetAllReservationsAsync();
-//            return Ok(reservations);
-//        }
+        [HttpPost("MakeReservation")]
+        [Authorize(Roles = "Admin,HotelServiceRecepsionist,Customer")]
+        public async Task<IActionResult> MakeReservation([FromBody] HotelServiceReservationDTO request)
+        {
+            int userID = GetUserIDFromClaims();
+            var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
 
-//        [HttpGet("{id}")]
-//        public async Task<ActionResult<HotelServiceReservation>> GetReservation(int id)
-//        {
-//            var reservation = await _reservationService.GetReservationByIdAsync(id);
-//            if (reservation == null)
-//                return NotFound();
+            var result = await hotelServiceReservationService.MakeReservation(userID, request, roles);
 
-//            return Ok(reservation);
-//        }
+            return Ok(result);
+        }
 
-//        [HttpPost]
-//        public async Task<ActionResult<HotelServiceReservation>> CreateReservation(HotelServiceReservation reservation)
-//        {
-//            var created = await _reservationService.CreateReservationAsync(reservation);
-//            return CreatedAtAction(nameof(GetReservation), new { id = created.Id }, created);
-//        }
+        [HttpPut("UpdateReservation/{reservationID}")]
+        [Authorize(Roles = "Admin,HotelServiceRecepsionist")]
+        public async Task<IActionResult> UpdateReservation(int reservationID, [FromBody] HotelServiceReservationUpdateDTO request)
+        {
+            int userID = GetUserIDFromClaims();
+            var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
 
-//        //[HttpPost]
-//        //public async Task<ActionResult<HotelServiceReservation>> CreateReservation(HotelServiceReservationDTO dto)
-//        //{
-//        //    var reservation = new HotelServiceReservation
-//        //    {
-//        //        UserId = dto.UserId,
-//        //        HotelServiceId = dto.HotelServiceId,
-//        //        ScheduleId = dto.ScheduleId,
-//        //        ReservationTime = dto.ReservationTime,
-//        //        Status = dto.Status
-//        //    };
+            var result = await hotelServiceReservationService.UpdateReservation(reservationID, request, userID, roles);
 
-//        //    var created = await _reservationService.CreateReservationAsync(reservation);
-//        //    return CreatedAtAction(nameof(GetReservation), new { id = created.Id }, created);
-//        //}
+            if (result == "Reservation updated successfully")
+                return Ok(new { message = result });
 
+            return BadRequest(new { error = result });
+        }
 
+        [HttpGet("GetUserReservations")]
+        [Authorize(Roles = "Admin,HotelServiceManager,HotelServiceRecepsionist,Customer")]
+        public async Task<IActionResult> GetUserReservations()
+        {
+            int userID = GetUserIDFromClaims();
+            var reservations = await hotelServiceReservationService.GetUserReservations(userID);
+            return Ok(reservations);
+        }
 
-//        [HttpPut("{id}")]
-//        public async Task<ActionResult<HotelServiceReservation>> UpdateReservation(int id, HotelServiceReservation updatedReservation)
-//        {
-//            var result = await _reservationService.UpdateReservationAsync(id, updatedReservation);
-//            if (result == null)
-//                return NotFound();
+        [HttpGet("GetAllReservations")]
+        [Authorize(Roles = "Admin,HotelServiceManager,HotelServiceRecepsionist")]
+        public async Task<IActionResult> GetAllReservations()
+        {
+            var reservations = await hotelServiceReservationService.GetAllReservations();
+            return Ok(reservations);
+        }
 
-//            return Ok(result);
-//        }
+        [HttpDelete("CancelReservationUser")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> CancelMyReservation(int id)
+        {
+            int userId = GetUserIDFromClaims();
+            var result = await hotelServiceReservationService.CancelReservation(id, userId, false);
+            return Ok(result);
+        }
 
-//        [HttpDelete("{id}")]
-//        public async Task<IActionResult> DeleteReservation(int id)
-//        {
-//            var success = await _reservationService.DeleteReservationAsync(id);
-//            if (!success)
-//                return NotFound();
+        [HttpDelete("staffCancelReservation")]
+        [Authorize(Roles = "Admin,HotelServiceRecepsionist")]
+        public async Task<IActionResult> CancelReservationAsStaff(int id)
+        {
+            var result = await hotelServiceReservationService.CancelReservation(id, 0, true);
 
-//            return NoContent();
-//        }
+            if (result != "Reservation cancelled successfully")
+            {
+                return BadRequest(new { message = result });
+            }
 
+            return Ok(new { message = result });
+        }
 
-//    }
-//}
+        [HttpPost("MarkReservationCompleted")]
+        [Authorize(Roles = "Admin,HotelServiceRecepsionist")]
+        public async Task<IActionResult> MarkReservationCompleted([FromBody] MarkReservationCompletedDTO request)
+        {
+            int userID = GetUserIDFromClaims();
+
+            var result = await hotelServiceReservationService.MarkReservationCompleted(request.ReservationID, userID);
+
+            if (result.StartsWith("You are not authorized"))
+                return Unauthorized(result);
+
+            if (result.StartsWith("Reservation not found"))
+                return NotFound(result);
+
+            return Ok(result);
+        }
+
+        private int GetUserIDFromClaims()
+        {
+            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        }
+    }
+}

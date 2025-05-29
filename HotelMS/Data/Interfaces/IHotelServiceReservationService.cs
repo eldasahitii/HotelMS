@@ -15,7 +15,7 @@ namespace HotelMS.Data.Interfaces
 
         Task<string> CancelReservation(int reservationID, int userID, bool isAdminOrStaff = false);
 
-        Task<string> UpdateReservation(int reservationID, HotelServiceReservationDTO request, int userID, List<string> roles);
+        Task<string> UpdateReservation(int reservationID, HotelServiceReservationUpdateDTO request, int userID, List<string> roles);
 
         Task<string> UpdateReservationStatus(int reservationID, int statusID);
 
