@@ -23,6 +23,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager'
 import RestaurantHomePage from './pages/restaurant/RestaurantHomePage';
 import RestaurantMenuPage from './pages/restaurant/RestaurantMenuPage';
+import RestaurantAdmin from './pages/dashboards/admindashboard/RestaurantAdmin/AdminRestaurant';
 
 // Lazy imports
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
@@ -171,6 +172,13 @@ function App() {
                 <AdminAddManager />
               </ProtectedRoute>
             }/>
+
+            <Route path="/admin/restaurant-dashboard" element={
+              <ProtectedRoute allowedRoles={['Admin']}>
+                <RestaurantAdmin />
+              </ProtectedRoute>
+            } />
+
 
             <Route path="*" element={<div>Page Not Found</div>} />
           </Routes>
