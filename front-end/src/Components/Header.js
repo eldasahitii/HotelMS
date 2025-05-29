@@ -9,6 +9,11 @@ const Header = () => {
   const navLinkStyle = (path) =>
     `nav-link px-3 fw-semibold fs-6 ${location.pathname === path ? 'text-dark border-bottom border-2 border-dark' : 'text-secondary'}`;
 
+  // ❌ Hide header ONLY on /login
+  if (location.pathname === '/login') {
+    return null;
+  }
+
   return (
     <header className="bg-white shadow-sm border-bottom py-2">
       <nav className="navbar navbar-expand-lg navbar-light container">
@@ -18,7 +23,7 @@ const Header = () => {
           <img
             src={logo}
             alt="Hotel Amé Logo"
-            style={{ height: '150px' }}
+            style={{ height: '120px' }}
             className="img-fluid"
           />
           
