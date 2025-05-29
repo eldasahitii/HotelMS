@@ -8,7 +8,7 @@ namespace HotelMS.Data.Interfaces
     {
         Task<IEnumerable<HotelService>> GetServicesByTypeAsync(string type);
         Task<HotelService> GetServiceByIdAsync(int id);
-        Task<IEnumerable<HotelServiceSchedule>> GetSchedulesByServiceIdAsync(int serviceId);
+        Task<IEnumerable<HotelServiceDetail>> GetSchedulesByServiceIdAsync(int serviceId);
         Task<HotelServiceReservation> ReserveServiceAsync(HotelServiceReservation reservation);
         Task<HotelService> UpdateServiceAsync(int id, HotelService updatedService);
         Task<bool> DeleteServiceAsync(int id);
