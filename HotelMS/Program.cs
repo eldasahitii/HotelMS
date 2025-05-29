@@ -85,7 +85,7 @@ builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
 builder.Services.AddScoped<IHotelService, HotelServiceService>();
 builder.Services.AddScoped<IHotelServiceDetailService, HotelServiceDetailService>();
-//builder.Services.AddScoped<IHotelServiceReservationService, HotelServiceReservationService>();
+builder.Services.AddScoped<IHotelServiceReservationService, HotelServiceReservationService>();
 builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 builder.Services.AddScoped<IReservationStatusService, ReservationStatusService>();
 builder.Services.AddScoped<IRoomReservationService, RoomReservationService>();

@@ -31,9 +31,7 @@ namespace HotelMS.Services
             if (!userExists)
                 return $"User with ID {userID} does not exist.";
 
-            var service = await dataContext.HotelServices
-                .FirstOrDefaultAsync(s => s.Id == request.ServiceId);
-
+            var service = await dataContext.HotelServices.FirstOrDefaultAsync(s => s.Id == request.ServiceId);
             if (service == null)
                 return "Selected service does not exist.";
 
@@ -56,7 +54,7 @@ namespace HotelMS.Services
                 ReservationDate = request.ReservationDate,
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
-                ReservationStatusID = 1, // default status
+                ReservationStatusID = 1,
                 CreatedAt = DateTime.Now
             };
 
@@ -140,13 +138,12 @@ namespace HotelMS.Services
                 return "Cancelled status not found";
 
             reservation.ReservationStatusID = cancelledStatus.ReservationStatusID;
-
             await dataContext.SaveChangesAsync();
 
             return "Reservation cancelled successfully";
         }
 
-        public async Task<string> UpdateReservation(int reservationID, HotelServiceReservationDTO request, int userID, List<string> roles)
+        public async Task<string> UpdateReservation(int reservationID, HotelServiceReservationUpdateDTO request, int userID, List<string> roles)
         {
             var reservation = await dataContext.HotelServiceReservations
                 .Include(r => r.ReservationStatus)
@@ -176,13 +173,11 @@ namespace HotelMS.Services
             if (isConflicting)
                 return "Selected time slot is already booked for this service.";
 
-            reservation.FirstName = request.FirstName;
-            reservation.LastName = request.LastName;
-            reservation.Email = request.Email;
-            reservation.Phone = request.Phone;
             reservation.ReservationDate = request.ReservationDate;
             reservation.StartTime = request.StartTime;
             reservation.EndTime = request.EndTime;
+            reservation.Phone = request.Phone;
+            reservation.Email = request.Email;
 
             await dataContext.SaveChangesAsync();
 
@@ -223,7 +218,6 @@ namespace HotelMS.Services
                 return "User not found";
 
             var role = await dataContext.Roles.FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
-
             if (role == null)
                 return "User role not found";
 
@@ -237,7 +231,6 @@ namespace HotelMS.Services
                 return "Completed status not found";
 
             reservation.ReservationStatusID = completedStatus.ReservationStatusID;
-
             await dataContext.SaveChangesAsync();
 
             return "Reservation marked as completed";
