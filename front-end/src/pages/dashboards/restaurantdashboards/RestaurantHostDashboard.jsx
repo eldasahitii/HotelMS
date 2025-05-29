@@ -57,6 +57,13 @@ export default function RestaurantHostDashboard() {
     fetchTables();
   }, []);
 
+  useEffect(() => {
+    if (message) {
+      const timeout = setTimeout(() => setMessage(''), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [message]);
+
   const handleAddReservation = async () => {
   if (
     !newReservation.firstName.trim() ||
@@ -175,6 +182,7 @@ const handleUserEmailReservation = async () => {
 
 
   const handleCancelReservation = async (id) => {
+    if (!window.confirm("Are you sure you want to cancel this reservation?")) return;
     try {
       await axios.delete(`/api/Host/cancelReservation?id=${id}`, {
         withCredentials: true

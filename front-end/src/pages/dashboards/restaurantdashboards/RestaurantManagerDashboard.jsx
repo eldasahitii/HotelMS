@@ -91,6 +91,15 @@ export default function RestaurantManagerDashboard() {
     fetchTables();
   }, []);
 
+    useEffect(() => {
+    if (message) {
+      const timeout = setTimeout(() => setMessage(''), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [message]);
+
+  
+
   useEffect(() => {
     if(activeSection === "reservations") {
       fetchReservations();
@@ -129,6 +138,7 @@ export default function RestaurantManagerDashboard() {
   };
 
   const handleDeleteHost = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this host?")) return;
     try {
       await axios.delete(`/api/HostManagement/deleteHost/${id}`, {
         withCredentials: true
@@ -217,6 +227,7 @@ export default function RestaurantManagerDashboard() {
     }
   };
   const handleDeleteMenuItem = async(id) => {
+    if (!window.confirm("Are you sure you want to delete this menu item?")) return;
     try {
       await axios.delete(`/api/MenuItem/deleteMenuItem?id=${id}`, {
         withCredentials: true
@@ -250,6 +261,7 @@ export default function RestaurantManagerDashboard() {
   };
 
   const handleDeleteTable = async (id) => {
+     if (!window.confirm("Are you sure you want to delete this table?")) return;
     try {
       await axios.delete(`/api/RestaurantTable/deleteTable?id=${id}`);
       setMessage("Table deleted.");
