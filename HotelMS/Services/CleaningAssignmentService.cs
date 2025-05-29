@@ -97,17 +97,34 @@ namespace HotelMS.Services
             });
         }
 
-        public async Task<CleaningAssignment> UpdateAssignment(int id, CleaningAssignmentDTO request)
+        public async Task<bool> UpdateAssignment(int assignmentId, CleaningAssignmentDTO dto)
         {
-            var assignment = await _dbContext.CleaningAssignments.FindAsync(id);
-            if (assignment == null) return null;
-            assignment.RoomID = request.RoomID;
-            assignment.Status = request.Status;
-            assignment.StartedAt = request.StartedAt;
-            assignment.FinishedAt = request.FinishedAt;
+            var assignment = await _dbContext.CleaningAssignments.FindAsync(assignmentId);
+            if (assignment == null) return false;
+
+            var oldRoomId = assignment.RoomID;
+            assignment.RoomID = dto.RoomID;
+            assignment.Status = dto.Status;
+            assignment.StartedAt = dto.StartedAt;
+            assignment.FinishedAt = dto.FinishedAt;
+
+            if (oldRoomId != dto.RoomID)
+            {
+                var oldRoom = await _dbContext.Rooms.FindAsync(oldRoomId);
+                if (oldRoom != null)
+                {
+                    oldRoom.RoomStatusID = 1; 
+                }
+
+                var newRoom = await _dbContext.Rooms.FindAsync(dto.RoomID);
+                if (newRoom != null)
+                {
+                    newRoom.RoomStatusID = 3;
+                }
+            }
 
             await _dbContext.SaveChangesAsync();
-            return assignment;
+            return true;
         }
 
         public async Task DeleteAssignment(int id)

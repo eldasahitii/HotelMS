@@ -43,11 +43,17 @@ namespace HotelMS.Controllers
         [HttpPut("updateAssignment")]
         public async Task<IActionResult> Update(int id, [FromBody] CleaningAssignmentDTO request)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var result = await _service.UpdateAssignment(id, request);
-            return result == null ? NotFound() : Ok(result);
+            bool result = await _service.UpdateAssignment(id, request);
+
+            if (!result)
+                return NotFound($"Assignment with ID {id} not found.");
+
+            return Ok("Assignment updated successfully.");
         }
+
 
         [HttpDelete("deleteAssignment")]
         public async Task<IActionResult> Delete(int id)

@@ -9,17 +9,31 @@ export default function AssignmentsByName() {
   const [staffName, setStaffName] = useState("");
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  
   const [loggedInUserID, setLoggedInUserID] = useState(null);
   const [currentCleaningStaffID, setCurrentCleaningStaffID] = useState(null);
-  
   const inputRef = useRef(null);
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
+
+  useEffect(() => {
+    fetchCurrentUser();
+    fetchAllAssignments();
+    if (inputRef.current) inputRef.current.focus();
+
+    const handleResize = () => {
+      const largeScreen = window.innerWidth >= 992;
+      setIsLargeScreen(largeScreen);
+      if (largeScreen) setSidebarOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const fetchCurrentUser = async () => {
     try {
       const res = await axios.get('/api/Auth/me', { withCredentials: true });
-      setLoggedInUserID(parseInt(res.data.userId || res.data.userID)); // adjust key as per your API response
+      setLoggedInUserID(parseInt(res.data.userId || res.data.userID));
     } catch (error) {
       console.error("Failed to get current user info", error);
       setMessage("You must be logged in to view assignments.");
@@ -27,6 +41,22 @@ export default function AssignmentsByName() {
       navigate('/login');
     }
   };
+
+  useEffect(() => {
+    if (!loggedInUserID) return;
+
+    const resolveCurrentCleaningStaffID = async () => {
+      try {
+        const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
+        const match = res.data.find(s => s.userID === loggedInUserID);
+        if (match) setCurrentCleaningStaffID(match.cleaningStaffID);
+      } catch (err) {
+        console.error("Failed to resolve cleaningStaffID", err);
+      }
+    };
+
+    resolveCurrentCleaningStaffID();
+  }, [loggedInUserID]);
 
   const fetchAllAssignments = async () => {
     try {
@@ -38,36 +68,10 @@ export default function AssignmentsByName() {
     }
   };
 
-  // Resolve cleaning staff id once loggedInUserID is known
-  useEffect(() => {
-    if (!loggedInUserID) return;
-
-    const resolveCurrentCleaningStaffID = async () => {
-      try {
-        const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
-        const match = res.data.find(s => s.userID === loggedInUserID);
-        if (match) {
-          setCurrentCleaningStaffID(match.cleaningStaffID);
-        }
-      } catch (err) {
-        console.error("Failed to resolve cleaningStaffID", err);
-      }
-    };
-
-    resolveCurrentCleaningStaffID();
-  }, [loggedInUserID]);
-
-  useEffect(() => {
-    fetchCurrentUser();
-    fetchAllAssignments();
-    if (inputRef.current) inputRef.current.focus();
-  }, []);
-
   const handleSearch = async (e) => {
     e.preventDefault();
     const trimmedName = staffName.trim();
     if (!trimmedName) {
-      // If input empty after trimming, fetch all assignments
       fetchAllAssignments();
       return;
     }
@@ -102,6 +106,8 @@ export default function AssignmentsByName() {
     }
   };
 
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
@@ -109,10 +115,45 @@ export default function AssignmentsByName() {
 
   return (
     <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      <aside className="text-white p-3" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
-        <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
+
+      {!isLargeScreen && (
+        <button
+          className="position-fixed"
+          onClick={toggleSidebar}
+          aria-label="Toggle sidebar"
+          style={{
+            zIndex: 1050,
+            top: '12px',
+            left: '12px',
+            padding: '5px 8px',
+            fontSize: '1.1rem',
+            borderRadius: '5px',
+            backgroundColor: '#324b6b',
+            color: 'white',
+            border: 'none',
+          }}
+        >
+          <i className="bi bi-list"></i>
+        </button>
+      )}
+      <aside
+        className="text-white p-3 position-fixed top-0 vh-100"
+        style={{
+          minWidth: 240,
+          backgroundColor: '#324b6b',
+          zIndex: 1040,
+          left: isLargeScreen ? 0 : (sidebarOpen ? 0 : -240),
+          transition: 'left 0.3s ease-in-out',
+          overflowY: 'auto',
+        }}
+      >
+        <h4 className="fw-bold mb-4" style={{ paddingLeft: !isLargeScreen ? '40px' : 0 }}>
+          <i className="bi bi-building"></i> HotelMS
+        </h4>
         <ul className="nav flex-column">
-          <li className="nav-item mb-2"><i className="bi bi-person-lines-fill me-2"></i>Dashboard</li>
+          <li className="nav-item mb-2">
+            <i className="bi bi-person-lines-fill me-2"></i>Dashboard
+          </li>
           <hr className="text-white" />
           <button className="btn btn-outline-light w-100" onClick={handleLogout}>
             <i className="bi bi-box-arrow-right me-2"></i> Logout
@@ -120,7 +161,20 @@ export default function AssignmentsByName() {
         </ul>
       </aside>
 
-      <main className="flex-grow-1 p-3">
+      {!isLargeScreen && sidebarOpen && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
+          style={{ zIndex: 1030 }}
+          onClick={toggleSidebar}
+        />
+      )}
+      <main
+        className="flex-grow-1 p-3"
+        style={{
+          marginLeft: isLargeScreen ? 240 : 0,
+          transition: 'margin-left 0.3s ease-in-out'
+        }}
+      >
         <h2 className="text-primary fw-bold mb-4">
           <i className="bi bi-search me-2"></i>Cleaning Assignments
         </h2>

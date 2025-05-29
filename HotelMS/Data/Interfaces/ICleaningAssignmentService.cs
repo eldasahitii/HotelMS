@@ -8,7 +8,7 @@ namespace HotelMS.Data.Interfaces
         Task<CleaningAssignment> AddAssignment(CleaningAssignmentDTO request);
         Task<CleaningAssignmentDTO> GetAssignment(int id);
         Task<IEnumerable<CleaningAssignmentDTO>> GetAllAssignments();
-        Task<CleaningAssignment> UpdateAssignment(int id, CleaningAssignmentDTO request);
+        Task<bool> UpdateAssignment(int assignmentId, CleaningAssignmentDTO dto);
         Task DeleteAssignment(int id);
         //Task<IEnumerable<CleaningAssignmentDTO>> GetAssignmentsForStaff(int staffId);
         Task<bool> StartAssignment(int id);

@@ -13,16 +13,17 @@ export default function AssignmentsDashboard() {
   const [editRoomID, setEditRoomID] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const [userID, setUserID] = useState(null);  // <--- Add state for logged-in user ID
+  const [userID, setUserID] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
 
   const navigate = useNavigate();
 
-  // Fetch current logged-in user info on mount
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         const response = await axios.get('/api/Auth/me', { withCredentials: true });
-        setUserID(parseInt(response.data.userId)); // store userId from backend
+        setUserID(parseInt(response.data.userId));
       } catch (err) {
         console.error('Failed to fetch current user', err);
         setMessage("You must be logged in.");
@@ -32,6 +33,14 @@ export default function AssignmentsDashboard() {
     };
 
     fetchCurrentUser();
+
+    const handleResize = () => {
+      const largeScreen = window.innerWidth >= 992;
+      setIsLargeScreen(largeScreen);
+      if (largeScreen) setSidebarOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [navigate]);
 
   const fetchAssignments = async () => {
@@ -91,7 +100,7 @@ export default function AssignmentsDashboard() {
       roomID: parseInt(newAssignment.roomID),
       cleaningStaffID: parseInt(newAssignment.cleaningStaffID),
       status: newAssignment.status,
-      assignedByUserID: userID  // <--- use userID from state here
+      assignedByUserID: userID
     };
     try {
       await axios.post("/api/CleaningAssignment/addAssignment", parsedAssignment, { withCredentials: true });
@@ -109,7 +118,7 @@ export default function AssignmentsDashboard() {
   const handleConfirmUpdate = async () => {
     const updated = {
       roomID: parseInt(editRoomID),
-      status: editingAssignment.status || "Pending",  
+      status: editingAssignment.status || "Pending",
       startedAt: editingAssignment.startedAt || null,
       finishedAt: editingAssignment.finishedAt || null
     };
@@ -152,6 +161,8 @@ export default function AssignmentsDashboard() {
     setEditRoomID(assignment.roomID);
   };
 
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
@@ -159,16 +170,57 @@ export default function AssignmentsDashboard() {
 
   return (
     <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      <aside className="text-white p-4" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
-        <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
+
+      {!isLargeScreen && (
+        <button
+          className="position-fixed"
+          onClick={toggleSidebar}
+          aria-label="Toggle sidebar"
+          style={{
+            zIndex: 1050,
+            top: '12px',
+            left: '12px',
+            padding: '5px 8px',
+            fontSize: '1.1rem',
+            borderRadius: '5px',
+            backgroundColor: '#324b6b',
+            color: 'white',
+            border: 'none',
+          }}
+        >
+          <i className="bi bi-list"></i>
+        </button>
+      )}
+      <aside
+        className="text-white p-4 position-fixed top-0 vh-100"
+        style={{
+          minWidth: 240,
+          backgroundColor: '#324b6b',
+          zIndex: 1040,
+          left: isLargeScreen ? 0 : (sidebarOpen ? 0 : -240),
+          transition: 'left 0.3s ease-in-out',
+          overflowY: 'auto',
+        }}
+      >
+        <h4 className="fw-bold mb-4" style={{ paddingLeft: !isLargeScreen ? '40px' : 0 }}>
+          <i className="bi bi-building"></i> HotelMS
+        </h4>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <Link to="/manager/cleaning-staff" className="nav-link text-white">
+            <Link
+              to="/manager/cleaning-staff"
+              className="nav-link text-white"
+              onClick={() => { if (!isLargeScreen) setSidebarOpen(false); }}
+            >
               <i className="bi bi-people-fill me-2"></i>Cleaning Staff
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/manager/assignments" className="nav-link text-white">
+            <Link
+              to="/manager/assignments"
+              className="nav-link text-white"
+              onClick={() => { if (!isLargeScreen) setSidebarOpen(false); }}
+            >
               <i className="bi bi-list-task me-2"></i>Assignments
             </Link>
           </li>
@@ -177,7 +229,21 @@ export default function AssignmentsDashboard() {
         </ul>
       </aside>
 
-      <main className="flex-grow-1 p-3">
+      {!isLargeScreen && sidebarOpen && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
+          style={{ zIndex: 1030 }}
+          onClick={toggleSidebar}
+        />
+      )}
+
+      <main
+        className="flex-grow-1 p-3"
+        style={{
+          marginLeft: isLargeScreen ? 240 : 0,
+          transition: 'margin-left 0.3s ease-in-out'
+        }}
+      >
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-list-task me-2"></i>Cleaning Assignments
         </h2>
@@ -196,27 +262,34 @@ export default function AssignmentsDashboard() {
           <div className="card-body">
             <div className="row g-2">
               <div className="col-12 col-md-6">
-               <select
-  className="form-control"
-  value={newAssignment.roomID}
-  onChange={e => setNewAssignment({ ...newAssignment, roomID: e.target.value })}
->
-  <option value="">Select Room</option>
-  {rooms.map(room => (
-    <option key={room.roomID} value={room.roomID}>
-      {room.title} (#{room.roomNumber})
-    </option>
-  ))}
-</select>
-              </div>
-              <div className="col-12 col-md-6">
-                <select className="form-control" value={newAssignment.cleaningStaffID} onChange={e => setNewAssignment({ ...newAssignment, cleaningStaffID: e.target.value })}>
-                  <option key="select-staff-placeholder" value="">Select Cleaning Staff</option>
-                  {cleaningStaffList.map(staff => (
-                    <option key={`staff-${staff.cleaningStaffID}`} value={staff.cleaningStaffID}>
-                      {staff.firstName} {staff.lastName}
+                <select
+                  className="form-control"
+                  value={newAssignment.roomID}
+                  onChange={e => setNewAssignment({ ...newAssignment, roomID: e.target.value })}
+                >
+                  <option value="">Select Room</option>
+                  {rooms.map(room => (
+                    <option key={room.roomID} value={room.roomID}>
+                      {room.title} (#{room.roomNumber})
                     </option>
                   ))}
+                </select>
+              </div>
+              <div className="col-12 col-md-6">
+                <select
+                  className="form-control"
+                  value={newAssignment.cleaningStaffID}
+                  onChange={e => setNewAssignment({ ...newAssignment, cleaningStaffID: e.target.value })}
+                >
+                  <option value="">Select Cleaning Staff</option>
+                  {cleaningStaffList
+                    .filter(staff => staff.isActive)
+                    .map(staff => (
+                      <option key={staff.cleaningStaffID} value={staff.cleaningStaffID}>
+                        {staff.firstName} {staff.lastName}
+                      </option>
+                    ))
+                  }
                 </select>
               </div>
             </div>
@@ -292,14 +365,14 @@ export default function AssignmentsDashboard() {
             <div className="card-body">
               <div className="row g-2">
                 <div className="col-12 col-md-6">
-                <select className="form-control" value={editRoomID} onChange={e => setEditRoomID(e.target.value)}>
-  <option value="">Select Room</option>
-  {rooms.map(room => (
-    <option key={room.roomID} value={room.roomID}>
-      {room.title} (#{room.roomNumber})
-    </option>
-  ))}
-</select>
+                  <select className="form-control" value={editRoomID} onChange={e => setEditRoomID(e.target.value)}>
+                    <option value="">Select Room</option>
+                    {rooms.map(room => (
+                      <option key={room.roomID} value={room.roomID}>
+                        {room.title} (#{room.roomNumber})
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="col-12 col-md-6 d-flex align-items-end">
                   <button className="btn btn-primary me-2 w-100" onClick={handleConfirmUpdate}>

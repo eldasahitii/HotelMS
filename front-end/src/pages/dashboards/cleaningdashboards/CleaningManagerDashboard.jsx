@@ -15,6 +15,20 @@ export default function CleaningManagerDashboard() {
   const [editingStaff, setEditingStaff] = useState(null);
   const [editShift, setEditShift] = useState('');
   const [editIsActive, setEditIsActive] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
+
+  useEffect(() => {
+    fetchData();
+
+    const handleResize = () => {
+      const largeScreen = window.innerWidth >= 992;
+      setIsLargeScreen(largeScreen);
+      if (largeScreen) setSidebarOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -27,8 +41,6 @@ export default function CleaningManagerDashboard() {
       console.error(err);
     }
   };
-
-  useEffect(() => { fetchData(); }, []);
 
   const handleDeleteStaff = async (id) => {
     try {
@@ -110,14 +122,24 @@ export default function CleaningManagerDashboard() {
 
   const handleShowActive = async () => {
     try {
-      const res = await axios.get("/api/CleaningStaff/getAllActive", { withCredentials: true });
-      setStaff(res.data);
+
+      if (staff.length && staff.every(s => s.isActive)) {
+     
+        const allStaff = await axios.get("/api/CleaningStaff/getAllCleaningStaff", { withCredentials: true });
+        setStaff(allStaff.data);
+      } else {
+  
+        const activeStaff = await axios.get("/api/CleaningStaff/getAllActive", { withCredentials: true });
+        setStaff(activeStaff.data);
+      }
     } catch (err) {
       console.error(err);
-      setMessage("Failed to load active staff.");
+      setMessage("Failed to load staff.");
       setMessageType("danger");
     }
   };
+
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -127,16 +149,59 @@ export default function CleaningManagerDashboard() {
 
   return (
     <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      <aside className="text-white p-4" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
-        <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
+  
+      {!isLargeScreen && (
+        <button
+          className="position-fixed"
+          onClick={toggleSidebar}
+          aria-label="Toggle sidebar"
+          style={{
+            zIndex: 1050,
+            top: '12px',
+            left: '12px',
+            padding: '5px 8px',
+            fontSize: '1.1rem',
+            borderRadius: '5px',
+            backgroundColor: '#324b6b',
+            color: 'white',
+            border: 'none',
+          }}
+        >
+          <i className="bi bi-list"></i>
+        </button>
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className="text-white p-4 position-fixed top-0 vh-100"
+        style={{
+          minWidth: 240,
+          backgroundColor: '#324b6b',
+          zIndex: 1040,
+          left: isLargeScreen ? 0 : (sidebarOpen ? 0 : -240),
+          transition: 'left 0.3s ease-in-out',
+          overflowY: 'auto',
+        }}
+      >
+        <h4 className="fw-bold mb-4" style={{ paddingLeft: !isLargeScreen ? '40px' : 0 }}>
+          <i className="bi bi-building"></i> HotelMS
+        </h4>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <Link to="/manager/cleaning-staff" className="nav-link text-white">
+            <Link
+              to="/manager/cleaning-staff"
+              className="nav-link text-white"
+              onClick={() => { if (!isLargeScreen) setSidebarOpen(false); }}
+            >
               <i className="bi bi-people-fill me-2"></i>Cleaning Staff
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/manager/assignments" className="nav-link text-white">
+            <Link
+              to="/manager/assignments"
+              className="nav-link text-white"
+              onClick={() => { if (!isLargeScreen) setSidebarOpen(false); }}
+            >
               <i className="bi bi-list-task me-2"></i>Assignments
             </Link>
           </li>
@@ -146,7 +211,21 @@ export default function CleaningManagerDashboard() {
           </button>
         </ul>
       </aside>
-      <main className="flex-grow-1 p-3">
+      {!isLargeScreen && sidebarOpen && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
+          style={{ zIndex: 1030 }}
+          onClick={toggleSidebar}
+        />
+      )}
+
+      <main
+        className="flex-grow-1 p-3"
+        style={{
+          marginLeft: isLargeScreen ? 240 : 0,
+          transition: 'margin-left 0.3s ease-in-out'
+        }}
+      >
         <h2 className="fw-bold text-primary mb-4"><i className="bi bi-people-fill me-2"></i>Cleaning Manager</h2>
 
         {message && (
