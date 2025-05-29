@@ -71,9 +71,9 @@ namespace HotelMS.Controllers
     [Route("api/[controller]")]
     public class HotelServiceScheduleController : ControllerBase
     {
-        private readonly IHotelServiceScheduleService _service;
+        private readonly IHotelServiceDetailService _service;
 
-        public HotelServiceScheduleController(IHotelServiceScheduleService service)
+        public HotelServiceScheduleController(IHotelServiceDetailService service)
         {
             _service = service;
         }

@@ -67,7 +67,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Services
 {
-    public class HotelServiceScheduleService : IHotelServiceScheduleService
+    public class HotelServiceScheduleService : IHotelServiceDetailService
     {
         private readonly DataContext _context;
 
