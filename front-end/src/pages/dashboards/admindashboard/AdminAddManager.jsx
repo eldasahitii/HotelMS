@@ -258,6 +258,7 @@ export default function AddManager() {
                 value={form.userID}
                 onChange={handleChange}
                 required
+                 disabled={editingId !== null}
               >
                 <option value="">-- Select User --</option>
                 {users.map((user) => (
