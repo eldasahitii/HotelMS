@@ -217,10 +217,26 @@ const handleSearch = () => {
   setFilteredReservations(filtered);
 };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
+ const handleLogout = async () => {
+  try {
+    await axios.get("/api/Auth/logout", { withCredentials: true });
+  } catch (err) {
+    console.error("Logout error", err);
+  }
+
+  localStorage.clear();
+
+  // Immediately redirect to login
+  navigate("/login");
+
+  // After redirect, prevent back button from returning to dashboard
+  setTimeout(() => {
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+  }, 0);
+};
 
  const reservationList = filteredReservations.length > 0 ? filteredReservations : reservations;
 

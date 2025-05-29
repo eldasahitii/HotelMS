@@ -174,7 +174,10 @@ if (typeof errorData === 'string') {
     <p className="mb-5 lead">A taste of our favorites, hand-picked by our head chef.</p>
 
     <div className="row justify-content-center g-4 menu-card">
-      {menuItems.slice(0, 3).map((item) => (
+      {menuItems
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3)
+      .map((item) => (
         <div className="col-sm-6 col-md-4 col-1g-3" key={item.menuItemID}>
           <div className="card shadow-sm">
             <img src={item.image_url} className="card-img-top" alt={item.name} style={{ height: '200px', objectFit: 'cover' }} />
@@ -241,8 +244,25 @@ if (typeof errorData === 'string') {
       <section className="py-5 bg-light">
         <div className="container">
           <h2 className="text-center mb-4">Book a Table</h2>
+           <style>
+    {`
+      input.form-control:focus {
+        border-color: #495057;
+        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.25);
+      }
+      .fade-in {
+  animation: fadeIn 0.8s ease-in;
+}
 
-          <form className="row g-3" onSubmit={handleSubmit}>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+    `}
+  </style>
+
+          <form className="row g-3 fade-in" onSubmit={handleSubmit}>
             <div className="col-md-6">
               <input
                 type="text"
@@ -280,6 +300,7 @@ if (typeof errorData === 'string') {
               <input
                 type="tel"
                 className="form-control"
+                id="phoneNumber"
                 placeholder="Phone Number"
                 name="phoneNumber"
                 value={formData.phoneNumber}
@@ -297,7 +318,10 @@ if (typeof errorData === 'string') {
               />
             </div>
             <div className="col-12 text-center">
-              <button type="submit" className="btn btn-dark px-5">Submit Reservation</button>
+              <button type="submit" className="btn btn-dark px-5 py-2 rounded-pill shadow-sm">
+                <i className="bi bi-calendar-check me-2"></i>
+                Submit Reservation
+              </button>
             </div>
           </form>
 

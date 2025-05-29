@@ -16,8 +16,6 @@ import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/manage
 import RoomsPage from './pages/Rooms/RoomsPage';
 import RoomsDetails from './pages/Rooms/RoomsDetails';
 import ReservationPage from './pages/Rooms/ReservationPage';
-import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
-import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 import RecepsionistReservationDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RecepsionistReservationDashboard';
 import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/RoomAdmin/AdminRoomType';
 // import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
@@ -29,6 +27,8 @@ import RestaurantMenuPage from './pages/restaurant/RestaurantMenuPage';
 // Lazy imports
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
 const CleaningStaffDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningStaffDashboard'));
+const RestaurantManagerDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/RestaurantManagerDashboard'));
+const RestaurantHostDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/RestaurantHostDashboard'));
 
 // Protected Route
 const ProtectedRoute = ({ children, allowedRoles }) => {

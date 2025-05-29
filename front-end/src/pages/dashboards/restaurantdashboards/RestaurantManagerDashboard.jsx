@@ -283,10 +283,27 @@ export default function RestaurantManagerDashboard() {
   };
 
   const navigate = useNavigate();
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
+ const handleLogout = async () => {
+  try {
+    await axios.get("/api/Auth/logout", { withCredentials: true });
+  } catch (err) {
+    console.error("Logout error", err);
+  }
+
+  localStorage.clear();
+
+  // Immediately redirect to login
+  navigate("/login");
+
+  // After redirect, prevent back button from returning to dashboard
+  setTimeout(() => {
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+  }, 0);
+};
+
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
@@ -619,7 +636,7 @@ export default function RestaurantManagerDashboard() {
             <td>${Number(item.price).toFixed(2)}</td>
             <td>{item.is_available ? "Yes" : "No"}</td>
             <td>
-              <img src={item.image_url} alt={item.name}  style={{ width: "80px", height: "auto", borderRadius: "8px", objectFit: "cover" }}/>
+              <img src={item.image_url} alt={item.name} loading="lazy" style={{ width: "80px", height: "auto", borderRadius: "8px", objectFit: "cover" }}/>
             </td>
             <td>
               <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteMenuItem(item.menuItemID)}><i className="bi bi-trash"></i></button>
