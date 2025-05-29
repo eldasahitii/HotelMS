@@ -106,23 +106,23 @@ export default function RestaurantManagerDashboard() {
     }
   }, [activeSection]);
 
-  const handleAddHost = async () => {
-    if(!newHost.firstName || !newHost.lastName || !newHost.email || !newHost.password) {
-      setMessage("Please fill all fields.");
-      setMessageType("danger");
-      return;
-    }
-    try {
-      await axios.post("/api/HostManagement/addHost", newHost);
-      setMessage("Host added successfully.");
-       setMessageType("success");
-      setNewHost({ firstName: '', lastName: '', email: '', password: '' });
-      fetchHosts();
-    } catch (error) {
-      setMessage("Failed to add host.");
-      setMessageType("danger");
-    }
-  };
+  // const handleAddHost = async () => {
+  //   if(!newHost.firstName || !newHost.lastName || !newHost.email || !newHost.password) {
+  //     setMessage("Please fill all fields.");
+  //     setMessageType("danger");
+  //     return;
+  //   }
+  //   try {
+  //     await axios.post("/api/HostManagement/addHost", newHost);
+  //     setMessage("Host added successfully.");
+  //      setMessageType("success");
+  //     setNewHost({ firstName: '', lastName: '', email: '', password: '' });
+  //     fetchHosts();
+  //   } catch (error) {
+  //     setMessage("Failed to add host.");
+  //     setMessageType("danger");
+  //   }
+  // };
   const handleAssignHostRole = async () => {
     if (!selectedUserEmail) return;
     try {
@@ -201,31 +201,34 @@ export default function RestaurantManagerDashboard() {
   };
 
   const handleUpdateMenuItem = async () => {
-    try {
-     await axios.put(`/api/MenuItem/updateMenuItem?id=${editingMenuItem.menuItemID}`, {
-  ...editMenuData,
-  price: Number(editMenuData.price),
-}, {
-  withCredentials: true
-});
-
-
-      const updated = menuItems.map(item =>
-      item.menuItemID === editingMenuItem.menuItemID
-        ? { ...item, ...editMenuData }
-        : item
+  try {
+    await axios.put(
+      `/api/MenuItem/updateMenuItem?id=${editingMenuItem.menuItemID}`,
+      {
+        name: editMenuData.name,
+        description: editMenuData.description,
+        price: Number(editMenuData.price),
+        image_url: editMenuData.image_url,          
+        is_available: editMenuData.is_available,  
+        menuCategoryID: Number(editMenuData.menuCategoryID)
+      },
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
     );
-    setMenuItems(updated);
 
-      setMessage("Menu item updated successfully.");
-      setMessageType("success");
-      setEditingMenuItem(null);
-      fetchMenuItems();
-    } catch(error) {
-      setMessage("Failed to update menu item.");
-      setMessageType("danger");
-    }
-  };
+    setMessage("Menu item updated successfully.");
+    setMessageType("success");
+    setEditingMenuItem(null);
+    fetchMenuItems();
+  } catch (error) {
+    setMessage("Failed to update menu item.");
+    setMessageType("danger");
+    console.error("Update error:", error.response?.data || error.message);
+  }
+};
+
   const handleDeleteMenuItem = async(id) => {
     if (!window.confirm("Are you sure you want to delete this menu item?")) return;
     try {
@@ -304,10 +307,9 @@ export default function RestaurantManagerDashboard() {
 
   localStorage.clear();
 
-  // Immediately redirect to login
+ 
   navigate("/login");
 
-  // After redirect, prevent back button from returning to dashboard
   setTimeout(() => {
     window.history.pushState(null, "", window.location.href);
     window.onpopstate = () => {
@@ -316,6 +318,23 @@ export default function RestaurantManagerDashboard() {
   }, 0);
 };
 
+const safeInputValue = (value) => value ?? '';
+  const safeNumberValue = (value) => value === '' || value === null || value === undefined ? '' : Number(value);
+  
+
+  const sanitizeObjectFields = (obj, schema) => {
+    const safe = {};
+    for (const key in schema) {
+      if (typeof schema[key] === 'number') {
+        safe[key] = Number(obj[key] ?? schema[key]);
+      } else if (typeof schema[key] === 'boolean') {
+        safe[key] = obj[key] ?? schema[key];
+      } else {
+        safe[key] = obj[key] ?? '';
+      }
+    }
+    return safe;
+  };
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
@@ -351,10 +370,17 @@ export default function RestaurantManagerDashboard() {
 
         {activeSection === "hosts" && (
   <>
+      {message && (
+      <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+        {message}
+        <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
+      </div>
+    )}
     <div className="card mb-4">
       <div className="card-header bg-info text-white">
         <i className="bi bi-person-plus-fill me-2"></i>Assign Host Role to Existing User
       </div>
+
       <div className="card-body">
         <select
           className="form-select mb-3"
@@ -389,7 +415,7 @@ export default function RestaurantManagerDashboard() {
     />
     <button
       className="btn btn-primary"
-      onClick={() => fetchHosts()} // re-fetches hosts, or just triggers UI update
+      onClick={() => fetchHosts()} 
     >
       Search
     </button>
@@ -449,23 +475,30 @@ export default function RestaurantManagerDashboard() {
         <div className="card-header bg-warning text-dark">
           <i className="bi bi-pencil-square me-2"></i>Edit Host
         </div>
+
+         {message && (
+      <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+        {message}
+        <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
+      </div>
+    )}
         <div className="card-body">
           <input
             className="form-control mb-2"
             placeholder="First Name"
-            value={editData.firstName}
+            value={safeInputValue(editData.firstName)}
             onChange={(e) => setEditData({ ...editData, firstName: e.target.value })}
           />
           <input
             className="form-control mb-2"
             placeholder="Last Name"
-            value={editData.lastName}
+            value={safeInputValue(editData.lastName)}
             onChange={(e) => setEditData({ ...editData, lastName: e.target.value })}
           />
           <input
             className="form-control mb-2"
             placeholder="Email"
-            value={editData.email}
+            value={safeInputValue(editData.email)}
             onChange={(e) => setEditData({ ...editData, email: e.target.value })}
           />
           <button className="btn btn-primary me-2" onClick={handleConfirmUpdate}>
@@ -480,120 +513,6 @@ export default function RestaurantManagerDashboard() {
   </>
 )}
 
-        {/* { activeSection === "hosts" && (
-        <div className="card mb-4">
-  <div className="card-header bg-info text-white">
-    <i className="bi bi-person-plus-fill me-2"></i>Assign Host Role to Existing User
-  </div>
-  <div className="card-body">
-    <select
-      className="form-select mb-3"
-      value={selectedUserEmail}
-      onChange={(e) => setSelectedUserEmail(e.target.value)}
-    >
-      <option value="">Select User</option>
-      {users.map((user) => (
-        <option key={user.userID} value={user.email}>
-          {user.firstName} {user.lastName} ({user.email})
-        </option>
-      ))}
-    </select>
-    <button
-      className="btn btn-info w-100"
-      disabled={!selectedUserEmail}
-      onClick={async () => {
-        try {
-          await axios.post("/api/HostManagement/assignHostRole", { email: selectedUserEmail });
-          setMessage("Host role assigned successfully.");
-          setMessageType("success");
-          fetchHosts(); // Refresh the list
-        } catch (err) {
-          setMessage(err.response?.data || "Failed to assign host role.");
-          setMessageType("danger");
-        }
-      }}
-    >
-      Assign Host Role
-    </button>
-  </div>
-</div>
-
-
-        <div className="card mb-4">
-          <div className="card-body d-flex gap-2">
-            <input type="text" className="form-control" placeholder="Search by Name" value={searchName} onChange={e => setSearchName(e.target.value)} />
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-header bg-primary text-white">
-            <i className="bi bi-people-fill me-2"></i>All Hosts
-          </div>
-          <div className="card-body p-0">
-            <table className="table mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {hosts
-                .filter(h => `${h.firstName} ${h.lastName}`.toLowerCase().includes(searchName.toLowerCase()))
-                .map((host, index) => (
-                  <tr key={host.userID}>
-                    <td>{index + 1}</td>
-                    <td>{host.firstName} {host.lastName}</td>
-                    <td>{host.email}</td>
-                    <td>
-                      <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteHost(host.userID)}><i className="bi bi-trash"></i></button>
-                      <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(host)}><i className="bi bi-pencil-square"></i></button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-       {editingHost && (
-  <div className="card mt-4">
-    <div className="card-header bg-warning text-dark">
-      <i className="bi bi-pencil-square me-2"></i>Edit Host
-    </div>
-    <div className="card-body">
-      <input
-        className="form-control mb-2"
-        placeholder="First Name"
-        value={editData.firstName}
-        onChange={e => setEditData({ ...editData, firstName: e.target.value })}
-      />
-      <input
-        className="form-control mb-2"
-        placeholder="Last Name"
-        value={editData.lastName}
-        onChange={e => setEditData({ ...editData, lastName: e.target.value })}
-      />
-      <input
-        className="form-control mb-2"
-        placeholder="Email"
-        value={editData.email}
-        onChange={e => setEditData({ ...editData, email: e.target.value })}
-      />
-      <button className="btn btn-primary me-2" onClick={handleConfirmUpdate}>
-        <i className="bi bi-check2"></i> Save
-      </button>
-      <button className="btn btn-secondary" onClick={() => setEditingHost(null)}>
-        <i className="bi bi-x"></i> Cancel
-      </button>
-    </div>
-  </div>
-       )}
-       </>
-
-        )} */}
         {activeSection === "menu" && (
         <>
          <h2 className="fw-bold text-primary mb-4">
@@ -611,11 +530,11 @@ export default function RestaurantManagerDashboard() {
     <i className="bi bi-plus-circle me-2"></i> Add Menu Item
   </div>
   <div className="card-body">
-    <input className="form-control mb-2" placeholder="Name" value={newMenuItem.name} onChange={e => setNewMenuItem({ ...newMenuItem, name: e.target.value })} />
-    <input className="form-control mb-2" placeholder="Description" value={newMenuItem.description} onChange={e => setNewMenuItem({ ...newMenuItem, description: e.target.value })} />
-    <input className="form-control mb-2" placeholder="Price" type="number" value={newMenuItem.price} onChange={e => setNewMenuItem({ ...newMenuItem, price: e.target.value })} />
-    <input className="form-control mb-2" placeholder="Image URL" value={newMenuItem.image_url} onChange={e => setNewMenuItem({ ...newMenuItem, image_url: e.target.value })} />
-    <input className="form-control mb-2" placeholder="Category ID" type="number" value={newMenuItem.menuCategoryID} onChange={e => setNewMenuItem({ ...newMenuItem, menuCategoryID: e.target.value })} />
+    <input className="form-control mb-2" placeholder="Name" value={safeInputValue(newMenuItem.name)} onChange={e => setNewMenuItem({ ...newMenuItem, name: e.target.value })} />
+    <input className="form-control mb-2" placeholder="Description" value={safeInputValue(newMenuItem.description)} onChange={e => setNewMenuItem({ ...newMenuItem, description: e.target.value })} />
+    <input className="form-control mb-2" placeholder="Price" type="number" value={safeNumberValue(newMenuItem.price)} onChange={e => setNewMenuItem({ ...newMenuItem, price: e.target.value })} />
+    <input className="form-control mb-2" placeholder="Image URL" value={safeInputValue(newMenuItem.image_url)} onChange={e => setNewMenuItem({ ...newMenuItem, image_url: e.target.value })} />
+    <input className="form-control mb-2" placeholder="Category ID" type="number" value={safeNumberValue(newMenuItem.menuCategoryID)} onChange={e => setNewMenuItem({ ...newMenuItem, menuCategoryID: e.target.value })} />
     <div className="form-check mb-2">
       <input className="form-check-input" type="checkbox" checked={newMenuItem.is_available} onChange={e => setNewMenuItem({ ...newMenuItem, is_available: e.target.checked })} />
       <label className="form-check-label">Available</label>
@@ -667,13 +586,13 @@ export default function RestaurantManagerDashboard() {
       <i className="bi bi-pencil-square me-2"></i>Edit Menu Item
     </div>
     <div className="card-body">
-      <input className="form-control mb-2" value={editMenuData.name} onChange={e => setEditMenuData({ ...editMenuData, name: e.target.value })} />
-      <input className="form-control mb-2" value={editMenuData.description} onChange={e => setEditMenuData({ ...editMenuData, description: e.target.value })} />
-      <input className="form-control mb-2" type="number" value={editMenuData.price} onChange={e => setEditMenuData({ ...editMenuData, price: e.target.value })} />
-      <input className="form-control mb-2" value={editMenuData.image_url} onChange={e => setEditMenuData({ ...editMenuData, image_url: e.target.value })} />
-      <input className="form-control mb-2" type="number" value={editMenuData.menuCategoryID} onChange={e => setEditMenuData({ ...editMenuData, menuCategoryID: e.target.value })} />
+      <input className="form-control mb-2" value={safeInputValue(editMenuData.name)} onChange={e => setEditMenuData({ ...editMenuData, name: e.target.value })} />
+      <input className="form-control mb-2" value={safeInputValue(editMenuData.description)} onChange={e => setEditMenuData({ ...editMenuData, description: e.target.value })} />
+      <input className="form-control mb-2" type="number" value={safeNumberValue(editMenuData.price)} onChange={e => setEditMenuData({ ...editMenuData, price: e.target.value })} />
+      <input className="form-control mb-2" value={safeInputValue(editMenuData.image_url)} onChange={e => setEditMenuData({ ...editMenuData, image_url: e.target.value })} />
+      <input className="form-control mb-2" type="number" value={safeNumberValue(editMenuData.menuCategoryID)} onChange={e => setEditMenuData({ ...editMenuData, menuCategoryID: e.target.value })} />
       <div className="form-check mb-2">
-        <input className="form-check-input" type="checkbox" checked={editMenuData.is_available} onChange={e => setEditMenuData({ ...editMenuData, is_available: e.target.checked })} />
+        <input className="form-check-input" type="checkbox" checked={editMenuData.is_available || ''} onChange={e => setEditMenuData({ ...editMenuData, is_available: e.target.checked })} />
         <label className="form-check-label">Available</label>
       </div>
       <button className="btn btn-primary me-2" onClick={handleUpdateMenuItem}>Save</button>
@@ -702,8 +621,8 @@ export default function RestaurantManagerDashboard() {
         <i className="bi bi-plus-circle me-2"></i> Add Table
       </div>
       <div className="card-body">
-        <input className="form-control mb-2" type="number" placeholder="Table Number" value={newTable.tableNumber} onChange={e => setNewTable({ ...newTable, tableNumber: e.target.value })} />
-        <input className="form-control mb-2" placeholder="Capacity" value={newTable.capacity} onChange={e => setNewTable({ ...newTable, capacity: e.target.value })} />
+        <input className="form-control mb-2" type="number" placeholder="Table Number" value={safeNumberValue(newTable.tableNumber)} onChange={e => setNewTable({ ...newTable, tableNumber: e.target.value })} />
+        <input className="form-control mb-2" placeholder="Capacity" value={safeNumberValue(newTable.capacity)} onChange={e => setNewTable({ ...newTable, capacity: e.target.value })} />
         <button className="btn btn-success w-100" onClick={handleAddTable}>Add Table</button>
       </div>
     </div>
@@ -765,8 +684,8 @@ export default function RestaurantManagerDashboard() {
           <i className="bi bi-pencil-square me-2"></i>Edit Table
         </div>
         <div className="card-body">
-          <input className="form-control mb-2" type="number" value={editTableData.tableNumber} onChange={e => setEditTableData({ ...editTableData, tableNumber: e.target.value })} />
-          <input className="form-control mb-2" value={editTableData.capacity} onChange={e => setEditTableData({ ...editTableData, capacity: e.target.value })} />
+          <input className="form-control mb-2" type="number" value={safeNumberValue(editTableData.tableNumber)} onChange={e => setEditTableData({ ...editTableData, tableNumber: e.target.value })} />
+          <input className="form-control mb-2" value={safeNumberValue(editTableData.capacity)} onChange={e => setEditTableData({ ...editTableData, capacity: e.target.value })} />
           <button className="btn btn-primary me-2" onClick={handleUpdateTable}>Save</button>
           <button className="btn btn-secondary" onClick={() => setEditingTable(null)}>Cancel</button>
         </div>
