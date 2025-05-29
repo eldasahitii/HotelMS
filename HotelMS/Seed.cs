@@ -469,43 +469,7 @@ public class Seed
                 dataContext.SaveChanges();
             }
 
-            //Seed HotelService
-            if (!dataContext.HotelServices.Any())
-            {
-                var services = new List<HotelService>
-            {
-                new HotelService
-                {
-                    Type = "Pool & Spa",
-                    Name = "Sauna Session",
-                    Description = "30-minute sauna to relax your body",
-                    Price = 30.00m
-                },
-                new HotelService
-                {
-                    Type = "Pool & Spa",
-                    Name = "Full Body Massage",
-                    Description = "1-hour relaxing massgae by professionals",
-                    Price = 60.00m
-                },
-                new HotelService
-                {
-                    Type = "Events",
-                    Name = "Wedding Hall Booking",
-                    Description = "Spacious hall for weddings and ceremonies",
-                    Price = 500.00m
-                },
-                new HotelService
-                {
-                    Type = "Events",
-                    Name = "Conference Room Booking",
-                    Description = "Corporate setup with presentation equipment",
-                    Price = 400.00m
-                }
-            };
-                dataContext.HotelServices.AddRange(services);
-                dataContext.SaveChanges();
-            }
+            
 
             if (!dataContext.MenuCategories.Any())
             {
@@ -571,59 +535,42 @@ public class Seed
                 dataContext.SaveChanges();
 
             }
-            
-            //Seed HotelServiceSchedule
-            if (!dataContext.HotelServiceSchedules.Any())
+
+            // **Seed Hotel Services directly here**
+
+            // Seed HotelServices
+
+            if (!dataContext.HotelServices.Any())
             {
-                var scheduleEntries = new List<HotelServiceDetail>();
-
-                var allServices = dataContext.HotelServices.ToList();
-                foreach (var service in allServices)
+                var hotelServices = new List<HotelService>
                 {
-                    scheduleEntries.Add(new HotelServiceDetail
+                    new HotelService
                     {
-                        HotelServiceId = service.Id,
-                        StartTime = DateTime.Today.AddHours(10),
-                        EndTime = DateTime.Today.AddHours(11),
-                        IsAvailable = true
-                    });
-                    scheduleEntries.Add(new HotelServiceDetail
+                         Name = "Pool & Spa",
+                         Description = " Relax and unwind in our luxurious pool and spa facilities. \r\n              Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, \r\n              sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. \r\n              Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.",
+                         HeroImageUrl = "../../Assets/images/pool1.jpg"
+                    },
+                    new HotelService
                     {
-                        HotelServiceId = service.Id,
-                        StartTime = DateTime.Today.AddHours(14),
-                        EndTime = DateTime.Today.AddHours(15),
-                        IsAvailable = true
-                    });
-                }
-                dataContext.HotelServiceSchedules.AddRange(scheduleEntries);
-                dataContext.SaveChanges();
-            }
-
-
-            //Seed HotelServiceReservation
-            if (!dataContext.HotelServiceReservations.Any())
-            {
-                var customer = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
-                var saunaService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Sauna Session");
-                var schedule = dataContext.HotelServiceSchedules.FirstOrDefault(s => s.HotelServiceId == saunaService.Id);
-
-                if (customer != null && saunaService != null && schedule != null)
-                {
-                    var reservation = new HotelServiceReservation
-                    {
-                        UserId = customer.UserID,
-                        HotelServiceId = saunaService.Id,
-                        ScheduleId = schedule.Id,
-                        ReservationTime = DateTime.Now,
-                        Status = "Confirmed"
-
+                        Name = "Events",
+                        Description = " Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations.\r\n               Our experienced team will help you plan every detail to ensure a seamless and memorable event. \r\n               Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized \r\n               service to make your occasion truly special.",
+                        HeroImageUrl = "../../Assets/images/mainevents.jpg"
+                    }
                     };
-
-                    dataContext.HotelServiceReservations.Add(reservation);
-                    dataContext.SaveChanges();
                 }
             }
-        }
+
+
+
+
+
+
+
+
+
+
+
+        
 
     }
 }
