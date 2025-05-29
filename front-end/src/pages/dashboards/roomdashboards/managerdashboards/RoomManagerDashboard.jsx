@@ -245,6 +245,16 @@ const RoomManagerDashboard = () => {
           >
             <i className="bi bi-journal-check me-2"></i> Room Reservation List
           </button>
+          <button
+          className="btn btn-outline-light w-100 mb-3"
+          onClick={() => navigate("/room-manager/review-dashboard")}
+           >
+          <i className="bi bi-chat-left-text me-2"></i> Review Dashboard
+          </button>
+
+
+          
+
 
           <button
             className="btn btn-outline-light w-100 mt-2"
@@ -353,6 +363,7 @@ const RoomManagerDashboard = () => {
             >
               Add Room
             </button>
+            
           )}
         </div>
 

@@ -1,34 +1,70 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import logo from '../Assets/images/logo.png';
 
 const Header = () => {
-  return (
-    <header className="headerContainer navbar navbar-expand-lg navbar-light bg-light p-3">
-      <div className="container-fluid d-flex justify-content-between align-items-center">
+  const location = useLocation();
 
-        <div className="logo">
-          {/* <img src="imgs/logo1.png" alt="Logo" className="img-fluid" /> */}
+  const navLinkStyle = (path) =>
+    `nav-link px-3 fw-semibold fs-6 ${location.pathname === path ? 'text-dark border-bottom border-2 border-dark' : 'text-secondary'}`;
+
+  if (location.pathname === '/login') {
+    return null;
+  }
+
+  return (
+    <header className="bg-white shadow-sm border-bottom py-2">
+      <nav className="navbar navbar-expand-lg navbar-light container">
+        
+        {/* Logo */}
+        <Link to="/" className="navbar-brand d-flex align-items-center">
+          <img
+            src={logo}
+            alt="Hotel Amé Logo"
+            style={{ height: '120px' }}
+            className="img-fluid"
+          />
+        </Link>
+
+        {/* Hamburger button */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        {/* Collapsible Nav */}
+        <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul className="navbar-nav gap-lg-5 gap-3 text-center">
+            <li className="nav-item">
+              <Link to="/" className={navLinkStyle('/')}>HOME</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/about" className={navLinkStyle('/about')}>ABOUT US</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/restaurant" className={navLinkStyle('/restaurant')}>RESTAURANT</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/spa" className={navLinkStyle('/spa')}>POOL & SPA</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/book" className={navLinkStyle('/book')}>BOOK NOW</Link>
+            </li>
+          </ul>
         </div>
-        <ul className="nav ms-auto">
-          <li className="nav-item">
-            <a href="index.php" className="nav-link custom-nav-link">Home</a>
-          </li>
-          <li className="nav-item">
-            <a href="AboutUs.php" className="nav-link custom-nav-link">Rooms</a>
-          </li>
-          <li className="nav-item">
-            <a href="/restaurant" className="nav-link custom-nav-link">Restaurant</a>
-          </li>
-          <li className="nav-item">
-            <a href="poolAndSpa.php" className="nav-link custom-nav-link">Pool & Spa</a>
-          </li>
-          <li className="nav-item">
-            <a href="BookNow.php" className="nav-link custom-nav-link" target="_blank">Book Now</a>
-          </li>
-        </ul>
-      </div>
+      </nav>
     </header>
   );
 };
 
 export default Header;
+
+

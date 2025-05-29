@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 const SignupPage = () => {
   const [user, setUser] = useState({
@@ -67,7 +68,7 @@ const SignupPage = () => {
           <p className="text-center text-muted mb-4">
             Enjoy personalized experiences when you create your account and tell us more about yourself.
             Already have an account?{' '}
-            <a href="/login" className="text-decoration-none" style={{ color: '#2a52be' }}>Log In</a>
+            <Link to="/login" className="text-decoration-none" style={{ color: '#2a52be' }}>Log In</Link>
           </p>
 
           <div className="row">

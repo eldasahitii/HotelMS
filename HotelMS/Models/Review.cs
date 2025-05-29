@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace HotelMS.Models
 {
@@ -14,6 +15,16 @@ namespace HotelMS.Models
         [Required]
         public int UserID { get; set; }
 
+        [ForeignKey("UserID")]
+        public User? User { get; set; }
+
+        [Required]
+        public int ReviewCategoryID { get; set; } // New
+
+        [ForeignKey("ReviewCategoryID")]
+        public ReviewCategory? Category { get; set; } // Make this optional
+
+
         [Range(1, 5)]
         public int Rating { get; set; }
 
@@ -22,6 +33,15 @@ namespace HotelMS.Models
 
         public DateTime Date { get; set; } = DateTime.Now;
 
-        public User? User { get; set; }  // navigation property
+        public string? ManagerReply { get; set; }
+        public DateTime? ReplyDate { get; set; }
+
+
+
+
+
+
+
+
     }
 }
