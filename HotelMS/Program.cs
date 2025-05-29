@@ -157,6 +157,8 @@ app.UseAuthorization();
 
 app.UseStaticFiles();
 
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
