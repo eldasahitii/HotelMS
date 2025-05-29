@@ -16,15 +16,20 @@ import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/manage
 import RoomsPage from './pages/Rooms/RoomsPage';
 import RoomsDetails from './pages/Rooms/RoomsDetails';
 import ReservationPage from './pages/Rooms/ReservationPage';
-import RestaurantHostDashboard from './pages/dashboards/restaurantdashboards/RestaurantHostDashboard';
-import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/RestaurantManagerDashboard';
 import RecepsionistReservationDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RecepsionistReservationDashboard';
 import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/RoomAdmin/AdminRoomType';
-import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
+// import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager'
+import RestaurantHomePage from './pages/restaurant/RestaurantHomePage';
+import RestaurantMenuPage from './pages/restaurant/RestaurantMenuPage';
+import RestaurantAdmin from './pages/dashboards/admindashboard/RestaurantAdmin/AdminRestaurant';
 
 // Lazy imports
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
 const CleaningStaffDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningStaffDashboard'));
+const RestaurantManagerDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/RestaurantManagerDashboard'));
+const RestaurantHostDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/RestaurantHostDashboard'));
 
 // Protected Route
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -69,6 +74,26 @@ function App() {
                 <ReservationPage />
               </ProtectedRoute>
             } />
+
+          {/*Rooms*/}
+          <Route path="/reserve" element={
+            <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
+              <ReservationPage />
+            </ProtectedRoute>
+          } />
+          {/* NEW: Reservation Page route */}
+<Route
+  path="/reserve"
+  element={
+    <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
+      <ReservationPage />
+    </ProtectedRoute>
+  }
+/>
+          <Route path="/restaurant">
+          <Route index element={<RestaurantHomePage />} />
+          <Route path="menu" element={<RestaurantMenuPage />} />
+          </Route>
 
             <Route path="/room-manager-receptionist-management" element={
               <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
@@ -147,6 +172,13 @@ function App() {
                 <AdminAddManager />
               </ProtectedRoute>
             }/>
+
+            <Route path="/admin/restaurant-dashboard" element={
+              <ProtectedRoute allowedRoles={['Admin']}>
+                <RestaurantAdmin />
+              </ProtectedRoute>
+            } />
+
 
             <Route path="*" element={<div>Page Not Found</div>} />
           </Routes>

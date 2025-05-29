@@ -19,13 +19,18 @@ namespace HotelMS.Services
         {
             try
             {
-                var tables = await _dbContext.RestaurantTables.ToListAsync();
+                var tables = await _dbContext.RestaurantTables
+                    .Include(t => t.Reservations)
+                    .ToListAsync();
+
                 return tables.Select(t => new RestaurantTableDTO
                 {
                     RestaurantTableID = t.RestaurantTableID,
                     TableNumber = t.TableNumber,
-                    Status = t.Status
+                    Capacity = t.Capacity,
+                    Status = t.Reservations.Any(r => r.status != "Canceled") ? "Booked" : "Available"
                 });
+
             }
             catch (Exception ex)
             {
@@ -66,14 +71,21 @@ namespace HotelMS.Services
                 var entity = new RestaurantTable
                 {
                     TableNumber = dto.TableNumber,
-                    Status = dto.Status
+                    Capacity = dto.Capacity
                 };
+
 
                 _dbContext.RestaurantTables.Add(entity);
                 await _dbContext.SaveChangesAsync();
 
-                dto.RestaurantTableID = entity.RestaurantTableID;
-                return dto;
+                return new RestaurantTableDTO
+                {
+                    RestaurantTableID = entity.RestaurantTableID,
+                    TableNumber = entity.TableNumber,
+                    Capacity = entity.Capacity,
+                    Status = "Available"
+                };
+
             }
             catch (Exception ex)
             {
@@ -106,7 +118,8 @@ namespace HotelMS.Services
                 if (entity == null) return null;
 
                 entity.TableNumber = dto.TableNumber;
-                entity.Status = dto.Status;
+                entity.Capacity = dto.Capacity;
+
 
                 await _dbContext.SaveChangesAsync();
 
@@ -114,8 +127,10 @@ namespace HotelMS.Services
                 {
                     RestaurantTableID = entity.RestaurantTableID,
                     TableNumber = entity.TableNumber,
-                    Status = entity.Status
+                    Capacity = entity.Capacity,
+                    Status = "Available"
                 };
+
             }
             catch (Exception ex)
             {
