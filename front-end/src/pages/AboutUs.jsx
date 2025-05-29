@@ -26,21 +26,26 @@ const [selectedReviewId, setSelectedReviewId] = useState(null);
 const [roleId, setRoleId] = useState(null);
 
 
-  useEffect(() => {
-    fetchReviews();
-    fetchCategories();
-     fetchRole();
-  }, []);
+useEffect(() => {
+  fetchReviews();
+  fetchCategories();
+  fetchRole();
+}, []);
 
- const fetchRole = async () => {
+const fetchRole = async () => {
   try {
     const res = await axios.get("/api/Auth/me", { withCredentials: true });
-    setRoleId(parseInt(res.data.roleID || res.data.roleId));
-    setUserId(parseInt(res.data.userID || res.data.userId)); // 👈 add this
+    const fetchedRoleId = parseInt(res.data.roleID || res.data.roleId);
+    const fetchedUserId = parseInt(res.data.userID || res.data.userId);
+    console.log("Role ID:", fetchedRoleId);
+    console.log("User ID:", fetchedUserId);
+    setRoleId(fetchedRoleId);
+    setUserId(fetchedUserId);
   } catch (err) {
     console.error("Error fetching role/user:", err);
   }
 };
+
 
 
 const submitReply = async () => {
@@ -309,11 +314,14 @@ const submitReply = async () => {
   </div>
 )}
 
-// Allow only manager roles to reply
-{[2, 4, 5, 7].includes(roleId) && (
+
+{([2, 4, 5, 7].includes(roleId) && (!review.managerReply || review.managerReply.trim() === "")) && (
   <div className="mt-3">
     {selectedReviewId !== review.reviewID ? (
-      <button className="btn btn-sm btn-outline-success" onClick={() => setSelectedReviewId(review.reviewID)}>
+      <button
+        className="btn btn-sm btn-outline-success"
+        onClick={() => setSelectedReviewId(review.reviewID)}
+      >
         Reply as Manager
       </button>
     ) : (
@@ -324,12 +332,23 @@ const submitReply = async () => {
           value={replyText}
           onChange={(e) => setReplyText(e.target.value)}
         />
-        <button className="btn btn-sm btn-success me-2" onClick={submitReply}>Submit Reply</button>
-        <button className="btn btn-sm btn-secondary" onClick={() => setSelectedReviewId(null)}>Cancel</button>
+        <button
+          className="btn btn-sm btn-success me-2"
+          onClick={submitReply}
+        >
+          Submit Reply
+        </button>
+        <button
+          className="btn btn-sm btn-secondary"
+          onClick={() => setSelectedReviewId(null)}
+        >
+          Cancel
+        </button>
       </>
     )}
   </div>
 )}
+
 
 
 

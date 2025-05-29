@@ -1,7 +1,6 @@
 ﻿import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
@@ -28,23 +27,23 @@ const Login = () => {
 
     try {
       const loginRes = await axios.post(
-      
         "https://localhost:7117/api/Auth/login",
         { email, password },
         { withCredentials: true }
       );
 
       if (loginRes.data.isLoggedIn) {
-       const meRes = await axios.get('https://localhost:7117/api/Auth/me', {
+        const meRes = await axios.get('https://localhost:7117/api/Auth/me', {
           withCredentials: true,
         });
 
-  
+        const { role, userId, userName } = meRes.data;
+
+        console.log("meRes.data:", meRes.data);
+console.log("role:", role);  // This is probably undefined
 
 
-
-        const { role, userId } = meRes.data;
-
+        //  3. Navigate based on user role
         switch (role) {
           case "Customer": navigate("/rooms"); break;
           case "Admin": navigate("/admin/room-types"); break;
@@ -59,7 +58,6 @@ const Login = () => {
             break;
         }
       }
-      
     } catch (err) {
       const message = err.response?.data?.message || err.message;
       console.error('Login error:', message);
@@ -95,7 +93,7 @@ const Login = () => {
           <p className="text-center text-muted mb-4">
             Log in to access your account and explore your next stay.
             Don’t have an account?{' '}
-            <Link to="/signup" className="text-decoration-none" style={{ color: '#2a52be' }}>Sign Up</Link>
+            <a href="/signup" className="text-decoration-none" style={{ color: '#2a52be' }}>Sign Up</a>
           </p>
 
           <div className="mb-3">
@@ -148,3 +146,4 @@ const Login = () => {
 };
 
 export default Login;
+
