@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const BASE_URL = "https://localhost:7117/";
 const api = axios.create({
@@ -49,7 +51,7 @@ const AdminRoomTypeDashboard = () => {
       });
       setRoomTypes(roomTypesWithImages);
     } catch (err) {
-      setError("Failed to load room types.");
+      toast.error("Failed to load room types.");
       console.error(err);
     }
   };
@@ -89,7 +91,7 @@ const AdminRoomTypeDashboard = () => {
     const { name, capacity, size, description, price, imageFiles } = newRoomType;
 
     if (!name.trim() || !capacity.trim() || !size.trim() || !description.trim() || price === "") {
-      setError("Please fill all fields.");
+      toast.error("Please fill all fields.");
       return;
     }
 
@@ -120,12 +122,12 @@ const AdminRoomTypeDashboard = () => {
         }
       }
 
-      alert("Room type and images added successfully!");
+      toast.success("Room type and images added successfully!");
       resetForm();
       loadRoomTypes();
     } catch (err) {
       console.error("Failed to add room type or upload images:", err);
-      setError("Something went wrong. Check your inputs and try again.");
+      toast.error("Something went wrong. Check your inputs and try again.");
     }
   };
 
@@ -153,7 +155,7 @@ const handleEditClick = (rt) => {
     const { roomTypeID, name, capacity, size, description, price, images, imageFiles } = newRoomType;
 
     if (!name.trim() || !capacity.trim() || !size.trim() || !description.trim() || price === "") {
-      setError("Please fill all fields.");
+      toast.error("Please fill all fields.");
       return;
     }
 
@@ -184,12 +186,12 @@ const handleEditClick = (rt) => {
         }
       }
 
-      alert("Room type updated successfully!");
+      toast.success("Room type updated successfully!");
       resetForm();
       loadRoomTypes();
     } catch (err) {
       console.error("Failed to update room type:", err);
-      setError("Failed to update room type.");
+      toast.error("Failed to update room type.");
     }
   };
 
@@ -200,28 +202,49 @@ const handleEditClick = (rt) => {
     }));
   };
 
-  const handleDeleteRoomType = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this room type?")) return;
+const handleDeleteRoomType = async (id) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will permanently delete the room type.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+  });
+
+  if (result.isConfirmed) {
     try {
       await api.delete(`/RoomType/DeleteRoomType?id=${id}`);
       loadRoomTypes();
+      toast.success("Room type deleted successfully.");
     } catch (err) {
       console.error("Failed to delete room type:", err);
-      alert("Failed to delete room type.");
+      toast.error("Failed to delete room type.");
     }
-  };
+  }
+};
 const handleDeleteImage = async (imageId) => {
-  try {
-    await api.delete(`/RoomImage/DeleteImage?imageId=${imageId}`);
-    
-    setNewRoomType(prev => ({
-      ...prev,
-      images: prev.images.filter(img => img.roomImageID !== imageId)
-    }));
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This image will be permanently removed.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+  });
 
-  } catch (error) {
-    console.error("Failed to delete image:", error);
-    setError("Failed to delete image.");
+  if (result.isConfirmed) {
+    try {
+      await api.delete(`/RoomImage/DeleteImage?imageId=${imageId}`);
+      setNewRoomType(prev => ({
+        ...prev,
+        images: prev.images.filter(img => img.roomImageID !== imageId)
+      }));
+      toast.success("Image deleted successfully.");
+    } catch (error) {
+      console.error("Failed to delete image:", error);
+      toast.error("Failed to delete image.");
+    }
   }
 };
 
@@ -244,6 +267,12 @@ const handleDeleteImage = async (imageId) => {
             onClick={() => navigate("/admin/roomstatus")}
           >
             <i className="bi bi-house-door me-2"></i> Add Room Status
+          </button>
+                                 <button
+            className="btn btn-outline-light w-100 mb-3"
+            onClick={() => navigate("/admin/reservationstatus")}
+          >
+            <i className="bi bi-house-door me-2"></i> Add Reservation Status
           </button>
           <button className="btn btn-outline-light w-100 mt-2" onClick={() => {
             localStorage.removeItem("token");

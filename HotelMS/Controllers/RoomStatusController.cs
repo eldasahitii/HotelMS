@@ -55,11 +55,11 @@ namespace HotelMS.Controllers
 
         [HttpGet("getAllRoomsStatuses")]
         [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,CleaningManager")]
-        public async Task<IActionResult> GetAllRoomStatus([FromQuery] string role)
+        public async Task<IActionResult> GetAllRoomStatus()
         {
             try
             {
-                var result = await _service.GetAllRoomStatus(role);
+                var result = await _service.GetAllRoomStatus();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -67,6 +67,7 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
 
         [HttpDelete("deleteRoomStatus")]
         [Authorize(Roles = "Admin")]

@@ -21,6 +21,7 @@ const ReservationPage = () => {
   const [specialRequests, setSpecialRequests] = useState("");
 
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     axios
@@ -62,60 +63,91 @@ const ReservationPage = () => {
 
   const phoneRegex = /^\d{9}$/;
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const getFriendlyMessage = (serverMessage) => {
+    if (!serverMessage) return "Something went wrong. Please try again.";
 
-  if (!checkInDate || !checkOutDate) {
-    alert("Please enter both check-in and check-out dates.");
-    return;
-  }
-  if (checkInDate >= checkOutDate) {
-    alert("Check-out date must be after check-in date.");
-    return;
-  }
-
-  if (phone && !phoneRegex.test(phone)) {
-    alert("Phone number must be exactly 9 digits.");
-    return;
-  }
-
-  try {
-    const response = await axios.post(
-      "https://localhost:7117/api/RoomReservation/MakeReservation",
-      {
-        roomID: roomId,
-        userID,
-        checkInDate,
-        checkOutDate,
-        specialRequests,
-        reservationStatusID: 1,
-        firstName,
-        lastName,
-        email,
-        phone,
-      },
-      { withCredentials: true }
-    );
-
-    console.log("Reservation response:", response.data);
-
-    alert("Reservation successful!");
-    navigate("/rooms");
-  } catch (error) {
-    console.error("Reservation error:", error.response || error.message);
-
-    // Check if backend sent a specific error message
     if (
-      error.response &&
-      error.response.data &&
-      typeof error.response.data.message === "string"
+      serverMessage.includes("already reserved") ||
+      serverMessage.includes("under cleaning") ||
+      serverMessage.includes("not found")
     ) {
-      alert(error.response.data.message); // show backend error message like "Room occupied"
-    } else {
-      alert("Failed to create reservation. Please try again.");
+      return "Sorry, this room is not available for the selected dates.";
     }
-  }
-};
+
+    if (serverMessage.includes("Check-out date must be after")) {
+      return "Please make sure your check-out date is after your check-in date.";
+    }
+
+    if (serverMessage.includes("Check-in date cannot be in the past")) {
+      return "Your check-in date cannot be in the past.";
+    }
+
+    return "Something went wrong. Please check your details and try again.";
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    if (!checkInDate || !checkOutDate) {
+      setErrorMessage("Please enter both check-in and check-out dates.");
+      return;
+    }
+
+    if (checkInDate >= checkOutDate) {
+      setErrorMessage("Check-out date must be after check-in date.");
+      return;
+    }
+
+    if (phone && !phoneRegex.test(phone)) {
+      setErrorMessage("Phone number must be exactly 9 digits.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "https://localhost:7117/api/RoomReservation/MakeReservation",
+        {
+          roomID: roomId,
+          checkInDate,
+          checkOutDate,
+          specialRequests,
+          firstName,
+          lastName,
+          email,
+          phone,
+          customerUserID: userID || null,
+        },
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        navigate("/rooms");
+      } else {
+        setErrorMessage(getFriendlyMessage(response.data.message));
+      }
+    } catch (error) {
+      console.error("Reservation error:", error);
+
+      let message = "Failed to create reservation. Please try again.";
+
+      try {
+        const serverMessage =
+          error.response?.data?.message ||
+          error.response?.data?.Message || // capital 'M' in some .NET APIs
+          (typeof error.response?.data === "string" ? error.response.data : null);
+
+        if (serverMessage) {
+          setErrorMessage(getFriendlyMessage(serverMessage));
+          return;
+        }
+      } catch (innerErr) {
+        console.error("Error parsing server error message:", innerErr);
+      }
+
+      setErrorMessage(message);
+    }
+  };
 
   if (loading) {
     return (
@@ -196,7 +228,7 @@ const handleSubmit = async (e) => {
               className="form-control shadow-sm"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="044-111-111"
+              placeholder="044111111"
             />
           </div>
         </section>
@@ -240,6 +272,12 @@ const handleSubmit = async (e) => {
             ></textarea>
           </div>
         </section>
+
+        {errorMessage && (
+          <div className="alert alert-danger mt-3" role="alert">
+            {errorMessage}
+          </div>
+        )}
 
         <div className="d-grid mt-4">
           <button

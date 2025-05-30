@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaUser, FaEnvelope, FaEdit, FaLock, FaCheckCircle, FaExclamationCircle, FaTimes } from "react-icons/fa";
 import { FaListAlt } from "react-icons/fa";
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 
 export default function UserInfo() {
@@ -78,7 +80,7 @@ export default function UserInfo() {
     setSuccessMsg("");
 
     if (!profileData.firstName || !profileData.lastName || !profileData.email) {
-      setError("First name, last name, and email are required.");
+      toast.error("First name, last name, and email are required.");
       return;
     }
 
@@ -89,11 +91,11 @@ export default function UserInfo() {
         profileData,
         { withCredentials: true }
       );
-      setSuccessMsg("Profile updated successfully.");
+      toast.success("Profile updated successfully.");
       setUser((prev) => ({ ...prev, ...profileData }));
       setEditProfileMode(false);
     } catch (err) {
-      setError(err.response?.data?.title || "Update failed");
+      toast.error(err.response?.data?.title || "Update failed");
     } finally {
       setFormLoading(false);
     }
@@ -107,12 +109,12 @@ export default function UserInfo() {
     const { oldPassword, newPassword, confirmPassword } = passwordData;
 
     if (!oldPassword || !newPassword || !confirmPassword) {
-      setError("All password fields are required.");
+      toast.error("All password fields are required.");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("New passwords do not match.");
+      toast.error("New passwords do not match.");
       return;
     }
 
@@ -123,11 +125,11 @@ export default function UserInfo() {
         { oldPassword, newPassword },
         { withCredentials: true }
       );
-      setSuccessMsg("Password changed successfully.");
+      toast.success("Password changed successfully.");
       setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
       setChangePasswordMode(false);
     } catch (err) {
-      setError(err.response?.data?.title || "Password update failed");
+      toast.error(err.response?.data?.title || "Password update failed");
     } finally {
       setFormLoading(false);
     }

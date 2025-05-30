@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const shifts = ["Morning", "Afternoon", "Night"];
 
@@ -18,7 +19,7 @@ export default function RoomReceptionistManager() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch logged-in user info
+
   const fetchCurrentUser = async () => {
     try {
       const res = await axios.get("https://localhost:7117/api/Auth/me", {
@@ -71,16 +72,29 @@ export default function RoomReceptionistManager() {
     setForm({ userID: recep.userID.toString(), shift: recep.shift });
   };
 
-  const handleDeleteClick = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this receptionist?")) return;
+const handleDeleteClick = async (id) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will permanently delete the receptionist.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+  });
+
+  if (result.isConfirmed) {
     try {
       await axios.delete(`/api/RoomRecepsionist/deleteRoomRecepsionist/${id}`);
       toast.success("Receptionist deleted successfully");
       fetchRecepsionists();
+      Swal.fire('Deleted!', 'The receptionist has been deleted.', 'success');
     } catch (err) {
+      console.error("Delete failed:", err);
       toast.error("Delete failed: " + (err.response?.data || err.message));
+      Swal.fire('Error', 'Failed to delete the receptionist.', 'error');
     }
-  };
+  }
+};
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));

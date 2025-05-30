@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
-
-
+import Swal from 'sweetalert2';
 
 const api = axios.create({
   baseURL: "https://localhost:7117/api",
@@ -164,19 +163,31 @@ const loadRooms = async () => {
     resetForm();
   };
 
-  const handleDeleteRoom = async (roomID) => {
-    if (!window.confirm("Are you sure you want to delete this room?")) return;
+const handleDeleteRoom = async (roomID) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will permanently delete the room.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+  });
+
+  if (result.isConfirmed) {
     setError("");
     try {
       await api.delete(`/Room/DeleteRoom/${roomID}`);
       toast.success("Room deleted successfully.");
       if (editingRoomID === roomID) resetForm();
       loadRooms();
+      Swal.fire('Deleted!', 'The room has been deleted.', 'success');
     } catch (err) {
+      console.error("Failed to delete room:", err);
       toast.error("Failed to delete room.");
+      Swal.fire('Error', 'Failed to delete the room.', 'error');
     }
-  };
-
+  }
+};
   
   const handleBulkCreate = async () => {
     setError("");
@@ -327,20 +338,23 @@ const loadRooms = async () => {
     />
   ) : (
     // Editable dropdown when adding
-    <select
-      id="roomStatusID"
-      name="roomStatusID"
-      className="form-select"
-      value={newRoom.roomStatusID}
-      onChange={handleInputChange}
-    >
-      <option value="">Select Status</option>
-      {roomStatuses.map((rs) => (
-        <option key={rs.roomStatusID} value={rs.roomStatusID}>
-          {rs.roomStatusName}
-        </option>
-      ))}
-    </select>
+<select
+  id="roomStatusID"
+  name="roomStatusID"
+  className="form-select"
+  value={newRoom.roomStatusID}
+  onChange={handleInputChange}
+>
+  <option value="">Select Status</option>
+  {roomStatuses
+    .filter(rs => rs.roomStatusName !== "Cleaning")  // <-- filter out Cleaning here
+    .map((rs) => (
+      <option key={rs.roomStatusID} value={rs.roomStatusID}>
+        {rs.roomStatusName}
+      </option>
+    ))}
+</select>
+
   )}
 </div>
 
@@ -446,20 +460,23 @@ const loadRooms = async () => {
               <label htmlFor="roomStatusIDBulk" className="form-label">
                 Room Status
               </label>
-              <select
-                id="roomStatusIDBulk"
-                name="roomStatusID"
-                className="form-select"
-                value={bulkRoomData.roomStatusID}
-                onChange={handleBulkInputChange}
-              >
-                <option value="">Select Status</option>
-                {roomStatuses.map((rs) => (
-                  <option key={rs.roomStatusID} value={rs.roomStatusID}>
-                    {rs.roomStatusName}
-                  </option>
-                ))}
-              </select>
+ <select
+  id="roomStatusIDBulk"
+  name="roomStatusID"
+  className="form-select"
+  value={bulkRoomData.roomStatusID}
+  onChange={handleBulkInputChange}
+>
+  <option value="">Select Status</option>
+  {roomStatuses
+    .filter(rs => rs.roomStatusName !== "Cleaning")
+    .map((rs) => (
+      <option key={rs.roomStatusID} value={rs.roomStatusID}>
+        {rs.roomStatusName}
+      </option>
+    ))}
+</select>
+
             </div>
           </div>
 
@@ -484,37 +501,46 @@ const loadRooms = async () => {
               </tr>
             </thead>
             <tbody>
-              {rooms.map((room) => {
-                const roomType = roomTypes.find(
-                  (rt) => rt.roomTypeID === room.roomTypeID
-                );
-                const roomStatus = roomStatuses.find(
-                  (rs) => rs.roomStatusID === room.roomStatusID
-                );
+{rooms.map((room) => {
+  const roomType = roomTypes.find((rt) => rt.roomTypeID === room.roomTypeID);
+  const roomStatus = roomStatuses.find((rs) => rs.roomStatusID === room.roomStatusID);
+  const cleaningStatus = roomStatuses.find(rs => rs.roomStatusName === "Cleaning");
 
-                return (
-                  <tr key={room.roomID}>
-                    <td>{room.roomNumber}</td>
-                    <td>{roomType ? roomType.name : "-"}</td>
-                    <td>{roomStatus ? roomStatus.roomStatusName : "-"}</td>
-                    <td>
-                      <button
-                        className="btn btn-sm btn-outline-primary me-2"
-                        onClick={() => handleEditClick(room)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => handleDeleteRoom(room.roomID)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
+  console.log("Room:", room.roomNumber, "Room StatusID:", room.roomStatusID);
+  console.log("Cleaning StatusID:", cleaningStatus?.roomStatusID);
+
+  return (
+    <tr key={room.roomID}>
+      <td>{room.roomNumber}</td>
+      <td>{roomType ? roomType.name : "-"}</td>
+      <td>
+        {room.roomStatusID?.toString() === cleaningStatus?.roomStatusID?.toString() ? (
+         <span>Cleaning</span>
+
+        ) : (
+          roomStatus ? roomStatus.roomStatusName : "-"
+        )}
+      </td>
+      <td>
+        <button
+          className="btn btn-sm btn-outline-primary me-2"
+          onClick={() => handleEditClick(room)}
+        >
+          Edit
+        </button>
+        <button
+          className="btn btn-sm btn-outline-danger"
+          onClick={() => handleDeleteRoom(room.roomID)}
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  );
+})}
+
+</tbody>
+
           </table>
         </div>
       </main>

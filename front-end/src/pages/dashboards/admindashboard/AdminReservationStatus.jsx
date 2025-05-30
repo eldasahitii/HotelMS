@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 export default function AdminRoomReservationStatus() {
   const navigate = useNavigate();
@@ -19,7 +21,7 @@ export default function AdminRoomReservationStatus() {
       const res = await axios.get("/api/ReservationStatus/getAllReservationStatuses");
       setStatuses(res.data);
     } catch (err) {
-      setError("Failed to load reservation statuses.");
+      toast.error("Failed to load reservation statuses.");
     } finally {
       setLoading(false);
     }
@@ -47,7 +49,7 @@ export default function AdminRoomReservationStatus() {
     setError("");
 
     if (!form.reservationStatusName.trim()) {
-      setError("Status Name is required.");
+      toast.error("Status Name is required.");
       return;
     }
 
@@ -57,10 +59,10 @@ export default function AdminRoomReservationStatus() {
           `/api/ReservationStatus/updateReservationStatus?id=${editingId}`,
           form
         );
-        alert("Reservation status updated successfully.");
+        toast.success("Reservation status updated successfully.");
       } else {
         await axios.post("/api/ReservationStatus/addReservationStatus", form);
-        alert("Reservation status added successfully.");
+        toast.success("Reservation status added successfully.");
       }
       clearForm();
       fetchStatuses();
@@ -74,7 +76,7 @@ export default function AdminRoomReservationStatus() {
     }
   };
 
-  // Edit button click
+
   const handleEditClick = (status) => {
     setEditingId(status.reservationStatusID);
     setForm({
@@ -83,16 +85,28 @@ export default function AdminRoomReservationStatus() {
     setError("");
   };
 
-  // Delete button click
-  const handleDeleteClick = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this reservation status?")) return;
+
+const handleDeleteClick = async (id) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will permanently delete the reservation status.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+  });
+
+  if (result.isConfirmed) {
     try {
       await axios.delete(`/api/ReservationStatus/deleteReservationStatus?id=${id}`);
       fetchStatuses();
+      Swal.fire('Deleted!', 'The reservation status has been deleted.', 'success');
     } catch (err) {
-      alert("Delete failed: " + (err.response?.data || err.message));
+      console.error("Delete failed:", err);
+      Swal.fire('Error', `Delete failed: ${err.response?.data || err.message}`, 'error');
     }
-  };
+  }
+};
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
@@ -120,6 +134,12 @@ export default function AdminRoomReservationStatus() {
             onClick={() => navigate("/admin/room-types")}
           >
             <i className="bi bi-house-door me-2"></i> Add Room Type
+          </button>
+                           <button
+            className="btn btn-outline-light w-100 mb-3"
+            onClick={() => navigate("/admin/roomstatus")}
+          >
+            <i className="bi bi-house-door me-2"></i> Add Room Status
           </button>
 
           <button

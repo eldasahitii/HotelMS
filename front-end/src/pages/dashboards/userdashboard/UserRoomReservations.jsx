@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 export default function UserRoomReservations() {
   const [reservations, setReservations] = useState([]);
@@ -30,7 +32,7 @@ export default function UserRoomReservations() {
       );
       setReservations(res.data);
     } catch (err) {
-      setError("Failed to load reservations.");
+      toast.error("Failed to load reservations.");
     } finally {
       setLoading(false);
     }
@@ -69,7 +71,7 @@ async function handleEditSubmit(e) {
   setFormLoading(true);
 
   if (formData.checkInDate >= formData.checkOutDate) {
-    setError("Check-out date must be after check-in date.");
+    toast.error("Check-out date must be after check-in date.");
     setFormLoading(false);
     return;
   }
@@ -89,7 +91,7 @@ async function handleEditSubmit(e) {
       { withCredentials: true }
     );
 
-    setSuccessMsg("Reservation updated successfully.");
+    toast.success("Reservation updated successfully.");
     setEditingReservation(null);
     fetchReservations();
   } catch (err) {
@@ -100,30 +102,53 @@ async function handleEditSubmit(e) {
           : JSON.stringify(err.response.data)
       );
     } else {
-      setError("Failed to update reservation.");
+      toast.error("Failed to update reservation.");
     }
   } finally {
     setFormLoading(false);
   }
 }
 
-  async function handleCancel(id) {
-    if (!window.confirm("Are you sure you want to cancel this reservation?")) return;
+async function handleCancel(id) {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you want to cancel this reservation?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, cancel it!',
+  });
 
-    try {
-      await axios.delete(
-        `https://localhost:7117/api/RoomReservation/CancelReservationUser`,
-        {
-          params: { id },
-          withCredentials: true,
-        }
-      );
-      setSuccessMsg("Reservation cancelled.");
-      fetchReservations();
-    } catch {
-      setError("Failed to cancel reservation.");
-    }
+  if (!result.isConfirmed) return;
+
+  try {
+    await axios.delete(
+      `https://localhost:7117/api/RoomReservation/CancelReservationUser`,
+      {
+        params: { id },
+        withCredentials: true,
+      }
+    );
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Cancelled!',
+      text: 'Reservation cancelled successfully.',
+      timer: 2500,
+      showConfirmButton: false,
+    });
+
+    await fetchReservations();
+
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Failed to cancel reservation.',
+    });
   }
+}
 
   if (loading)
     return <p style={{ color: "#555", fontStyle: "italic" }}>Loading reservations...</p>;
