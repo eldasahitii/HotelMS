@@ -20,38 +20,64 @@ export default function RoomReceptionistManager() {
   const [error, setError] = useState("");
 
 
-  const fetchCurrentUser = async () => {
-    try {
-      const res = await axios.get("https://localhost:7117/api/Auth/me", {
-        withCredentials: true,
-      });
-      setCurrentUserId(res.data.userId);
-      setCurrentUserName(`${res.data.firstName} ${res.data.lastName}`);
-    } catch (err) {
-      toast.error("Failed to fetch logged-in user info.");
-    }
-  };
+const fetchCurrentUser = async () => {
+  try {
+    const res = await axios.get("https://localhost:7117/api/Auth/me", {
+      withCredentials: true,
+    });
+    console.log("fetchCurrentUser response:", res.data);
 
-  const fetchUsers = async () => {
-    try {
-      const res = await axios.get("/api/User/getAllCustomers");
-      setUsers(res.data);
-    } catch (err) {
-      toast.error("Failed to load customers.");
-    }
-  };
+    setCurrentUserId(res.data.userID); // Fix capitalization here
+    setCurrentUserName(res.data.userName); // Use userName string directly
 
-  const fetchRecepsionists = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get("/api/RoomRecepsionist/getAllRoomRecepsionists");
-      setReceps(res.data);
-    } catch (err) {
-      toast.error("Failed to load receptionists.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err) {
+    toast.error("Failed to fetch logged-in user info.");
+  }
+};
+
+
+useEffect(() => {
+  async function init() {
+    await fetchCurrentUser();
+  }
+  init();
+}, []);
+
+useEffect(() => {
+  console.log("currentUserId changed:", currentUserId);
+  if (currentUserId) {
+    fetchUsers();
+    fetchRecepsionists();
+  }
+}, [currentUserId]);
+
+const fetchUsers = async () => {
+  console.log("fetchUsers called");
+  try {
+    const res = await axios.get("/api/User/getAllCustomers");
+    console.log("fetchUsers response:", res.data);
+    setUsers(res.data);
+  } catch (err) {
+    console.error("fetchUsers error:", err);
+    toast.error("Failed to load customers.");
+  }
+};
+
+const fetchRecepsionists = async () => {
+  console.log("fetchRecepsionists called");
+  try {
+    setLoading(true);
+    const res = await axios.get("/api/RoomRecepsionist/getAllRoomRecepsionists");
+    console.log("fetchRecepsionists response:", res.data);
+    setReceps(res.data);
+  } catch (err) {
+    console.error("fetchRecepsionists error:", err);
+    toast.error("Failed to load receptionists.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     async function init() {

@@ -28,7 +28,7 @@ const ReservationPage = () => {
       .get("https://localhost:7117/api/Auth/me", { withCredentials: true })
       .then((res) => {
         const user = res.data;
-        const userIDFromResponse = user.userId;
+        const userIDFromResponse = user.userID;
         if (!userIDFromResponse) {
           navigate("/login");
           return;
@@ -89,6 +89,11 @@ const ReservationPage = () => {
     e.preventDefault();
     setErrorMessage("");
 
+    if (!roomId) {
+      setErrorMessage("No room selected. Please go back and select a room.");
+      return;
+    }
+
     if (!checkInDate || !checkOutDate) {
       setErrorMessage("Please enter both check-in and check-out dates.");
       return;
@@ -103,6 +108,19 @@ const ReservationPage = () => {
       setErrorMessage("Phone number must be exactly 9 digits.");
       return;
     }
+
+    // DEBUG: Log all data to be sent
+    console.log("Sending reservation data:", {
+      roomID: roomId,
+      checkInDate,
+      checkOutDate,
+      specialRequests,
+      firstName,
+      lastName,
+      email,
+      phone,
+      customerUserID: userID || null,
+    });
 
     try {
       const response = await axios.post(
@@ -127,15 +145,20 @@ const ReservationPage = () => {
         setErrorMessage(getFriendlyMessage(response.data.message));
       }
     } catch (error) {
-      console.error("Reservation error:", error);
+      console.error(
+        "Reservation error response:",
+        error.response?.data || error.message
+      );
 
       let message = "Failed to create reservation. Please try again.";
 
       try {
         const serverMessage =
           error.response?.data?.message ||
-          error.response?.data?.Message || // capital 'M' in some .NET APIs
-          (typeof error.response?.data === "string" ? error.response.data : null);
+          error.response?.data?.Message ||
+          (typeof error.response?.data === "string"
+            ? error.response.data
+            : null);
 
         if (serverMessage) {
           setErrorMessage(getFriendlyMessage(serverMessage));

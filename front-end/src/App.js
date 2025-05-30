@@ -85,9 +85,9 @@ function App() {
 
             {/* Room Reservation route */}
             <Route path="/reserve" element={
-              <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
-                <ReservationPage />
-              </ProtectedRoute>
+<ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
+  <ReservationPage />
+</ProtectedRoute>
             } />
 
             {/* Restaurant nested route */}

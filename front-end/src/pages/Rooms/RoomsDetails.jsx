@@ -40,25 +40,30 @@ export default function RoomsDetails() {
     fetchRoomDetails();
   }, [roomId]);
 
-  const handleBookNow = async () => {
-    if (!room?.id) {
-      alert("Room data not loaded yet.");
-      return;
-    }
+const handleBookNow = async () => {
+  if (!room?.id) {
+    alert("Room data not loaded yet.");
+    return;
+  }
 
-    try {
-      const authCheck = await axios.get(`${backendBaseUrl}api/Auth/me`, {
-        withCredentials: true,
-      });
-      if (authCheck.data.role) {
-        navigate(`/reserve?roomTypeId=${room.id}`);
-      } else {
-        navigate("/login");
-      }
-    } catch (err) {
+  try {
+    const authCheck = await axios.get(`${backendBaseUrl}api/Auth/me`, {
+      withCredentials: true,
+    });
+
+    console.log("Auth response:", authCheck.data);
+
+    if (authCheck.data && authCheck.data.userID) {
+      navigate(`/reserve?roomTypeId=${room.id}`);
+    } else {
       navigate("/login");
     }
-  };
+  } catch (err) {
+    console.error("Auth error:", err);
+    navigate("/login");
+  }
+};
+
 
   if (error) return <div className="alert alert-danger m-3">{error}</div>;
   if (!room) return <div className="m-3">Loading room details...</div>;
