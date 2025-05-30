@@ -21,6 +21,7 @@ const ReservationPage = () => {
   const [specialRequests, setSpecialRequests] = useState("");
 
   const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -140,10 +141,13 @@ const ReservationPage = () => {
       );
 
       if (response.data.success) {
+      setSuccessMessage("Reservation successful! You can view your reservation in your profile !");
+      setTimeout(() => {
         navigate("/rooms");
-      } else {
-        setErrorMessage(getFriendlyMessage(response.data.message));
-      }
+      }, 5000); 
+    } else {
+      setErrorMessage(getFriendlyMessage(response.data.message));
+    }
     } catch (error) {
       console.error(
         "Reservation error response:",
@@ -301,6 +305,11 @@ const ReservationPage = () => {
             {errorMessage}
           </div>
         )}
+        {successMessage && (
+  <div className="alert alert-success mt-3" role="alert">
+    {successMessage}
+  </div>
+)}
 
         <div className="d-grid mt-4">
           <button

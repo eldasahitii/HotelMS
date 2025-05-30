@@ -31,10 +31,11 @@ namespace HotelMS.Controllers
             var (success, message) = await roomReservationService.MakeReservation(userID, request, roles);
 
             if (!success)
-                return BadRequest(new { message }); 
+                return BadRequest(new { success = false, message });
 
-            return Ok(new { message });
+            return Ok(new { success = true, message });
         }
+
 
 
 
