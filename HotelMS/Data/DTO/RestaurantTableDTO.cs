@@ -6,6 +6,8 @@
 
         public int TableNumber { get; set; }
 
-        public string Status { get; set; }
+        public string Status { get; set; } = "Available";
+
+        public int Capacity { get; set; }
     }
 }

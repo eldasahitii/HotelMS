@@ -47,5 +47,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://localhost:7117"
+   "proxy": "https://localhost:7117"
+
+
 }

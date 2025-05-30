@@ -1,19 +1,12 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using Azure.Core;
-using Azure;
 using HotelMS.Data;
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
-using HotelMS.Services;
-
-//using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
-using Microsoft.AspNetCore.Authorization;
-
 
 namespace HotelMS.Controllers
 {
@@ -28,7 +21,6 @@ namespace HotelMS.Controllers
         {
             _service = service;
             _context = context;
-
         }
 
         [HttpPost("register")]
@@ -46,7 +38,7 @@ namespace HotelMS.Controllers
                 {
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.None,//Required for cookies to be sent across different ports (React on 3000, API on 7117) or domains.
+                    SameSite = SameSiteMode.None,
                     Expires = DateTime.UtcNow.AddHours(2)
                 });
 
@@ -58,6 +50,7 @@ namespace HotelMS.Controllers
                 return StatusCode(500, new { message = "Registration failed: " + ex.Message });
             }
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDTO request)
         {
@@ -88,12 +81,10 @@ namespace HotelMS.Controllers
             }
             catch (ArgumentException ex)
             {
-                // Specific errors like: email doesn't exist / wrong password
                 return BadRequest(new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // For unexpected internal errors
                 return StatusCode(500, new { message = "An internal server error occurred." });
             }
         }
@@ -126,88 +117,47 @@ namespace HotelMS.Controllers
             {
                 var result = await _service.ChangePassword(UserID, request);
                 if (result == null)
-                {
                     return NotFound();
-                }
-                else
-                {
-                    return Ok(result);
-                }
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpGet("me")]
         [Authorize]
-        public IActionResult Me()
+        public async Task<IActionResult> Me()
         {
             try
             {
-                var token = Request.Cookies["jwt"];
-                if (string.IsNullOrEmpty(token)) return Unauthorized(new { message = "No token provided" });
+                var jwt = Request.Cookies["jwt"];
+                if (string.IsNullOrEmpty(jwt))
+                    return Unauthorized(new { message = "JWT not found" });
 
                 var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
+                var token = handler.ReadJwtToken(jwt);
 
-                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                var role = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                var userId = token.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                var email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+                var role = token.Claims.First(c => c.Type == ClaimTypes.Role).Value;
 
-                if (userId == null || role == null)
-                    return Unauthorized(new { message = "Invalid token" });
+                var user = await _context.Users.FindAsync(int.Parse(userId));
+                var fullName = $"{user.FirstName} {user.LastName}";
 
                 return Ok(new
                 {
-                    userId,
-                    role
+                    userID = userId,
+                    email,
+                    role,
+                    userName = fullName
                 });
             }
-            catch (Exception ex)
+            catch
             {
-                return StatusCode(500, new { message = "Failed to read user info", error = ex.Message });
+                return Unauthorized(new { message = "Invalid token or user not found" });
             }
         }
-        [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshToken()
-        {
-            var oldRefreshToken = Request.Cookies["refresh"];
-            if (string.IsNullOrEmpty(oldRefreshToken))
-                return Unauthorized(new { message = "No refresh token found." });
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == oldRefreshToken);
-            if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
-                return Unauthorized(new { message = "Invalid or expired refresh token." });
-
-            //  ROTATE refresh token
-            var newRefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-            user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
-            await _context.SaveChangesAsync();
-
-            var newAccessToken = await _service.CreateToken(user);
-
-            //  Set new cookies
-            Response.Cookies.Append("jwt", newAccessToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddMinutes(15)
-            });
-
-            Response.Cookies.Append("refresh", newRefreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddDays(7)
-            });
-
-            return Ok(new { refreshed = true });
-        }
-
-
-
     }
 }

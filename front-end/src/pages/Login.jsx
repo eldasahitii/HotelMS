@@ -39,6 +39,10 @@ const Login = () => {
 
         const { role, userId, userName } = meRes.data;
 
+        console.log("meRes.data:", meRes.data);
+console.log("role:", role);  // This is probably undefined
+
+
         //  3. Navigate based on user role
         switch (role) {
           case "Customer": navigate("/rooms"); break;
@@ -142,3 +146,4 @@ const Login = () => {
 };
 
 export default Login;
+

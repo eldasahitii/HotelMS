@@ -1,4 +1,5 @@
-﻿using HotelMS.Data;
+﻿
+using HotelMS.Data;
 using HotelMS.Models;
 using System.Security.Cryptography;
 using System.Text;
@@ -313,7 +314,27 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-       // Seed Rooms
+        // ⚠️ Pre-seed fallback RoomTypes to prevent First() crash (do NOT remove this)
+        var requiredRoomTypes = new[]
+        {
+    new RoomType { Name = "Junior Room", Capacity = "1-2 PERSONS", Size = "22M2", Description = "Auto-added fallback", Price = 120 },
+    new RoomType { Name = "Deluxe Room", Capacity = "1-2 PERSONS", Size = "22M2", Description = "Auto-added fallback", Price = 140 },
+    new RoomType { Name = "Double Room", Capacity = "1-2 PERSONS", Size = "22M2", Description = "Auto-added fallback", Price = 110 },
+    new RoomType { Name = "Twin Room", Capacity = "1-2 PERSONS", Size = "30M2", Description = "Auto-added fallback", Price = 130 },
+    new RoomType { Name = "Superior Twin Room", Capacity = "2-3 PERSONS", Size = "28M2", Description = "Auto-added fallback", Price = 160 }
+};
+
+        foreach (var rt in requiredRoomTypes)
+        {
+            if (!dataContext.RoomTypes.Any(x => x.Name == rt.Name))
+            {
+                dataContext.RoomTypes.Add(rt);
+            }
+        }
+        dataContext.SaveChanges();
+
+
+        // Seed Rooms
         if (!dataContext.Rooms.Any())
         {
             var juniorRoomTypeID = dataContext.RoomTypes.First(rt => rt.Name == "Junior Room").RoomTypeID;
@@ -444,42 +465,56 @@ public class Seed
         //    dataContext.SaveChanges();
         //}
 
+        // Seed ReviewCategories
+        if (!dataContext.ReviewCategories.Any())
+        {
+            dataContext.ReviewCategories.AddRange(new[]
+            {
+                new ReviewCategory { CategoryName = "Room" },
+                new ReviewCategory { CategoryName = "Restaurant" },
+                new ReviewCategory { CategoryName = "Cleaning Staff" },
+                new ReviewCategory { CategoryName = "Service" }
+            });
+
+            dataContext.SaveChanges();
+        }
+
         // Seed Reviews
         if (!dataContext.Reviews.Any())
         {
-            var customerUser = dataContext.Users.FirstOrDefault(u => u.Email == "erza@gmail.com");
+            var customer = dataContext.Users.FirstOrDefault(u => u.Email == "erza@gmail.com");
+            var roomCategory = dataContext.ReviewCategories.FirstOrDefault(c => c.CategoryName == "Room");
 
-            if (customerUser != null)
+            if (customer != null && roomCategory != null)
             {
-                var reviews = new List<Review>
+                dataContext.Reviews.AddRange(new[]
                 {
-                    new Review()
+                    new Review
                     {
-                        UserID = customerUser.UserID,
+                        UserID = customer.UserID,
                         Rating = 5,
                         Comment = "Excellent service and very clean rooms!",
-                        Date = DateTime.Now.AddDays(-2)
+                        Date = DateTime.Now.AddDays(-2),
+                        ReviewCategoryID = roomCategory.ReviewCategoryID
                     },
-                    new Review()
+                    new Review
                     {
-                        UserID = customerUser.UserID,
+                        UserID = customer.UserID,
                         Rating = 4,
-                        Comment = "Nice hotel, but breakfast could be better.",
-                        Date = DateTime.Now.AddDays(-1)
-                    },
-                    new Review()
-                    {
-                        UserID = customerUser.UserID,
-                        Rating = 3,
-                        Comment = "Nice hotel, but breakfast could be better.",
-                        Date = DateTime.Now.AddDays(-1)
+                        Comment = "Nice hotel, breakfast could improve.",
+                        Date = DateTime.Now.AddDays(-1),
+                        ReviewCategoryID = roomCategory.ReviewCategoryID,
+                        ManagerReply = "Thanks for the feedback! We'll work on improving breakfast.",
+                        ReplyDate = DateTime.Now
                     }
-                    }; dataContext.Reviews.AddRange(reviews);
+                });
+
                 dataContext.SaveChanges();
             }
+        }
 
-            //Seed HotelService
-            if (!dataContext.HotelServices.Any())
+        //Seed HotelService
+        if (!dataContext.HotelServices.Any())
             {
                 var services = new List<HotelService>
             {
@@ -554,9 +589,9 @@ public class Seed
             {
                 var tables = new List<RestaurantTable>
     {
-        new RestaurantTable { TableNumber = 1,  Status = "Available" },
-        new RestaurantTable { TableNumber = 2,  Status = "Available" },
-        new RestaurantTable { TableNumber = 3,  Status = "Available" }
+        new RestaurantTable { TableNumber = 1 },
+        new RestaurantTable { TableNumber = 2 },
+        new RestaurantTable { TableNumber = 3 }
     };
 
                 dataContext.RestaurantTables.AddRange(tables);
@@ -580,7 +615,10 @@ public class Seed
                 dataContext.SaveChanges();
 
             }
+
+
             
+
             //Seed HotelServiceSchedule
             if (!dataContext.HotelServiceSchedules.Any())
             {
@@ -632,14 +670,37 @@ public class Seed
                     dataContext.SaveChanges();
                 }
             }
+
+            if (!dataContext.RestaurantSettings.Any())
+            {
+                var homepageSettings = new RestaurantSettings
+                {
+                    WelcomeTitle = "Welcome to Rolve Restaurant",
+                    WelcomeMessage = "Discover the essence of fine dining at Rolve Restaurant, where every dish is crafted with organic ingredients, timeless flavors, and a passion for culinary excellence.",
+                    WelcomeImageUrl = "/images/restaurant.jpg", // Path should match your frontend assets or be publicly hosted
+
+                    AboutTitle = "About Rolve Restaurant",
+                    AboutMessage = "At Rolve Restaurant, we believe food should not only taste amazing but also be nourishing. Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring every dish to life.",
+                    AboutImageUrl1 = "/images/restaurantTerrace.jpg",
+                    AboutImageUrl2 = "/images/restaurantInterior.jpg"
+                };
+
+                dataContext.RestaurantSettings.Add(homepageSettings);
+                dataContext.SaveChanges();
+            }
         }
 
     }
-}
-   
 
 
 
 
-  
+
+
+
+
+
+
+
+
 
