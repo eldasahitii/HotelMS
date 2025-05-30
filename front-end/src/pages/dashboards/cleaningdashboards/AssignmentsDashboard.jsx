@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function AssignmentsDashboard() {
   const [assignments, setAssignments] = useState([]);
@@ -15,36 +15,32 @@ export default function AssignmentsDashboard() {
   const [messageType, setMessageType] = useState('');
   const [userID, setUserID] = useState(null);
   const [role, setRole] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   const navigate = useNavigate();
 
-  // Fetch current user info (ID and Role)
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const response = await axios.get('/api/Auth/me', { withCredentials: true });
-        setUserID(parseInt(response.data.userId));
-        setRole(response.data.role);
-      } catch (err) {
-        console.error('Failed to fetch current user', err);
-        setMessage("You must be logged in.");
-        setMessageType("danger");
-        navigate('/login');
-      }
-    };
+ useEffect(() => {
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await axios.get('/api/Auth/me', { withCredentials: true });
+      // Directly set userID from first available key or null
+      setUserID(
+        parseInt(response.data.userId || response.data.userID || response.data.id || null)
+      );
 
-    fetchCurrentUser();
+      setRole(response.data.role);
+    } catch (err) {
+      console.error('Failed to fetch current user', err);
+      setMessage("You must be logged in.");
+      setMessageType("danger");
+      navigate('/login');
+    } finally {
+      setIsLoadingUser(false);
+    }
+  };
 
-    const handleResize = () => {
-      const largeScreen = window.innerWidth >= 992;
-      setIsLargeScreen(largeScreen);
-      if (largeScreen) setSidebarOpen(false);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [navigate]);
+  fetchCurrentUser();
+}, [navigate]);
 
   // Fetch assignments
   const fetchAssignments = async () => {
@@ -167,13 +163,6 @@ export default function AssignmentsDashboard() {
     }
   };
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
-
   // Helper to format date and time nicely
   const formatDateTime = (datetimeString) => {
     if (!datetimeString) return '-';
@@ -181,9 +170,17 @@ export default function AssignmentsDashboard() {
     return dateObj.toLocaleString();
   };
 
+  if (isLoadingUser) {
+    return (
+      <div className="text-center mt-5">
+        <div className="spinner-border text-primary" role="status" aria-hidden="true"></div>
+        <div>Loading user info...</div>
+      </div>
+    );
+  }
+
   return (
     <div>
-
       <main className="p-3" style={{ backgroundColor: '#f2f6fc', minHeight: '100vh' }}>
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-list-task me-2"></i>Cleaning Assignments
@@ -235,7 +232,11 @@ export default function AssignmentsDashboard() {
                 </select>
               </div>
             </div>
-            <button className="btn btn-success w-100 mt-3" onClick={handleAddAssignment}>
+            <button
+              className="btn btn-success w-100 mt-3"
+              onClick={handleAddAssignment}
+              disabled={!userID} // disable if userID not loaded
+            >
               <i className="bi bi-check-circle me-2"></i>Add Assignment
             </button>
           </div>
@@ -312,7 +313,6 @@ export default function AssignmentsDashboard() {
           </div>
         </div>
 
-        {/* Edit Assignment form */}
         {editingAssignment && (
           <div className="card mt-4">
             <div className="card-header bg-warning text-dark">
@@ -342,7 +342,6 @@ export default function AssignmentsDashboard() {
             </div>
           </div>
         )}
-
       </main>
     </div>
   );
