@@ -29,10 +29,28 @@ namespace HotelMS.Services
             };
 
             _dbContext.Managers.Add(manager);
+
+
+            var user = await _dbContext.Users.FindAsync(request.UserID);
+            if (user != null)
+            {
+                if (request.ManagerTypeID == 1)
+                    user.RoleID = 2; // 
+                else if (request.ManagerTypeID == 2)
+                    user.RoleID = 4; // CleaningManager
+                else if (request.ManagerTypeID == 3)
+                    user.RoleID = 5; // RestaurantManager
+                else if (request.ManagerTypeID == 4)
+                    user.RoleID = 7; // ServicesManager
+                else
+                    user.RoleID = 10; // Default to Customer
+            }
+
             await _dbContext.SaveChangesAsync();
 
             return await GetManagerById(manager.ManagerID);
         }
+
 
         public async Task<ManagerDTO> GetManagerById(int id)
         {
@@ -81,12 +99,28 @@ namespace HotelMS.Services
 
             manager.UserID = request.UserID;
             manager.ManagerTypeID = request.ManagerTypeID;
-            // Optional: manager.AssignedAt = DateTime.UtcNow;
+            manager.AssignedAt = DateTime.UtcNow;
+
+            var user = await _dbContext.Users.FindAsync(manager.UserID);
+            if (user != null)
+            {
+                if (request.ManagerTypeID == 1)
+                    user.RoleID = 2; // Room Manager
+                else if (request.ManagerTypeID == 2)
+                    user.RoleID = 4; // Cleaning Manager
+                else if (request.ManagerTypeID == 3)
+                    user.RoleID = 5; // Restaurant Manager
+                else if (request.ManagerTypeID == 4)
+                    user.RoleID = 7; // Services Manager
+                else
+                    user.RoleID = 10; // Default to Customer
+            }
 
             await _dbContext.SaveChangesAsync();
 
             return await GetManagerById(id);
         }
+
 
         public async Task<ManagerDTO> DeleteManager(int id)
         {
@@ -108,11 +142,18 @@ namespace HotelMS.Services
                 AssignedAt = manager.AssignedAt
             };
 
+            var user = await _dbContext.Users.FindAsync(manager.UserID);
+            if (user != null)
+            {
+                user.RoleID = 10; 
+            }
+
             _dbContext.Managers.Remove(manager);
             await _dbContext.SaveChangesAsync();
 
             return managerDTO;
         }
+
 
         public async Task<IEnumerable<ManagerTypeDTO>> GetManagerTypes()
         {

@@ -40,25 +40,30 @@ export default function RoomsDetails() {
     fetchRoomDetails();
   }, [roomId]);
 
-  const handleBookNow = async () => {
-    if (!room?.id) {
-      alert("Room data not loaded yet.");
-      return;
-    }
+const handleBookNow = async () => {
+  if (!room?.id) {
+    alert("Room data not loaded yet.");
+    return;
+  }
 
-    try {
-      const authCheck = await axios.get(`${backendBaseUrl}api/Auth/me`, {
-        withCredentials: true,
-      });
-      if (authCheck.data.role) {
-        navigate(`/reserve?roomTypeId=${room.id}`);
-      } else {
-        navigate("/login");
-      }
-    } catch (err) {
+  try {
+    const authCheck = await axios.get(`${backendBaseUrl}api/Auth/me`, {
+      withCredentials: true,
+    });
+
+    console.log("Auth response:", authCheck.data);
+
+    if (authCheck.data && authCheck.data.userID) {
+      navigate(`/reserve?roomTypeId=${room.id}`);
+    } else {
       navigate("/login");
     }
-  };
+  } catch (err) {
+    console.error("Auth error:", err);
+    navigate("/login");
+  }
+};
+
 
   if (error) return <div className="alert alert-danger m-3">{error}</div>;
   if (!room) return <div className="m-3">Loading room details...</div>;
@@ -70,19 +75,21 @@ export default function RoomsDetails() {
 
   // Styles for Capacity/Size block (with margin bottom)
   const capSizeStyle = {
-    fontSize: "1.1rem",
-    lineHeight: 1.2,
-    marginBottom: "1rem", // margin between capacity/size and description
+    fontSize: "1.25rem",
+    lineHeight: 1.3,
+    marginBottom: "1.5rem",
     whiteSpace: "pre-line",
+    color: "#333",
   };
 
   // Styles for description paragraph (no margin, tight line spacing)
   const descriptionStyle = {
-    fontSize: "1.1rem",
-    lineHeight: 1.2,
+    fontSize: "1.15rem",
+    lineHeight: 1.5,
     marginTop: 0,
-    marginBottom: 0,
+    marginBottom: "2rem",
     whiteSpace: "pre-line",
+    color: "#555",
   };
 
   return (
@@ -126,33 +133,74 @@ export default function RoomsDetails() {
 
       {/* Room details */}
       <div
-        className="container"
-        style={{ fontFamily: customFontFamily, marginTop: "4rem" }}
+        className="container my-5 p-4 rounded shadow-sm"
+        style={{
+          fontFamily: customFontFamily,
+          backgroundColor: "#fafafa",
+          maxWidth: 900,
+          boxShadow: "0 4px 15px rgb(0 0 0 / 0.1)",
+        }}
       >
-        <h2 className="display-3 mb-3 text-black">{room.name}</h2>
+        <h2
+          className="display-4 mb-4"
+          style={{ color: "#222", fontWeight: "700", letterSpacing: "0.03em" }}
+        >
+          {room.name}
+        </h2>
 
-        <div style={capSizeStyle} className="text-black">
-          <strong>Capacity:</strong> {room.capacity}
-          <br />
-          <strong>Size:</strong> {room.size}
+        <div
+          style={{
+            ...capSizeStyle,
+            borderBottom: "1px solid #ddd",
+            paddingBottom: "1rem",
+            marginBottom: "1.75rem",
+          }}
+          className="d-flex justify-content-start gap-4 flex-wrap"
+        >
+          <div>
+            <strong style={{ color: "#444" }}>Capacity:</strong> {room.capacity}
+          </div>
+          <div>
+            <strong style={{ color: "#444" }}>Size:</strong> {room.size}
+          </div>
+          <div>
+            <strong style={{ color: "#444" }}>Price:</strong> ${room.price}
+          </div>
         </div>
 
-        <p style={descriptionStyle} className="text-black">
+        <p style={descriptionStyle} className="text-justify">
           {room.description.split(new RegExp(`(${keywordsToBold.join("|")})`, "gi")).map((part, i) =>
             keywordsToBold.includes(part.toLowerCase()) ? (
-              <strong key={i}>{part}</strong>
+              <strong key={i} style={{ color: "#222" }}>
+                {part}
+              </strong>
             ) : (
               part
             )
           )}
         </p>
 
-        <button
-          onClick={handleBookNow}
-          className="btn btn-secondary btn-lg px-5 mt-5"
-        >
-          Book Now
-        </button>
+<div className="text-center mt-5">
+  <button
+    onClick={handleBookNow}
+    className="btn btn-lg px-5"
+    style={{
+      backgroundColor: "#28a745", // bootstrap success green
+      color: "white",
+      borderRadius: "30px",
+      fontWeight: "600",
+      letterSpacing: "0.05em",
+      transition: "background-color 0.3s ease",
+      border: "none",
+    }}
+    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1e7e34")} // darker green
+    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#28a745")}
+  >
+    Book Now
+  </button>
+</div>
+
+
       </div>
     </>
   );

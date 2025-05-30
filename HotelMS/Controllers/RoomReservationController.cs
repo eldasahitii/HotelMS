@@ -28,12 +28,19 @@ namespace HotelMS.Controllers
             int userID = GetUserIDFromClaims();
             var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            var result = await roomReservationService.MakeReservation(userID, request, roles);
+            var (success, message) = await roomReservationService.MakeReservation(userID, request, roles);
 
-            return Ok(result);
+            if (!success)
+                return BadRequest(new { success = false, message });
+
+            return Ok(new { success = true, message });
         }
+
+
+
+
         [HttpPut("UpdateReservation/{reservationID}")]
-        [Authorize(Roles ="Admin,RoomRecepsionist")] 
+        [Authorize(Roles ="Admin,RoomRecepsionist,Customer")] 
         public async Task<IActionResult> UpdateReservation(int reservationID, [FromBody] RoomReservationUpdateDTO request)
         {
  
@@ -65,7 +72,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetAllReservations")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,Customer")]
 
         public async Task<IActionResult> GetAllReservations()
         {
@@ -102,25 +109,32 @@ namespace HotelMS.Controllers
 
 
         [HttpPost("MarkReservationCompleted")]
-        [Authorize(Roles = "Admin,RoomRecepsionist")] 
+        [Authorize(Roles = "Admin,RoomRecepsionist")]
         public async Task<IActionResult> MarkReservationCompleted([FromBody] MarkReservationCompletedDTO request)
         {
             int userID = GetUserIDFromClaims();
 
             var result = await roomReservationService.MarkReservationCompleted(request.ReservationID, userID);
 
-            if (result.StartsWith("You are not authorized"))
-            {
-                return Unauthorized(result);  
-            }
+            if (result == "Reservation not found")
+                return NotFound(new { error = result });
 
-            if (result.StartsWith("Reservation not found"))
-            {
-                return NotFound(result); 
-            }
+            if (result == "User or role not found" || result.StartsWith("You are not authorized"))
+                return Unauthorized(new { error = result });
 
-            return Ok(result);  
+            if (result == "Cannot mark reservation as completed before the check-out date")
+                return BadRequest(new { error = result });
+
+            if (result == "Completed status not found")
+                return StatusCode(500, new { error = result });
+
+            if (result == "Reservation marked as completed")
+                return Ok(new { message = result });
+
+            // fallback
+            return BadRequest(new { error = result });
         }
+
 
         private int GetUserIDFromClaims()
         {

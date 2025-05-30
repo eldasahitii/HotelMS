@@ -18,7 +18,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager,Customer")]
 
         public async Task<IActionResult> GetUser(int id)
         {
@@ -43,7 +43,7 @@ namespace HotelMS.Controllers
         [HttpGet("getAll")]
 
 
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, CleaningManager, RestaurantManager")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, CleaningManager, RestaurantManager,Customer")]
 
         public async Task<IActionResult> GetAll()
         {
@@ -59,7 +59,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpDelete("deleteUser")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager,Customer")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -73,7 +73,7 @@ namespace HotelMS.Controllers
             }
         }
         [HttpPut("updateUser")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager,Customer")]
         public async Task<IActionResult> Update(int id, [FromBody] UserDTO request)
         {
             try
@@ -89,7 +89,7 @@ namespace HotelMS.Controllers
             }
         }
         [HttpGet("GetAllCustomers")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager,Customer")]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllCustomers()
         {
             try

@@ -3,6 +3,8 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const RoomReceptionistDashboard = () => {
   const [rooms, setRooms] = useState([]);
@@ -32,8 +34,8 @@ const RoomReceptionistDashboard = () => {
       setRoomStatuses(roomStatusesRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setMessage('Failed to load data.');
-      setMessageType('danger');
+      toast.error('Failed to load data.');
+
     }
   };
 

@@ -49,16 +49,13 @@ namespace HotelMS.Services
             }
         }
 
-        public async Task<IEnumerable<RoomStatus>> GetAllRoomStatus(string role = null)
+        public async Task<IEnumerable<RoomStatus>> GetAllRoomStatus()
         {
             try
             {
                 var result = await _dbContext.RoomStatuses.ToListAsync();
 
-                if (string.Equals(role, "RoomManager", StringComparison.OrdinalIgnoreCase))
-                {
-                    result = result.Where(rs => rs.RoomStatusID != 3).ToList();
-                }
+ 
 
                 return result;
             }
