@@ -158,6 +158,7 @@ public class Seed
         new ManagerType() { Name = "Room Manager" },
         new ManagerType() { Name = "Cleaning Manager" },
         new ManagerType() { Name = "Restaurant Manager" },
+        new ManagerType() { Name = "Services Manager" },
         // Add other manager types as needed
     };
 
@@ -170,10 +171,12 @@ public class Seed
             var roomManagerTypeID = dataContext.ManagerTypes.First(mt => mt.Name == "Room Manager").ManagerTypeID;
             var cleaningManagerTypeID = dataContext.ManagerTypes.First(mt => mt.Name == "Cleaning Manager").ManagerTypeID;
             var restaurantManagerTypeID = dataContext.ManagerTypes.First(mt => mt.Name == "Restaurant Manager").ManagerTypeID;
+            var servicesManagerTypeID = dataContext.ManagerTypes.First(mt => mt.Name == "Services Manager").ManagerTypeID;
 
             var lirandaUserID = dataContext.Users.First(u => u.Email == "liranda@gmail.com").UserID;
             var velsaUserID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
             var eldaUserID = dataContext.Users.First(u => u.Email == "elda@gmail.com").UserID;
+            var ronaUserID = dataContext.Users.First(u => u.Email == "rona@gmail.com").UserID;
 
             var managers = new List<Manager>
     {
@@ -193,6 +196,12 @@ public class Seed
         {
             UserID = eldaUserID,
             ManagerTypeID = restaurantManagerTypeID,
+            AssignedAt = DateTime.UtcNow
+        },
+        new Manager()
+        {
+            UserID = ronaUserID,
+            ManagerTypeID = servicesManagerTypeID,
             AssignedAt = DateTime.UtcNow
         }
     };
@@ -340,35 +349,35 @@ public class Seed
     {
         new Room()
         {
-            RoomNumber="100A",
+            RoomNumber="Junior1",
             CreatedAt = DateTime.Now,
             RoomTypeID = juniorRoomTypeID,
             RoomStatusID = availableStatusID
         },
         new Room()
         {
-            RoomNumber="101A",
+            RoomNumber="Deluxe1",
             CreatedAt = DateTime.Now,
             RoomTypeID = deluxeRoomTypeID,
             RoomStatusID = availableStatusID
         },
         new Room()
         {
-            RoomNumber="102A",
+            RoomNumber="Double1",
             CreatedAt = DateTime.Now,
             RoomTypeID = doubleRoomTypeID,
             RoomStatusID = availableStatusID
         },
         new Room()
         {
-            RoomNumber="103A",
+            RoomNumber="Twin1",
             CreatedAt = DateTime.Now,
             RoomTypeID = twinRoomTypeID,
             RoomStatusID = availableStatusID
         },
         new Room()
         {
-            RoomNumber="104A",
+            RoomNumber="SuperiorTwin1",
             CreatedAt = DateTime.Now,
             RoomTypeID = superiorTwinRoomTypeID,
             RoomStatusID = availableStatusID

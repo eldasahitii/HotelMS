@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const shifts = ["Morning", "Afternoon", "Night"];
 
 export default function RoomReceptionistManager() {
   const navigate = useNavigate();
 
-  // Read userId from localStorage
-  const currentUserId = parseInt(localStorage.getItem("userId"), 10);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [currentUserName, setCurrentUserName] = useState("");
 
   const [users, setUsers] = useState([]);
@@ -18,194 +19,187 @@ export default function RoomReceptionistManager() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch current user full name by ID
-  const fetchCurrentUserInfo = async () => {
-    try {
-      const res = await axios.get(`/api/User`, { params: { id: currentUserId } });
-      const user = res.data;
-      setCurrentUserName(`${user.firstName} ${user.lastName}`);
-    } catch (err) {
-      setError("Failed to load current user info");
-    }
-  };
 
-  const fetchUsers = async () => {
-    try {
-      const res = await axios.get("/api/User/getAllCustomers");
-      setUsers(res.data);
-    } catch (err) {
-      setError("Failed to load customers");
-    }
-  };
+const fetchCurrentUser = async () => {
+  try {
+    const res = await axios.get("https://localhost:7117/api/Auth/me", {
+      withCredentials: true,
+    });
+    console.log("fetchCurrentUser response:", res.data);
 
-  const fetchRecepsionists = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get("/api/RoomRecepsionist/getAllRoomRecepsionists");
-      setReceps(res.data);
-      setLoading(false);
-    } catch (err) {
-      setError("Failed to load receptionists");
-      setLoading(false);
+    setCurrentUserId(res.data.userID); // Fix capitalization here
+    setCurrentUserName(res.data.userName); // Use userName string directly
+
+  } catch (err) {
+    toast.error("Failed to fetch logged-in user info.");
+  }
+};
+
+
+useEffect(() => {
+  async function init() {
+    await fetchCurrentUser();
+  }
+  init();
+}, []);
+
+useEffect(() => {
+  console.log("currentUserId changed:", currentUserId);
+  if (currentUserId) {
+    fetchUsers();
+    fetchRecepsionists();
+  }
+}, [currentUserId]);
+
+const fetchUsers = async () => {
+  console.log("fetchUsers called");
+  try {
+    const res = await axios.get("/api/User/getAllCustomers");
+    console.log("fetchUsers response:", res.data);
+    setUsers(res.data);
+  } catch (err) {
+    console.error("fetchUsers error:", err);
+    toast.error("Failed to load customers.");
+  }
+};
+
+const fetchRecepsionists = async () => {
+  console.log("fetchRecepsionists called");
+  try {
+    setLoading(true);
+    const res = await axios.get("/api/RoomRecepsionist/getAllRoomRecepsionists");
+    console.log("fetchRecepsionists response:", res.data);
+    setReceps(res.data);
+  } catch (err) {
+    console.error("fetchRecepsionists error:", err);
+    toast.error("Failed to load receptionists.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  useEffect(() => {
+    async function init() {
+      await fetchCurrentUser();
     }
-  };
+    init();
+  }, []);
 
   useEffect(() => {
     if (currentUserId) {
-      fetchCurrentUserInfo();
+      fetchUsers();
+      fetchRecepsionists();
     }
-    fetchUsers();
-    fetchRecepsionists();
-  }, []);
+  }, [currentUserId]);
 
   const handleEditClick = (recep) => {
     setEditingId(recep.roomReceptionistID);
     setForm({ userID: recep.userID.toString(), shift: recep.shift });
   };
 
-  const handleDeleteClick = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this receptionist?")) return;
+const handleDeleteClick = async (id) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will permanently delete the receptionist.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+  });
+
+  if (result.isConfirmed) {
     try {
       await axios.delete(`/api/RoomRecepsionist/deleteRoomRecepsionist/${id}`);
+      toast.success("Receptionist deleted successfully");
       fetchRecepsionists();
+      Swal.fire('Deleted!', 'The receptionist has been deleted.', 'success');
     } catch (err) {
-      alert("Delete failed: " + (err.response?.data || err.message));
+      console.error("Delete failed:", err);
+      toast.error("Delete failed: " + (err.response?.data || err.message));
+      Swal.fire('Error', 'Failed to delete the receptionist.', 'error');
     }
-  };
+  }
+};
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  if (!form.userID) {
-    setError("Please select a user.");
-    return;
-  }
-  if (!form.shift) {
-    setError("Please select a shift.");
-    return;
-  }
-  if (!currentUserId || !currentUserName) {
-    setError("Current user ID or name is not set.");
-    return;
-  }
+    if (!form.userID) return setError("Please select a user.");
+    if (!form.shift) return setError("Please select a shift.");
+    if (!currentUserId || !currentUserName) return setError("User info not loaded.");
 
-  try {
-    if (editingId) {
-      console.log("editingId:", editingId, typeof editingId);
-      console.log("receps IDs:", receps.map((r) => r.roomReceptionistID));
+    try {
+      if (editingId) {
+        const existingRecep = receps.find((r) => r.roomReceptionistID === Number(editingId));
+        if (!existingRecep) return setError("Receptionist to update not found.");
 
-      // Make sure to convert editingId to number for comparison
-      const existingRecep = receps.find((r) => r.roomReceptionistID === Number(editingId));
-      if (!existingRecep) {
-        setError("Receptionist to update not found.");
-        return;
+        const updateDto = {
+          ...existingRecep,
+          shift: form.shift,
+        };
+
+        await axios.put(`/api/RoomRecepsionist/updateRoomRecepsionist/${existingRecep.roomReceptionistID}`, updateDto);
+        toast.success("Receptionist updated successfully");
+      } else {
+        const selectedUser = users.find((u) => u.userID.toString() === form.userID);
+        if (!selectedUser) return toast.error("Selected user not found.");
+
+        const dto = {
+          roomReceptionistID: 0,
+          userID: selectedUser.userID,
+          firstName: selectedUser.firstName,
+          lastName: selectedUser.lastName,
+          email: selectedUser.email,
+          shift: form.shift,
+          assignedByUserID: currentUserId,
+          assignedByUserName: currentUserName,
+          assignedAt: new Date().toISOString(),
+        };
+
+        await axios.post(`/api/RoomRecepsionist/addRoomRecepsionist/${currentUserId}`, dto);
+        toast.success("Receptionist added successfully");
       }
 
-      // Build update DTO with all required fields
-      const updateDto = {
-        roomReceptionistID: existingRecep.roomReceptionistID,
-        userID: existingRecep.userID,
-        firstName: existingRecep.firstName,
-        lastName: existingRecep.lastName,
-        email: existingRecep.email,
-        shift: form.shift,
-        assignedByUserID: existingRecep.assignedByUserID,
-        assignedByUserName: existingRecep.assignedByUserName,
-        assignedAt: existingRecep.assignedAt,
-      };
-
-      await axios.put(`/api/RoomRecepsionist/updateRoomRecepsionist/${existingRecep.roomReceptionistID}`, updateDto);
-      alert("Receptionist updated successfully");
-    } else {
-      // Adding new receptionist
-      const selectedUser = users.find((u) => u.userID.toString() === form.userID);
-      if (!selectedUser) {
-        setError("Selected user not found.");
-        return;
-      }
-
-      const dto = {
-        roomReceptionistID: 0,
-        userID: selectedUser.userID,
-        firstName: selectedUser.firstName,
-        lastName: selectedUser.lastName,
-        email: selectedUser.email,
-        shift: form.shift,
-        assignedByUserID: currentUserId,
-        assignedByUserName: currentUserName,
-        assignedAt: new Date().toISOString(),
-      };
-      await axios.post(`/api/RoomRecepsionist/addRoomRecepsionist/${currentUserId}`, dto);
-      alert("Receptionist added successfully");
+      setForm({ userID: "", shift: "" });
+      setEditingId(null);
+      fetchRecepsionists();
+    } catch (err) {
+      const msg = err.response?.data?.title || err.response?.data?.errors || err.message || "Submit failed";
+      toast.error(JSON.stringify(msg));
     }
-    setForm({ userID: "", shift: "" });
-    setEditingId(null);
-    fetchRecepsionists();
-  } catch (err) {
-    const msg =
-      err.response?.data?.title ||
-      err.response?.data?.errors ||
-      err.message ||
-      "Submit failed";
-    setError(JSON.stringify(msg));
-  }
-};
+  };
 
-
-const formatDateTime = (dateString) => {
-  if (!dateString) return "";
-
-  let isoString = dateString;
-  if (!dateString.endsWith('Z')) {
-    isoString = dateString + 'Z';
-  }
-
-  const dt = new Date(isoString);
-
-  if (isNaN(dt)) return "";
-
-  return dt.toLocaleString(undefined, { timeZoneName: 'short' });
-};
-
-
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "";
+    let isoString = dateString.endsWith("Z") ? dateString : dateString + "Z";
+    const dt = new Date(isoString);
+    return isNaN(dt) ? "" : dt.toLocaleString(undefined, { timeZoneName: "short" });
+  };
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
       <aside className="text-white p-4" style={{ width: "240px", backgroundColor: "#324b6b" }}>
-        <h4 className="fw-bold mb-4">
-          <i className="bi bi-people"></i> HotelMS
-        </h4>
+        <h4 className="fw-bold mb-4"><i className="bi bi-people"></i> HotelMS</h4>
         <ul className="nav flex-column">
           <li className="nav-item">
             <i className="bi bi-person-badge me-2"></i> Receptionist Management
           </li>
-
-          <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/manager/room-dashboard")}
-          >
+          <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/manager/room-dashboard")}>
             <i className="bi bi-house-door me-2"></i> Room Management
           </button>
-
-          <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/admin/reservation-dashboard")}
-          >
+          <button className="btn btn-outline-light w-100 mb-3" onClick={() => navigate("/admin/reservation-dashboard")}>
             <i className="bi bi-journal-check me-2"></i> Room Reservation List
           </button>
-
           <button
             className="btn btn-outline-light w-100 mt-2"
             onClick={() => {
-              localStorage.removeItem("token");
-              localStorage.removeItem("userId");
-              localStorage.removeItem("userName");
-              localStorage.removeItem("userRole");
+              localStorage.clear();
               navigate("/login");
             }}
           >
@@ -219,17 +213,11 @@ const formatDateTime = (dateString) => {
           <i className="bi bi-person-lines-fill me-2"></i> Room Receptionist Management
         </h2>
 
-        {error && (
-          <div className="alert alert-danger" role="alert">
-            {error}
-          </div>
-        )}
+        {error && <div className="alert alert-danger">{error}</div>}
 
         <form onSubmit={handleSubmit} className="mb-4">
           <div className="mb-3">
-            <label htmlFor="userID" className="form-label">
-              User
-            </label>
+            <label htmlFor="userID" className="form-label">User</label>
             <select
               id="userID"
               name="userID"
@@ -248,9 +236,7 @@ const formatDateTime = (dateString) => {
           </div>
 
           <div className="mb-3">
-            <label htmlFor="shift" className="form-label">
-              Shift
-            </label>
+            <label htmlFor="shift" className="form-label">Shift</label>
             <select
               id="shift"
               name="shift"
@@ -260,9 +246,7 @@ const formatDateTime = (dateString) => {
             >
               <option value="">-- Select Shift --</option>
               {shifts.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
+                <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </div>
@@ -313,15 +297,8 @@ const formatDateTime = (dateString) => {
                   <td>{r.assignedByUserName || ""}</td>
                   <td>{formatDateTime(r.assignedAt)}</td>
                   <td>
-                    <button className="btn btn-sm btn-info me-2" onClick={() => handleEditClick(r)}>
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteClick(r.roomReceptionistID)}
-                    >
-                      Delete
-                    </button>
+                    <button className="btn btn-sm btn-info me-2" onClick={() => handleEditClick(r)}>Edit</button>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleDeleteClick(r.roomReceptionistID)}>Delete</button>
                   </td>
                 </tr>
               ))}

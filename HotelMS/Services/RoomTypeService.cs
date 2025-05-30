@@ -76,6 +76,7 @@ namespace HotelMS.Services
                 Price = roomType.Price,
                 Images = roomType.RoomImages?.Select(img => new RoomImageDTO
                 {
+                    RoomImageID=img.RoomImageID,
                     RoomTypeID = img.RoomTypeID,
                     ImageUrl = img.ImageUrl,
                     IsPreview = img.IsPreview
@@ -99,6 +100,7 @@ namespace HotelMS.Services
                 Price = roomType.Price,
                 Images = roomType.RoomImages?.Select(img => new RoomImageDTO
                 {
+                    RoomImageID=img.RoomImageID,
                     RoomTypeID = img.RoomTypeID,
                     ImageUrl = img.ImageUrl,
                     IsPreview = img.IsPreview
