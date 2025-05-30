@@ -26,10 +26,15 @@ import RestaurantHomePage from './pages/restaurant/RestaurantHomePage';
 import RestaurantMenuPage from './pages/restaurant/RestaurantMenuPage';
 import RestaurantAdmin from './pages/dashboards/admindashboard/RestaurantAdmin/AdminRestaurant';
 
+
+
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
 const CleaningStaffDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningStaffDashboard'));
-const RestaurantManagerDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/RestaurantManagerDashboard'));
-const RestaurantHostDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/RestaurantHostDashboard'));
+const HostAssignmentDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/managerdashboards/HostAssignmentDashboard'));
+const MenuDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/managerdashboards/MenuDashboard'));
+const TableDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/managerdashboards/TableDashboard'));
+const ReservationOverviewDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/managerdashboards/ReservationOverviewDashboard'));
+const RestaurantHostDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/hostdashboard/RestaurantHostDashboard'));
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const [authorized, setAuthorized] = React.useState(null);
@@ -130,11 +135,36 @@ function App() {
                 </ProtectedRoute>
               }/>
 
-              <Route path="/restaurant-manager/dashboard" element={
+              {/* <Route path="/restaurant-manager/dashboard" element={
                 <ProtectedRoute allowedRoles={['RestaurantManager']}>
                   <RestaurantManagerDashboard />
                 </ProtectedRoute>
-              }/>
+              }/> */}
+
+              <Route path="/manager/restaurant-hosts" element={
+                <ProtectedRoute allowedRoles={['RestaurantManager']}>
+                 <HostAssignmentDashboard />
+               </ProtectedRoute>
+              } />
+
+              <Route path="/manager/restaurant-menu" element={
+                <ProtectedRoute allowedRoles={['RestaurantManager']}>
+                 <MenuDashboard />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/manager/restaurant-tables" element={
+                <ProtectedRoute allowedRoles={['RestaurantManager']}>
+                 <TableDashboard />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/manager/restaurant-reservations" element={
+                <ProtectedRoute allowedRoles={['RestaurantManager']}>
+                 <ReservationOverviewDashboard />
+               </ProtectedRoute>
+              } />
+
 
               <Route path="/host/dashboard" element={
                 <ProtectedRoute allowedRoles={['RestaurantHost']}>
@@ -165,6 +195,9 @@ function App() {
                   <RestaurantAdmin />
                 </ProtectedRoute>
               }/>
+
+              <Route path="/restaurant-manager/dashboard" element={<Navigate to="/manager/restaurant-hosts" />} />
+
 
               <Route path="*" element={<div>Page Not Found</div>} />
             </Routes>

@@ -250,7 +250,7 @@ const handleSearch = () => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#fefefe' }}>
-      <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#3c4b64' }}>
+      {/* <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#3c4b64' }}>
         <h4 className="fw-bold mb-4"><i className="bi bi-person-circle"></i> Host Panel</h4>
         <ul className="nav flex-column">
           <li className="nav-item">Manage Reservations</li>
@@ -259,7 +259,7 @@ const handleSearch = () => {
         <button className="btn btn-outline-light w-100" onClick={handleLogout}>
           <i className="bi bi-box-arrow-right me-2"></i> Logout
         </button>
-      </aside>
+      </aside> */}
 
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">

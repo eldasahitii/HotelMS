@@ -46,6 +46,16 @@ const Header = () => {
       { path: "/cleaningstaff/dashboard", label: "My Dashboard" },
     ],
     // Add more roles here
+    RestaurantManager: [
+      { path: "/manager/restaurant-hosts", label: "Hosts"},
+      { path: "/manager/restaurant-menu", label: "Menu"},
+      { path: "/manager/restaurant-tables", label: "Tables"},
+      { path: "/manager/restaurant-reservations", label: "Reservations"}
+    ],
+    RestaurantHost: [
+      { path: "/host/dashboard", label: "Reservations" }
+    ],
+
   };
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
