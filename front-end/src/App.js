@@ -1,14 +1,12 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Header from './Components/Header';
-import Footer from './Components/Footer';
-
 import axios from 'axios';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
-// Static imports
+import { AuthProvider } from './Context/AuthContext'; //  import context
+import Header from './Components/Header';
+import Footer from './Components/Footer';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AboutUs from './pages/AboutUs';
@@ -35,17 +33,15 @@ import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReser
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// Lazy imports
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
 const CleaningStaffDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningStaffDashboard'));
 const RestaurantManagerDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/RestaurantManagerDashboard'));
 const RestaurantHostDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/RestaurantHostDashboard'));
 
-// Protected Route
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const [authorized, setAuthorized] = useState(null);
+  const [authorized, setAuthorized] = React.useState(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const checkAuth = async () => {
       try {
         const res = await axios.get('https://localhost:7117/api/Auth/me', {
@@ -69,19 +65,24 @@ function App() {
   return (
     
     <Router>
-      <div>
-     {!["/login"].includes(window.location.pathname) && <Header />}
+      <AuthProvider> {/*  Wrap the whole app */}
+        <div>
+          {!["/login"].includes(window.location.pathname) && <Header />}
      <ToastContainer position="top-right" autoClose={4000} />
 
-        <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/signup" />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/rooms" element={<RoomsPage />} />
-            <Route path="/rooms/:roomId" element={<RoomsDetails />} />
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="/room-manager/review-dashboard" element={<ReviewDashboard />} />
+          <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/about" />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/rooms" element={<RoomsPage />} />
+              <Route path="/rooms/:roomId" element={<RoomsDetails />} />
+              <Route path="/about" element={<AboutUs />} />
+              <Route path="/room-manager/review-dashboard" element={<ReviewDashboard />} />
+              <Route path="/restaurant" >
+                <Route index element={<RestaurantHomePage />} />
+                <Route path="menu" element={<RestaurantMenuPage />} />
+              </Route>
 
             {/* Room Reservation route */}
             <Route path="/reserve" element={
@@ -90,83 +91,77 @@ function App() {
 </ProtectedRoute>
             } />
 
-            {/* Restaurant nested route */}
-            <Route path="/restaurant">
-              <Route index element={<RestaurantHomePage />} />
-              <Route path="menu" element={<RestaurantMenuPage />} />
-            </Route>
+              <Route path="/room-manager-receptionist-management" element={
+                <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
+                  <RoomRecepsionistManagement />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/room-manager-receptionist-management" element={
-              <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
-                <RoomRecepsionistManagement />
-              </ProtectedRoute>
-            }/>
+              <Route path="/reservations" element={
+                <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist']}>
+                  <ReservationPage />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/reservations" element={
-              <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist']}>
-                <ReservationPage />
-              </ProtectedRoute>
-            }/>
+              <Route path="/manager/cleaning-staff" element={
+                <ProtectedRoute allowedRoles={['CleaningManager']}>
+                  <CleaningManagerDashboard />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/manager/cleaning-staff" element={
-              <ProtectedRoute allowedRoles={['CleaningManager']}>
-                <CleaningManagerDashboard />
-              </ProtectedRoute>
-            }/>
+              <Route path="/manager/assignments" element={
+                <ProtectedRoute allowedRoles={['CleaningManager']}>
+                  <AssignmentsDashboard />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/manager/assignments" element={
-              <ProtectedRoute allowedRoles={['CleaningManager']}>
-                <AssignmentsDashboard />
-              </ProtectedRoute>
-            }/>
+              <Route path="/cleaningstaff/dashboard" element={
+                <ProtectedRoute allowedRoles={['CleaningStaff']}>
+                  <CleaningStaffDashboard />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/cleaningstaff/dashboard" element={
-              <ProtectedRoute allowedRoles={['CleaningStaff']}>
-                <CleaningStaffDashboard />
-              </ProtectedRoute>
-            }/>
+              <Route path="/manager/room-dashboard" element={
+                <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+                  <RoomManagerDashboard />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/manager/room-dashboard" element={
-              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
-                <RoomManagerDashboard />
-              </ProtectedRoute>
-            }/>
+              <Route path="/admin/reservation-dashboard" element={
+                <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
+                  <ReservationDashboard />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/admin/reservation-dashboard" element={
-              <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
-                <ReservationDashboard />
-              </ProtectedRoute>
-            }/>
+              <Route path="/recepsionist-dashboard" element={
+                <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
+                  <RoomReceptionistDashboard />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/recepsionist-dashboard" element={
-              <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
-                <RoomReceptionistDashboard />
-              </ProtectedRoute>
-            }/>
+              <Route path="/restaurant-manager/dashboard" element={
+                <ProtectedRoute allowedRoles={['RestaurantManager']}>
+                  <RestaurantManagerDashboard />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/restaurant-manager/dashboard" element={
-              <ProtectedRoute allowedRoles={['RestaurantManager']}>
-                <RestaurantManagerDashboard />
-              </ProtectedRoute>
-            }/>
+              <Route path="/host/dashboard" element={
+                <ProtectedRoute allowedRoles={['RestaurantHost']}>
+                  <RestaurantHostDashboard />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/host/dashboard" element={
-              <ProtectedRoute allowedRoles={['RestaurantHost']}>
-                <RestaurantHostDashboard />
-              </ProtectedRoute>
-            }/>
+              <Route path="/recepsionist-reservations" element={
+                <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
+                  <RecepsionistReservationDashboard />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="/recepsionist-reservations" element={
-              <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
-                <RecepsionistReservationDashboard />
-              </ProtectedRoute>
-            }/>
-
-            <Route path="/admin/room-types" element={
-              <ProtectedRoute allowedRoles={['Admin']}>
-                <AdminRoomTypeDashboard />
-              </ProtectedRoute>
-            }/>
+              <Route path="/admin/room-types" element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <AdminRoomTypeDashboard />
+                </ProtectedRoute>
+              }/>
 
            <Route
              path="/admin/add-manager"
@@ -215,18 +210,19 @@ function App() {
 
 
 
-            <Route path="/admin/restaurant-dashboard" element={
-              <ProtectedRoute allowedRoles={['Admin']}>
-                <RestaurantAdmin />
-              </ProtectedRoute>
-            }/>
+              <Route path="/admin/restaurant-dashboard" element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <RestaurantAdmin />
+                </ProtectedRoute>
+              }/>
 
-            <Route path="*" element={<div>Page Not Found</div>} />
-          </Routes>
-        </Suspense>
+              <Route path="*" element={<div>Page Not Found</div>} />
+            </Routes>
+          </Suspense>
 
-        <Footer />
-      </div>
+          <Footer />
+        </div>
+      </AuthProvider>
     </Router>
   );
 }
