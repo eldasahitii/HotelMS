@@ -4,22 +4,26 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from "react-router-dom";
 
-export default function AssignmentsByName() {
+export default function CleaningStaffDashboard() {
   const [assignments, setAssignments] = useState([]);
   const [staffName, setStaffName] = useState("");
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  
   const [loggedInUserID, setLoggedInUserID] = useState(null);
   const [currentCleaningStaffID, setCurrentCleaningStaffID] = useState(null);
-  
   const inputRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchCurrentUser();
+    fetchAllAssignments();
+    if (inputRef.current) inputRef.current.focus();
+  }, []);
 
   const fetchCurrentUser = async () => {
     try {
       const res = await axios.get('/api/Auth/me', { withCredentials: true });
-      setLoggedInUserID(parseInt(res.data.userId || res.data.userID)); // adjust key as per your API response
+      setLoggedInUserID(parseInt(res.data.userId || res.data.userID));
     } catch (error) {
       console.error("Failed to get current user info", error);
       setMessage("You must be logged in to view assignments.");
@@ -27,6 +31,22 @@ export default function AssignmentsByName() {
       navigate('/login');
     }
   };
+
+  useEffect(() => {
+    if (!loggedInUserID) return;
+
+    const resolveCurrentCleaningStaffID = async () => {
+      try {
+        const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
+        const match = res.data.find(s => s.userID === loggedInUserID);
+        if (match) setCurrentCleaningStaffID(match.cleaningStaffID);
+      } catch (err) {
+        console.error("Failed to resolve cleaningStaffID", err);
+      }
+    };
+
+    resolveCurrentCleaningStaffID();
+  }, [loggedInUserID]);
 
   const fetchAllAssignments = async () => {
     try {
@@ -38,36 +58,10 @@ export default function AssignmentsByName() {
     }
   };
 
-  // Resolve cleaning staff id once loggedInUserID is known
-  useEffect(() => {
-    if (!loggedInUserID) return;
-
-    const resolveCurrentCleaningStaffID = async () => {
-      try {
-        const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff");
-        const match = res.data.find(s => s.userID === loggedInUserID);
-        if (match) {
-          setCurrentCleaningStaffID(match.cleaningStaffID);
-        }
-      } catch (err) {
-        console.error("Failed to resolve cleaningStaffID", err);
-      }
-    };
-
-    resolveCurrentCleaningStaffID();
-  }, [loggedInUserID]);
-
-  useEffect(() => {
-    fetchCurrentUser();
-    fetchAllAssignments();
-    if (inputRef.current) inputRef.current.focus();
-  }, []);
-
   const handleSearch = async (e) => {
     e.preventDefault();
     const trimmedName = staffName.trim();
     if (!trimmedName) {
-      // If input empty after trimming, fetch all assignments
       fetchAllAssignments();
       return;
     }
@@ -102,118 +96,100 @@ export default function AssignmentsByName() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
-
   return (
-    <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      <aside className="text-white p-3" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
-        <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
-        <ul className="nav flex-column">
-          <li className="nav-item mb-2"><i className="bi bi-person-lines-fill me-2"></i>Dashboard</li>
-          <hr className="text-white" />
-          <button className="btn btn-outline-light w-100" onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right me-2"></i> Logout
-          </button>
-        </ul>
-      </aside>
-
-      <main className="flex-grow-1 p-3">
-        <h2 className="text-primary fw-bold mb-4">
-          <i className="bi bi-search me-2"></i>Cleaning Assignments
-        </h2>
-        <div className="card mb-4 shadow-sm">
-          <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
-            <i className="bi bi-search me-2"></i>Search Assignments by Name
-          </div>
-          <div className="card-body">
-            <form onSubmit={handleSearch} className="row g-2">
-              <div className="col-12 col-md-8">
-                <input
-                  ref={inputRef}
-                  className="form-control"
-                  type="text"
-                  placeholder="Enter full name"
-                  value={staffName}
-                  onChange={(e) => setStaffName(e.target.value)}
-                />
-              </div>
-              <div className="col-12 col-md-4">
-                <button type="submit" className="btn w-100" style={{ color: '#000000', border: '1px solid' }}>
-                  <i className="bi bi-search me-2"></i> Search
-                </button>
-              </div>
-            </form>
-          </div>
+    <div className="container-fluid py-3 px-4" style={{ backgroundColor: '#f2f6fc', minHeight: '100vh' }}>
+      <h2 className="text-primary fw-bold mb-4">
+        <i className="bi bi-search me-2"></i>Cleaning Assignments
+      </h2>
+      <div className="card mb-4 shadow-sm">
+        <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
+          <i className="bi bi-search me-2"></i>Search Assignments by Name
         </div>
-
-        {message && <div className={`alert alert-${messageType}`}>{message}</div>}
-
-        <div className="card shadow-sm">
-          <div className="card-header bg-success text-white">
-            <i className="bi bi-list-task me-2"></i>Assignment List
-          </div>
-          <div className="card-body p-0">
-            <div className="table-responsive">
-              <table className="table table-striped mb-0">
-                <thead className="table-light">
-                  <tr>
-                    <th>#</th>
-                    <th>Room</th>
-                    <th>Staff</th>
-                    <th>Status</th>
-                    <th>Assigned</th>
-                    <th>Assigned By</th>
-                    <th>Started</th>
-                    <th>Finished</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {assignments.map((a, index) => (
-                    <tr key={a.cleaningAssignmentID}>
-                      <td>{index + 1}</td>
-                      <td>{a.roomName} (#{a.roomNumber})</td>
-                      <td>{a.staffName}</td>
-                      <td>
-                        <span className={`badge ${a.status === 'Completed' ? 'bg-success' : a.status === 'InProgress' ? 'bg-info' : 'bg-secondary'}`}>
-                          {a.status}
-                        </span>
-                      </td>
-                      <td>{a.assignedAt ? new Date(a.assignedAt).toLocaleString() : '-'}</td>
-                      <td>{a.assignedByName || '-'}</td>
-                      <td>{a.startedAt ? new Date(a.startedAt).toLocaleString() : '-'}</td>
-                      <td>{a.finishedAt ? new Date(a.finishedAt).toLocaleString() : '-'}</td>
-                      <td>
-                        <div className="btn-group">
-                          <button
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => handleStart(a.cleaningAssignmentID)}
-                            disabled={a.status !== 'Pending' || a.cleaningStaffID !== currentCleaningStaffID}
-                            title={a.cleaningStaffID !== loggedInUserID ? "You cannot start another staff's assignment" : ""}
-                          >
-                            <i className="bi bi-play-fill"></i>
-                          </button>
-                          <button
-                            className="btn btn-sm btn-outline-success"
-                            onClick={() => handleComplete(a.cleaningAssignmentID)}
-                            disabled={a.status !== 'InProgress' || a.cleaningStaffID !== currentCleaningStaffID}
-                            title={a.cleaningStaffID !== loggedInUserID ? "You cannot complete another staff's assignment" : ""}
-                          >
-                            <i className="bi bi-check-circle"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <div className="card-body">
+          <form onSubmit={handleSearch} className="row g-2">
+            <div className="col-12 col-md-8">
+              <input
+                ref={inputRef}
+                className="form-control"
+                type="text"
+                placeholder="Enter full name"
+                value={staffName}
+                onChange={(e) => setStaffName(e.target.value)}
+              />
             </div>
+            <div className="col-12 col-md-4">
+              <button type="submit" className="btn w-100" style={{ color: '#000000', border: '1px solid' }}>
+                <i className="bi bi-search me-2"></i> Search
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {message && <div className={`alert alert-${messageType}`}>{message}</div>}
+
+      <div className="card shadow-sm">
+        <div className="card-header bg-success text-white">
+          <i className="bi bi-list-task me-2"></i>Assignment List
+        </div>
+        <div className="card-body p-0">
+          <div className="table-responsive">
+            <table className="table table-striped mb-0">
+              <thead className="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>Room</th>
+                  <th>Staff</th>
+                  <th>Status</th>
+                  <th>Assigned</th>
+                  <th>Assigned By</th>
+                  <th>Started</th>
+                  <th>Finished</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {assignments.map((a, index) => (
+                  <tr key={a.cleaningAssignmentID}>
+                    <td>{index + 1}</td>
+                    <td>{a.roomName} (#{a.roomNumber})</td>
+                    <td>{a.staffName}</td>
+                    <td>
+                      <span className={`badge ${a.status === 'Completed' ? 'bg-success' : a.status === 'InProgress' ? 'bg-info' : 'bg-secondary'}`}>
+                        {a.status}
+                      </span>
+                    </td>
+                    <td>{a.assignedAt ? new Date(a.assignedAt).toLocaleString() : '-'}</td>
+                    <td>{a.assignedByName || '-'}</td>
+                    <td>{a.startedAt ? new Date(a.startedAt).toLocaleString() : '-'}</td>
+                    <td>{a.finishedAt ? new Date(a.finishedAt).toLocaleString() : '-'}</td>
+                    <td>
+                      <div className="btn-group">
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => handleStart(a.cleaningAssignmentID)}
+                          disabled={a.status !== 'Pending' || a.cleaningStaffID !== currentCleaningStaffID}
+                          title={a.cleaningStaffID !== loggedInUserID ? "You cannot start another staff's assignment" : ""}
+                        >
+                          <i className="bi bi-play-fill"></i>
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-success"
+                          onClick={() => handleComplete(a.cleaningAssignmentID)}
+                          disabled={a.status !== 'InProgress' || a.cleaningStaffID !== currentCleaningStaffID}
+                          title={a.cleaningStaffID !== loggedInUserID ? "You cannot complete another staff's assignment" : ""}
+                        >
+                          <i className="bi bi-check-circle"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
