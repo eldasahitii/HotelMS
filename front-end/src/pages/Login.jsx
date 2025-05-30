@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useAuth } from '../Context/AuthContext'; // ✅ Import AuthContext
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,11 +11,13 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [formErrors, setFormErrors] = useState({});
+
   const navigate = useNavigate();
+  const { fetchUser } = useAuth(); //  Access fetchUser from context
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     const emailRegex = /^\S+@\S+\.\S+$/;
     const errors = {
@@ -27,29 +30,31 @@ const Login = () => {
 
     try {
       const loginRes = await axios.post(
-        "https://localhost:7117/api/Auth/login",
+        'https://localhost:7117/api/Auth/login',
         { email, password },
         { withCredentials: true }
       );
 
       if (loginRes.data.isLoggedIn) {
+        await fetchUser(); // Immediately update context state
+
         const meRes = await axios.get('https://localhost:7117/api/Auth/me', {
           withCredentials: true,
         });
 
-        const { role, userId, userName } = meRes.data;
+        const { role } = meRes.data;
 
         switch (role) {
-          case "Customer": navigate("/rooms"); break;
-          case "Admin": navigate("/admin/room-types"); break;
-          case "RoomManager": navigate("/manager/room-dashboard"); break;
-          case "RoomRecepsionist": navigate("/recepsionist-dashboard"); break;
-          case "CleaningManager": navigate("/manager/cleaning-staff"); break;
-          case "CleaningStaff": navigate("/cleaningstaff/dashboard"); break;
-          case "RestaurantManager": navigate("/restaurant-manager/dashboard"); break;
-          case "RestaurantHost": navigate("/host/dashboard"); break;
+          case 'Customer': navigate('/rooms'); break;
+          case 'Admin': navigate('/admin/room-types'); break;
+          case 'RoomManager': navigate('/manager/room-dashboard'); break;
+          case 'RoomRecepsionist': navigate('/recepsionist-dashboard'); break;
+          case 'CleaningManager': navigate('/manager/cleaning-staff'); break;
+          case 'CleaningStaff': navigate('/cleaningstaff/dashboard'); break;
+          case 'RestaurantManager': navigate('/restaurant-manager/dashboard'); break;
+          case 'RestaurantHost': navigate('/host/dashboard'); break;
           default:
-            setError("Unknown role. Access denied.");
+            setError('Unknown role. Access denied.');
             break;
         }
       }
@@ -57,14 +62,14 @@ const Login = () => {
       const message = err.response?.data?.message || err.message;
       console.error('Login error:', message);
 
-      if (message.toLowerCase().includes("email")) {
+      if (message.toLowerCase().includes('email')) {
         setFormErrors(prev => ({ ...prev, email: true }));
-        setError("No account found with this email.");
-      } else if (message.toLowerCase().includes("password")) {
+        setError('No account found with this email.');
+      } else if (message.toLowerCase().includes('password')) {
         setFormErrors(prev => ({ ...prev, password: true }));
-        setError("Incorrect password.");
+        setError('Incorrect password.');
       } else {
-        setError("Login failed. Please check your credentials.");
+        setError('Login failed. Please check your credentials.');
       }
     }
   };
@@ -141,4 +146,3 @@ const Login = () => {
 };
 
 export default Login;
-

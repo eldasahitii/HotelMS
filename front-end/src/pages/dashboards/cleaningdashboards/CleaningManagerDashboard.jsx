@@ -8,7 +8,7 @@ import Select from "react-select";
 export default function CleaningManagerDashboard() {
   const [staff, setStaff] = useState([]);
   const [users, setUsers] = useState([]);
-  const [newStaff, setNewStaff] = useState({ userID: '', shift: '', isActive: true, assignedByUserID: 1 });
+  const [newStaff, setNewStaff] = useState({ userID: '', shift: '', isActive: true, assignedByUserID: ''});
   const [shiftFilter, setShiftFilter] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
