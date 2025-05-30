@@ -2,19 +2,25 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Link, useNavigate } from 'react-router-dom';
 import Select from "react-select";
+
 
 export default function CleaningManagerDashboard() {
   const [staff, setStaff] = useState([]);
   const [users, setUsers] = useState([]);
-  const [newStaff, setNewStaff] = useState({ userID: '', shift: '', isActive: true, assignedByUserID: 1 });
+  const [newStaff, setNewStaff] = useState({ userID: '', shift: '', isActive: true, assignedByUserID: ''});
   const [shiftFilter, setShiftFilter] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [editingStaff, setEditingStaff] = useState(null);
   const [editShift, setEditShift] = useState('');
   const [editIsActive, setEditIsActive] = useState(true);
+
+  const [role, setRole] = useState('CleaningManager');
+
+  useEffect(() => { 
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -27,8 +33,6 @@ export default function CleaningManagerDashboard() {
       console.error(err);
     }
   };
-
-  useEffect(() => { fetchData(); }, []);
 
   const handleDeleteStaff = async (id) => {
     try {
@@ -110,43 +114,24 @@ export default function CleaningManagerDashboard() {
 
   const handleShowActive = async () => {
     try {
-      const res = await axios.get("/api/CleaningStaff/getAllActive", { withCredentials: true });
-      setStaff(res.data);
+      if (staff.length && staff.every(s => s.isActive)) {
+        const allStaff = await axios.get("/api/CleaningStaff/getAllCleaningStaff", { withCredentials: true });
+        setStaff(allStaff.data);
+      } else {
+        const activeStaff = await axios.get("/api/CleaningStaff/getAllActive", { withCredentials: true });
+        setStaff(activeStaff.data);
+      }
     } catch (err) {
       console.error(err);
-      setMessage("Failed to load active staff.");
+      setMessage("Failed to load staff.");
       setMessageType("danger");
     }
   };
 
-  const navigate = useNavigate();
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
-
   return (
-    <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      <aside className="text-white p-4" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
-        <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
-        <ul className="nav flex-column">
-          <li className="nav-item">
-            <Link to="/manager/cleaning-staff" className="nav-link text-white">
-              <i className="bi bi-people-fill me-2"></i>Cleaning Staff
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/manager/assignments" className="nav-link text-white">
-              <i className="bi bi-list-task me-2"></i>Assignments
-            </Link>
-          </li>
-          <hr className="text-white" />
-          <button className="btn btn-outline-light w-100" onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right me-2"></i> Logout
-          </button>
-        </ul>
-      </aside>
-      <main className="flex-grow-1 p-3">
+    <>
+      
+      <main className="p-3" style={{ backgroundColor: '#f2f6fc', minHeight: '100vh' }}>
         <h2 className="fw-bold text-primary mb-4"><i className="bi bi-people-fill me-2"></i>Cleaning Manager</h2>
 
         {message && (
@@ -295,8 +280,7 @@ export default function CleaningManagerDashboard() {
             </div>
           </div>
         )}
-
       </main>
-    </div>
+    </>
   );
 }
