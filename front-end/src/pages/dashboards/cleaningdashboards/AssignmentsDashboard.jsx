@@ -14,16 +14,19 @@ export default function AssignmentsDashboard() {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [userID, setUserID] = useState(null);
+  const [role, setRole] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
 
   const navigate = useNavigate();
 
+  // Fetch current user info (ID and Role)
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         const response = await axios.get('/api/Auth/me', { withCredentials: true });
         setUserID(parseInt(response.data.userId));
+        setRole(response.data.role);
       } catch (err) {
         console.error('Failed to fetch current user', err);
         setMessage("You must be logged in.");
@@ -43,6 +46,7 @@ export default function AssignmentsDashboard() {
     return () => window.removeEventListener("resize", handleResize);
   }, [navigate]);
 
+  // Fetch assignments
   const fetchAssignments = async () => {
     try {
       const res = await axios.get("/api/CleaningAssignment/getAllAssignments", { withCredentials: true });
@@ -52,6 +56,7 @@ export default function AssignmentsDashboard() {
     }
   };
 
+  // Fetch cleaning staff
   const fetchCleaningStaff = async () => {
     try {
       const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff", { withCredentials: true });
@@ -61,6 +66,7 @@ export default function AssignmentsDashboard() {
     }
   };
 
+  // Fetch rooms
   const fetchRooms = async () => {
     try {
       const res = await axios.get("/api/Room/getAllRooms", { withCredentials: true });
@@ -172,85 +178,13 @@ export default function AssignmentsDashboard() {
   const formatDateTime = (datetimeString) => {
     if (!datetimeString) return '-';
     const dateObj = new Date(datetimeString);
-    return dateObj.toLocaleString();  // Shows date and time in local format
+    return dateObj.toLocaleString();
   };
 
   return (
-    <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
+    <div>
 
-      {!isLargeScreen && (
-        <button
-          className="position-fixed"
-          onClick={toggleSidebar}
-          aria-label="Toggle sidebar"
-          style={{
-            zIndex: 1050,
-            top: '12px',
-            left: '12px',
-            padding: '5px 8px',
-            fontSize: '1.1rem',
-            borderRadius: '5px',
-            backgroundColor: '#324b6b',
-            color: 'white',
-            border: 'none',
-          }}
-        >
-          <i className="bi bi-list"></i>
-        </button>
-      )}
-      <aside
-        className="text-white p-4 position-fixed top-0 vh-100"
-        style={{
-          minWidth: 240,
-          backgroundColor: '#324b6b',
-          zIndex: 1040,
-          left: isLargeScreen ? 0 : (sidebarOpen ? 0 : -240),
-          transition: 'left 0.3s ease-in-out',
-          overflowY: 'auto',
-        }}
-      >
-        <h4 className="fw-bold mb-4" style={{ paddingLeft: !isLargeScreen ? '40px' : 0 }}>
-          <i className="bi bi-building"></i> HotelMS
-        </h4>
-        <ul className="nav flex-column">
-          <li className="nav-item">
-            <Link
-              to="/manager/cleaning-staff"
-              className="nav-link text-white"
-              onClick={() => { if (!isLargeScreen) setSidebarOpen(false); }}
-            >
-              <i className="bi bi-people-fill me-2"></i>Cleaning Staff
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link
-              to="/manager/assignments"
-              className="nav-link text-white"
-              onClick={() => { if (!isLargeScreen) setSidebarOpen(false); }}
-            >
-              <i className="bi bi-list-task me-2"></i>Assignments
-            </Link>
-          </li>
-          <hr className="text-white" />
-          <button className="btn btn-outline-light w-100" onClick={handleLogout}><i className="bi bi-box-arrow-right me-2"></i> Logout</button>
-        </ul>
-      </aside>
-
-      {!isLargeScreen && sidebarOpen && (
-        <div
-          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
-          style={{ zIndex: 1030 }}
-          onClick={toggleSidebar}
-        />
-      )}
-
-      <main
-        className="flex-grow-1 p-3"
-        style={{
-          marginLeft: isLargeScreen ? 240 : 0,
-          transition: 'margin-left 0.3s ease-in-out'
-        }}
-      >
+      <main className="p-3" style={{ backgroundColor: '#f2f6fc', minHeight: '100vh' }}>
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-list-task me-2"></i>Cleaning Assignments
         </h2>
@@ -262,6 +196,7 @@ export default function AssignmentsDashboard() {
           </div>
         )}
 
+        {/* Add Assignment form */}
         <div className="card mb-4">
           <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
             <i className="bi bi-plus-circle me-2"></i>Add New Assignment
@@ -306,6 +241,7 @@ export default function AssignmentsDashboard() {
           </div>
         </div>
 
+        {/* Assignments list */}
         <div className="card">
           <div className="card-header" style={{ backgroundColor: '#7ca8d8', color: '#fff' }}>
             <i className="bi bi-table me-2"></i>Assignments List
@@ -334,9 +270,9 @@ export default function AssignmentsDashboard() {
                       <td>
                         <span className={`badge ${
                           a.status === 'Completed' ? 'bg-success' :
-                            a.status === 'InProgress' ? 'bg-info' :
-                              a.status === 'Pending' ? 'bg-secondary' :
-                                'bg-light text-dark'}`}>
+                          a.status === 'InProgress' ? 'bg-info' :
+                          a.status === 'Pending' ? 'bg-secondary' :
+                          'bg-light text-dark'}`}>
                           {a.status}
                         </span>
                       </td>
@@ -376,6 +312,7 @@ export default function AssignmentsDashboard() {
           </div>
         </div>
 
+        {/* Edit Assignment form */}
         {editingAssignment && (
           <div className="card mt-4">
             <div className="card-header bg-warning text-dark">
