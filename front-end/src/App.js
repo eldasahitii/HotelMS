@@ -4,11 +4,9 @@ import axios from 'axios';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import { AuthProvider } from './Context/AuthContext'; //  import context
 import Header from './Components/Header';
 import Footer from './Components/Footer';
-import { AuthProvider } from './Context/AuthContext'; //  import context
-
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AboutUs from './pages/AboutUs';

@@ -4,14 +4,14 @@ import axios from "axios";
 import logo from "../Assets/images/logo.png";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useAuth } from "../Context/AuthContext"; // ✅ import context
+import { useAuth } from "../Context/AuthContext"; //  import context
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const { userRole, setUserRole, loading } = useAuth(); // ✅ use global role
+  const { userRole, setUserRole, loading } = useAuth(); //  use global role
 
   const logout = async () => {
     try {
@@ -19,7 +19,7 @@ const Header = () => {
     } catch (e) {
       // ignore errors
     }
-    setUserRole(null); // ✅ clear role in context
+    setUserRole(null); //  clear role in context
     navigate("/login");
   };
 
