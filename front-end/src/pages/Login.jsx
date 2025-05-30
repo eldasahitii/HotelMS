@@ -39,9 +39,6 @@ const Login = () => {
 
         const { role, userId, userName } = meRes.data;
 
-        console.log("meRes.data:", meRes.data);
-       console.log("role:", role);  
-
         switch (role) {
           case "Customer": navigate("/rooms"); break;
           case "Admin": navigate("/admin/room-types"); break;
