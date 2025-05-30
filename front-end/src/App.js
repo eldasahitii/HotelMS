@@ -21,6 +21,9 @@ import RestaurantManagerDashboard from './pages/dashboards/restaurantdashboards/
 import RecepsionistReservationDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RecepsionistReservationDashboard';
 import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/RoomAdmin/AdminRoomType';
 import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
+import ServiceMain from './Components/Services/ServiceMain';
+import PoolSpaPage from './Components/Services/PoolSpaPage';
+import EventsPage from './Components/Services/EventsPage';
 
 // Lazy imports
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
@@ -147,6 +150,32 @@ function App() {
                 <AdminAddManager />
               </ProtectedRoute>
             }/>
+
+            <Route
+            path="/services"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Recepcionist']}>
+                <ServiceMain />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/services/pool-spa"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Receptionist']}>
+                <PoolSpaPage />
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path="/services/event-page"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Receptionist']}>
+                <EventsPage />
+              </ProtectedRoute>
+            }
+          />
 
             <Route path="*" element={<div>Page Not Found</div>} />
           </Routes>

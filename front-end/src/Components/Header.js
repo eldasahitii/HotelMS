@@ -20,7 +20,7 @@ const Header = () => {
             <a href="rooms.php" className="nav-link custom-nav-link">Restaurant</a>
           </li>
           <li className="nav-item">
-            <a href="poolAndSpa.php" className="nav-link custom-nav-link">Pool & Spa</a>
+            <a href="poolAndSpa.php" className="nav-link custom-nav-link">Amenities</a>
           </li>
           <li className="nav-item">
             <a href="BookNow.php" className="nav-link custom-nav-link" target="_blank">Book Now</a>
