@@ -22,7 +22,7 @@ const HeaderSection = () => (
     }}
   >
     <Container className="text-center">
-      <h1 className="text-black" style={{ fontSize: '30px' }}>Ame Hotel</h1>
+      <h1 className="text-black" style={{ fontSize: '30px' }}>Amé Hotel</h1>
       <p className="text-black" style={{ fontSize: '75px' }}>Elegance in every element</p>
     </Container>
   </div>
@@ -62,7 +62,7 @@ const MiddleSection = () => {
             className="mb-4 px-3 px-md-0"
             style={{ color: "#5c5c5c", fontSize: "20px", lineHeight: 1.5 }}
           >
-            Perched along the serene coastline, Ame Hotel offers a sanctuary of refined luxury where every detail reflects elegance and comfort. Guests can indulge in breathtaking sea views while enjoying world-class amenities designed for relaxation and sophistication.
+            Perched along the serene coastline, Amé Hotel offers a sanctuary of refined luxury where every detail reflects elegance and comfort. Guests can indulge in breathtaking sea views while enjoying world-class amenities designed for relaxation and sophistication.
           </p>
           <p
             id="paragraph2"
@@ -256,7 +256,7 @@ const FourthSection = () => {
    
             }}
           >
-            Ame Restaurant
+            Amé Restaurant
           </h3>
 <p
   className="text-start"
@@ -266,7 +266,7 @@ const FourthSection = () => {
     lineHeight: 1.3,
   }}
 >
-  At Ame Restaurant, indulge in a luxurious dining experience where exquisite flavors meet elegant ambiance. Our culinary team crafts each dish with passion and precision, offering a menu that celebrates the finest ingredients and Mediterranean inspiration. Savor every moment in a setting designed for comfort and sophistication.
+  At Amé Restaurant, indulge in a luxurious dining experience where exquisite flavors meet elegant ambiance. Our culinary team crafts each dish with passion and precision, offering a menu that celebrates the finest ingredients and Mediterranean inspiration. Savor every moment in a setting designed for comfort and sophistication.
 </p>
 
           <button

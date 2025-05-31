@@ -31,7 +31,7 @@ const Header = () => {
     }`;
 
   if (location.pathname === "/login") return null;
-  if (loading) return null; // ✅ still loading role
+  if (loading) return null; // still loading role
 
   const dashboardLinks = {
     CleaningManager: [
@@ -94,7 +94,7 @@ const Header = () => {
         <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul className="navbar-nav gap-lg-5 gap-3 text-center align-items-center">
             <li className="nav-item">
-              <Link to="/" className={navLinkStyle("/")}>HOME</Link>
+              <Link to="/homepage" className={navLinkStyle("/homepage")}>HOME</Link>
             </li>
             <li className="nav-item">
               <Link to="/about" className={navLinkStyle("/about")}>ABOUT US</Link>
