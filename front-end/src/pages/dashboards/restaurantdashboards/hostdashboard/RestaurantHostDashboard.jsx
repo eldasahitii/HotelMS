@@ -29,6 +29,8 @@ export default function RestaurantHostDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredReservations, setFilteredReservations] = useState([]);
   const [tables, setTables] = useState([]);
+  const [loggedInEmail, setLoggedInEmail] = useState(null);
+
   const navigate = useNavigate();
 
   const fetchReservations = async () => {
@@ -51,10 +53,21 @@ export default function RestaurantHostDashboard() {
       toast.error("Failed to fetch tables.");
     }
   };
+  const fetchCurrentUser = async () => {
+  try {
+    const res = await axios.get("/api/User/me", {
+      withCredentials: true,
+    });
+    setLoggedInEmail(res.data.email);
+  } catch {
+    setLoggedInEmail(null);
+  }
+};
  
   useEffect(() => {
     fetchReservations();
     fetchTables();
+    fetchCurrentUser();
   }, []);
 
   // useEffect(() => {
@@ -64,34 +77,36 @@ export default function RestaurantHostDashboard() {
   //   }
   // }, [message]);
 
-  const handleAddReservation = async () => {
+  const handleReservationSubmit = async () => {
+  const isUser = newReservation.email.toLowerCase() === loggedInEmail?.toLowerCase();
+
   if (
-    !newReservation.firstName.trim() ||
-    !newReservation.lastName.trim() ||
     !newReservation.email.trim() ||
-    !newReservation.phoneNumber.trim() ||
     !newReservation.dateTime ||
     !newReservation.restaurantTableID
   ) {
-    toast.warning("Please fill in all fields before submitting.");
+    toast.warning("Please fill in all fields.");
     return;
   }
 
+  const payload = {
+    ...newReservation,
+    restaurantTableID: parseInt(newReservation.restaurantTableID),
+  };
+
   try {
-    const payload = {
-      ...newReservation,
-      restaurantTableID: parseInt(newReservation.restaurantTableID),
-    };
+    if (isUser) {
+      await axios.post("/api/Host/createReservationByEmail", payload, {
+        withCredentials: true,
+      });
+    } else {
+      await axios.post("/api/Host/createReservationWithGuest", payload, {
+        withCredentials: true,
+      });
+    }
 
-
-
-    await axios.post("/api/Host/createReservationWithGuest", payload, {
-      withCredentials: true
-    });
-
-    toast.success("Reservation added successfully.");
-
-    setNewReservation({ 
+    toast.success("Reservation created successfully.");
+    setNewReservation({
       firstName: '',
       lastName: '',
       email: '',
@@ -100,76 +115,124 @@ export default function RestaurantHostDashboard() {
       dateTime: '',
       status: 'Booked'
     });
-
     fetchReservations();
   } catch (error) {
     const validationErrors = error.response?.data?.errors;
-
-  if (validationErrors) {
-    const allMessages = Object.values(validationErrors).flat().join(" ");
-    toast.error(allMessages);
-  } else if (typeof error.response?.data === 'string') {
-    toast.error(error.response.data)
-  } else if (error.response?.data?.title) {
-    toast.error(error.response.data.title);
-  } else {
-    toast.error("Something went wrong. Please try again.");
-  }
-
+    if (validationErrors) {
+      toast.error(Object.values(validationErrors).flat().join(" "));
+    } else {
+      toast.error(error.response?.data || "Reservation failed.");
+    }
   }
 };
 
-const handleUserEmailReservation = async () => {
-  const tableID = parseInt(userReservation.restaurantTableID);
 
-  if (
-    !userReservation.email.trim() ||
-    !userReservation.dateTime ||
-    !tableID
-  ) {
-    toast.warning("Email, date/time and table are required.");
-    return;
-  }
+//   const handleAddReservation = async () => {
+//   if (
+//     !newReservation.firstName.trim() ||
+//     !newReservation.lastName.trim() ||
+//     !newReservation.email.trim() ||
+//     !newReservation.phoneNumber.trim() ||
+//     !newReservation.dateTime ||
+//     !newReservation.restaurantTableID
+//   ) {
+//     toast.warning("Please fill in all fields before submitting.");
+//     return;
+//   }
 
-  const payload = {
-    email: userReservation.email,
-    restaurantTableID: tableID,
-    dateTime: userReservation.dateTime,
-    status: userReservation.status
-  };
+//   try {
+//     const payload = {
+//       ...newReservation,
+//       restaurantTableID: parseInt(newReservation.restaurantTableID),
+//     };
 
 
-  try {
-    const response = await axios.post("/api/Host/createReservationByEmail", payload, {
-      withCredentials: true
-    });
 
-    console.log("Success:", response.data);
-    toast.success("Reservation for user created successfully.");
+//     await axios.post("/api/Host/createReservationWithGuest", payload, {
+//       withCredentials: true
+//     });
 
-       setUserReservation({
-      email: '',
-      restaurantTableID: '',
-      dateTime: '',
-      status: 'Booked'
-    });
-    fetchReservations();
-  } catch (error) {
-      const errorData = error.response?.data;
+//     toast.success("Reservation added successfully.");
 
-  if (typeof errorData === 'string') {
-    toast.error(errorData);
-  } else if (errorData?.errors) {
-    const allMessages = Object.values(errorData.errors).flat().join(" ");
-    toast.error(allMessages);
-  } else if (errorData?.title) {
-    toast.error(`${errorData.title}: ${errorData.detail || ''}`);
-  } else {
-    toast.error("Something went wrong. Please try again.");
-  }
+//     setNewReservation({ 
+//       firstName: '',
+//       lastName: '',
+//       email: '',
+//       phoneNumber: '',
+//       restaurantTableID: '',
+//       dateTime: '',
+//       status: 'Booked'
+//     });
 
-  }
-};
+//     fetchReservations();
+//   } catch (error) {
+//     const validationErrors = error.response?.data?.errors;
+
+//   if (validationErrors) {
+//     const allMessages = Object.values(validationErrors).flat().join(" ");
+//     toast.error(allMessages);
+//   } else if (typeof error.response?.data === 'string') {
+//     toast.error(error.response.data)
+//   } else if (error.response?.data?.title) {
+//     toast.error(error.response.data.title);
+//   } else {
+//     toast.error("Something went wrong. Please try again.");
+//   }
+
+//   }
+// };
+
+// const handleUserEmailReservation = async () => {
+//   const tableID = parseInt(userReservation.restaurantTableID);
+
+//   if (
+//     !userReservation.email.trim() ||
+//     !userReservation.dateTime ||
+//     !tableID
+//   ) {
+//     toast.warning("Email, date/time and table are required.");
+//     return;
+//   }
+
+//   const payload = {
+//     email: userReservation.email,
+//     restaurantTableID: tableID,
+//     dateTime: userReservation.dateTime,
+//     status: userReservation.status
+//   };
+
+
+//   try {
+//     const response = await axios.post("/api/Host/createReservationByEmail", payload, {
+//       withCredentials: true
+//     });
+
+//     console.log("Success:", response.data);
+//     toast.success("Reservation for user created successfully.");
+
+//        setUserReservation({
+//       email: '',
+//       restaurantTableID: '',
+//       dateTime: '',
+//       status: 'Booked'
+//     });
+//     fetchReservations();
+//   } catch (error) {
+//       const errorData = error.response?.data;
+
+//   if (typeof errorData === 'string') {
+//     toast.error(errorData);
+//   } else if (errorData?.errors) {
+//     const allMessages = Object.values(errorData.errors).flat().join(" ");
+//     toast.error(allMessages);
+//   } else if (errorData?.title) {
+//     toast.error(`${errorData.title}: ${errorData.detail || ''}`);
+//   } else {
+//     toast.error("Something went wrong. Please try again.");
+//   }
+
+//   }
+// };
 
 
   const handleCancelReservation = async (id) => {
@@ -286,9 +349,14 @@ const handleSearch = () => {
       ))}
     </select>
 
-    <button className="btn btn-primary w-100" onClick={handleAddReservation}>
+
+   <button className="btn btn-primary w-100" onClick={handleReservationSubmit}>
+  <i className="bi bi-check2-circle me-2"></i>Reserve
+</button>
+
+    {/* <button className="btn btn-primary w-100" onClick={handleAddReservation}>
       <i className="bi bi-check2-circle me-2"></i>Add
-    </button>
+    </button> */}
   </div>
 </div>
 
@@ -322,9 +390,10 @@ const handleSearch = () => {
         </option>
       ))}
     </select>
-    <button className="btn btn-success w-100" onClick={handleUserEmailReservation}>
-      <i className="bi bi-person-plus me-2"></i>Reserve for User
-    </button>
+   <button className="btn btn-primary w-100" onClick={handleReservationSubmit}>
+  <i className="bi bi-check2-circle me-2"></i>Reserve
+</button>
+
   </div>
 </div><br /><br />
     

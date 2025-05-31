@@ -4,6 +4,7 @@ using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Services;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace HotelMS.Controllers
 {
@@ -15,6 +16,14 @@ namespace HotelMS.Controllers
         public UserController(IUserServices service)
         {
             _service = service;
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public IActionResult GetCurrentUser()
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            return Ok(new { Email = email });
         }
 
         [HttpGet]

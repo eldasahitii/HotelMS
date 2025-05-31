@@ -56,43 +56,43 @@ namespace HotelMS.Services
                 .FirstOrDefaultAsync(r => r.ReservationID == id);
         }
 
-        public async Task<RestaurantReservationDTO> CreateReservationAsync(RestaurantReservationCreateDTO dto)
-        {
+        //public async Task<RestaurantReservationDTO> CreateReservationAsync(RestaurantReservationCreateDTO dto)
+        //{
 
-            bool isBooked = await _dbContext.RestaurantReservations.AnyAsync(r => r.RestaurantTableID == dto.RestaurantTableID && r.date_time == dto.DateTime && r.status != "Canceled");
+        //    bool isBooked = await _dbContext.RestaurantReservations.AnyAsync(r => r.RestaurantTableID == dto.RestaurantTableID && r.date_time == dto.DateTime && r.status != "Canceled");
 
-                if(isBooked)
-            {
-                throw new Exception("This table is already booked at the selected date and time.");
-            }
+        //        if(isBooked)
+        //    {
+        //        throw new Exception("This table is already booked at the selected date and time.");
+        //    }
             
-            var reservation = new RestaurantReservation
-            {
-                GuestID = dto.GuestID,
-                RestaurantTableID = dto.RestaurantTableID,
-                date_time = dto.DateTime,
-                status = dto.Status
-            };
+        //    var reservation = new RestaurantReservation
+        //    {
+        //        GuestID = dto.GuestID,
+        //        RestaurantTableID = dto.RestaurantTableID,
+        //        date_time = dto.DateTime,
+        //        status = dto.Status
+        //    };
 
-            _dbContext.RestaurantReservations.Add(reservation);
-            await _dbContext.SaveChangesAsync();
-
-            
-            var table = await _dbContext.RestaurantTables
-                .FirstOrDefaultAsync(t => t.RestaurantTableID == dto.RestaurantTableID);
+        //    _dbContext.RestaurantReservations.Add(reservation);
+        //    await _dbContext.SaveChangesAsync();
 
             
-            return new RestaurantReservationDTO
-            {
-                ReservationID = reservation.ReservationID,
-                GuestID = reservation.GuestID,
-                RestaurantTableID = reservation.RestaurantTableID,
-                TableNumber = table?.TableNumber ?? 0, 
-                DateTime = reservation.date_time,
-                Status = reservation.status,
-                GuestName = "" 
-            };
-        }
+        //    var table = await _dbContext.RestaurantTables
+        //        .FirstOrDefaultAsync(t => t.RestaurantTableID == dto.RestaurantTableID);
+
+            
+        //    return new RestaurantReservationDTO
+        //    {
+        //        ReservationID = reservation.ReservationID,
+        //        GuestID = reservation.GuestID,
+        //        RestaurantTableID = reservation.RestaurantTableID,
+        //        TableNumber = table?.TableNumber ?? 0, 
+        //        DateTime = reservation.date_time,
+        //        Status = reservation.status,
+        //        GuestName = "" 
+        //    };
+        //}
 
 
 
@@ -249,5 +249,48 @@ namespace HotelMS.Services
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<RestaurantReservationDTO>> GetUserReservationsAsync(int userId)
+        {
+            return await _dbContext.RestaurantReservations
+                .Where(r => r.UserID == userId)
+                .Include(r => r.RestaurantTable)
+                .Select(r => new RestaurantReservationDTO
+                {
+                    ReservationID = r.ReservationID,
+                    RestaurantTableID = r.RestaurantTableID,
+                    TableNumber = r.RestaurantTable.TableNumber,
+                    DateTime = r.date_time,
+                    Status = r.status
+                })
+                .ToListAsync();
+        }
+
+        public async Task<bool> UpdateUserReservationAsync(int id, int userId, DateTime dateTime, string status)
+        {
+            var reservation = await _dbContext.RestaurantReservations
+                .FirstOrDefaultAsync(r => r.ReservationID == id && r.UserID == userId);
+
+            if (reservation == null) return false;
+
+            reservation.date_time = dateTime;
+            reservation.status = status;
+
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> CancelUserReservationAsync(int id, int userId)
+        {
+            var reservation = await _dbContext.RestaurantReservations
+                .FirstOrDefaultAsync(r => r.ReservationID == id && r.UserID == userId);
+
+            if (reservation == null) return false;
+
+            _dbContext.RestaurantReservations.Remove(reservation);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
     }
 }
