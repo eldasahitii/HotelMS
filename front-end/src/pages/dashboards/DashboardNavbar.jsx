@@ -16,11 +16,12 @@ export default function DashboardNavbar({ role }) {
       { path: "/manager/cleaning-staff", label: "Cleaning Staff" },
       { path: "/manager/assignments", label: "Assignments" },
     ],
-    // RoomManager: [
-    //   { path: "/manager/room-dashboard", label: "Room Dashboard" },
-    //   { path: "/manager/assignments", label: "Assignments" },
-    // ],
-  
+  RoomManager: [
+    { path: "/manager/room-dashboard", label: "Room Dashboard" },
+    { path: "/admin/reservation-dashboard", label: "Room Reservations" },
+    { path: "room-manager/review-dashboard", label: "Room Reviews" },
+    { path: "/room-manager-receptionist-management", label: "Manage Recepsionists" },
+  ],
     // Add other roles here...
   };
 

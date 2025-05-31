@@ -51,8 +51,8 @@ const ReviewDashboard = () => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-      {/* Sidebar */}
-      <aside
+  
+      {/* <aside
         className="text-white p-4"
         style={{ width: "240px", backgroundColor: "#324b6b" }}
       >
@@ -79,7 +79,7 @@ const ReviewDashboard = () => {
             <i className="bi bi-box-arrow-right me-2"></i> Logout
           </button>
         </ul>
-      </aside>
+      </aside> */}
 
       {/* Main Content */}
       <main className="flex-grow-1 p-4">

@@ -234,7 +234,7 @@ const handleDeleteRoom = async (roomID) => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-      <aside
+      {/* <aside
         className="text-white p-4"
         style={{ width: "240px", backgroundColor: "#324b6b" }}
       >
@@ -281,7 +281,7 @@ const handleDeleteRoom = async (roomID) => {
             <i className="bi bi-box-arrow-right me-2"></i> Logout
           </button>
         </ul>
-      </aside>
+      </aside> */}
 
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
