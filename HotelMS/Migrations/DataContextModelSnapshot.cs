@@ -17,7 +17,7 @@ namespace HotelMS.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -451,9 +451,6 @@ namespace HotelMS.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ReviewCategoryID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
                         .HasColumnType("int");
 
                     b.Property<int>("UserID")

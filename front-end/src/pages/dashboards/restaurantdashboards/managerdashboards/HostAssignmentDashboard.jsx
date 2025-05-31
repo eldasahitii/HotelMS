@@ -3,6 +3,9 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 export default function HostAssignmentDashboard() {
   const [hosts, setHosts] = useState([]);
@@ -11,8 +14,7 @@ export default function HostAssignmentDashboard() {
   const [editingHost, setEditingHost] = useState(null);
   const [editData, setEditData] = useState({ firstName: '', lastName: '', email: '' });
   const [searchName, setSearchName] = useState('');
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
+
 
   const safeInputValue = (value) => value ?? '';
 
@@ -26,8 +28,7 @@ export default function HostAssignmentDashboard() {
       const response = await axios.get("/api/HostManagement/getAllHosts");
       setHosts(response.data);
     } catch {
-      setMessage("Failed to fetch hosts");
-      setMessageType("danger");
+      toast.error("Failed to fetch hosts");
     }
   };
 
@@ -38,8 +39,7 @@ export default function HostAssignmentDashboard() {
       });
       setUsers(res.data);
     } catch {
-      setMessage("Failed to fetch users.");
-      setMessageType("danger");
+      toast.error("Failed to fetch users.");
     }
   };
 
@@ -47,28 +47,33 @@ export default function HostAssignmentDashboard() {
     if (!selectedUserEmail) return;
     try {
       await axios.post("/api/HostManagement/assignHostRole", { email: selectedUserEmail });
-      setMessage("Host role assigned successfully.");
-      setMessageType("success");
+      toast.success("Host role assigned successfully.");
       setSelectedUserEmail("");
       fetchHosts();
     } catch (err) {
-      setMessage(err.response?.data || "Failed to assign host role.");
-      setMessageType("danger");
+      toast.error(err.response?.data || "Failed to assign host role.");
     }
   };
 
   const handleDeleteHost = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this host?")) return;
+    const result = await Swal.fire({
+          title: 'Delete Host?',
+          text: "Are you sure you want to remove this host?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, remove it',
+          cancelButtonText: 'No'
+        });
+    
+        if (!result.isConfirmed) return;
     try {
       await axios.delete(`/api/HostManagement/deleteHost/${id}`, {
         withCredentials: true
       });
-      setMessage("Host deleted successfully.");
-      setMessageType("success");
+      toast.success("Host deleted successfully.");
       fetchHosts();
     } catch {
-      setMessage("Failed to delete host.");
-      setMessageType("danger");
+      toast.error("Failed to delete host.");
     }
   };
 
@@ -80,13 +85,11 @@ export default function HostAssignmentDashboard() {
   const handleConfirmUpdate = async () => {
     try {
       await axios.put(`/api/HostManagement/updateHost?id=${editingHost.userID}`, editData);
-      setMessage("Host updated successfully.");
-      setMessageType("success");
+      toast.success("Host updated successfully.");
       setEditingHost(null);
       fetchHosts();
     } catch {
-      setMessage("Failed to update host.");
-      setMessageType("danger");
+      toast.error("Failed to update host.");
     }
   };
 
@@ -95,13 +98,9 @@ export default function HostAssignmentDashboard() {
       <h2 className="fw-bold text-primary mb-4">
         <i className="bi bi-people-fill me-2"></i>Host Management
       </h2>
-      
-      {message && (
-  <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-    {message}
-    <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-  </div>
-)}
+        
+              <ToastContainer position="top-right" autoClose={3000} />
+        
 
       <div className="card mb-4">
         <div className="card-header bg-info text-white">

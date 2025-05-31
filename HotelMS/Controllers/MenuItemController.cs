@@ -66,7 +66,7 @@ namespace HotelMS.Controllers
                 if (result == null) return NotFound();
                 return Ok(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

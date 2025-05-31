@@ -3,11 +3,13 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 export default function ReservationOverviewDashboard() {
   const [reservations, setReservations] = useState([]);
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
+
 
   useEffect(() => {
     fetchReservations();
@@ -20,8 +22,7 @@ export default function ReservationOverviewDashboard() {
       });
       setReservations(response.data);
     } catch {
-      setMessage("Failed to fetch reservations.");
-      setMessageType("danger");
+      toast.error("Failed to fetch reservations.");
     }
   };
 
@@ -30,6 +31,9 @@ export default function ReservationOverviewDashboard() {
       <h2 className="fw-bold text-primary mb-4">
         <i className="bi bi-calendar-check me-2"></i>All Reservations
       </h2>
+
+                    <ToastContainer position="top-right" autoClose={3000} />
+      
 
       <div className="card mt-4">
         <div className="card-body p-0">

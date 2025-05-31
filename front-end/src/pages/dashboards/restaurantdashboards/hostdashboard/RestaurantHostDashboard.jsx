@@ -3,6 +3,9 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 export default function RestaurantHostDashboard() {
   const [reservations, setReservations] = useState([]);
@@ -26,8 +29,6 @@ export default function RestaurantHostDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredReservations, setFilteredReservations] = useState([]);
   const [tables, setTables] = useState([]);
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
 
   const fetchReservations = async () => {
@@ -37,8 +38,7 @@ export default function RestaurantHostDashboard() {
       });
       setReservations(res.data);
     } catch (err) {
-      setMessage("Failed to fetch reservations.");
-      setMessageType("danger");
+      toast.error("Failed to fetch reservations.");
     }
   };
   const fetchTables = async () => {
@@ -48,7 +48,7 @@ export default function RestaurantHostDashboard() {
       });
       setTables(res.data);
     } catch (err) {
-      console.error("Failed to fetch tables", err);
+      toast.error("Failed to fetch tables.");
     }
   };
  
@@ -57,12 +57,12 @@ export default function RestaurantHostDashboard() {
     fetchTables();
   }, []);
 
-  useEffect(() => {
-    if (message) {
-      const timeout = setTimeout(() => setMessage(''), 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [message]);
+  // useEffect(() => {
+  //   if (message) {
+  //     const timeout = setTimeout(() => setMessage(''), 3000);
+  //     return () => clearTimeout(timeout);
+  //   }
+  // }, [message]);
 
   const handleAddReservation = async () => {
   if (
@@ -73,8 +73,7 @@ export default function RestaurantHostDashboard() {
     !newReservation.dateTime ||
     !newReservation.restaurantTableID
   ) {
-    setMessage("Please fill in all fields before submitting.");
-    setMessageType("danger");
+    toast.warning("Please fill in all fields before submitting.");
     return;
   }
 
@@ -90,10 +89,7 @@ export default function RestaurantHostDashboard() {
       withCredentials: true
     });
 
-
-
-    setMessage("Reservation added successfully.");
-    setMessageType("success");
+    toast.success("Reservation added successfully.");
 
     setNewReservation({ 
       firstName: '',
@@ -111,17 +107,15 @@ export default function RestaurantHostDashboard() {
 
   if (validationErrors) {
     const allMessages = Object.values(validationErrors).flat().join(" ");
-    setMessage(allMessages);
+    toast.error(allMessages);
   } else if (typeof error.response?.data === 'string') {
-    
-    setMessage(error.response.data);
+    toast.error(error.response.data)
   } else if (error.response?.data?.title) {
-    setMessage(error.response.data.title);
+    toast.error(error.response.data.title);
   } else {
-    setMessage("Something went wrong. Please try again.");
+    toast.error("Something went wrong. Please try again.");
   }
 
-  setMessageType("danger");
   }
 };
 
@@ -133,8 +127,7 @@ const handleUserEmailReservation = async () => {
     !userReservation.dateTime ||
     !tableID
   ) {
-    setMessage("Email, date/time and table are required.");
-    setMessageType("danger");
+    toast.warning("Email, date/time and table are required.");
     return;
   }
 
@@ -152,8 +145,7 @@ const handleUserEmailReservation = async () => {
     });
 
     console.log("Success:", response.data);
-    setMessage("Reservation for user created successfully.");
-    setMessageType("success");
+    toast.success("Reservation for user created successfully.");
 
        setUserReservation({
       email: '',
@@ -166,33 +158,39 @@ const handleUserEmailReservation = async () => {
       const errorData = error.response?.data;
 
   if (typeof errorData === 'string') {
-    setMessage(errorData);
+    toast.error(errorData);
   } else if (errorData?.errors) {
     const allMessages = Object.values(errorData.errors).flat().join(" ");
-    setMessage(allMessages);
+    toast.error(allMessages);
   } else if (errorData?.title) {
-    setMessage(`${errorData.title}: ${errorData.detail || ''}`);
+    toast.error(`${errorData.title}: ${errorData.detail || ''}`);
   } else {
-    setMessage("Something went wrong. Please try again.");
+    toast.error("Something went wrong. Please try again.");
   }
 
-  setMessageType("danger");
   }
 };
 
 
   const handleCancelReservation = async (id) => {
-    if (!window.confirm("Are you sure you want to cancel this reservation?")) return;
+    const result = await Swal.fire({
+      title: 'Cancel Reservation?',
+      text: "Are you sure you want to cancel this reservation?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel it',
+      cancelButtonText: 'No'
+    });
+
+    if (!result.isConfirmed) return;
     try {
       await axios.delete(`/api/Host/cancelReservation?id=${id}`, {
         withCredentials: true
       });
-      setMessage("Reservation cancelled.");
-      setMessageType("success");
+      toast.success("Reservation cancelled.");
       fetchReservations();
     } catch (error) {
-      setMessage("Failed to cancel reservation.");
-      setMessageType("danger");
+      toast.error("Failed to cancel reservation.");
     }
   };
   const handleUpdateReservationStatus = async (id) => {
@@ -203,14 +201,13 @@ const handleUserEmailReservation = async () => {
         },
         withCredentials: true
       });
-      setMessage("Status updated.");
-      setMessageType("success");
+      toast.success("Status updated.");
       setEditingReservation(null);
       setNewStatus('');
       fetchReservations();
+      fetchTables();
     } catch (error) {
-      setMessage("Failed to update status.");
-      setMessageType("danger");
+      toast.error("Failed to update status.");
     }
   };
 
@@ -225,53 +222,18 @@ const handleSearch = () => {
   setFilteredReservations(filtered);
 };
 
- const handleLogout = async () => {
-  try {
-    await axios.get("/api/Auth/logout", { withCredentials: true });
-  } catch (err) {
-    console.error("Logout error", err);
-  }
-
-  localStorage.clear();
-
-  // Immediately redirect to login
-  navigate("/login");
-
-  // After redirect, prevent back button from returning to dashboard
-  setTimeout(() => {
-    window.history.pushState(null, "", window.location.href);
-    window.onpopstate = () => {
-      window.history.pushState(null, "", window.location.href);
-    };
-  }, 0);
-};
-
  const reservationList = filteredReservations.length > 0 ? filteredReservations : reservations;
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#fefefe' }}>
-      {/* <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#3c4b64' }}>
-        <h4 className="fw-bold mb-4"><i className="bi bi-person-circle"></i> Host Panel</h4>
-        <ul className="nav flex-column">
-          <li className="nav-item">Manage Reservations</li>
-        </ul>
-        <hr className="text-white" />
-        <button className="btn btn-outline-light w-100" onClick={handleLogout}>
-          <i className="bi bi-box-arrow-right me-2"></i> Logout
-        </button>
-      </aside> */}
+
+      <ToastContainer position="top-right" autoClose={3000} />
+
 
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-calendar2-check me-2"></i>Reservations
         </h2>
-
-        {message && (
-          <div className={`alert alert-${messageType} alert-dismissible fade show`}>
-            {message}
-            <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-          </div>
-        )}
 
         <div className="card mb-4">
   <div className="card-header bg-primary text-white">

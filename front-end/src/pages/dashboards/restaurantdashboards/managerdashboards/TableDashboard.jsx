@@ -3,6 +3,9 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 export default function TableDashboard() {
   const [tables, setTables] = useState([]);
@@ -10,8 +13,8 @@ export default function TableDashboard() {
   const [editingTable, setEditingTable] = useState(null);
   const [editTableData, setEditTableData] = useState({ tableNumber: '', capacity: '' });
   const [tableFilter, setTableFilter] = useState("All");
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
+  
+
 
   const safeNumberValue = (value) => value === '' || value === null || value === undefined ? '' : Number(value);
 
@@ -24,8 +27,7 @@ export default function TableDashboard() {
       const response = await axios.get("/api/RestaurantTable/getAllTables");
       setTables(response.data);
     } catch {
-      setMessage("Failed to fetch tables.");
-      setMessageType("danger");
+      toast.error("Failed to fetch tables.");
     }
   };
 
@@ -34,26 +36,31 @@ export default function TableDashboard() {
     const capacity = parseInt(newTable.capacity);
     try {
       await axios.post("/api/RestaurantTable/addTable", { tableNumber, capacity });
-      setMessage("Table added successfully.");
-      setMessageType("success");
+      toast.success("Table added successfully.");
       setNewTable({ tableNumber: '', capacity: '' });
       fetchTables();
     } catch {
-      setMessage("Failed to add table.");
-      setMessageType("danger");
+      toast.error("Failed to add table.");
     }
   };
 
   const handleDeleteTable = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this table?")) return;
+    const result = await Swal.fire({
+                  title: 'Delete Table?',
+                  text: "Are you sure you want to remove this table?",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonText: 'Yes, remove it',
+                  cancelButtonText: 'No'
+                });
+            
+                if (!result.isConfirmed) return;
     try {
       await axios.delete(`/api/RestaurantTable/deleteTable?id=${id}`);
-      setMessage("Table deleted.");
-      setMessageType("success");
+      toast.success("Table deleted.");
       fetchTables();
     } catch {
-      setMessage("Failed to delete table.");
-      setMessageType("danger");
+      toast.error("Failed to delete table.");
     }
   };
 
@@ -70,13 +77,11 @@ export default function TableDashboard() {
         tableNumber,
         capacity
       });
-      setMessage("Table updated successfully");
-      setMessageType("success");
+      toast.success("Table updated successfully");
       setEditingTable(null);
       fetchTables();
     } catch {
-      setMessage("Failed to update table.");
-      setMessageType("danger");
+      toast.error("Failed to update table.");
     }
   };
 
@@ -86,13 +91,8 @@ export default function TableDashboard() {
         <i className="bi bi-table me-2"></i>Table Management
       </h2>
 
-      {message && (
-  <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-    {message}
-    <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-  </div>
-)}
-
+           <ToastContainer position="top-right" autoClose={3000} />
+      
 
       <div className="card mt-4">
         <div className="card-header bg-success text-white">

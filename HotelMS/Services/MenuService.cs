@@ -26,7 +26,7 @@ namespace HotelMS.Services
                     Price = request.Price,
                     image_url = request.image_url,
                     is_available = request.is_available,
-                    MenuCategoryID = request.MenuCategoryID
+                    MenuCategoryID = request.MenuCategoryID.Value
                 };
                 _dbContext.MenuItems.Add(item);
                 await _dbContext.SaveChangesAsync();
@@ -106,7 +106,7 @@ namespace HotelMS.Services
                 item.Price = request.Price;
                 item.image_url = request.image_url;
                 item.is_available = request.is_available;
-                item.MenuCategoryID = request.MenuCategoryID;
+                item.MenuCategoryID = request.MenuCategoryID ?? item.MenuCategoryID;
 
                 await _dbContext.SaveChangesAsync();
                 return item;

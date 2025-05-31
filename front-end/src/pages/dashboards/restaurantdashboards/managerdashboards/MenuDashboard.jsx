@@ -3,21 +3,26 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 export default function MenuDashboard() {
   const [menuItems, setMenuItems] = useState([]);
   const [newMenuItem, setNewMenuItem] = useState({ name: '', description: '', price: '', image_url: '', is_available: true, menuCategoryID: 1 });
   const [editingMenuItem, setEditingMenuItem] = useState(null);
   const [editMenuData, setEditMenuData] = useState({ name: '', description: '', price: '', image_url: '', is_available: true, menuCategoryID: 1 });
+  const [categories, setCategories] = useState([]);
 
-   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
+
+
 
   const safeInputValue = (value) => value ?? '';
   const safeNumberValue = (value) => value === '' || value === null || value === undefined ? '' : Number(value);
 
   useEffect(() => {
     fetchMenuItems();
+    fetchCategories();
   }, []);
 
   const fetchMenuItems = async () => {
@@ -27,10 +32,19 @@ export default function MenuDashboard() {
       });
       setMenuItems(response.data);
     } catch {
-      setMessage("Failed to fetch menu items.");
-      setMessageType("danger");
+      toast.error("Failed to fetch menu items.");
     }
   };
+  const fetchCategories = async () => {
+  try {
+    const response = await axios.get("/api/MenuCategory/getAllCategories", {
+      withCredentials: true
+    });
+    setCategories(response.data);
+  } catch {
+    toast.error("Failed to fetch categories.");
+  }
+};
 
   const handleAddMenuItem = async () => {
     try {
@@ -40,13 +54,11 @@ export default function MenuDashboard() {
       }, {
         withCredentials: true
       });
-      setMessage("Menu item added successfully.");
-      setMessageType("success");
+      toast.success("Menu item added successfully.");
       setNewMenuItem({ name: '', description: '', price: '', image_url: '', is_available: true, menuCategoryID: 1 });
       fetchMenuItems();
     } catch {
-      setMessage("Failed to add menu item.");
-      setMessageType("danger");
+      toast.error("Failed to add menu item.");
     }
   };
 
@@ -75,28 +87,33 @@ export default function MenuDashboard() {
         withCredentials: true,
         headers: { "Content-Type": "application/json" }
       });
-      setMessage("Menu item updated successfully.");
-      setMessageType("success");
+      toast.success("Menu item updated successfully.");
       setEditingMenuItem(null);
       fetchMenuItems();
     } catch (error) {
-      setMessage("Failed to update menu item.");
-      setMessageType("danger");
+      toast.error("Failed to update menu item.");
     }
   };
 
   const handleDeleteMenuItem = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this menu item?")) return;
+    const result = await Swal.fire({
+              title: 'Delete Menu Item?',
+              text: "Are you sure you want to remove this menu item?",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Yes, remove it',
+              cancelButtonText: 'No'
+            });
+        
+            if (!result.isConfirmed) return;
     try {
       await axios.delete(`/api/MenuItem/deleteMenuItem?id=${id}`, {
         withCredentials: true
       });
-      setMessage("Menu Item deleted.");
-      setMessageType("success");
+      toast.success("Menu Item deleted.");
       fetchMenuItems();
     } catch {
-      setMessage("Failed to delete menu item.");
-      setMessageType("danger");
+      toast.error("Failed to delete menu item.");
     }
   };
 
@@ -105,13 +122,10 @@ export default function MenuDashboard() {
       <h2 className="fw-bold text-primary mb-4">
         <i className="bi bi-list-ul me-2"></i>Menu Management
       </h2>
+      
+                    <ToastContainer position="top-right" autoClose={3000} />
+      
 
-      {message && (
-  <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-    {message}
-    <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-  </div>
-)}
 
 
       <div className="card mt-4">
@@ -123,7 +137,18 @@ export default function MenuDashboard() {
           <input className="form-control mb-2" placeholder="Description" value={safeInputValue(newMenuItem.description)} onChange={e => setNewMenuItem({ ...newMenuItem, description: e.target.value })} />
           <input className="form-control mb-2" type="number" placeholder="Price" value={safeNumberValue(newMenuItem.price)} onChange={e => setNewMenuItem({ ...newMenuItem, price: e.target.value })} />
           <input className="form-control mb-2" placeholder="Image URL" value={safeInputValue(newMenuItem.image_url)} onChange={e => setNewMenuItem({ ...newMenuItem, image_url: e.target.value })} />
-          <input className="form-control mb-2" type="number" placeholder="Category ID" value={safeNumberValue(newMenuItem.menuCategoryID)} onChange={e => setNewMenuItem({ ...newMenuItem, menuCategoryID: e.target.value })} />
+          <select
+            className="form-control mb-2"
+            value={newMenuItem.menuCategoryID}
+            onChange={e => setNewMenuItem({ ...newMenuItem, menuCategoryID: parseInt(e.target.value) })}
+          >
+           <option value="">Select Category</option>
+            {categories.map(cat => (
+           <option key={cat.menuCategoryID} value={cat.menuCategoryID}>
+           {cat.name}
+           </option>
+          ))}
+         </select>
           <div className="form-check mb-2">
             <input className="form-check-input" type="checkbox" checked={newMenuItem.is_available} onChange={e => setNewMenuItem({ ...newMenuItem, is_available: e.target.checked })} />
             <label className="form-check-label">Available</label>
@@ -144,6 +169,7 @@ export default function MenuDashboard() {
                 <th>Name</th>
                 <th>Price</th>
                 <th>Available</th>
+                <th>Category</th>
                 <th>Image</th>
                 <th>Actions</th>
               </tr>
@@ -155,6 +181,7 @@ export default function MenuDashboard() {
                   <td>{item.name}</td>
                   <td>${Number(item.price).toFixed(2)}</td>
                   <td>{item.is_available ? "Yes" : "No"}</td>
+                  <td>{item.categoryName}</td>
                   <td><img src={item.image_url} alt={item.name} style={{ width: "80px", borderRadius: "8px", objectFit: "cover" }} /></td>
                   <td>
                     <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteMenuItem(item.menuItemID)}><i className="bi bi-trash"></i></button>
@@ -177,7 +204,18 @@ export default function MenuDashboard() {
             <input className="form-control mb-2" value={safeInputValue(editMenuData.description)} onChange={e => setEditMenuData({ ...editMenuData, description: e.target.value })} />
             <input className="form-control mb-2" type="number" value={safeNumberValue(editMenuData.price)} onChange={e => setEditMenuData({ ...editMenuData, price: e.target.value })} />
             <input className="form-control mb-2" value={safeInputValue(editMenuData.image_url)} onChange={e => setEditMenuData({ ...editMenuData, image_url: e.target.value })} />
-            <input className="form-control mb-2" type="number" value={safeNumberValue(editMenuData.menuCategoryID)} onChange={e => setEditMenuData({ ...editMenuData, menuCategoryID: e.target.value })} />
+            <select
+                 className="form-control mb-2"
+                 value={editMenuData.menuCategoryID}
+                 onChange={e => setEditMenuData({ ...editMenuData, menuCategoryID: parseInt(e.target.value) })}
+             >
+             <option value="">Select Category</option>
+             {categories.map(cat => (
+              <option key={cat.menuCategoryID} value={cat.menuCategoryID}>
+             {cat.name}
+              </option>
+             ))}
+            </select>
             <div className="form-check mb-2">
               <input className="form-check-input" type="checkbox" checked={editMenuData.is_available} onChange={e => setEditMenuData({ ...editMenuData, is_available: e.target.checked })} />
               <label className="form-check-label">Available</label>
