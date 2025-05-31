@@ -3,14 +3,15 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Select from "react-select";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function CleaningManagerDashboard() {
   const [staff, setStaff] = useState([]);
   const [users, setUsers] = useState([]);
   const [newStaff, setNewStaff] = useState({ userID: '', shift: '', isActive: true });
   const [shiftFilter, setShiftFilter] = useState('');
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
   const [editingStaff, setEditingStaff] = useState(null);
   const [editShift, setEditShift] = useState('');
   const [editIsActive, setEditIsActive] = useState(true);
@@ -19,6 +20,7 @@ export default function CleaningManagerDashboard() {
   useEffect(() => {
     fetchData();
     fetchCurrentUser();
+    toast.clearWaitingQueue();
   }, []);
 
   const fetchCurrentUser = async () => {
@@ -39,18 +41,30 @@ export default function CleaningManagerDashboard() {
       setUsers(usersRes.data);
     } catch (err) {
       console.error(err);
+      toast.error("Failed to load data.");
     }
   };
 
   const handleDeleteStaff = async (id) => {
-    try {
-      await axios.delete(`/api/CleaningStaff/deleteCleaningStaff?id=${id}`, { withCredentials: true });
-      setMessage("Staff deleted successfully.");
-      setMessageType("success");
-      fetchData();
-    } catch (err) {
-      setMessage("Failed to delete staff.");
-      setMessageType("danger");
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will permanently delete the staff member.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`/api/CleaningStaff/deleteCleaningStaff?id=${id}`, { withCredentials: true });
+        toast.success("Staff deleted successfully.");
+        fetchData();
+        Swal.fire('Deleted!', 'The staff member has been deleted.', 'success');
+      } catch (err) {
+        toast.error("Failed to delete staff.");
+        Swal.fire('Error', 'Something went wrong while deleting.', 'error');
+      }
     }
   };
 
@@ -71,20 +85,17 @@ export default function CleaningManagerDashboard() {
         },
         { withCredentials: true }
       );
-      setMessage("Staff updated successfully.");
-      setMessageType("success");
+      toast.success("Staff updated successfully.");
       setEditingStaff(null);
       fetchData();
     } catch (err) {
-      setMessage("Failed to update staff.");
-      setMessageType("danger");
+      toast.error("Failed to update staff.");
     }
   };
 
   const handleAddStaff = async () => {
     if (!newStaff.userID || !newStaff.shift || !currentUserID) {
-      setMessage("Please select User and Shift.");
-      setMessageType("danger");
+      toast.warn("Please select User and Shift.");
       return;
     }
     try {
@@ -99,12 +110,10 @@ export default function CleaningManagerDashboard() {
         { withCredentials: true }
       );
       setNewStaff({ userID: '', shift: '', isActive: true });
-      setMessage("Staff added successfully.");
-      setMessageType("success");
+      toast.success("Staff added successfully.");
       fetchData();
     } catch (error) {
-      setMessage("Failed to add staff.");
-      setMessageType("danger");
+      toast.error("Failed to add staff.");
     }
   };
 
@@ -115,8 +124,7 @@ export default function CleaningManagerDashboard() {
       setStaff(result.data);
     } catch (err) {
       console.error(err);
-      setMessage("Failed to filter by shift.");
-      setMessageType("danger");
+      toast.error("Failed to filter by shift.");
     }
   };
 
@@ -131,21 +139,13 @@ export default function CleaningManagerDashboard() {
       }
     } catch (err) {
       console.error(err);
-      setMessage("Failed to load staff.");
-      setMessageType("danger");
+      toast.error("Failed to load staff.");
     }
   };
 
   return (
     <main className="p-3" style={{ backgroundColor: '#f2f6fc', minHeight: '100vh' }}>
       <h2 className="fw-bold text-primary mb-4"><i className="bi bi-people-fill me-2"></i>Cleaning Manager</h2>
-
-      {message && (
-        <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-          {message}
-          <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-        </div>
-      )}
 
       <div className="card mb-4">
         <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
@@ -199,92 +199,93 @@ export default function CleaningManagerDashboard() {
           </button>
         </div>
       </div>
-        <div className="card mb-4">
-          <div className="card-body">
-            <div className="row g-2 mb-2">
-              <div className="col-md-9">
-                <input
-                  className="form-control"
-                  placeholder="Filter by shift..."
-                  value={shiftFilter}
-                  onChange={e => setShiftFilter(e.target.value)}
-                />
-              </div>
-              <div className="col-md-3">
-                <button className="btn btn-outline-primary w-100" onClick={handleGetByShift}>
-                  <i className="bi bi-filter me-2"></i>Filter
-                </button>
-              </div>
-              <button
-                className="btn btn-outline-success w-100 mt-2 py-2"
-                style={{ height: '48px', fontWeight: 500 }}
-                onClick={handleShowActive}
-              >
-                <i className="bi bi-person-check me-2"></i> Show Active
+
+      <div className="card mb-4">
+        <div className="card-body">
+          <div className="row g-2 mb-2">
+            <div className="col-md-9">
+              <input
+                className="form-control"
+                placeholder="Filter by shift..."
+                value={shiftFilter}
+                onChange={e => setShiftFilter(e.target.value)}
+              />
+            </div>
+            <div className="col-md-3">
+              <button className="btn btn-outline-primary w-100" onClick={handleGetByShift}>
+                <i className="bi bi-filter me-2"></i>Filter
               </button>
             </div>
+            <button
+              className="btn btn-outline-success w-100 mt-2 py-2"
+              style={{ height: '48px', fontWeight: 500 }}
+              onClick={handleShowActive}
+            >
+              <i className="bi bi-person-check me-2"></i> Show Active
+            </button>
           </div>
         </div>
+      </div>
 
-        <div className="card mb-4">
-          <div className="card-header" style={{ backgroundColor: '#7ca8d8', color: '#fff' }}>
-            <i className="bi bi-people-fill me-2"></i>Cleaning Staff
-          </div>
-          <div className="table-responsive">
-            <table className="table mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Shift</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+      <div className="card mb-4">
+        <div className="card-header" style={{ backgroundColor: '#7ca8d8', color: '#fff' }}>
+          <i className="bi bi-people-fill me-2"></i>Cleaning Staff
+        </div>
+        <div className="table-responsive">
+          <table className="table mb-0">
+            <thead className="table-light">
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Shift</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {staff.map((s, index) => (
+                <tr key={s.cleaningStaffID}>
+                  <td>{index + 1}</td>
+                  <td>{s.firstName} {s.lastName}</td>
+                  <td>{s.email}</td>
+                  <td>{s.shift}</td>
+                  <td>{s.isActive ? "Active" : "Inactive"}</td>
+                  <td>
+                    <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteStaff(s.cleaningStaffID)}><i className="bi bi-trash"></i></button>
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(s)}><i className="bi bi-pencil-square"></i></button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {staff.map((s, index) => (
-                  <tr key={s.cleaningStaffID}>
-                    <td>{index + 1}</td>
-                    <td>{s.firstName} {s.lastName}</td>
-                    <td>{s.email}</td>
-                    <td>{s.shift}</td>
-                    <td>{s.isActive ? "Active" : "Inactive"}</td>
-                    <td>
-                      <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteStaff(s.cleaningStaffID)}><i className="bi bi-trash"></i></button>
-                      <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(s)}><i className="bi bi-pencil-square"></i></button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        {editingStaff && (
-          <div className="card mt-4">
-            <div className="card-header bg-warning text-dark"><i className="bi bi-pencil-square me-2"></i>Update Staff Info</div>
-            <div className="card-body">
-              <div className="row g-2 mb-3">
-                <div className="col-md-6">
-                  <select className="form-control" value={editShift} onChange={e => setEditShift(e.target.value)}>
-                    <option value="Morning">Morning</option>
-                    <option value="Afternoon">Afternoon</option>
-                    <option value="Night">Night</option>
-                  </select>
-                </div>
-                <div className="col-md-6">
-                  <div className="form-check form-switch">
-                    <input className="form-check-input" type="checkbox" checked={editIsActive} onChange={e => setEditIsActive(e.target.checked)} />
-                    <label className="form-check-label">Active</label>
-                  </div>
+      {editingStaff && (
+        <div className="card mt-4">
+          <div className="card-header bg-warning text-dark"><i className="bi bi-pencil-square me-2"></i>Update Staff Info</div>
+          <div className="card-body">
+            <div className="row g-2 mb-3">
+              <div className="col-md-6">
+                <select className="form-control" value={editShift} onChange={e => setEditShift(e.target.value)}>
+                  <option value="Morning">Morning</option>
+                  <option value="Afternoon">Afternoon</option>
+                  <option value="Night">Night</option>
+                </select>
+              </div>
+              <div className="col-md-6">
+                <div className="form-check form-switch">
+                  <input className="form-check-input" type="checkbox" checked={editIsActive} onChange={e => setEditIsActive(e.target.checked)} />
+                  <label className="form-check-label">Active</label>
                 </div>
               </div>
-              <button className="btn btn-primary me-2" onClick={handleConfirmUpdate}><i className="bi bi-check2"></i> Save</button>
-              <button className="btn btn-secondary" onClick={() => setEditingStaff(null)}><i className="bi bi-x"></i> Cancel</button>
             </div>
+            <button className="btn btn-primary me-2" onClick={handleConfirmUpdate}><i className="bi bi-check2"></i> Save</button>
+            <button className="btn btn-secondary" onClick={() => setEditingStaff(null)}><i className="bi bi-x"></i> Cancel</button>
           </div>
-        )}
-      </main>
+        </div>
+      )}
+    </main>
   );
 }

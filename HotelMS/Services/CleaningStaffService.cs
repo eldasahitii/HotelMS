@@ -123,11 +123,20 @@ namespace HotelMS.Services
 
                 if (!request.IsActive)
                 {
-                 
+                    // Set role to Customer
                     var customerRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "Customer");
                     if (customerRole != null && staff.User != null)
                     {
                         staff.User.RoleID = customerRole.RoleID;
+                    }
+                }
+                else
+                {
+                    // Set role to CleaningStaff
+                    var cleaningRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "CleaningStaff");
+                    if (cleaningRole != null && staff.User != null)
+                    {
+                        staff.User.RoleID = cleaningRole.RoleID;
                     }
                 }
 
@@ -140,6 +149,8 @@ namespace HotelMS.Services
                 throw new Exception("An error occurred while attempting to update cleaning staff.");
             }
         }
+
+
 
         public async Task DeleteCleaningStaff(int id)
         {

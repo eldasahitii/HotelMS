@@ -3,6 +3,9 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function AssignmentsDashboard() {
   const [assignments, setAssignments] = useState([]);
@@ -11,58 +14,45 @@ export default function AssignmentsDashboard() {
   const [newAssignment, setNewAssignment] = useState({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: null });
   const [editingAssignment, setEditingAssignment] = useState(null);
   const [editRoomID, setEditRoomID] = useState('');
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
   const [userID, setUserID] = useState(null);
   const [role, setRole] = useState(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
-
   const navigate = useNavigate();
 
- useEffect(() => {
-  const fetchCurrentUser = async () => {
-    try {
-      const response = await axios.get('/api/Auth/me', { withCredentials: true });
-      // Directly set userID from first available key or null
-      setUserID(
-        parseInt(response.data.userId || response.data.userID || response.data.id || null)
-      );
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await axios.get('/api/Auth/me', { withCredentials: true });
+        setUserID(parseInt(response.data.userId || response.data.userID || response.data.id || null));
+        setRole(response.data.role);
+      } catch (err) {
+        toast.error("You must be logged in.");
+        navigate('/login');
+      } finally {
+        setIsLoadingUser(false);
+      }
+    };
+    fetchCurrentUser();
+  }, [navigate]);
 
-      setRole(response.data.role);
-    } catch (err) {
-      console.error('Failed to fetch current user', err);
-      setMessage("You must be logged in.");
-      setMessageType("danger");
-      navigate('/login');
-    } finally {
-      setIsLoadingUser(false);
-    }
-  };
-
-  fetchCurrentUser();
-}, [navigate]);
-
-  // Fetch assignments
   const fetchAssignments = async () => {
     try {
       const res = await axios.get("/api/CleaningAssignment/getAllAssignments", { withCredentials: true });
       setAssignments(res.data);
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to fetch assignments.");
     }
   };
 
-  // Fetch cleaning staff
   const fetchCleaningStaff = async () => {
     try {
       const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff", { withCredentials: true });
       setCleaningStaffList(res.data);
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to fetch cleaning staff.");
     }
   };
 
-  // Fetch rooms
   const fetchRooms = async () => {
     try {
       const res = await axios.get("/api/Room/getAllRooms", { withCredentials: true });
@@ -74,7 +64,7 @@ export default function AssignmentsDashboard() {
       );
       setRooms(availableRooms);
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to fetch rooms.");
     }
   };
 
@@ -89,31 +79,26 @@ export default function AssignmentsDashboard() {
 
   const handleAddAssignment = async () => {
     if (!newAssignment.roomID || !newAssignment.cleaningStaffID) {
-      setMessage("Please select both a Room and a Cleaning Staff.");
-      setMessageType("danger");
+      toast.warn("Please select both a Room and a Cleaning Staff.");
       return;
     }
     if (!userID) {
-      setMessage("User ID not found. Please log in again.");
-      setMessageType("danger");
+      toast.error("User ID not found. Please log in again.");
       return;
     }
-    const parsedAssignment = {
-      roomID: parseInt(newAssignment.roomID),
-      cleaningStaffID: parseInt(newAssignment.cleaningStaffID),
-      status: newAssignment.status,
-      assignedByUserID: userID
-    };
     try {
-      await axios.post("/api/CleaningAssignment/addAssignment", parsedAssignment, { withCredentials: true });
-      setMessage("Assignment added successfully.");
-      setMessageType("success");
+      await axios.post("/api/CleaningAssignment/addAssignment", {
+        ...newAssignment,
+        roomID: parseInt(newAssignment.roomID),
+        cleaningStaffID: parseInt(newAssignment.cleaningStaffID),
+        assignedByUserID: userID
+      }, { withCredentials: true });
+      toast.success("Assignment added successfully.");
       setNewAssignment({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: null });
       fetchAssignments();
     } catch (err) {
       const error = err.response?.data?.message || "Failed to add assignment.";
-      setMessage(error);
-      setMessageType("danger");
+      toast.error(error);
     }
   };
 
@@ -123,47 +108,55 @@ export default function AssignmentsDashboard() {
   };
 
   const handleConfirmUpdate = async () => {
-    const updated = {
-      roomID: parseInt(editRoomID),
-      status: editingAssignment.status || "Pending",
-      startedAt: editingAssignment.startedAt || null,
-      finishedAt: editingAssignment.finishedAt || null
-    };
-
     try {
-      await axios.put(`/api/CleaningAssignment/updateAssignment?id=${editingAssignment.cleaningAssignmentID}`, updated, { withCredentials: true });
-      setMessage("Assignment updated successfully.");
-      setMessageType("success");
+      await axios.put(`/api/CleaningAssignment/updateAssignment?id=${editingAssignment.cleaningAssignmentID}`, {
+        roomID: parseInt(editRoomID),
+        status: editingAssignment.status || "Pending",
+        startedAt: editingAssignment.startedAt || null,
+        finishedAt: editingAssignment.finishedAt || null
+      }, { withCredentials: true });
+      toast.success("Assignment updated successfully.");
       setEditingAssignment(null);
       fetchAssignments();
     } catch (err) {
       const error = err.response?.data?.message || "Failed to update assignment.";
-      setMessage(error);
-      setMessageType("danger");
+      toast.error(error);
     }
   };
 
   const handleCancelAssignment = async (id) => {
     try {
       await axios.put(`/api/CleaningAssignment/cancelAssignment?id=${id}`, {}, { withCredentials: true });
+      toast.success("Assignment cancelled.");
       fetchAssignments();
     } catch (err) {
-      setMessage("Failed to cancel assignment.");
-      setMessageType("danger");
+      toast.error("Failed to cancel assignment.");
     }
   };
 
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`/api/CleaningAssignment/deleteAssignment?id=${id}`, { withCredentials: true });
-      fetchAssignments();
-    } catch (err) {
-      setMessage("Failed to delete assignment.");
-      setMessageType("danger");
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will permanently delete the assignment.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`/api/CleaningAssignment/deleteAssignment?id=${id}`, { withCredentials: true });
+        toast.success("Assignment deleted successfully.");
+        fetchAssignments();
+        Swal.fire('Deleted!', 'The assignment has been deleted.', 'success');
+      } catch (err) {
+        toast.error("Failed to delete assignment.");
+        Swal.fire('Error', 'Something went wrong while deleting.', 'error');
+      }
     }
   };
 
-  // Helper to format date and time nicely
   const formatDateTime = (datetimeString) => {
     if (!datetimeString) return '-';
     const dateObj = new Date(datetimeString);
@@ -185,13 +178,6 @@ export default function AssignmentsDashboard() {
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-list-task me-2"></i>Cleaning Assignments
         </h2>
-
-        {message && (
-          <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-            {message}
-            <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-          </div>
-        )}
 
         {/* Add Assignment form */}
         <div className="card mb-4">
@@ -235,7 +221,7 @@ export default function AssignmentsDashboard() {
             <button
               className="btn btn-success w-100 mt-3"
               onClick={handleAddAssignment}
-              disabled={!userID} // disable if userID not loaded
+              disabled={!userID}
             >
               <i className="bi bi-check-circle me-2"></i>Add Assignment
             </button>
@@ -282,25 +268,13 @@ export default function AssignmentsDashboard() {
                       <td>{formatDateTime(a.finishedAt)}</td>
                       <td>
                         <div className="btn-group">
-                          <button
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => openEditForm(a)}
-                            disabled={a.status !== 'Pending'}
-                          >
+                          <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(a)} disabled={a.status !== 'Pending'}>
                             <i className="bi bi-pencil"></i>
                           </button>
-                          <button
-                            className="btn btn-sm btn-outline-warning"
-                            onClick={() => handleCancelAssignment(a.cleaningAssignmentID)}
-                            disabled={a.status !== 'Pending'}
-                          >
+                          <button className="btn btn-sm btn-outline-warning" onClick={() => handleCancelAssignment(a.cleaningAssignmentID)} disabled={a.status !== 'Pending'}>
                             <i className="bi bi-x-circle"></i>
                           </button>
-                          <button
-                            className="btn btn-sm btn-outline-danger"
-                            onClick={() => handleDelete(a.cleaningAssignmentID)}
-                            disabled={a.status === 'InProgress'}
-                          >
+                          <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.cleaningAssignmentID)} disabled={a.status === 'InProgress'}>
                             <i className="bi bi-trash"></i>
                           </button>
                         </div>
