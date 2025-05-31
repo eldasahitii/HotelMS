@@ -20,5 +20,7 @@ namespace HotelMS.Data.Interfaces
         Task<string> UpdateReservationStatus(int reservationID, int statusID);
 
         Task<string> MarkReservationCompleted(int reservationID, int userID);
+        Task<List<string>> GetTakenSlotsForDate(string date);
+
     }
 }

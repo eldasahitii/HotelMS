@@ -236,6 +236,21 @@ namespace HotelMS.Services
             return "Reservation marked as completed";
         }
 
+        public async Task<List<string>> GetTakenSlotsForDate(string date)
+        {
+            if (!DateTime.TryParse(date, out var parsedDate))
+                return new List<string>();
+
+            var reservations = await dataContext.HotelServiceReservations
+                .Where(r => r.ReservationDate.Date == parsedDate.Date)
+                .Select(r => $"{r.StartTime:hh\\:mm} - {r.EndTime:hh\\:mm}")
+                .ToListAsync();
+
+            return reservations;
+        }
+
+
+
         private async Task<bool> IsUserReservationOwner(int userID, string reservationEmail)
         {
             var userEmail = await dataContext.Users

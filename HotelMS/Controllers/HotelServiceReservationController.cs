@@ -101,6 +101,15 @@ namespace HotelMS.Controllers
             return Ok(result);
         }
 
+        [HttpGet("TakenSlots")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetTakenSlots([FromQuery] string date)
+        {
+            var takenSlots = await hotelServiceReservationService.GetTakenSlotsForDate(date);
+            return Ok(takenSlots); // returns List<string> like ["10:00 AM - 11:00 AM"]
+        }
+
+
         private int GetUserIDFromClaims()
         {
             return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
