@@ -52,6 +52,9 @@ const Header = () => {
     CleaningStaff: [
       { path: "/cleaningstaff/dashboard", label: "My Dashboard" },
     ],
+          Customer: [
+    { path: "/user/profile", label: "My Profile" },
+  ],
     // Add more roles here
   };
 
