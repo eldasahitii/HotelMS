@@ -16,13 +16,13 @@ export default function RestaurantHostDashboard() {
     phoneNumber: '',
     restaurantTableID: '',
     dateTime: '',
-    status: 'Booked'
+    status: 'Occupied'
   });
   const [userReservation, setUserReservation] = useState({
   email: '',
   restaurantTableID: '',
   dateTime: '',
-  status: 'Booked'
+  status: 'Occupied'
 });
   const [editingReservation, setEditingReservation] = useState(null);
   const [newStatus, setNewStatus] = useState('');
@@ -49,6 +49,7 @@ export default function RestaurantHostDashboard() {
         withCredentials: true
       });
       setTables(res.data);
+      console.log("Updated tables:", res.data);
     } catch (err) {
       toast.error("Failed to fetch tables.");
     }
@@ -344,7 +345,7 @@ const handleSearch = () => {
       <option value="">Select Table</option>
       {tables.map(table => (
         <option key={table.restaurantTableID} value={table.restaurantTableID}>
-          Table {table.tableNumber} {table.status === "Booked" ? "(Booked)" : ""}
+          Table {table.tableNumber} {table.status === "Occupied" ? "(Occupied)" : ""}
         </option>
       ))}
     </select>
@@ -386,7 +387,7 @@ const handleSearch = () => {
       <option value="">Select Table</option>
       {tables.map(table => (
         <option key={table.restaurantTableID} value={table.restaurantTableID}>
-          Table {table.tableNumber} {table.status === "Booked" ? "(Booked)" : ""}
+          Table {table.tableNumber} {table.status === "Occupied" ? "(Occupied)" : ""}
         </option>
       ))}
     </select>
@@ -461,12 +462,16 @@ const handleSearch = () => {
       Update Reservation Status
     </div>
     <div className="card-body">
-      <input
-        className="form-control mb-2"
-        placeholder="New Status"
-        value={newStatus}
-        onChange={e => setNewStatus(e.target.value)}
-      />
+       <select
+  className="form-control mb-2"
+  value={newStatus}
+  onChange={e => setNewStatus(e.target.value)}
+>
+  <option value="">Select Status</option>
+  <option value="Occupied">Occupied</option>
+  <option value="Completed">Completed</option>
+  <option value="Cancelled">Cancelled</option>
+</select>
       <button className="btn btn-primary me-2" onClick={() => handleUpdateReservationStatus(editingReservation)}>
         Save
       </button>
@@ -495,7 +500,7 @@ const handleSearch = () => {
           <tr key={table.restaurantTableID}>
             <td>{index + 1}</td>
             <td>{table.tableNumber}</td>
-            <td className={table.status === "Booked" ? "text-danger" : "text-success"}>
+            <td className={table.status === "Occupied" ? "text-danger" : "text-success"}>
               {table.status}
             </td>
           </tr>

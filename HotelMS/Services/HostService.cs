@@ -152,7 +152,7 @@ namespace HotelMS.Services
                     GuestID = guest.GuestID,
                     RestaurantTableID = availableTable.RestaurantTableID,
                     date_time = dto.DateTime,
-                    status = "Booked"
+                    status = "Occupied"
                 };
 
                 _dbContext.RestaurantReservations.Add(reservation);
@@ -283,7 +283,7 @@ namespace HotelMS.Services
                 UserID = user.UserID,
                 RestaurantTableID = assignedTableID,
                 date_time = dto.DateTime,
-                status = string.IsNullOrWhiteSpace(dto.Status) ? "Booked" : dto.Status
+                status = string.IsNullOrWhiteSpace(dto.Status) ? "Occupied" : dto.Status
             };
 
             _dbContext.RestaurantReservations.Add(reservation);
@@ -323,13 +323,30 @@ namespace HotelMS.Services
 
         public async Task<bool> UpdateReservationAsync(int id, string newStatus)
         {
-            var reservation = await _dbContext.RestaurantReservations.FindAsync(id);
+            var reservation = await _dbContext.RestaurantReservations
+                .Include(r => r.RestaurantTable)
+                .FirstOrDefaultAsync(r => r.ReservationID == id);
+
             if (reservation == null) return false;
 
             reservation.status = newStatus;
+
+            // Update the status of the table based on reservation status
+         
+
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
+        //public async Task<bool> UpdateReservationAsync(int id, string newStatus)
+        //{
+        //    var reservation = await _dbContext.RestaurantReservations.FindAsync(id);
+        //    if (reservation == null) return false;
+
+        //    reservation.status = newStatus;
+        //    await _dbContext.SaveChangesAsync();
+        //    return true;
+        //}
 
         public async Task<List<RestaurantReservationDTO>> GetUserReservationsAsync(int userId)
         {
