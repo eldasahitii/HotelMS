@@ -38,13 +38,23 @@ const Header = () => {
       { path: "/manager/cleaning-staff", label: "Cleaning Staff" },
       { path: "/manager/assignments", label: "Assignments" },
     ],
-    RoomManager: [
-      { path: "/manager/room-dashboard", label: "Room Dashboard" },
-      { path: "/room-manager/review-dashboard", label: "Reviews" },
-    ],
+  RoomManager: [
+  { path: "/manager/room-dashboard", label: "Room Dashboard" },
+  { path: "/admin/reservation-dashboard", label: "Room Reservations" },
+  { path: "/room-manager/review-dashboard", label: "Room Reviews" },
+  { path: "/room-manager-receptionist-management", label: "Manage Recepsionists" },
+],
+    RoomRecepsionist: [
+    { path: "/recepsionist-dashboard", label: "Room Availability Dashboard" },
+    { path: "/recepsionist-reservations", label: "Room Reservations" },
+  ],
+
     CleaningStaff: [
       { path: "/cleaningstaff/dashboard", label: "My Dashboard" },
     ],
+          Customer: [
+    { path: "/user/profile", label: "My Profile" },
+  ],
     // Add more roles here
     RestaurantManager: [
       { path: "/manager/restaurant-hosts", label: "Hosts"},
@@ -88,6 +98,9 @@ const Header = () => {
             </li>
             <li className="nav-item">
               <Link to="/about" className={navLinkStyle("/about")}>ABOUT US</Link>
+            </li>
+                 <li className="nav-item">
+              <Link to="/rooms" className={navLinkStyle("/rooms")}>ROOMS</Link>
             </li>
             <li className="nav-item">
               <Link to="/restaurant" className={navLinkStyle("/restaurant")}>RESTAURANT</Link>

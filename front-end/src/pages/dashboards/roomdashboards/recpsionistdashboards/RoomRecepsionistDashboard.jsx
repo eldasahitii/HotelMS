@@ -58,8 +58,7 @@ const RoomReceptionistDashboard = () => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      {/* Sidebar */}
-      <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
+      {/* <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
         <h4 className="fw-bold mb-4">
           <i className="bi bi-building"></i> HotelMS
         </h4>
@@ -85,7 +84,7 @@ const RoomReceptionistDashboard = () => {
   <i className="bi bi-box-arrow-right me-2"></i> Logout
 </button>
 
-      </aside>
+      </aside> */}
 
       {/* Main content */}
       <main className="flex-grow-1 p-4">

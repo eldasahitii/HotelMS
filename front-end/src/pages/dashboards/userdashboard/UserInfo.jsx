@@ -4,7 +4,7 @@ import axios from "axios";
 import { FaUser, FaEnvelope, FaEdit, FaLock, FaCheckCircle, FaExclamationCircle, FaTimes } from "react-icons/fa";
 import { FaListAlt } from "react-icons/fa";
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
+
 
 
 export default function UserInfo() {
@@ -32,37 +32,37 @@ export default function UserInfo() {
   const [successMsg, setSuccessMsg] = useState("");
   const [formLoading, setFormLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const meRes = await axios.get("https://localhost:7117/api/Auth/me", {
-          withCredentials: true,
-        });
+useEffect(() => {
+  async function fetchUser() {
+    try {
+      const meRes = await axios.get("https://localhost:7117/api/Auth/me", {
+        withCredentials: true,
+      });
 
-        const userId = meRes.data.userId;
-        if (!userId) throw new Error("User ID not found");
+      const userId = meRes.data.userID;  
+      if (!userId) throw new Error("User ID not found");
 
-        const userRes = await axios.get(
-          `https://localhost:7117/api/User?id=${userId}`,
-          { withCredentials: true }
-        );
+      const userRes = await axios.get(
+        `https://localhost:7117/api/User?id=${userId}`,
+        { withCredentials: true }
+      );
 
-        setUser(userRes.data);
-        setProfileData({
-          firstName: userRes.data.firstName || "",
-          lastName: userRes.data.lastName || "",
-          email: userRes.data.email || "",
-        });
-      } catch (err) {
-        console.error(err);
-        navigate("/login");
-      } finally {
-        setLoading(false);
-      }
+      setUser(userRes.data);
+      setProfileData({
+        firstName: userRes.data.firstName || "",
+        lastName: userRes.data.lastName || "",
+        email: userRes.data.email || "",
+      });
+    } catch (err) {
+      console.error(err);
+      navigate("/login");
+    } finally {
+      setLoading(false);
     }
+  }
 
-    fetchUser();
-  }, [navigate]);
+  fetchUser();
+}, [navigate]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;

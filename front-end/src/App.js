@@ -30,6 +30,7 @@ import AdminRoomStatus from './pages/dashboards/admindashboard/AdminRoomStatus';
 import AdminRoomReservationStatus from './pages/dashboards/admindashboard/AdminReservationStatus';
 import UserInfo from './pages/dashboards/userdashboard/UserInfo';
 import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReservations';
+import HomePage from './pages/HomePage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserRestaurantReservations from './pages/dashboards/userdashboard/UserRestaurantReservations';
@@ -84,6 +85,7 @@ function App() {
               <Route path="/rooms" element={<RoomsPage />} />
               <Route path="/rooms/:roomId" element={<RoomsDetails />} />
               <Route path="/about" element={<AboutUs />} />
+              <Route path="/homepage" element={<HomePage />} />
               <Route path="/room-manager/review-dashboard" element={<ReviewDashboard />} />
               <Route path="/restaurant" >
                 <Route index element={<RestaurantHomePage />} />

@@ -1,0 +1,50 @@
+.img1 img, .img2 img {
+  max-width: 100%;     /* Responsive width */
+  height: auto;        /* Maintain aspect ratio */
+  margin-bottom: 1rem; /* smaller, responsive margin */
+  margin-top: 0;       /* remove negative margin */
+  position: relative;
+  animation-fill-mode: forwards;
+  
+  max-width: 240px;
+  max-height: 300px;
+}
+
+/* Animations - increased movement */
+@keyframes img1 {
+  from { top: 100px; }
+  to { top: -20px; }
+}
+
+@keyframes img2 {
+  from { top: -20px; }
+  to { top: 60px; }
+}
+
+
+/* Apply animations with infinite looping and alternate */
+.img1 img {
+  animation-name: img1;
+  animation-duration: 5s;
+  animation-iteration-count: infinite;  /* repeat forever */
+  animation-direction: alternate;       /* go back and forth */
+  animation-timing-function: ease-in-out;
+  
+  max-width: 240px;
+  max-height: 300px;
+}
+
+.img2 img {
+  animation-name: img2;
+  animation-duration: 5s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+  
+  max-width: 210px;
+  max-height: 300px;
+}
+
+.mt-7 {
+  margin-top: 200px !important;
+}
