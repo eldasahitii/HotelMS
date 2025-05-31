@@ -33,7 +33,6 @@ import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReser
 import HomePage from './pages/HomePage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import UserRestaurantReservations from './pages/dashboards/userdashboard/UserRestaurantReservations';
 
 
 
@@ -239,18 +238,6 @@ function App() {
             </ProtectedRoute>
   }
 />
-
-            <Route
-              path="/user/userrestaurantreservation"
-              element={
-                <ProtectedRoute allowedRoles={['Customer']}>
-                <UserRestaurantReservations />
-                </ProtectedRoute>
-              }
- />
-
-
-
 
               <Route path="/admin/restaurant-dashboard" element={
                 <ProtectedRoute allowedRoles={['Admin']}>
