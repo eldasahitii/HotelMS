@@ -410,31 +410,6 @@ public class Seed
 
 
 
-
-        //if (!dataContext.RoomReservations.Any())
-        //{
-        //    var availableRoomID = dataContext.Rooms.First(r => r.Title == "Single Room").RoomID;
-        //    var customerID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
-        //    var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Pending").ReservationStatusID;
-
-        //    var reservations = new List<RoomReservation>
-        //    {
-        //        new RoomReservation()
-        //        {
-        //            RoomID = availableRoomID,
-        //            UserID = customerID,
-        //            CheckInDate = DateTime.Now.AddDays(1),
-        //            CheckOutDate = DateTime.Now.AddDays(5),
-        //            ReservationStatusID = reservationStatusID,
-        //            CreatedAt = DateTime.Now
-
-        //        }
-        //    };
-
-        //    dataContext.RoomReservations.AddRange(reservations);
-        //    dataContext.SaveChanges();
-        //}
-
         // Seed Reviews
         if (!dataContext.Reviews.Any())
         {
