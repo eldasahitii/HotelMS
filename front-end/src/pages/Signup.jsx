@@ -52,7 +52,7 @@ const SignupPage = () => {
       const response = await axios.post('/api/Auth/register', user, { withCredentials: true });
 
       if (response.data.isLoggedIn) {
-        await fetchUser(); // ✅ Set global role after signup
+        await fetchUser(); //  Set global role after signup
 
         // Optionally fetch role again from /me if needed
         const meRes = await axios.get('/api/Auth/me', { withCredentials: true });

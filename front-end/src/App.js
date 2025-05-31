@@ -73,7 +73,7 @@ function App() {
 
           <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
             <Routes>
-              <Route path="/" element={<Navigate to="/about" />} />
+              <Route path="/" element={<Navigate to="/homepage" />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/login" element={<Login />} />
               <Route path="/rooms" element={<RoomsPage />} />
@@ -189,9 +189,6 @@ function App() {
             </ProtectedRoute>
   }
 />
-
-
-
            <Route
              path="/user/profile"
              element={
@@ -208,10 +205,6 @@ function App() {
             </ProtectedRoute>
   }
 />
-
-
-
-
               <Route path="/admin/restaurant-dashboard" element={
                 <ProtectedRoute allowedRoles={['Admin']}>
                   <RestaurantAdmin />
@@ -221,7 +214,6 @@ function App() {
               <Route path="*" element={<div>Page Not Found</div>} />
             </Routes>
           </Suspense>
-
           <Footer />
         </div>
       </AuthProvider>
