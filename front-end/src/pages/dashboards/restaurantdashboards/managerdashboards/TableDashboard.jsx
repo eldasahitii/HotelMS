@@ -35,7 +35,7 @@ export default function TableDashboard() {
     const tableNumber = parseInt(newTable.tableNumber);
     const capacity = parseInt(newTable.capacity);
     try {
-      await axios.post("/api/RestaurantTable/addTable", { tableNumber, capacity });
+      await axios.post("/api/RestaurantTable/addTable", { TableNumber: tableNumber, Capacity: capacity });
       toast.success("Table added successfully.");
       setNewTable({ tableNumber: '', capacity: '' });
       fetchTables();
@@ -74,8 +74,8 @@ export default function TableDashboard() {
     const capacity = parseInt(editTableData.capacity);
     try {
       await axios.put(`/api/RestaurantTable/updateTable?id=${editingTable.restaurantTableID}`, {
-        tableNumber,
-        capacity
+        TableNumber: tableNumber,
+        Capacity: capacity
       });
       toast.success("Table updated successfully");
       setEditingTable(null);
@@ -111,7 +111,7 @@ export default function TableDashboard() {
           <select className="form-select w-auto" value={tableFilter} onChange={(e) => setTableFilter(e.target.value)}>
             <option value="All">All</option>
             <option value="Available">Available</option>
-            <option value="Booked">Booked</option>
+            <option value="Occupied">Occupied</option>
           </select>
         </div>
       </div>
