@@ -3,12 +3,12 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function CleaningStaffDashboard() {
   const [assignments, setAssignments] = useState([]);
   const [staffName, setStaffName] = useState("");
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
   const [loggedInUserID, setLoggedInUserID] = useState(null);
   const [currentCleaningStaffID, setCurrentCleaningStaffID] = useState(null);
   const inputRef = useRef(null);
@@ -25,9 +25,7 @@ export default function CleaningStaffDashboard() {
       const res = await axios.get('/api/Auth/me', { withCredentials: true });
       setLoggedInUserID(parseInt(res.data.userId || res.data.userID));
     } catch (error) {
-      console.error("Failed to get current user info", error);
-      setMessage("You must be logged in to view assignments.");
-      setMessageType("danger");
+      toast.error("You must be logged in to view assignments.");
       navigate('/login');
     }
   };
@@ -41,7 +39,7 @@ export default function CleaningStaffDashboard() {
         const match = res.data.find(s => s.userID === loggedInUserID);
         if (match) setCurrentCleaningStaffID(match.cleaningStaffID);
       } catch (err) {
-        console.error("Failed to resolve cleaningStaffID", err);
+        toast.error("Failed to resolve cleaning staff.");
       }
     };
 
@@ -53,8 +51,7 @@ export default function CleaningStaffDashboard() {
       const res = await axios.get("/api/CleaningAssignment/getAllAssignments");
       setAssignments(res.data);
     } catch (err) {
-      setMessage("Error fetching all assignments.");
-      setMessageType("danger");
+      toast.error("Error fetching all assignments.");
     }
   };
 
@@ -68,31 +65,27 @@ export default function CleaningStaffDashboard() {
     try {
       const res = await axios.get(`/api/CleaningAssignment/getAssignmentsByStaffName?name=${encodeURIComponent(trimmedName)}`);
       setAssignments(res.data);
-      setMessage(res.data.length ? '' : "No assignments found.");
-      setMessageType(res.data.length ? '' : "info");
+      if (!res.data.length) toast.info("No assignments found.");
     } catch (err) {
-      setMessage("Error fetching assignments.");
-      setMessageType("danger");
+      toast.error("Error fetching assignments.");
     }
   };
 
   const handleStart = async (id) => {
     try {
       await axios.put(`/api/CleaningAssignment/startAssignment?id=${id}`);
-      handleSearch({ preventDefault: () => { } });
+      handleSearch({ preventDefault: () => {} });
     } catch {
-      setMessage("Failed to start assignment.");
-      setMessageType("danger");
+      toast.error("Failed to start assignment.");
     }
   };
 
   const handleComplete = async (id) => {
     try {
       await axios.put(`/api/CleaningAssignment/markAssignmentCompleted?id=${id}`);
-      handleSearch({ preventDefault: () => { } });
+      handleSearch({ preventDefault: () => {} });
     } catch {
-      setMessage("Failed to complete assignment.");
-      setMessageType("danger");
+      toast.error("Failed to complete assignment.");
     }
   };
 
@@ -101,6 +94,7 @@ export default function CleaningStaffDashboard() {
       <h2 className="text-primary fw-bold mb-4">
         <i className="bi bi-search me-2"></i>Cleaning Assignments
       </h2>
+
       <div className="card mb-4 shadow-sm">
         <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
           <i className="bi bi-search me-2"></i>Search Assignments by Name
@@ -125,8 +119,6 @@ export default function CleaningStaffDashboard() {
           </form>
         </div>
       </div>
-
-      {message && <div className={`alert alert-${messageType}`}>{message}</div>}
 
       <div className="card shadow-sm">
         <div className="card-header bg-success text-white">
