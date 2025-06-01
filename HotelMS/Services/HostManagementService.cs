@@ -50,34 +50,34 @@ namespace HotelMS.Services
                 Email = user.Email
             };
         }
-        public async Task<HostDTO> CreateHostAsync(HostDTO hostDto)
-        {
-            var hostRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "RestaurantHost");
-            if (hostRole == null) throw new Exception("Host role not found");
+        //public async Task<HostDTO> CreateHostAsync(HostDTO hostDto)
+        //{
+        //    var hostRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "RestaurantHost");
+        //    if (hostRole == null) throw new Exception("Host role not found");
 
-            CreatePasswordHash(hostDto.Password, out byte[] hash, out byte[] salt);
+        //    CreatePasswordHash(hostDto.Password, out byte[] hash, out byte[] salt);
 
-            var user = new User
-            {
-                FirstName = hostDto.FirstName,
-                LastName = hostDto.LastName,
-                Email = hostDto.Email,
-                PasswordHash = hash,
-                PasswordSalt = salt,
-                RoleID = hostRole.RoleID
-            };
+        //    var user = new User
+        //    {
+        //        FirstName = hostDto.FirstName,
+        //        LastName = hostDto.LastName,
+        //        Email = hostDto.Email,
+        //        PasswordHash = hash,
+        //        PasswordSalt = salt,
+        //        RoleID = hostRole.RoleID
+        //    };
 
-            _dbContext.Users.Add(user);
-            await _dbContext.SaveChangesAsync();
+        //    _dbContext.Users.Add(user);
+        //    await _dbContext.SaveChangesAsync();
 
-            return new HostDTO
-            {
-                UserID = user.UserID,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email
-            };
-        }
+        //    return new HostDTO
+        //    {
+        //        UserID = user.UserID,
+        //        FirstName = user.FirstName,
+        //        LastName = user.LastName,
+        //        Email = user.Email
+        //    };
+        //}
         public async Task<HostDTO> UpdateHostAsync(int id, HostDTO updatedHost)
         {
             var user = await _dbContext.Users.FindAsync(id);
