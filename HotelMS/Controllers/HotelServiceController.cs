@@ -18,7 +18,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost("add")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, ServiceManager")]
         public async Task<IActionResult> AddService([FromBody] HotelServiceDTO request)
         {
             try
