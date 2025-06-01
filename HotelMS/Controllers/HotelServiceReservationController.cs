@@ -54,7 +54,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetAllReservations")]
-        [Authorize(Roles = "Admin,HotelServiceManager,HotelServiceRecepsionist")]
+        [Authorize(Roles = "Admin,HotelServiceManager,Receptionist")]
         public async Task<IActionResult> GetAllReservations()
         {
             var reservations = await hotelServiceReservationService.GetAllReservations();
