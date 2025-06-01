@@ -1,9 +1,9 @@
-﻿
-using HotelMS.Data;
+﻿using HotelMS.Data;
 using HotelMS.Models;
 using System.Security.Cryptography;
 using System.Text;
 using System.Linq;
+using HotelMS.Migrations;
 
 public class Seed
 {
@@ -243,6 +243,7 @@ public class Seed
                 new RoomStatus() { RoomStatusName = "Occupied" },
                 new RoomStatus() { RoomStatusName = "Cleaning" },
                 new RoomStatus() { RoomStatusName = "Completed" }
+            
             };
 
             dataContext.RoomStatuses.AddRange(roomStatuses);
@@ -513,11 +514,9 @@ public class Seed
             }
         }
 
-
-
-            if (!dataContext.MenuCategories.Any())
-            {
-                var categories = new List<MenuCategory>
+        if (!dataContext.MenuCategories.Any())
+        {
+            var categories = new List<MenuCategory>
         {
             new MenuCategory {Name = "Appetizers"},
             new MenuCategory { Name = "Main Courses" },
@@ -525,18 +524,18 @@ public class Seed
             new MenuCategory { Name = "Drinks" }
         };
 
-                dataContext.MenuCategories.AddRange(categories);
-                dataContext.SaveChanges();
-            }
+            dataContext.MenuCategories.AddRange(categories);
+            dataContext.SaveChanges();
+        }
 
-            if (!dataContext.MenuItems.Any())
-            {
-                var appetizersID = dataContext.MenuCategories.First(c => c.Name == "Appetizers").MenuCategoryID;
-                var mainsID = dataContext.MenuCategories.First(c => c.Name == "Main Courses").MenuCategoryID;
-                var dessertsID = dataContext.MenuCategories.First(c => c.Name == "Desserts").MenuCategoryID;
-                var drinksID = dataContext.MenuCategories.First(c => c.Name == "Drinks").MenuCategoryID;
+        if (!dataContext.MenuItems.Any())
+        {
+            var appetizersID = dataContext.MenuCategories.First(c => c.Name == "Appetizers").MenuCategoryID;
+            var mainsID = dataContext.MenuCategories.First(c => c.Name == "Main Courses").MenuCategoryID;
+            var dessertsID = dataContext.MenuCategories.First(c => c.Name == "Desserts").MenuCategoryID;
+            var drinksID = dataContext.MenuCategories.First(c => c.Name == "Drinks").MenuCategoryID;
 
-                var menuItems = new List<MenuItem>
+            var menuItems = new List<MenuItem>
     {
         new MenuItem { Name = "Bruschetta", Description = "Grilled bread with tomato & basil", Price = 4.99, MenuCategoryID = appetizersID },
         new MenuItem { Name = "Spaghetti Carbonara", Description = "Pasta with eggs, cheese & pancetta", Price = 10.99, MenuCategoryID = mainsID },
@@ -544,169 +543,61 @@ public class Seed
         new MenuItem { Name = "Lemonade", Description = "Freshly squeezed lemonade", Price = 2.99, MenuCategoryID = drinksID }
     };
 
-                dataContext.MenuItems.AddRange(menuItems);
-                dataContext.SaveChanges();
-            }
+            dataContext.MenuItems.AddRange(menuItems);
+            dataContext.SaveChanges();
+        }
 
 
-            if (!dataContext.RestaurantTables.Any())
-            {
-                var tables = new List<RestaurantTable>
+        if (!dataContext.RestaurantTables.Any())
+        {
+            var tables = new List<RestaurantTable>
     {
         new RestaurantTable { TableNumber = 1 },
         new RestaurantTable { TableNumber = 2 },
         new RestaurantTable { TableNumber = 3 }
     };
 
-                dataContext.RestaurantTables.AddRange(tables);
-                dataContext.SaveChanges();
-            }
-            if (!dataContext.RestaurantReservations.Any())
-            {
-                var tableID = dataContext.RestaurantTables.First().RestaurantTableID;
-                var guestID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
-
-
-                var reservation = new RestaurantReservation
-                {
-                    GuestID = guestID,
-                    date_time = DateTime.Now.AddHours(2),
-                    status = "Booked",
-                    RestaurantTableID = tableID
-                };
-
-                dataContext.RestaurantReservations.Add(reservation);
-                dataContext.SaveChanges();
-
-            }
-
-            // **Seed Hotel Services directly here**
-
-            // Seed HotelServices
-
-            if (!dataContext.HotelServices.Any())
-            {
-                var hotelServices = new List<HotelService>
-                {
-                    new HotelService
-                    {
-                        Name = "Pool & Spa",
-                        Description = " Relax and unwind in our luxurious pool and spa facilities. \r\n              Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, \r\n              sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. \r\n              Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.",
-                        HeroImageUrl = "../../Assets/images/pool1.jpg"
-                    },
-                    new HotelService
-                    {
-                        Name = "Events",
-                        Description = " Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations.\r\n               Our experienced team will help you plan every detail to ensure a seamless and memorable event. \r\n               Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized \r\n               service to make your occasion truly special.",
-                        HeroImageUrl = "../../Assets/images/mainevents.jpg"
-                    }
-
-                };
-                dataContext.HotelServices.AddRange(hotelServices);
-                dataContext.SaveChanges();
-            }
+            dataContext.RestaurantTables.AddRange(tables);
+            dataContext.SaveChanges();
         }
-        // Seed HotelServiceDetails
-        if (!dataContext.HotelServiceDetails.Any())
+        if (!dataContext.RestaurantReservations.Any())
         {
-            var spaService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Spa & Wellness");
-            var eventService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Events & Banquets");
+            var tableID = dataContext.RestaurantTables.First().RestaurantTableID;
+            var guestID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
 
-            if (spaService != null && eventService != null)
+
+            var reservation = new RestaurantReservation
             {
-                var serviceDetails = new List<HotelServiceDetail>
-                {
-                    new HotelServiceDetail
-                    {
-                         ServiceId = spaService.Id,
-                         Title = "Heated Indoor Pool",
-                         Description = "Relax in our temperature-controlled indoor pool, perfect for year-round swims. Ideal for solo visitors or families looking for a calm, refreshing environment regardless of the season. Enjoy clean, modern facilities and a peaceful atmosphere designed for your comfort.",
-                         ImageUrl = "../../Assets/images/indoorpool3.png",
-                         Price = 25.00m
-                    },
-                    new HotelServiceDetail
-                    {
-                        ServiceId = spaService.Id,
-                        Title = "Scenic Outdoor Pool",
-                        Description = "Escape to our breathtaking outdoor pool area, where tranquility meets natural beauty. Surrounded by lush greenery and designed with relaxation in mind, our expansive pool offers the perfect setting to soak up the sun or enjoy a peaceful swim. Lounge on comfortable sunbeds, sip refreshing drinks from our poolside bar, and take in the serene views that create a true resort-style experience.",
-                        ImageUrl = "../../Assets/images/spa.jpg",
-                        Price = 50.00m
-                    },
-                    new HotelServiceDetail
-                    {
-                        ServiceId = spaService.Id,
-                        Title = "Sauna Room",
-                        Description = "Experience the soothing warmth of our dedicated sauna room, designed to relax muscles, improve circulation, and promote overall well-being. Enjoy the quiet, wood-lined space as heat gently eases tension and clears your mind. Perfect for unwinding after a swim or simply taking time for yourself in a peaceful setting.",
-                        ImageUrl = "../../Assets/images/pool2.jpg",
-                        Price = 30.00m
-                    },
-                    new HotelServiceDetail
-                    {
-                        ServiceId = eventService.Id,
-                        Title = "Wedding Hall",
-                        Description = "Elegant hall suitable for weddings up to 300 guests.",
-                        ImageUrl = "/images/services/wedding.jpg",
-                        Price = 500.00m
-                    },
-                    new HotelServiceDetail
-                    {
-                        ServiceId = eventService.Id,
-                        Title = "Conference Room",
-                         Description = "Fully-equipped room for business meetings and seminars.",
-                        ImageUrl = "/images/services/conference.jpg",
-                        Price = 400.00m
-                    }
+                GuestID = guestID,
+                date_time = DateTime.Now.AddHours(2),
+                status = "Booked",
+                RestaurantTableID = tableID
+            };
 
-                    };
+            dataContext.RestaurantReservations.Add(reservation);
+            dataContext.SaveChanges();
 
-            
-
-            if (!dataContext.RestaurantSettings.Any())
-            {
-                var homepageSettings = new RestaurantSettings
-                {
-                    WelcomeTitle = "Welcome to Rolve Restaurant",
-                    WelcomeMessage = "Discover the essence of fine dining at Rolve Restaurant, where every dish is crafted with organic ingredients, timeless flavors, and a passion for culinary excellence.",
-                    WelcomeImageUrl = "/images/restaurant.jpg", // Path should match your frontend assets or be publicly hosted
-
-                    AboutTitle = "About Rolve Restaurant",
-                    AboutMessage = "At Rolve Restaurant, we believe food should not only taste amazing but also be nourishing. Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring every dish to life.",
-                    AboutImageUrl1 = "/images/restaurantTerrace.jpg",
-                    AboutImageUrl2 = "/images/restaurantInterior.jpg"
-                };
-
-                dataContext.RestaurantSettings.Add(homepageSettings);
-                dataContext.SaveChanges();
-            }
         }
 
 
 
+        if (!dataContext.RestaurantSettings.Any())
+        {
+            var homepageSettings = new RestaurantSettings
+            {
+                WelcomeTitle = "Welcome to Rolve Restaurant",
+                WelcomeMessage = "Discover the essence of fine dining at Rolve Restaurant, where every dish is crafted with organic ingredients, timeless flavors, and a passion for culinary excellence.",
+                WelcomeImageUrl = "/images/restaurant.jpg", // Path should match your frontend assets or be publicly hosted
 
+                AboutTitle = "About Rolve Restaurant",
+                AboutMessage = "At Rolve Restaurant, we believe food should not only taste amazing but also be nourishing. Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring every dish to life.",
+                AboutImageUrl1 = "/images/restaurantTerrace.jpg",
+                AboutImageUrl2 = "/images/restaurantInterior.jpg"
+            };
 
-
-
-
-
-
-
-
-
-
-
-
-
+            dataContext.RestaurantSettings.Add(homepageSettings);
+            dataContext.SaveChanges();
+        }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
+}

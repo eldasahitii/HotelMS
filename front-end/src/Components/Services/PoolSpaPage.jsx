@@ -565,6 +565,7 @@ const PoolSpa = () => {
       const response = await fetch('/api/HotelServiceReservation/MakeReservation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(reservationPayload)
       });
 

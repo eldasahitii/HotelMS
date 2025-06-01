@@ -1,5 +1,4 @@
 
-
 // import React, { useState, useEffect } from "react";
 // import axios from "axios";
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,9 +7,9 @@
 
 // export default function ServiceManagerDashboard() {
 //   const [services, setServices] = useState([]);
-//   const [newService, setNewService] = useState({ name: '', description: '', price: 0 });
+//   const [newService, setNewService] = useState({ name: '', description: '', heroImageUrl: '' });
 //   const [editingService, setEditingService] = useState(null);
-//   const [editServiceData, setEditServiceData] = useState({ name: '', description: '', price: 0 });
+//   const [editServiceData, setEditServiceData] = useState({ name: '', description: '', heroImageUrl: '' });
 
 //   const [message, setMessage] = useState('');
 //   const [messageType, setMessageType] = useState('');
@@ -34,7 +33,7 @@
 //       await axios.post("/api/HotelService/add", newService);
 //       setMessage("Service added successfully.");
 //       setMessageType("success");
-//       setNewService({ name: '', description: '', price: 0 });
+//       setNewService({ name: '', description: '', heroImageUrl: '' });
 //       fetchServices();
 //     } catch {
 //       setMessage("Failed to add service.");
@@ -59,7 +58,7 @@
 //     setEditServiceData({
 //       name: service.name,
 //       description: service.description,
-//       price: service.price
+//       heroImageUrl: service.heroImageUrl || ''
 //     });
 //   };
 
@@ -119,7 +118,7 @@
 //           <div className="card-body">
 //             <input className="form-control mb-2" placeholder="Name" value={newService.name} onChange={e => setNewService({ ...newService, name: e.target.value })} />
 //             <input className="form-control mb-2" placeholder="Description" value={newService.description} onChange={e => setNewService({ ...newService, description: e.target.value })} />
-//             <input className="form-control mb-2" placeholder="Price" type="number" value={newService.price} onChange={e => setNewService({ ...newService, price: parseFloat(e.target.value) })} />
+//             <input className="form-control mb-2" placeholder="Hero Image URL" value={newService.heroImageUrl} onChange={e => setNewService({ ...newService, heroImageUrl: e.target.value })} />
 //             <button className="btn btn-success w-100" onClick={handleAddService}>Add Service</button>
 //           </div>
 //         </div>
@@ -136,17 +135,17 @@
 //                   <th>#</th>
 //                   <th>Name</th>
 //                   <th>Description</th>
-//                   <th>Price</th>
+//                   <th>Image</th>
 //                   <th>Actions</th>
 //                 </tr>
 //               </thead>
 //               <tbody>
 //                 {services.map((service, index) => (
-//                   <tr key={service.serviceID}>
+//                   <tr key={service.serviceID || index}>
 //                     <td>{index + 1}</td>
 //                     <td>{service.name}</td>
 //                     <td>{service.description}</td>
-//                     <td>${parseFloat(service.price).toFixed(2)}</td>
+//                     <td><img src={service.heroImageUrl} alt={service.name} width="100" style={{ objectFit: 'cover' }} /></td>
 //                     <td>
 //                       <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteService(service.serviceID)}>
 //                         <i className="bi bi-trash"></i>
@@ -171,7 +170,7 @@
 //             <div className="card-body">
 //               <input className="form-control mb-2" value={editServiceData.name} onChange={e => setEditServiceData({ ...editServiceData, name: e.target.value })} />
 //               <input className="form-control mb-2" value={editServiceData.description} onChange={e => setEditServiceData({ ...editServiceData, description: e.target.value })} />
-//               <input className="form-control mb-2" type="number" value={editServiceData.price} onChange={e => setEditServiceData({ ...editServiceData, price: parseFloat(e.target.value) })} />
+//               <input className="form-control mb-2" placeholder="Hero Image URL" value={editServiceData.heroImageUrl} onChange={e => setEditServiceData({ ...editServiceData, heroImageUrl: e.target.value })} />
 //               <button className="btn btn-primary me-2" onClick={handleUpdateService}>
 //                 <i className="bi bi-check2"></i> Save
 //               </button>
@@ -186,45 +185,31 @@
 //   );
 // }
 
-// import React, { useState, useEffect } from "react";
+// import React, { useState, useEffect } from "react"; 
 // import axios from "axios";
 // import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap-icons/font/bootstrap-icons.css';
 // import { useNavigate } from "react-router-dom";
 
-// const API_BASE_URL = "https://localhost:7117"; // Change to your backend HTTPS URL
-
 // export default function ServiceManagerDashboard() {
 //   const [services, setServices] = useState([]);
-//   const [newService, setNewService] = useState({ name: '', description: '', price: 0 });
+//   const [newService, setNewService] = useState({ name: '', description: '', heroImageUrl: '' });
+//   const [newServiceImage, setNewServiceImage] = useState(null);
+
 //   const [editingService, setEditingService] = useState(null);
-//   const [editServiceData, setEditServiceData] = useState({ name: '', description: '', price: 0 });
+//   const [editServiceData, setEditServiceData] = useState({ name: '', description: '', heroImageUrl: '' });
+//   const [editServiceImage, setEditServiceImage] = useState(null);
 
 //   const [message, setMessage] = useState('');
 //   const [messageType, setMessageType] = useState('');
 
-//   const navigate = useNavigate();
-
-//   // Helper: get auth token
-//   const getAuthHeaders = () => {
-//     const token = localStorage.getItem('token');
-//     return token ? { Authorization: `Bearer ${token}` } : {};
-//   };
-
 //   const fetchServices = async () => {
 //     try {
-//       const res = await axios.get(`${API_BASE_URL}/api/HotelService/getAll`, {
-//         headers: getAuthHeaders()
-//       });
+//       const res = await axios.get("/api/HotelService/getAll");
 //       setServices(res.data);
-//     } catch (error) {
-//       setMessage("Error fetching services. Make sure you are logged in.");
+//     } catch {
+//       setMessage("Error fetching services.");
 //       setMessageType("danger");
-
-//       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-//         // Unauthorized or Forbidden - redirect to login
-//         navigate('/login');
-//       }
 //     }
 //   };
 
@@ -234,38 +219,44 @@
 
 //   const handleAddService = async () => {
 //     try {
-//       await axios.post(`${API_BASE_URL}/api/HotelService/add`, newService, {
-//         headers: getAuthHeaders()
+//       const formData = new FormData();
+     
+//       formData.append("name", newService.name);
+//       formData.append("description", newService.description);
+//       console.log(URL.createObjectURL(newServiceImage))
+//     //   if (newServiceImage) {
+//     //     formData.append("heroImage", newServiceImage);
+//     //   }
+
+//       await axios.post("/api/HotelService/add", {
+//         Name: newService.name,
+//         Description: newService.description,
+//         HeroImageUrl: ""
+//       }, {
+//         headers: { "Content-Type": "application/json" },
 //       });
+
 //       setMessage("Service added successfully.");
 //       setMessageType("success");
-//       setNewService({ name: '', description: '', price: 0 });
+//       setNewService({ name: '', description: '', heroImageUrl: '' });
+//       setNewServiceImage(null);
 //       fetchServices();
 //     } catch (error) {
-//       setMessage("Failed to add service. " + (error.response?.data?.message || ''));
-//       setMessageType("danger");
-
-//       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-//         navigate('/login');
-//       }
-//     }
+//     console.error("Error adding service:", error);
+//     setMessage("Failed to add service.");
+//     setMessageType("danger");
+//   }
 //   };
 
 //   const handleDeleteService = async (id) => {
 //     try {
-//       await axios.delete(`${API_BASE_URL}/api/HotelService/delete?id=${id}`, {
-//         headers: getAuthHeaders()
-//       });
+//       await axios.delete(`/api/HotelService/delete?id=${id}`);
 //       setMessage("Service deleted.");
 //       setMessageType("success");
 //       fetchServices();
-//     } catch (error) {
-//       setMessage("Failed to delete service. " + (error.response?.data?.message || ''));
+//     } catch {
+//       setMessage("Failed to delete service.");
 //       setMessageType("danger");
-
-//       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-//         navigate('/login');
-//       }
 //     }
 //   };
 
@@ -274,29 +265,48 @@
 //     setEditServiceData({
 //       name: service.name,
 //       description: service.description,
-//       price: service.price
+//       heroImageUrl: service.heroImageUrl || ''
 //     });
+//     setEditServiceImage(null);
 //   };
 
 //   const handleUpdateService = async () => {
 //     try {
-//       await axios.put(`${API_BASE_URL}/api/HotelService/update?id=${editingService.serviceID}`, editServiceData, {
-//         headers: getAuthHeaders()
+//       const formData = new FormData();
+//       formData.append("name", editServiceData.name);
+//       formData.append("description", editServiceData.description);
+//       if (editServiceImage) {
+//         formData.append("heroImage", editServiceImage);
+//       }
+
+//       await axios.put(`/api/HotelService/update?id=${editingService.serviceID}`, formData, {
+//         headers: { "Content-Type": "multipart/form-data" },
 //       });
+
 //       setMessage("Service updated.");
 //       setMessageType("success");
 //       setEditingService(null);
+//       setEditServiceImage(null);
 //       fetchServices();
-//     } catch (error) {
-//       setMessage("Failed to update service. " + (error.response?.data?.message || ''));
+//     } catch {
+//       setMessage("Failed to update service.");
 //       setMessageType("danger");
-
-//       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-//         navigate('/login');
-//       }
 //     }
 //   };
 
+//   const handleNewImageChange = (e) => {
+//     if (e.target.files && e.target.files[0]) {
+//       setNewServiceImage(e.target.files[0]);
+//     }
+//   };
+
+//   const handleEditImageChange = (e) => {
+//     if (e.target.files && e.target.files[0]) {
+//       setEditServiceImage(e.target.files[0]);
+//     }
+//   };
+
+//   const navigate = useNavigate();
 //   const handleLogout = () => {
 //     localStorage.clear();
 //     navigate('/login');
@@ -337,27 +347,32 @@
 //             <i className="bi bi-plus-circle me-2"></i>Add New Service
 //           </div>
 //           <div className="card-body">
-//             <input
-//               className="form-control mb-2"
-//               placeholder="Name"
-//               value={newService.name}
-//               onChange={e => setNewService({ ...newService, name: e.target.value })}
+//             <input 
+//               className="form-control mb-2" 
+//               placeholder="Name" 
+//               value={newService.name} 
+//               onChange={e => setNewService({ ...newService, name: e.target.value })} 
 //             />
-//             <input
-//               className="form-control mb-2"
-//               placeholder="Description"
-//               value={newService.description}
-//               onChange={e => setNewService({ ...newService, description: e.target.value })}
+//             <input 
+//               className="form-control mb-2" 
+//               placeholder="Description" 
+//               value={newService.description} 
+//               onChange={e => setNewService({ ...newService, description: e.target.value })} 
 //             />
-//             <input
+//             <input 
+//               type="file" 
+//               accept="image/*" 
 //               className="form-control mb-2"
-//               placeholder="Price"
-//               type="number"
-//               min="0"
-//               step="0.01"
-//               value={newService.price}
-//               onChange={e => setNewService({ ...newService, price: parseFloat(e.target.value) || 0 })}
+//               onChange={handleNewImageChange} 
 //             />
+//             {newServiceImage && (
+//               <img 
+//                 src={URL.createObjectURL(newServiceImage)} 
+//                 alt="Preview" 
+//                 width="100" 
+//                 style={{ objectFit: "cover", marginBottom: "10px" }} 
+//               />
+//             )}
 //             <button className="btn btn-success w-100" onClick={handleAddService}>Add Service</button>
 //           </div>
 //         </div>
@@ -374,22 +389,37 @@
 //                   <th>#</th>
 //                   <th>Name</th>
 //                   <th>Description</th>
-//                   <th>Price</th>
+//                   <th>Image</th>
 //                   <th>Actions</th>
 //                 </tr>
 //               </thead>
 //               <tbody>
 //                 {services.map((service, index) => (
-//                   <tr key={service.serviceID}>
+//                   <tr key={service.serviceID || index}>
 //                     <td>{index + 1}</td>
 //                     <td>{service.name}</td>
 //                     <td>{service.description}</td>
-//                     <td>${parseFloat(service.price).toFixed(2)}</td>
 //                     <td>
-//                       <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteService(service.serviceID)}>
+//                       {service.heroImageUrl && (
+//                         <img 
+//                           src={service.heroImageUrl} 
+//                           alt={service.name} 
+//                           width="100" 
+//                           style={{ objectFit: 'cover' }} 
+//                         />
+//                       )}
+//                     </td>
+//                     <td>
+//                       <button 
+//                         className="btn btn-sm btn-outline-danger me-2" 
+//                         onClick={() => handleDeleteService(service.serviceID)}
+//                       >
 //                         <i className="bi bi-trash"></i>
 //                       </button>
-//                       <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditService(service)}>
+//                       <button 
+//                         className="btn btn-sm btn-outline-secondary" 
+//                         onClick={() => openEditService(service)}
+//                       >
 //                         <i className="bi bi-pencil-square"></i>
 //                       </button>
 //                     </td>
@@ -407,24 +437,39 @@
 //               <i className="bi bi-pencil-square me-2"></i>Edit Service
 //             </div>
 //             <div className="card-body">
-//               <input
-//                 className="form-control mb-2"
-//                 value={editServiceData.name}
-//                 onChange={e => setEditServiceData({ ...editServiceData, name: e.target.value })}
+//               <input 
+//                 className="form-control mb-2" 
+//                 value={editServiceData.name} 
+//                 onChange={e => setEditServiceData({ ...editServiceData, name: e.target.value })} 
 //               />
-//               <input
-//                 className="form-control mb-2"
-//                 value={editServiceData.description}
-//                 onChange={e => setEditServiceData({ ...editServiceData, description: e.target.value })}
+//               <input 
+//                 className="form-control mb-2" 
+//                 value={editServiceData.description} 
+//                 onChange={e => setEditServiceData({ ...editServiceData, description: e.target.value })} 
 //               />
-//               <input
+//               <input 
+//                 type="file" 
+//                 accept="image/*" 
 //                 className="form-control mb-2"
-//                 type="number"
-//                 min="0"
-//                 step="0.01"
-//                 value={editServiceData.price}
-//                 onChange={e => setEditServiceData({ ...editServiceData, price: parseFloat(e.target.value) || 0 })}
+//                 onChange={handleEditImageChange} 
 //               />
+//               {editServiceImage ? (
+//                 <img 
+//                   src={URL.createObjectURL(editServiceImage)} 
+//                   alt="Preview" 
+//                   width="100" 
+//                   style={{ objectFit: "cover", marginBottom: "10px" }} 
+//                 />
+//               ) : (
+//                 editServiceData.heroImageUrl && (
+//                   <img 
+//                     src={editServiceData.heroImageUrl} 
+//                     alt="Current" 
+//                     width="100" 
+//                     style={{ objectFit: "cover", marginBottom: "10px" }} 
+//                   />
+//                 )
+//               )}
 //               <button className="btn btn-primary me-2" onClick={handleUpdateService}>
 //                 <i className="bi bi-check2"></i> Save
 //               </button>
@@ -439,7 +484,7 @@
 //   );
 // }
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; 
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -448,8 +493,11 @@ import { useNavigate } from "react-router-dom";
 export default function ServiceManagerDashboard() {
   const [services, setServices] = useState([]);
   const [newService, setNewService] = useState({ name: '', description: '', heroImageUrl: '' });
+  const [newServiceImage, setNewServiceImage] = useState(null);
+
   const [editingService, setEditingService] = useState(null);
   const [editServiceData, setEditServiceData] = useState({ name: '', description: '', heroImageUrl: '' });
+  const [editServiceImage, setEditServiceImage] = useState(null);
 
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
@@ -470,12 +518,27 @@ export default function ServiceManagerDashboard() {
 
   const handleAddService = async () => {
     try {
-      await axios.post("/api/HotelService/add", newService);
+      const formData = new FormData();
+     
+      formData.append("name", newService.name);
+      formData.append("description", newService.description);
+      // formData.append("heroImage", newServiceImage); // image upload disabled for now
+
+      await axios.post("/api/HotelService/add", {
+        Name: newService.name,
+        Description: newService.description,
+        HeroImageUrl: ""
+      }, {
+        headers: { "Content-Type": "application/json" },
+      });
+
       setMessage("Service added successfully.");
       setMessageType("success");
       setNewService({ name: '', description: '', heroImageUrl: '' });
+      setNewServiceImage(null);
       fetchServices();
-    } catch {
+    } catch (error) {
+      console.error("Error adding service:", error);
       setMessage("Failed to add service.");
       setMessageType("danger");
     }
@@ -500,18 +563,42 @@ export default function ServiceManagerDashboard() {
       description: service.description,
       heroImageUrl: service.heroImageUrl || ''
     });
+    setEditServiceImage(null);
   };
 
   const handleUpdateService = async () => {
     try {
-      await axios.put(`/api/HotelService/update?id=${editingService.serviceID}`, editServiceData);
+      const formData = new FormData();
+      formData.append("name", editServiceData.name);
+      formData.append("description", editServiceData.description);
+      if (editServiceImage) {
+        formData.append("heroImage", editServiceImage);
+      }
+
+      await axios.put(`/api/HotelService/update?id=${editingService.serviceID}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       setMessage("Service updated.");
       setMessageType("success");
       setEditingService(null);
+      setEditServiceImage(null);
       fetchServices();
     } catch {
       setMessage("Failed to update service.");
       setMessageType("danger");
+    }
+  };
+
+  const handleNewImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewServiceImage(e.target.files[0]);
+    }
+  };
+
+  const handleEditImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setEditServiceImage(e.target.files[0]);
     }
   };
 
@@ -551,20 +638,47 @@ export default function ServiceManagerDashboard() {
         )}
 
         {/* Add Service Form */}
-        <div className="card mb-4">
-          <div className="card-header bg-success text-white">
-            <i className="bi bi-plus-circle me-2"></i>Add New Service
+        <div className="card mb-4 shadow-sm">
+          <div 
+            className="card-header d-flex align-items-center" 
+            style={{ backgroundColor: '#fff', borderBottom: '1px solid #dee2e6', color: '#0d6efd' }}
+          >
+            <i className="bi bi-plus-circle me-2"></i>
+            <strong>Add New Service</strong>
           </div>
           <div className="card-body">
-            <input className="form-control mb-2" placeholder="Name" value={newService.name} onChange={e => setNewService({ ...newService, name: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Description" value={newService.description} onChange={e => setNewService({ ...newService, description: e.target.value })} />
-            <input className="form-control mb-2" placeholder="Hero Image URL" value={newService.heroImageUrl} onChange={e => setNewService({ ...newService, heroImageUrl: e.target.value })} />
-            <button className="btn btn-success w-100" onClick={handleAddService}>Add Service</button>
+            <input 
+              className="form-control mb-2" 
+              placeholder="Name" 
+              value={newService.name} 
+              onChange={e => setNewService({ ...newService, name: e.target.value })} 
+            />
+            <input 
+              className="form-control mb-2" 
+              placeholder="Description" 
+              value={newService.description} 
+              onChange={e => setNewService({ ...newService, description: e.target.value })} 
+            />
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="form-control mb-2"
+              onChange={handleNewImageChange} 
+            />
+            {newServiceImage && (
+              <img 
+                src={URL.createObjectURL(newServiceImage)} 
+                alt="Preview" 
+                width="100" 
+                style={{ objectFit: "cover", marginBottom: "10px" }} 
+              />
+            )}
+            <button className="btn btn-primary w-100" onClick={handleAddService}>Add Service</button>
           </div>
         </div>
 
         {/* List of Services */}
-        <div className="card">
+        <div className="card shadow-sm">
           <div className="card-header bg-primary text-white">
             <i className="bi bi-list-ul me-2"></i>All Services
           </div>
@@ -585,12 +699,27 @@ export default function ServiceManagerDashboard() {
                     <td>{index + 1}</td>
                     <td>{service.name}</td>
                     <td>{service.description}</td>
-                    <td><img src={service.heroImageUrl} alt={service.name} width="100" style={{ objectFit: 'cover' }} /></td>
                     <td>
-                      <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteService(service.serviceID)}>
+                      {service.heroImageUrl && (
+                        <img 
+                          src={service.heroImageUrl} 
+                          alt={service.name} 
+                          width="100" 
+                          style={{ objectFit: 'cover' }} 
+                        />
+                      )}
+                    </td>
+                    <td>
+                      <button 
+                        className="btn btn-sm btn-outline-danger me-2" 
+                        onClick={() => handleDeleteService(service.serviceID)}
+                      >
                         <i className="bi bi-trash"></i>
                       </button>
-                      <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditService(service)}>
+                      <button 
+                        className="btn btn-sm btn-outline-secondary" 
+                        onClick={() => openEditService(service)}
+                      >
                         <i className="bi bi-pencil-square"></i>
                       </button>
                     </td>
@@ -603,14 +732,44 @@ export default function ServiceManagerDashboard() {
 
         {/* Edit Service Form */}
         {editingService && (
-          <div className="card mt-4">
-            <div className="card-header bg-warning text-dark">
+          <div className="card mt-4 shadow-sm">
+            <div className="card-header bg-primary text-white d-flex align-items-center">
               <i className="bi bi-pencil-square me-2"></i>Edit Service
             </div>
             <div className="card-body">
-              <input className="form-control mb-2" value={editServiceData.name} onChange={e => setEditServiceData({ ...editServiceData, name: e.target.value })} />
-              <input className="form-control mb-2" value={editServiceData.description} onChange={e => setEditServiceData({ ...editServiceData, description: e.target.value })} />
-              <input className="form-control mb-2" placeholder="Hero Image URL" value={editServiceData.heroImageUrl} onChange={e => setEditServiceData({ ...editServiceData, heroImageUrl: e.target.value })} />
+              <input 
+                className="form-control mb-2" 
+                value={editServiceData.name} 
+                onChange={e => setEditServiceData({ ...editServiceData, name: e.target.value })} 
+              />
+              <input 
+                className="form-control mb-2" 
+                value={editServiceData.description} 
+                onChange={e => setEditServiceData({ ...editServiceData, description: e.target.value })} 
+              />
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="form-control mb-2"
+                onChange={handleEditImageChange} 
+              />
+              {editServiceImage ? (
+                <img 
+                  src={URL.createObjectURL(editServiceImage)} 
+                  alt="Preview" 
+                  width="100" 
+                  style={{ objectFit: "cover", marginBottom: "10px" }} 
+                />
+              ) : (
+                editServiceData.heroImageUrl && (
+                  <img 
+                    src={editServiceData.heroImageUrl} 
+                    alt="Current" 
+                    width="100" 
+                    style={{ objectFit: "cover", marginBottom: "10px" }} 
+                  />
+                )
+              )}
               <button className="btn btn-primary me-2" onClick={handleUpdateService}>
                 <i className="bi bi-check2"></i> Save
               </button>
@@ -624,3 +783,7 @@ export default function ServiceManagerDashboard() {
     </div>
   );
 }
+
+
+
+

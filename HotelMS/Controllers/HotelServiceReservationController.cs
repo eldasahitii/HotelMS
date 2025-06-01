@@ -28,6 +28,13 @@ namespace HotelMS.Controllers
 
             return Ok(result);
         }
+        //[HttpPost("MakeReservation")]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> MakeReservation([FromBody] HotelServiceReservationDTO request)
+        //{
+        //    var result = await hotelServiceReservationService.MakeReservation(0, request, new List<string>());
+        //    return Ok(result);
+        //}
 
         [HttpPut("UpdateReservation/{reservationID}")]
         [Authorize(Roles = "Admin,HotelServiceRecepsionist")]
