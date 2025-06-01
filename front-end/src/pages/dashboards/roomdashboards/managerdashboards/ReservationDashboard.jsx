@@ -3,6 +3,9 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
+
 
 const ReservationDashboard = () => {
   const [reservations, setReservations] = useState([]);
@@ -26,8 +29,7 @@ const ReservationDashboard = () => {
         await axios.get('https://localhost:7117/api/Auth/me', { withCredentials: true });
         fetchReservations();
       } catch (error) {
-        setMessage('You must be logged in to view reservations.');
-        setMessageType('danger');
+        toast.error('You must be logged in to view reservations.');
         navigate('/login');
       }
     };
@@ -57,16 +59,14 @@ const ReservationDashboard = () => {
       console.error('Error fetching reservations:', error);
       if (error.response) {
         if (error.response.status === 401) {
-          setMessage('Unauthorized. Please log in again.');
-          setMessageType('danger');
+          toast.warn('Unauthorized. Please log in again.');
           navigate('/login');
         } else {
-          setMessage(`Server error: ${error.response.status} ${error.response.statusText}`);
-          setMessageType('danger');
+          toast.error(`Server error: ${error.response.status} ${error.response.statusText}`);
         }
       } else {
-        setMessage('Network error or server not reachable.');
-        setMessageType('danger');
+        toast.error('Network error or server not reachable.');
+
       }
     }
   };
@@ -97,7 +97,7 @@ const ReservationDashboard = () => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
+      {/* <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
         <h4 className="fw-bold mb-4">
           <i className="bi bi-building"></i> HotelMS
         </h4>
@@ -111,7 +111,7 @@ const ReservationDashboard = () => {
           >
             <i className="bi bi-bookmark-plus me-2"></i> Room Managing
           </button>
-                   <button
+          <button
             className="btn btn-outline-light w-100 mb-3"
             onClick={() => navigate("/room-manager-receptionist-management")}
           >
@@ -120,21 +120,15 @@ const ReservationDashboard = () => {
           <button className="btn btn-outline-light w-100 mt-2" onClick={handleLogout}>
             <i className="bi bi-box-arrow-right me-2"></i> Logout
           </button>
-          
         </ul>
-      </aside>
+      </aside> */}
 
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-house-door me-2"></i> Reservation Dashboard
         </h2>
 
-        {message && (
-          <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-            {message}
-            <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-          </div>
-        )}
+
 
         <div className="mb-3 d-flex gap-3">
           <select

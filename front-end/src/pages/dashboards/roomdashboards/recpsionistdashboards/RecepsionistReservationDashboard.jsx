@@ -3,6 +3,8 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const RecepsionistReservationDashboard = () => {
   const [reservations, setReservations] = useState([]);
@@ -37,11 +39,7 @@ const RecepsionistReservationDashboard = () => {
     withCredentials: true,
   });
 
-  const showMessage = (msg, type = 'success') => {
-    setMessage(msg);
-    setMessageType(type);
-    setTimeout(() => setMessage(''), 3000);
-  };
+ 
 
   const fetchCustomers = async () => {
     try {
@@ -51,7 +49,7 @@ const RecepsionistReservationDashboard = () => {
       setCustomers(res.data);
     } catch (error) {
       console.error('Error fetching customers:', error);
-      showMessage('Failed to load customers.', 'danger');
+      toast.error('Failed to load customers.');
     }
   };
 
@@ -63,7 +61,7 @@ const RecepsionistReservationDashboard = () => {
       setRooms(res.data);
     } catch (error) {
       console.error('Error fetching rooms:', error);
-      showMessage('Failed to load rooms.', 'danger');
+      toast.error('Failed to load rooms.');
     }
   };
 
@@ -96,13 +94,13 @@ const RecepsionistReservationDashboard = () => {
       console.error('Error fetching reservations:', error);
       if (error.response) {
         if (error.response.status === 401) {
-          showMessage('Unauthorized. Please log in again.', 'danger');
+          toast.error('Unauthorized. Please log in again.');
           navigate('/login');
         } else {
-          showMessage(`Server error: ${error.response.status} ${error.response.statusText}`, 'danger');
+          toast.error(`Server error: ${error.response.status} ${error.response.statusText}`);
         }
       } else {
-        showMessage('Network error or server not reachable.', 'danger');
+        toast.error('Network error or server not reachable.');
       }
     } finally {
       setLoading(false);
@@ -117,7 +115,7 @@ const RecepsionistReservationDashboard = () => {
         await fetchRooms();
         await fetchReservations();
       } catch (error) {
-        showMessage('You must be logged in to view reservations.', 'danger');
+        toast.error('You must be logged in to view reservations.');
         navigate('/login');
       }
     };
@@ -139,34 +137,54 @@ const RecepsionistReservationDashboard = () => {
     setFilteredReservations(filtered);
   }, [filterRoomType, filterReservationStatus, reservations]);
 
-  const handleCancel = async (id) => {
-    if (!window.confirm('Are you sure you want to cancel this reservation?')) return;
+const handleCancel = async (id) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will cancel the reservation.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, cancel it!',
+    cancelButtonText: 'No, keep it',
+  });
 
-    try {
-      await api.delete(`/staffCancelReservation?id=${id}`);
-      showMessage('Reservation cancelled.', 'warning');
-      await fetchReservations();
-    } catch (error) {
-      console.error('Cancel failed:', error);
+  if (!result.isConfirmed) return;
 
-      if (error.response?.data?.message) {
-        showMessage(`Error: ${error.response.data.message}`, 'danger');
-      } else {
-        showMessage('Failed to cancel reservation.', 'danger');
-      }
+  try {
+    await api.delete(`/staffCancelReservation?id=${id}`);
+    toast.info('Reservation cancelled.');
+    await fetchReservations();
+    Swal.fire('Cancelled', 'The reservation has been cancelled.', 'success');
+  } catch (error) {
+    console.error('Cancel failed:', error);
+
+    if (error.response?.data?.message) {
+      toast.error(`Error: ${error.response.data.message}`);
+      Swal.fire('Error', error.response.data.message, 'error');
+    } else {
+      toast.error('Failed to cancel reservation.');
+      Swal.fire('Error', 'Failed to cancel reservation.', 'error');
     }
-  };
+  }
+};
 
-  const handleComplete = async (id) => {
-    try {
-      await api.post('/MarkReservationCompleted', { reservationID: id });
-      showMessage('Reservation marked as completed.', 'success');
-      await fetchReservations();
-    } catch (error) {
-      console.error('Mark completed failed:', error);
-      showMessage('Failed to mark reservation as completed.', 'danger');
+const handleComplete = async (id) => {
+  try {
+    await api.post('/MarkReservationCompleted', { reservationID: id });
+    toast.success('Reservation marked as completed.');
+    await fetchReservations();
+  } catch (error) {
+    console.error('Mark completed failed:', error);
+
+    const backendMessage = error.response?.data?.error || error.response?.data?.message;
+
+    if (backendMessage) {
+      toast.error(backendMessage);
+    } else {
+      toast.error('Failed to mark reservation as completed.');
     }
-  };
+  }
+};
+
 
   const handleAddReservation = async (e) => {
     e.preventDefault();
@@ -177,12 +195,12 @@ const RecepsionistReservationDashboard = () => {
       !newReservation.checkInDate ||
       !newReservation.checkOutDate
     ) {
-      showMessage('Please fill in all required fields.', 'danger');
+      toast.error('Please fill in all required fields.');
       return;
     }
 
     if (new Date(newReservation.checkInDate) > new Date(newReservation.checkOutDate)) {
-      showMessage('Check-out date must be after check-in date.', 'danger');
+      toast.error('Check-out date must be after check-in date.');
       return;
     }
 
@@ -196,7 +214,7 @@ const RecepsionistReservationDashboard = () => {
       };
 
       await api.post('/MakeReservation', payload);
-      showMessage('Reservation added successfully.', 'success');
+      toast.success('Reservation added successfully.');
       await fetchReservations();
       setNewReservation({
         roomID: '',
@@ -208,16 +226,15 @@ const RecepsionistReservationDashboard = () => {
     } catch (error) {
       console.error('Add reservation failed:', error);
       if (error.response) {
-        showMessage(`Error: ${error.response.data.message || 'Server error'}`, 'danger');
+        toast.error(`Error: ${error.response.data.message || 'Server error'}`);
       } else {
-        showMessage('Failed to add reservation.', 'danger');
+        toast.error('Failed to add reservation.');
       }
     }
   };
 
-  // --- New functions for editing/updating reservation ---
 
-  // Start editing reservation - populate form fields with existing data
+
   const startEditReservation = (reservation) => {
     setEditReservationID(reservation.reservationID);
     setEditReservationData({
@@ -227,7 +244,7 @@ const RecepsionistReservationDashboard = () => {
     });
   };
 
-  // Cancel editing mode
+
   const cancelEdit = () => {
     setEditReservationID(null);
     setEditReservationData({
@@ -237,7 +254,7 @@ const RecepsionistReservationDashboard = () => {
     });
   };
 
-  // Format date string (e.g., "5/26/2025") to yyyy-MM-dd for input[type=date]
+
   const formatForInputDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -247,25 +264,25 @@ const RecepsionistReservationDashboard = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // Handle edit input changes
+
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditReservationData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Submit updated reservation data via PUT request
+
   const handleUpdateReservation = async (e) => {
     e.preventDefault();
 
     if (!editReservationID) return;
 
     if (!editReservationData.checkInDate || !editReservationData.checkOutDate) {
-      showMessage('Please fill in both check-in and check-out dates.', 'danger');
+      toast.error('Please fill in both check-in and check-out dates.');
       return;
     }
 
     if (new Date(editReservationData.checkInDate) > new Date(editReservationData.checkOutDate)) {
-      showMessage('Check-out date must be after check-in date.', 'danger');
+      toast.error('Check-out date must be after check-in date.');
       return;
     }
 
@@ -280,7 +297,7 @@ const RecepsionistReservationDashboard = () => {
       await api.put(`/UpdateReservation/${editReservationID}`, payload);
 
 
-      showMessage('Reservation updated successfully.', 'success');
+      toast.success('Reservation updated successfully.');
       setEditReservationID(null);
       setEditReservationData({
         checkInDate: '',
@@ -291,17 +308,17 @@ const RecepsionistReservationDashboard = () => {
     } catch (error) {
       console.error('Update reservation failed:', error);
       if (error.response) {
-        showMessage(`Error: ${error.response.data.message || 'Server error'}`, 'danger');
+        toast.error(`Error: ${error.response.data.message || 'Server error'}`);
       } else {
-        showMessage('Failed to update reservation.', 'danger');
+        toast.error('Failed to update reservation.');
       }
     }
   };
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      {/* Sidebar */}
-      <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
+
+      {/* <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
         <h4 className="fw-bold mb-4">
           <i className="bi bi-building"></i> HotelMS
         </h4>
@@ -324,9 +341,9 @@ const RecepsionistReservationDashboard = () => {
         >
           <i className="bi bi-box-arrow-right me-2"></i> Logout
         </button>
-      </aside>
+      </aside> */}
 
-      {/* Main content */}
+  
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-calendar-check me-2"></i> Receptionist Reservation Dashboard
@@ -339,7 +356,7 @@ const RecepsionistReservationDashboard = () => {
           </div>
         )}
 
-        {/* Filters */}
+ 
         <div className="row mb-4">
           <div className="col-md-4">
             <label htmlFor="filterRoomType" className="form-label">
@@ -379,7 +396,6 @@ const RecepsionistReservationDashboard = () => {
           </div>
         </div>
 
-        {/* Add New Reservation Form */}
         <div className="card mb-4 shadow-sm">
           <div className="card-header bg-primary text-white">Add New Reservation</div>
           <div className="card-body">
@@ -479,7 +495,7 @@ const RecepsionistReservationDashboard = () => {
           </div>
         </div>
 
-        {/* Reservations Table */}
+
         <h4>Reservations List</h4>
         {loading ? (
           <p>Loading reservations...</p>
@@ -570,42 +586,41 @@ const RecepsionistReservationDashboard = () => {
                         </button>
                       </form>
                     ) : (
-                      <>
-{!(resv.reservationStatusName === "Cancelled" || resv.reservationStatusName === "Completed") && (
-  <button
-    className="btn btn-primary btn-sm me-1"
-    onClick={() => startEditReservation(resv)}
-    title="Edit Reservation"
-  >
-    Edit
-  </button>
-)}
+                      <>{!(resv.reservationStatusName === "Cancelled" || resv.reservationStatusName === "Completed") && (
+                       <button
+                       className="btn btn-primary btn-sm me-1"
+                       onClick={() => startEditReservation(resv)}
+                      title="Edit Reservation"
+                      >Edit
+                      </button>
+                     )}
 
 
-<button
-  className="btn btn-danger btn-sm me-1"
-  onClick={() => handleCancel(resv.reservationID)}
-  title="Cancel Reservation"
-  disabled={
-    resv.reservationStatusName === "Cancelled" ||
-    resv.reservationStatusName === "Completed"
-  }
->
-  Cancel
-</button>
+                      <button
+                      className="btn btn-danger btn-sm me-1"
+                      onClick={() => handleCancel(resv.reservationID)}
+                      title="Cancel Reservation"
+                      disabled={
+                      resv.reservationStatusName === "Cancelled" ||
+                      resv.reservationStatusName === "Completed"
+                      }
+                      >
+                      Cancel
+                     </button>
 
 
-<button
-  className="btn btn-success btn-sm"
-  onClick={() => handleComplete(resv.reservationID)}
-  title="Mark Completed"
-  disabled={
-    resv.reservationStatusName === "Cancelled" ||
-    resv.reservationStatusName === "Completed"
-  }
->
-  Complete
-</button>
+                      <button
+                      className="btn btn-success btn-sm"
+                      onClick={() => handleComplete(resv.reservationID)}
+                      title="Mark Completed"
+                      disabled={
+                      resv.reservationStatusName === "Cancelled" ||
+                      resv.reservationStatusName === "Completed"
+                      } 
+                      > 
+                      Complete
+                    </button>
+
 
 
                       </>

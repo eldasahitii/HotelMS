@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function AssignmentsDashboard() {
   const [assignments, setAssignments] = useState([]);
@@ -11,26 +14,24 @@ export default function AssignmentsDashboard() {
   const [newAssignment, setNewAssignment] = useState({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: null });
   const [editingAssignment, setEditingAssignment] = useState(null);
   const [editRoomID, setEditRoomID] = useState('');
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
-  const [userID, setUserID] = useState(null);  // <--- Add state for logged-in user ID
-
+  const [userID, setUserID] = useState(null);
+  const [role, setRole] = useState(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch current logged-in user info on mount
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         const response = await axios.get('/api/Auth/me', { withCredentials: true });
-        setUserID(parseInt(response.data.userId)); // store userId from backend
+        setUserID(parseInt(response.data.userId || response.data.userID || response.data.id || null));
+        setRole(response.data.role);
       } catch (err) {
-        console.error('Failed to fetch current user', err);
-        setMessage("You must be logged in.");
-        setMessageType("danger");
+        toast.error("You must be logged in.");
         navigate('/login');
+      } finally {
+        setIsLoadingUser(false);
       }
     };
-
     fetchCurrentUser();
   }, [navigate]);
 
@@ -39,7 +40,7 @@ export default function AssignmentsDashboard() {
       const res = await axios.get("/api/CleaningAssignment/getAllAssignments", { withCredentials: true });
       setAssignments(res.data);
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to fetch assignments.");
     }
   };
 
@@ -48,7 +49,7 @@ export default function AssignmentsDashboard() {
       const res = await axios.get("/api/CleaningStaff/getAllCleaningStaff", { withCredentials: true });
       setCleaningStaffList(res.data);
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to fetch cleaning staff.");
     }
   };
 
@@ -63,7 +64,7 @@ export default function AssignmentsDashboard() {
       );
       setRooms(availableRooms);
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to fetch rooms.");
     }
   };
 
@@ -78,72 +79,26 @@ export default function AssignmentsDashboard() {
 
   const handleAddAssignment = async () => {
     if (!newAssignment.roomID || !newAssignment.cleaningStaffID) {
-      setMessage("Please select both a Room and a Cleaning Staff.");
-      setMessageType("danger");
+      toast.warn("Please select both a Room and a Cleaning Staff.");
       return;
     }
     if (!userID) {
-      setMessage("User ID not found. Please log in again.");
-      setMessageType("danger");
+      toast.error("User ID not found. Please log in again.");
       return;
     }
-    const parsedAssignment = {
-      roomID: parseInt(newAssignment.roomID),
-      cleaningStaffID: parseInt(newAssignment.cleaningStaffID),
-      status: newAssignment.status,
-      assignedByUserID: userID  // <--- use userID from state here
-    };
     try {
-      await axios.post("/api/CleaningAssignment/addAssignment", parsedAssignment, { withCredentials: true });
-      setMessage("Assignment added successfully.");
-      setMessageType("success");
+      await axios.post("/api/CleaningAssignment/addAssignment", {
+        ...newAssignment,
+        roomID: parseInt(newAssignment.roomID),
+        cleaningStaffID: parseInt(newAssignment.cleaningStaffID),
+        assignedByUserID: userID
+      }, { withCredentials: true });
+      toast.success("Assignment added successfully.");
       setNewAssignment({ roomID: '', cleaningStaffID: '', status: 'Pending', assignedByUserID: null });
       fetchAssignments();
     } catch (err) {
       const error = err.response?.data?.message || "Failed to add assignment.";
-      setMessage(error);
-      setMessageType("danger");
-    }
-  };
-
-  const handleConfirmUpdate = async () => {
-    const updated = {
-      roomID: parseInt(editRoomID),
-      status: editingAssignment.status || "Pending",  
-      startedAt: editingAssignment.startedAt || null,
-      finishedAt: editingAssignment.finishedAt || null
-    };
-
-    try {
-      await axios.put(`/api/CleaningAssignment/updateAssignment?id=${editingAssignment.cleaningAssignmentID}`, updated, { withCredentials: true });
-      setMessage("Assignment updated successfully.");
-      setMessageType("success");
-      setEditingAssignment(null);
-      fetchAssignments();
-    } catch (err) {
-      const error = err.response?.data?.message || "Failed to update assignment.";
-      setMessage(error);
-      setMessageType("danger");
-    }
-  };
-
-  const handleCancelAssignment = async (id) => {
-    try {
-      await axios.put(`/api/CleaningAssignment/cancelAssignment?id=${id}`, {}, { withCredentials: true });
-      fetchAssignments();
-    } catch (err) {
-      setMessage("Failed to cancel assignment.");
-      setMessageType("danger");
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`/api/CleaningAssignment/deleteAssignment?id=${id}`, { withCredentials: true });
-      fetchAssignments();
-    } catch (err) {
-      setMessage("Failed to delete assignment.");
-      setMessageType("danger");
+      toast.error(error);
     }
   };
 
@@ -152,43 +107,79 @@ export default function AssignmentsDashboard() {
     setEditRoomID(assignment.roomID);
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
+  const handleConfirmUpdate = async () => {
+    try {
+      await axios.put(`/api/CleaningAssignment/updateAssignment?id=${editingAssignment.cleaningAssignmentID}`, {
+        roomID: parseInt(editRoomID),
+        status: editingAssignment.status || "Pending",
+        startedAt: editingAssignment.startedAt || null,
+        finishedAt: editingAssignment.finishedAt || null
+      }, { withCredentials: true });
+      toast.success("Assignment updated successfully.");
+      setEditingAssignment(null);
+      fetchAssignments();
+    } catch (err) {
+      const error = err.response?.data?.message || "Failed to update assignment.";
+      toast.error(error);
+    }
   };
 
-  return (
-    <div className="d-flex flex-column flex-lg-row min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      <aside className="text-white p-4" style={{ minWidth: '240px', backgroundColor: '#324b6b' }}>
-        <h4 className="fw-bold mb-4"><i className="bi bi-building"></i> HotelMS</h4>
-        <ul className="nav flex-column">
-          <li className="nav-item">
-            <Link to="/manager/cleaning-staff" className="nav-link text-white">
-              <i className="bi bi-people-fill me-2"></i>Cleaning Staff
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/manager/assignments" className="nav-link text-white">
-              <i className="bi bi-list-task me-2"></i>Assignments
-            </Link>
-          </li>
-          <hr className="text-white" />
-          <button className="btn btn-outline-light w-100" onClick={handleLogout}><i className="bi bi-box-arrow-right me-2"></i> Logout</button>
-        </ul>
-      </aside>
+  const handleCancelAssignment = async (id) => {
+    try {
+      await axios.put(`/api/CleaningAssignment/cancelAssignment?id=${id}`, {}, { withCredentials: true });
+      toast.success("Assignment cancelled.");
+      fetchAssignments();
+    } catch (err) {
+      toast.error("Failed to cancel assignment.");
+    }
+  };
 
-      <main className="flex-grow-1 p-3">
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will permanently delete the assignment.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`/api/CleaningAssignment/deleteAssignment?id=${id}`, { withCredentials: true });
+        toast.success("Assignment deleted successfully.");
+        fetchAssignments();
+        Swal.fire('Deleted!', 'The assignment has been deleted.', 'success');
+      } catch (err) {
+        toast.error("Failed to delete assignment.");
+        Swal.fire('Error', 'Something went wrong while deleting.', 'error');
+      }
+    }
+  };
+
+  const formatDateTime = (datetimeString) => {
+    if (!datetimeString) return '-';
+    const dateObj = new Date(datetimeString);
+    return dateObj.toLocaleString();
+  };
+
+  if (isLoadingUser) {
+    return (
+      <div className="text-center mt-5">
+        <div className="spinner-border text-primary" role="status" aria-hidden="true"></div>
+        <div>Loading user info...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <main className="p-3" style={{ backgroundColor: '#f2f6fc', minHeight: '100vh' }}>
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-list-task me-2"></i>Cleaning Assignments
         </h2>
 
-        {message && (
-          <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
-            {message}
-            <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-          </div>
-        )}
-
+        {/* Add Assignment form */}
         <div className="card mb-4">
           <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
             <i className="bi bi-plus-circle me-2"></i>Add New Assignment
@@ -196,36 +187,48 @@ export default function AssignmentsDashboard() {
           <div className="card-body">
             <div className="row g-2">
               <div className="col-12 col-md-6">
-               <select
-  className="form-control"
-  value={newAssignment.roomID}
-  onChange={e => setNewAssignment({ ...newAssignment, roomID: e.target.value })}
->
-  <option value="">Select Room</option>
-  {rooms.map(room => (
-    <option key={room.roomID} value={room.roomID}>
-      {room.title} (#{room.roomNumber})
-    </option>
-  ))}
-</select>
-              </div>
-              <div className="col-12 col-md-6">
-                <select className="form-control" value={newAssignment.cleaningStaffID} onChange={e => setNewAssignment({ ...newAssignment, cleaningStaffID: e.target.value })}>
-                  <option key="select-staff-placeholder" value="">Select Cleaning Staff</option>
-                  {cleaningStaffList.map(staff => (
-                    <option key={`staff-${staff.cleaningStaffID}`} value={staff.cleaningStaffID}>
-                      {staff.firstName} {staff.lastName}
+                <select
+                  className="form-control"
+                  value={newAssignment.roomID}
+                  onChange={e => setNewAssignment({ ...newAssignment, roomID: e.target.value })}
+                >
+                  <option value="">Select Room</option>
+                  {rooms.map(room => (
+                    <option key={room.roomID} value={room.roomID}>
+                      {room.title} (#{room.roomNumber})
                     </option>
                   ))}
                 </select>
               </div>
+              <div className="col-12 col-md-6">
+                <select
+                  className="form-control"
+                  value={newAssignment.cleaningStaffID}
+                  onChange={e => setNewAssignment({ ...newAssignment, cleaningStaffID: e.target.value })}
+                >
+                  <option value="">Select Cleaning Staff</option>
+                  {cleaningStaffList
+                    .filter(staff => staff.isActive)
+                    .map(staff => (
+                      <option key={staff.cleaningStaffID} value={staff.cleaningStaffID}>
+                        {staff.firstName} {staff.lastName}
+                      </option>
+                    ))
+                  }
+                </select>
+              </div>
             </div>
-            <button className="btn btn-success w-100 mt-3" onClick={handleAddAssignment}>
+            <button
+              className="btn btn-success w-100 mt-3"
+              onClick={handleAddAssignment}
+              disabled={!userID}
+            >
               <i className="bi bi-check-circle me-2"></i>Add Assignment
             </button>
           </div>
         </div>
 
+        {/* Assignments list */}
         <div className="card">
           <div className="card-header" style={{ backgroundColor: '#7ca8d8', color: '#fff' }}>
             <i className="bi bi-table me-2"></i>Assignments List
@@ -260,18 +263,18 @@ export default function AssignmentsDashboard() {
                           {a.status}
                         </span>
                       </td>
-                      <td>{a.assignedAt?.split('T')[0]}</td>
-                      <td>{a.startedAt?.split('T')[0] || '-'}</td>
-                      <td>{a.finishedAt?.split('T')[0] || '-'}</td>
+                      <td>{formatDateTime(a.assignedAt)}</td>
+                      <td>{formatDateTime(a.startedAt)}</td>
+                      <td>{formatDateTime(a.finishedAt)}</td>
                       <td>
                         <div className="btn-group">
-                          <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(a)}>
+                          <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(a)} disabled={a.status !== 'Pending'}>
                             <i className="bi bi-pencil"></i>
                           </button>
-                          <button className="btn btn-sm btn-outline-warning" onClick={() => handleCancelAssignment(a.cleaningAssignmentID)}>
+                          <button className="btn btn-sm btn-outline-warning" onClick={() => handleCancelAssignment(a.cleaningAssignmentID)} disabled={a.status !== 'Pending'}>
                             <i className="bi bi-x-circle"></i>
                           </button>
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.cleaningAssignmentID)}>
+                          <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.cleaningAssignmentID)} disabled={a.status === 'InProgress'}>
                             <i className="bi bi-trash"></i>
                           </button>
                         </div>
@@ -292,14 +295,14 @@ export default function AssignmentsDashboard() {
             <div className="card-body">
               <div className="row g-2">
                 <div className="col-12 col-md-6">
-                <select className="form-control" value={editRoomID} onChange={e => setEditRoomID(e.target.value)}>
-  <option value="">Select Room</option>
-  {rooms.map(room => (
-    <option key={room.roomID} value={room.roomID}>
-      {room.title} (#{room.roomNumber})
-    </option>
-  ))}
-</select>
+                  <select className="form-control" value={editRoomID} onChange={e => setEditRoomID(e.target.value)}>
+                    <option value="">Select Room</option>
+                    {rooms.map(room => (
+                      <option key={room.roomID} value={room.roomID}>
+                        {room.title} (#{room.roomNumber})
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="col-12 col-md-6 d-flex align-items-end">
                   <button className="btn btn-primary me-2 w-100" onClick={handleConfirmUpdate}>
@@ -313,7 +316,6 @@ export default function AssignmentsDashboard() {
             </div>
           </div>
         )}
-
       </main>
     </div>
   );

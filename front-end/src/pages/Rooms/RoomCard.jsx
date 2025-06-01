@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import RoomSlider from "./RoomSlider";
 import "./Rooms.css";
 
-const BACKEND_BASE_URL = "https://yourbackend.com"; // Change this accordingly
+const BACKEND_BASE_URL = "https://yourbackend.com";
 
 const RoomCard = ({
   id,

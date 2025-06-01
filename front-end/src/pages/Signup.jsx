@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useAuth } from '../Context/AuthContext'; //  Import context
 
 const SignupPage = () => {
   const [user, setUser] = useState({
@@ -18,7 +19,9 @@ const SignupPage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
+  const { fetchUser } = useAuth(); // Access global fetchUser
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,8 +50,27 @@ const SignupPage = () => {
 
     try {
       const response = await axios.post('/api/Auth/register', user, { withCredentials: true });
+
       if (response.data.isLoggedIn) {
-        navigate('/login');
+        await fetchUser(); //  Set global role after signup
+
+        // Optionally fetch role again from /me if needed
+        const meRes = await axios.get('/api/Auth/me', { withCredentials: true });
+        const { role } = meRes.data;
+
+        switch (role) {
+          case 'Customer': navigate('/rooms'); break;
+          case 'Admin': navigate('/admin/room-types'); break;
+          case 'RoomManager': navigate('/manager/room-dashboard'); break;
+          case 'RoomRecepsionist': navigate('/recepsionist-dashboard'); break;
+          case 'CleaningManager': navigate('/manager/cleaning-staff'); break;
+          case 'CleaningStaff': navigate('/cleaningstaff/dashboard'); break;
+          case 'RestaurantManager': navigate('/restaurant-manager/dashboard'); break;
+          case 'RestaurantHost': navigate('/host/dashboard'); break;
+          default:
+            setError('Unknown role. Access denied.');
+            break;
+        }
       }
     } catch (err) {
       const message = err.response?.data?.message || err.message;
@@ -64,12 +86,6 @@ const SignupPage = () => {
         <form className="bg-white p-4 p-md-5 shadow-lg rounded" onSubmit={handleSubmit}>
           <h3 className="fw-bold text-center mb-3">Hotel Amé</h3>
           <h2 className="fw-bold text-center mb-3">Join the Experience</h2>
-          <p className="text-center text-muted mb-4">
-            Enjoy personalized experiences when you create your account and tell us more about yourself.
-            Already have an account?{' '}
-            <a href="/login" className="text-decoration-none" style={{ color: '#2a52be' }}>Log In</a>
-          </p>
-
           <div className="row">
             <div className="col-md-6 mb-3">
               <label className="form-label">First Name <span className="text-danger">*</span></label>
@@ -163,6 +179,12 @@ const SignupPage = () => {
           </div>
 
           {error && <div className="alert alert-danger">{error}</div>}
+
+          <p className="text-center text-muted mb-4">
+            Enjoy personalized experiences when you create your account and tell us more about yourself.
+            Already have an account?{' '}
+            <Link to="/login" className="text-decoration-none" style={{ color: '#2a52be' }}>Log In</Link>
+          </p>
 
           <button type="submit" className="btn btn-dark w-100">Sign Up</button>
         </form>

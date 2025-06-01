@@ -104,12 +104,13 @@ namespace HotelMS.Services
                 throw new Exception("An error occurred while fetching all cleaning staff.");
             }
         }
-
         public async Task<CleaningStaff> UpdateCleaningStaff(int id, CleaningStaffDTO request)
         {
             try
             {
-                var staff = await _dbContext.CleaningStaff.FindAsync(id);
+                var staff = await _dbContext.CleaningStaff
+                    .Include(cs => cs.User)
+                    .FirstOrDefaultAsync(cs => cs.CleaningStaffID == id);
 
                 if (staff == null)
                 {
@@ -120,6 +121,25 @@ namespace HotelMS.Services
                 staff.Shift = request.Shift;
                 staff.AssignedByUserID = request.AssignedByUserID;
 
+                if (!request.IsActive)
+                {
+                    // Set role to Customer
+                    var customerRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "Customer");
+                    if (customerRole != null && staff.User != null)
+                    {
+                        staff.User.RoleID = customerRole.RoleID;
+                    }
+                }
+                else
+                {
+                    // Set role to CleaningStaff
+                    var cleaningRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "CleaningStaff");
+                    if (cleaningRole != null && staff.User != null)
+                    {
+                        staff.User.RoleID = cleaningRole.RoleID;
+                    }
+                }
+
                 await _dbContext.SaveChangesAsync();
                 return staff;
             }
@@ -128,8 +148,9 @@ namespace HotelMS.Services
                 Console.WriteLine(ex.Message);
                 throw new Exception("An error occurred while attempting to update cleaning staff.");
             }
-
         }
+
+
 
         public async Task DeleteCleaningStaff(int id)
         {
@@ -139,6 +160,16 @@ namespace HotelMS.Services
 
                 if (staff != null)
                 {
+                    var user = await _dbContext.Users.FindAsync(staff.UserID);
+                    if (user != null)
+                    {
+                        var customerRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "Customer");
+                        if (customerRole != null)
+                        {
+                            user.RoleID = customerRole.RoleID; 
+                        }
+                    }
+
                     _dbContext.CleaningStaff.Remove(staff);
                     await _dbContext.SaveChangesAsync();
                 }
@@ -146,9 +177,10 @@ namespace HotelMS.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception("An error occurred while attempting to delete cleaning staff.");
+                throw new Exception("An error occurred while attempting to delete cleaning staff and revert role.");
             }
         }
+
         public async Task<IEnumerable<CleaningStaffDTO>> GetAllActive()
         {
             var list = await _dbContext.CleaningStaff

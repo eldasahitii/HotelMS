@@ -73,7 +73,7 @@ namespace HotelMS.Controllers
 
         [HttpDelete("DeleteImage")]
         [Authorize(Roles = "Admin,RoomManager")]
-        public async Task<IActionResult> DeleteImage(int imageId)
+        public async Task<IActionResult> DeleteImage([FromQuery] int imageId)
         {
             var image = await _roomImageService.GetImageById(imageId);
             if (image == null)
@@ -86,11 +86,11 @@ namespace HotelMS.Controllers
                 System.IO.File.Delete(filePath);
             }
 
-       
             await _roomImageService.DeleteImage(imageId);
 
             return NoContent();
         }
+
 
         [HttpGet("GetImagesByRoomTypeId/{roomTypeId}")]
         public async Task<ActionResult<IEnumerable<RoomImage>>> GetImagesByRoomTypeId(

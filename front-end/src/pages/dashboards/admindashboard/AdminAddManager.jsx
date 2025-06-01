@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const api = axios.create({
   baseURL: "https://localhost:7117/api",
@@ -29,7 +31,7 @@ export default function AddManager() {
       setManagers(res.data);
       setLoading(false);
     } catch (err) {
-      setError("Failed to load managers");
+      toast.error("Failed to load managers");
       setLoading(false);
     }
   };
@@ -39,7 +41,7 @@ export default function AddManager() {
       const res = await api.get("/Manager/GetManagerTypes");
       setManagerTypes(res.data);
     } catch {
-      setError("Failed to load manager types");
+      toast.error("Failed to load manager types");
     }
   };
 
@@ -49,7 +51,7 @@ export default function AddManager() {
       const res = await api.get("/User/GetAllCustomers");
       setUsers(res.data);
     } catch {
-      setError("Failed to load users");
+      toast.error("Failed to load users");
     }
   };
 
@@ -85,19 +87,19 @@ export default function AddManager() {
     setError("");
 
     if (!form.managerTypeID || !form.userID) {
-      setError("Please select both Manager Type and User");
+      toast.error("Please select both Manager Type and User");
       return;
     }
 
     const user = findUserById(form.userID);
     if (!user) {
-      setError("Selected user not found");
+      toast.error("Selected user not found");
       return;
     }
 
     const managerTypeName = findManagerTypeName(form.managerTypeID);
     if (!managerTypeName) {
-      setError("Selected manager type not found");
+      toast.error("Selected manager type not found");
       return;
     }
 
@@ -115,10 +117,10 @@ export default function AddManager() {
       setLoading(true);
       if (editingId) {
         await api.put(`/Manager/UpdateManager/${editingId}`, payload);
-        alert("Manager updated successfully");
+        toast.success("Manager updated successfully");
       } else {
         await api.post("/Manager/AddManager", payload);
-        alert("Manager added successfully");
+        toast.success("Manager added successfully");
       }
       setForm({ managerTypeID: "", userID: "" });
       setEditingId(null);
@@ -144,15 +146,26 @@ export default function AddManager() {
     setError("");
   };
 
-  const handleDeleteClick = async (id) => {
-    if (!window.confirm("Are you sure to delete this manager?")) return;
+const handleDeleteClick = async (id) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'You will not be able to recover this manager!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+  });
+
+  if (result.isConfirmed) {
     try {
       await api.delete(`/Manager/DeleteManager/${id}`);
       fetchManagers();
+      toast.success("Manager deleted successfully");
     } catch (err) {
-      alert("Delete failed: " + (err.response?.data || err.message));
+      toast.error("Delete failed: " + (err.response?.data || err.message));
     }
-  };
+  }
+};
 
   const handleCancel = () => {
     setEditingId(null);
@@ -162,44 +175,6 @@ export default function AddManager() {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-      <aside
-        className="text-white p-4"
-        style={{ width: "240px", backgroundColor: "#324b6b" }}
-      >
-        <h4 className="fw-bold mb-4">
-          <i className="bi bi-people"></i> HotelMS
-        </h4>
-        <ul className="nav flex-column">
-          <li className="nav-item mb-3 text-white">
-            <i className="bi bi-person-badge me-2"></i> Manager Management
-          </li>
-          <button
-            type="button"
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/manager/room-dashboard")}
-          >
-            <i className="bi bi-house-door me-2"></i> Room Management
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/admin/reservation-dashboard")}
-          >
-            <i className="bi bi-journal-check me-2"></i> Room Reservation List
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline-light w-100 mt-2"
-            onClick={() => {
-              localStorage.clear();
-              navigate("/login");
-            }}
-          >
-            <i className="bi bi-box-arrow-right me-2"></i> Logout
-          </button>
-        </ul>
-      </aside>
-
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-person-lines-fill me-2"></i> Manager Management
@@ -245,6 +220,7 @@ export default function AddManager() {
                 value={form.userID}
                 onChange={handleChange}
                 required
+                 disabled={editingId !== null}
               >
                 <option value="">-- Select User --</option>
                 {users.map((user) => (

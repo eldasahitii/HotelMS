@@ -1,4 +1,5 @@
-﻿using HotelMS.Data.DTO;
+﻿using HotelMS.Data;
+using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,15 +11,17 @@ namespace HotelMS.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "RestaurantHost")]
+    [Authorize(Roles = "RestaurantHost, RestaurantManager, Admin")]
     public class HostController : ControllerBase
     {
        
             private readonly IHostService _service;
+            private readonly DataContext _context;
 
-            public HostController(IHostService service)
+        public HostController(IHostService service, DataContext context)
             {
                 _service = service;
+                _context = context;
             }
 
             [HttpGet("getAllReservations")]
@@ -35,7 +38,21 @@ namespace HotelMS.Controllers
                 }
             }
 
-            [HttpGet("getReservation")]
+        [HttpGet("getAllGuests")]
+        public async Task<IActionResult> GetAllGuests()
+        {
+            try
+            {
+                var guests = await _context.RestaurantGuests.ToListAsync();
+                return Ok(guests);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Failed to load guests: " + (ex.InnerException?.Message ?? ex.Message));
+            }
+        }
+
+        [HttpGet("getReservation")]
             public async Task<IActionResult> GetReservation(int id)
             {
                 try
@@ -52,7 +69,7 @@ namespace HotelMS.Controllers
             }
 
         [HttpPost("createReservation")]
-        public async Task<IActionResult> CreateReservation([FromBody] RestaurantReservation request)
+        public async Task<IActionResult> CreateReservation([FromBody] RestaurantReservationCreateDTO request)
         {
             try
             {
@@ -64,6 +81,40 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("createReservationWithGuest")]
+        public async Task<IActionResult> CreateReservationWithGuest([FromBody] RestaurantReservationGuestDTO dto)
+        {
+            try
+            {
+                var result = await _service.CreateReservationWithGuestAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpPost("createReservationByEmail")]
+        [Authorize(Roles = "RestaurantHost")]
+        public async Task<IActionResult> CreateReservationByEmail([FromBody] RestaurantReservationUserDTO dto)
+        {
+            try
+            {
+                var result = await _service.CreateReservationForUserByEmailAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
+
 
         [HttpDelete("cancelReservation")]
             public async Task<IActionResult> CancelReservation(int id)

@@ -23,5 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # Ignore local SSL certs
-certs/localhost.pem
-certs/localhost-key.pem
+front-end/certs/localhost.pem
+front-end/certs/localhost-key.pem

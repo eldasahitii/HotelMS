@@ -1,5 +1,6 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using HotelMS.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetRoom")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
+        //[Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
         public async Task<IActionResult> GetRoom(int id)
         {
             try
@@ -48,7 +49,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetAllRooms")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,CleaningManager")]
+        //[Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,CleaningManager")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -132,6 +133,13 @@ namespace HotelMS.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpGet("GetRoomAvailability")]
+        public async Task<ActionResult<IEnumerable<RoomAvailabilityDTO>>> GetRoomAvailability()
+        {
+            var availability = await _service.GetRoomAvailability();
+            return Ok(availability);
         }
     }
 }
