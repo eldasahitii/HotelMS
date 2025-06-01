@@ -187,12 +187,14 @@ function App() {
              </ProtectedRoute>
             } />
 
-          <Route path="/service/recepcionist-dashboard" 
-           element={
-            <ProtectedRoute allowedRoles={['ServiceRecepcionist']}>
-              <ServiceRecepcionist />
+        <Route path="/service/recepcionist-dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={['ServiceRecepsionist']}> // ✅ FIXED
+             <ServiceRecepcionist />
             </ProtectedRoute>
-            } />
+          }
+        />
+
 
             <Route path="*" element={<div>Page Not Found</div>} />
           </Routes>
