@@ -62,6 +62,7 @@ const Header = () => {
     { path: "/admin/reservationstatus", label: "Add Reservation Status" },
     { path: "/admin/reservation-dashboard", label: "Room Reservations" },
     { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
+    { path: "/admin/cleaning-dashboard", label: "Cleaning Dashboard" },
   ],
     // Add more roles here
   };
