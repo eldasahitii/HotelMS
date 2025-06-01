@@ -22,6 +22,13 @@ export default function DashboardNavbar({ role }) {
     { path: "room-manager/review-dashboard", label: "Room Reviews" },
     { path: "/room-manager-receptionist-management", label: "Manage Recepsionists" },
   ],
+    RoomRecepsionist: [
+    { path: "/recepsionist-dashboard", label: "Room Availability Dashboard" },
+    { path: "/recepsionist-reservations", label: "Room Reservations" },
+  ],
+      Customer: [
+    { path: "/user/profile", label: "My Profile" },
+  ],
     // Add other roles here...
   };
 

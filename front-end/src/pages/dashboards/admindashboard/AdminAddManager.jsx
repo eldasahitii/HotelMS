@@ -175,48 +175,6 @@ const handleDeleteClick = async (id) => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-      <aside
-        className="text-white p-4"
-        style={{ width: "240px", backgroundColor: "#324b6b" }}
-      >
-        <h4 className="fw-bold mb-4">
-          <i className="bi bi-people"></i> HotelMS
-        </h4>
-        <ul className="nav flex-column">
-          <li className="nav-item mb-3 text-white">
-            <i className="bi bi-person-badge me-2"></i> Manager Management
-          </li>
-           <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/admin/room-types")}
-          >
-            <i className="bi bi-house-door me-2"></i> Add Room Type
-          </button>
-               <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/admin/roomstatus")}
-          >
-            <i className="bi bi-house-door me-2"></i> Add Room Status
-          </button>
-                                           <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/admin/reservationstatus")}
-          >
-            <i className="bi bi-house-door me-2"></i> Add Reservation Status
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline-light w-100 mt-2"
-            onClick={() => {
-              localStorage.clear();
-              navigate("/login");
-            }}
-          >
-            <i className="bi bi-box-arrow-right me-2"></i> Logout
-          </button>
-        </ul>
-      </aside>
-
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-person-lines-fill me-2"></i> Manager Management

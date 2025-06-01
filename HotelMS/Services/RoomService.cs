@@ -154,6 +154,22 @@ namespace HotelMS.Services
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<RoomAvailabilityDTO>> GetRoomAvailability()
+        {
+            var availabilityData = await _dbContext.Rooms
+                .GroupBy(r => r.RoomTypeID)
+                .Select(g => new RoomAvailabilityDTO
+                {
+                    RoomTypeID = g.Key,
+                    TotalRooms = g.Count(),
+                    AvailableRooms = g.Count(r => r.RoomStatusID == 1) 
+                })
+                .ToListAsync();
+
+            return availabilityData;
+        }
+
+
 
 
     }

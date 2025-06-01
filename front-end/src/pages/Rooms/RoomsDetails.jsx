@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 export default function RoomsDetails() {
   const { roomId } = useParams();
   const [room, setRoom] = useState(null);
+  const [isAvailable, setIsAvailable] = useState(null);
   const [error, setError] = useState(null);
   const backendBaseUrl = "https://localhost:7117/";
   const navigate = useNavigate();
@@ -37,43 +38,63 @@ export default function RoomsDetails() {
         setError("Failed to load room details.");
       }
     };
+
+    const fetchAvailability = async () => {
+      try {
+        const res = await axios.get(`${backendBaseUrl}api/Room/GetRoomAvailability`, {
+          withCredentials: true,
+        });
+
+        const availabilityArray = res.data;
+        const roomAvailability = availabilityArray.find(
+          (item) => item.roomTypeID.toString() === roomId.toString()
+        );
+
+        if (roomAvailability) {
+          setIsAvailable(roomAvailability.availableRooms > 0);
+        } else {
+          setIsAvailable(false);
+        }
+      } catch (err) {
+        console.error("Failed to fetch availability:", err);
+        setIsAvailable(false);
+      }
+    };
+
     fetchRoomDetails();
+    fetchAvailability();
   }, [roomId]);
 
-const handleBookNow = async () => {
-  if (!room?.id) {
-    alert("Room data not loaded yet.");
-    return;
-  }
+  const handleBookNow = async () => {
+    if (!room?.id) {
+      alert("Room data not loaded yet.");
+      return;
+    }
 
-  try {
-    const authCheck = await axios.get(`${backendBaseUrl}api/Auth/me`, {
-      withCredentials: true,
-    });
+    try {
+      const authCheck = await axios.get(`${backendBaseUrl}api/Auth/me`, {
+        withCredentials: true,
+      });
 
-    console.log("Auth response:", authCheck.data);
-
-    if (authCheck.data && authCheck.data.userID) {
-      navigate(`/reserve?roomTypeId=${room.id}`);
-    } else {
+      if (authCheck.data && authCheck.data.userID) {
+        navigate(`/reserve?roomTypeId=${room.id}`);
+      } else {
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error("Auth error:", err);
       navigate("/login");
     }
-  } catch (err) {
-    console.error("Auth error:", err);
-    navigate("/login");
-  }
-};
-
+  };
 
   if (error) return <div className="alert alert-danger m-3">{error}</div>;
-  if (!room) return <div className="m-3">Loading room details...</div>;
+  if (!room || isAvailable === null) return <div className="m-3">Loading room details...</div>;
 
   const selectedImages = room.images.slice(-3);
   const customFontFamily = "'Crimson Text', serif";
-
   const keywordsToBold = ["pool", "breakfast", "wifi", "room service"];
 
-  // Styles for Capacity/Size block (with margin bottom)
+  // Styles
   const capSizeStyle = {
     fontSize: "1.25rem",
     lineHeight: 1.3,
@@ -82,7 +103,6 @@ const handleBookNow = async () => {
     color: "#333",
   };
 
-  // Styles for description paragraph (no margin, tight line spacing)
   const descriptionStyle = {
     fontSize: "1.15rem",
     lineHeight: 1.5,
@@ -94,11 +114,9 @@ const handleBookNow = async () => {
 
   return (
     <>
-      {/* Images container with no padding, no gutters */}
       {selectedImages.length > 0 && (
         <div className="container-fluid px-0 mt-4">
           <div className="row g-0 justify-content-center align-items-center">
-            {/* Left Image - no padding, touches left edge */}
             <div className="col-12 col-md-3 ps-0 pe-0 pe-md-2">
               <img
                 src={selectedImages[0]}
@@ -107,8 +125,6 @@ const handleBookNow = async () => {
                 style={{ height: 400, objectFit: "cover" }}
               />
             </div>
-
-            {/* Middle Image with horizontal padding */}
             <div className="col-12 col-md-6 px-3 my-3 my-md-0">
               <img
                 src={selectedImages[1]}
@@ -117,8 +133,6 @@ const handleBookNow = async () => {
                 style={{ height: 400, objectFit: "cover" }}
               />
             </div>
-
-            {/* Right Image - no padding, touches right edge */}
             <div className="col-12 col-md-3 pe-0 ps-0 ps-md-2">
               <img
                 src={selectedImages[2]}
@@ -131,7 +145,6 @@ const handleBookNow = async () => {
         </div>
       )}
 
-      {/* Room details */}
       <div
         className="container my-5 p-4 rounded shadow-sm"
         style={{
@@ -180,27 +193,38 @@ const handleBookNow = async () => {
           )}
         </p>
 
-<div className="text-center mt-5">
-  <button
-    onClick={handleBookNow}
-    className="btn btn-lg px-5"
-    style={{
-      backgroundColor: "#28a745", // bootstrap success green
-      color: "white",
-      borderRadius: "30px",
-      fontWeight: "600",
-      letterSpacing: "0.05em",
-      transition: "background-color 0.3s ease",
-      border: "none",
-    }}
-    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1e7e34")} // darker green
-    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#28a745")}
-  >
-    Book Now
-  </button>
+        {!isAvailable && (
+<div className="alert alert-danger text-center fw-semibold fs-5 mx-auto" style={{ maxWidth: 400 }}>
+  Sorry, this room is currently <strong>unavailable</strong>.
 </div>
 
+        )}
 
+        <div className="text-center mt-4">
+          <button
+            onClick={handleBookNow}
+            className="btn btn-lg px-5"
+            style={{
+              backgroundColor: isAvailable ? "#28a745" : "#6c757d",
+              color: "white",
+              borderRadius: "30px",
+              fontWeight: "600",
+              letterSpacing: "0.05em",
+              transition: "background-color 0.3s ease",
+              border: "none",
+              cursor: isAvailable ? "pointer" : "not-allowed",
+            }}
+            disabled={!isAvailable}
+            onMouseEnter={(e) => {
+              if (isAvailable) e.currentTarget.style.backgroundColor = "#1e7e34";
+            }}
+            onMouseLeave={(e) => {
+              if (isAvailable) e.currentTarget.style.backgroundColor = "#28a745";
+            }}
+          >
+            Book Now
+          </button>
+        </div>
       </div>
     </>
   );
