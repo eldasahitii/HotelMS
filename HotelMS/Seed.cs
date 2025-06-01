@@ -702,12 +702,12 @@ public class Seed
         {
             var homepageSettings = new RestaurantSettings
             {
-                WelcomeTitle = "Welcome to Rolve Restaurant",
-                WelcomeMessage = "Discover the essence of fine dining at Rolve Restaurant, where every dish is crafted with organic ingredients, timeless flavors, and a passion for culinary excellence.",
+                WelcomeTitle = "Welcome to Amé Restaurant",
+                WelcomeMessage = "Discover the essence of fine dining at Amé Restaurant, where every dish is crafted with organic ingredients, timeless flavors, and a passion for culinary excellence.",
                 WelcomeImageUrl = "/Images/restaurant/restaurant.jpg", // Path should match your frontend assets or be publicly hosted
 
-                AboutTitle = "About Rolve Restaurant",
-                AboutMessage = "At Rolve Restaurant, we believe food should not only taste amazing but also be nourishing. Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring every dish to life.",
+                AboutTitle = "About Amé Restaurant",
+                AboutMessage = "At Amé Restaurant, we believe food should not only taste amazing but also be nourishing. Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring every dish to life.",
                 AboutImageUrl1 = "/Images/restaurant/restaurantTerrace.jpg",
                 AboutImageUrl2 = "/Images/restaurant/restaurantInterior.jpg"
             };

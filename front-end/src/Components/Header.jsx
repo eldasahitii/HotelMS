@@ -61,7 +61,11 @@ const Header = () => {
     { path: "/admin/roomstatus", label: "Add Room Status" },
     { path: "/admin/reservationstatus", label: "Add Reservation Status" },
     { path: "/admin/reservation-dashboard", label: "Room Reservations" },
-    { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
+    // { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
+    { path: "/admin/restaurant-hosts", label: "Add Restaurant Host"},
+    { path: "/admin/restaurant-menu", label: "Restaurant Menu"},
+    { path: "/admin/restaurant-tables", label: "Restaurant Tables"},
+    { path: "/admin/restaurant-reservations", label: "Restaurant Reservations"},
   ],
     // Add more roles here
     RestaurantManager: [

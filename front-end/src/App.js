@@ -25,7 +25,6 @@ import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
 import ReviewDashboard from './pages/dashboards/roomdashboards/managerdashboards/ReviewDashboard';
 import RestaurantHomePage from './pages/restaurant/RestaurantHomePage';
 import RestaurantMenuPage from './pages/restaurant/RestaurantMenuPage';
-import RestaurantAdmin from './pages/dashboards/admindashboard/RestaurantAdmin/AdminRestaurant';
 import AdminRoomStatus from './pages/dashboards/admindashboard/AdminRoomStatus';
 import AdminRoomReservationStatus from './pages/dashboards/admindashboard/AdminReservationStatus';
 import UserInfo from './pages/dashboards/userdashboard/UserInfo';
@@ -43,6 +42,10 @@ const MenuDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards
 const TableDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/managerdashboards/TableDashboard'));
 const ReservationOverviewDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/managerdashboards/ReservationOverviewDashboard'));
 const RestaurantHostDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/hostdashboard/RestaurantHostDashboard'));
+const AssignHostSection = lazy(() => import('./pages/dashboards/admindashboard/RestaurantAdmin/AssignHostSection'));
+const MenuSection = lazy(() => import('./pages/dashboards/admindashboard/RestaurantAdmin/MenuSection'));
+const TableSection = lazy(() => import('./pages/dashboards/admindashboard/RestaurantAdmin/TableSection'));
+const ReservationSection = lazy(() => import('./pages/dashboards/admindashboard/RestaurantAdmin/ReservationSection'));
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const [authorized, setAuthorized] = React.useState(null);
@@ -236,11 +239,31 @@ function App() {
   }
 />
 
-              <Route path="/admin/restaurant-dashboard" element={
-                <ProtectedRoute allowedRoles={['Admin']}>
-                  <RestaurantAdmin />
-                </ProtectedRoute>
-              }/>
+            
+ <Route path="/admin/restaurant-hosts" element={
+  <ProtectedRoute allowedRoles={['Admin']}>
+    <AssignHostSection />
+  </ProtectedRoute>
+} />
+
+<Route path="/admin/restaurant-menu" element={
+  <ProtectedRoute allowedRoles={['Admin']}>
+    <MenuSection />
+  </ProtectedRoute>
+} />
+
+<Route path="/admin/restaurant-tables" element={
+  <ProtectedRoute allowedRoles={['Admin']}>
+    <TableSection />
+  </ProtectedRoute>
+} />
+
+<Route path="/admin/restaurant-reservations" element={
+  <ProtectedRoute allowedRoles={['Admin']}>
+    <ReservationSection />
+  </ProtectedRoute>
+} />
+
 
               <Route path="/restaurant-manager/dashboard" element={<Navigate to="/manager/restaurant-hosts" />} />
 
