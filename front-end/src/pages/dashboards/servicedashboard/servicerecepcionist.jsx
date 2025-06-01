@@ -133,82 +133,115 @@
 
 // File: ServiceRecepcionistDashboard.jsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-axios.defaults.withCredentials = true; // Enable sending cookies
+axios.defaults.withCredentials = true; // send cookies with requests
 
-export default function ServiceRecepcionistDashboard() {
+export default function ServiceReceptionistDashboard() {
   const navigate = useNavigate();
 
   const [currentUserName, setCurrentUserName] = useState("");
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [actionLoading, setActionLoading] = useState(false);
 
-  const fetchCurrentUserInfo = async () => {
+  // Axios interceptor for 401 Unauthorized
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        if (error.response?.status === 401) {
+          // Try refresh token
+          try {
+            await axios.post("https://localhost:7117/api/auth/refresh");
+            // Retry original request
+            return axios(error.config);
+          } catch (refreshError) {
+            // Redirect to login if refresh fails
+            navigate("/login");
+            return Promise.reject(refreshError);
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => axios.interceptors.response.eject(interceptor);
+  }, [navigate]);
+
+  // Fetch current user info
+  const fetchCurrentUserInfo = useCallback(async () => {
+    setError("");
     try {
       const res = await axios.get("https://localhost:7117/api/auth/me");
-      const { userId, role } = res.data;
+      const { firstName, lastName, role } = res.data;
 
-      // Optional: check role if you want to restrict access
       if (role !== "Receptionist") {
         setError("Access denied.");
         return;
       }
 
-      // Fetch full user details by ID if needed
-      const userRes = await axios.get(`https://localhost:7117/api/User`, {
-        params: { id: userId },
-      });
-      const user = userRes.data;
-      setCurrentUserName(`${user.firstName} ${user.lastName}`);
+      setCurrentUserName(`${firstName} ${lastName}`);
     } catch (err) {
       console.error(err);
       setError("You are not authorized. Please log in.");
+      navigate("/login");
     }
-  };
+  }, [navigate]);
 
-  const fetchReservations = async () => {
+  // Fetch reservations
+  const fetchReservations = useCallback(async () => {
+    setError("");
+    setLoading(true);
     try {
-      setLoading(true);
       const res = await axios.get(
         "https://localhost:7117/api/HotelServiceReservation/GetAllReservations"
       );
       setReservations(res.data);
-      setLoading(false);
     } catch (err) {
-      console.error("Fetch error:", err);
+      console.error(err);
       setError("Failed to fetch reservations.");
+    } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
+  // Cancel reservation
   const handleCancel = async (id) => {
     if (!window.confirm("Cancel this reservation?")) return;
+    setActionLoading(true);
     try {
       await axios.delete(
         `https://localhost:7117/api/HotelServiceReservation/staffCancelReservation?id=${id}`
       );
-      fetchReservations();
+      await fetchReservations();
     } catch (err) {
       alert("Failed to cancel reservation.");
+    } finally {
+      setActionLoading(false);
     }
   };
 
+  // Mark reservation completed
   const handleMarkCompleted = async (id) => {
+    setActionLoading(true);
     try {
       await axios.post(
         "https://localhost:7117/api/HotelServiceReservation/MarkReservationCompleted",
         { reservationID: id }
       );
-      fetchReservations();
+      await fetchReservations();
     } catch (err) {
       alert("Failed to mark as completed.");
+    } finally {
+      setActionLoading(false);
     }
   };
 
+  // Logout
   const handleLogout = async () => {
     try {
       await axios.post("https://localhost:7117/api/auth/logout");
@@ -219,10 +252,11 @@ export default function ServiceRecepcionistDashboard() {
     }
   };
 
+  // On mount fetch data
   useEffect(() => {
     fetchCurrentUserInfo();
     fetchReservations();
-  }, []);
+  }, [fetchCurrentUserInfo, fetchReservations]);
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f4f6fa" }}>
@@ -237,7 +271,11 @@ export default function ServiceRecepcionistDashboard() {
         >
           Dashboard
         </button>
-        <button className="btn btn-outline-light w-100" onClick={handleLogout}>
+        <button
+          className="btn btn-outline-light w-100"
+          onClick={handleLogout}
+          disabled={actionLoading}
+        >
           Logout
         </button>
       </aside>
@@ -278,12 +316,14 @@ export default function ServiceRecepcionistDashboard() {
                     <button
                       className="btn btn-sm btn-danger me-2"
                       onClick={() => handleCancel(r.reservationID)}
+                      disabled={actionLoading}
                     >
                       Cancel
                     </button>
                     <button
                       className="btn btn-sm btn-success"
                       onClick={() => handleMarkCompleted(r.reservationID)}
+                      disabled={actionLoading}
                     >
                       Complete
                     </button>
@@ -297,6 +337,5 @@ export default function ServiceRecepcionistDashboard() {
     </div>
   );
 }
-
 
 
