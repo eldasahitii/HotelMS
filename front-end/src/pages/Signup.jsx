@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { useAuth } from '../Context/AuthContext'; //  Import context
+import { useAuth } from '../Context/AuthContext';
 
 const SignupPage = () => {
   const [user, setUser] = useState({
@@ -21,7 +21,7 @@ const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-  const { fetchUser } = useAuth(); // Access global fetchUser
+  const { fetchUser } = useAuth(); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,9 +52,8 @@ const SignupPage = () => {
       const response = await axios.post('/api/Auth/register', user, { withCredentials: true });
 
       if (response.data.isLoggedIn) {
-        await fetchUser(); //  Set global role after signup
+        await fetchUser(); 
 
-        // Optionally fetch role again from /me if needed
         const meRes = await axios.get('/api/Auth/me', { withCredentials: true });
         const { role } = meRes.data;
 
