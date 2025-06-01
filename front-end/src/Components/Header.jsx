@@ -55,6 +55,14 @@ const Header = () => {
           Customer: [
     { path: "/user/profile", label: "My Profile" },
   ],
+         Admin: [
+    { path: "/admin/room-types", label: "Add Room Types" },
+    { path: "/admin/add-manager", label: "Add Manager" },
+    { path: "/admin/roomstatus", label: "Add Room Status" },
+    { path: "/admin/reservationstatus", label: "Add Reservation Status" },
+    { path: "/admin/reservation-dashboard", label: "Room Reservations" },
+    { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
+  ],
     // Add more roles here
     RestaurantManager: [
       { path: "/manager/restaurant-hosts", label: "Hosts"},
