@@ -15,7 +15,7 @@ namespace HotelMS.Data.Interfaces
 
 
 
-        Task<HostDTO> CreateHostAsync(HostDTO hostDto);
+        //Task<HostDTO> CreateHostAsync(HostDTO hostDto);
 
         Task<bool> DeleteHostAsync(int userId);
     }

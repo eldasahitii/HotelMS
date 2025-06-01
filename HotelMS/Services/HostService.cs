@@ -56,43 +56,43 @@ namespace HotelMS.Services
                 .FirstOrDefaultAsync(r => r.ReservationID == id);
         }
 
-        public async Task<RestaurantReservationDTO> CreateReservationAsync(RestaurantReservationCreateDTO dto)
-        {
+        //public async Task<RestaurantReservationDTO> CreateReservationAsync(RestaurantReservationCreateDTO dto)
+        //{
 
-            bool isBooked = await _dbContext.RestaurantReservations.AnyAsync(r => r.RestaurantTableID == dto.RestaurantTableID && r.date_time == dto.DateTime && r.status != "Canceled");
+        //    bool isBooked = await _dbContext.RestaurantReservations.AnyAsync(r => r.RestaurantTableID == dto.RestaurantTableID && r.date_time == dto.DateTime && r.status != "Canceled");
 
-                if(isBooked)
-            {
-                throw new Exception("This table is already booked at the selected date and time.");
-            }
+        //        if(isBooked)
+        //    {
+        //        throw new Exception("This table is already booked at the selected date and time.");
+        //    }
             
-            var reservation = new RestaurantReservation
-            {
-                GuestID = dto.GuestID,
-                RestaurantTableID = dto.RestaurantTableID,
-                date_time = dto.DateTime,
-                status = dto.Status
-            };
+        //    var reservation = new RestaurantReservation
+        //    {
+        //        GuestID = dto.GuestID,
+        //        RestaurantTableID = dto.RestaurantTableID,
+        //        date_time = dto.DateTime,
+        //        status = dto.Status
+        //    };
 
-            _dbContext.RestaurantReservations.Add(reservation);
-            await _dbContext.SaveChangesAsync();
-
-            
-            var table = await _dbContext.RestaurantTables
-                .FirstOrDefaultAsync(t => t.RestaurantTableID == dto.RestaurantTableID);
+        //    _dbContext.RestaurantReservations.Add(reservation);
+        //    await _dbContext.SaveChangesAsync();
 
             
-            return new RestaurantReservationDTO
-            {
-                ReservationID = reservation.ReservationID,
-                GuestID = reservation.GuestID,
-                RestaurantTableID = reservation.RestaurantTableID,
-                TableNumber = table?.TableNumber ?? 0, 
-                DateTime = reservation.date_time,
-                Status = reservation.status,
-                GuestName = "" 
-            };
-        }
+        //    var table = await _dbContext.RestaurantTables
+        //        .FirstOrDefaultAsync(t => t.RestaurantTableID == dto.RestaurantTableID);
+
+            
+        //    return new RestaurantReservationDTO
+        //    {
+        //        ReservationID = reservation.ReservationID,
+        //        GuestID = reservation.GuestID,
+        //        RestaurantTableID = reservation.RestaurantTableID,
+        //        TableNumber = table?.TableNumber ?? 0, 
+        //        DateTime = reservation.date_time,
+        //        Status = reservation.status,
+        //        GuestName = "" 
+        //    };
+        //}
 
 
 
@@ -152,7 +152,7 @@ namespace HotelMS.Services
                     GuestID = guest.GuestID,
                     RestaurantTableID = availableTable.RestaurantTableID,
                     date_time = dto.DateTime,
-                    status = "Booked"
+                    status = "Occupied"
                 };
 
                 _dbContext.RestaurantReservations.Add(reservation);
@@ -178,38 +178,118 @@ namespace HotelMS.Services
         }
 
 
+        //public async Task<RestaurantReservationDTO> CreateReservationForUserByEmailAsync(RestaurantReservationUserDTO dto)
+        //{
+        //    var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == dto.Email.ToLower());
+        //    if (user == null)
+        //        throw new Exception("User not found with this email.");
+
+        //    if (dto.DateTime <= DateTime.Now)
+        //        throw new Exception("Reservation must be for a future time.");
+
+        //    if (dto.DateTime.Hour < 10 || dto.DateTime.Hour >= 22)
+        //        throw new Exception("Reservations are allowed only between 10:00 and 22:00.");
+
+        //    int duration = 90;
+        //    var newStart = dto.DateTime;
+        //    var newEnd = newStart.AddMinutes(duration);
+
+        //    // Auto-assign the first available table
+        //    var availableTable = await _dbContext.RestaurantTables
+        //        .Where(t => !_dbContext.RestaurantReservations.Any(r =>
+        //            r.RestaurantTableID == t.RestaurantTableID &&
+        //            r.status != "Canceled" &&
+        //            r.date_time < newEnd &&
+        //            r.date_time.AddMinutes(duration) > newStart))
+        //        .FirstOrDefaultAsync();
+
+        //    if (availableTable == null)
+        //        throw new Exception("No available tables at the selected time.");
+
+        //    var reservation = new RestaurantReservation
+        //    {
+        //        UserID = user.UserID,
+        //        RestaurantTableID = availableTable.RestaurantTableID,
+        //        date_time = dto.DateTime,
+        //        status = string.IsNullOrWhiteSpace(dto.Status) ? "Booked" : dto.Status
+        //    };
+
+        //    _dbContext.RestaurantReservations.Add(reservation);
+        //    await _dbContext.SaveChangesAsync();
+
+        //    return new RestaurantReservationDTO
+        //    {
+        //        ReservationID = reservation.ReservationID,
+        //        GuestName = $"{user.FirstName} {user.LastName}",
+        //        Email = user.Email,
+        //        PhoneNumber = user.Phone,
+        //        RestaurantTableID = availableTable.RestaurantTableID,
+        //        TableNumber = availableTable.TableNumber,
+        //        DateTime = reservation.date_time,
+        //        Status = reservation.status
+        //    };
+        //}
         public async Task<RestaurantReservationDTO> CreateReservationForUserByEmailAsync(RestaurantReservationUserDTO dto)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == dto.Email.ToLower());
             if (user == null)
                 throw new Exception("User not found with this email.");
 
+            if (dto.DateTime <= DateTime.Now)
+                throw new Exception("Reservation must be for a future time.");
+
+            if (dto.DateTime.Hour < 10 || dto.DateTime.Hour >= 22)
+                throw new Exception("Reservations are allowed only between 10:00 and 22:00.");
+
             int duration = 90;
             var newStart = dto.DateTime;
             var newEnd = newStart.AddMinutes(duration);
 
-            bool isBooked = await _dbContext.RestaurantReservations.AnyAsync(r =>
-                r.RestaurantTableID == dto.RestaurantTableID &&
-                r.status != "Canceled" &&
-                r.date_time < newEnd &&
-                r.date_time.AddMinutes(duration) > newStart
-            );
+            int assignedTableID;
 
-            if (isBooked)
-                throw new Exception("This table is already booked at the selected time.");
+            if (dto.RestaurantTableID > 0)
+            {
+                // Validate the selected table is available
+                bool isBooked = await _dbContext.RestaurantReservations.AnyAsync(r =>
+                    r.RestaurantTableID == dto.RestaurantTableID &&
+                    r.status != "Canceled" &&
+                    r.date_time < newEnd &&
+                    r.date_time.AddMinutes(duration) > newStart);
+
+                if (isBooked)
+                    throw new Exception("Selected table is already booked at the chosen time.");
+
+                assignedTableID = dto.RestaurantTableID;
+            }
+            else
+            {
+                // Auto-assign the first available table
+                var availableTable = await _dbContext.RestaurantTables
+                    .Where(t => !_dbContext.RestaurantReservations.Any(r =>
+                        r.RestaurantTableID == t.RestaurantTableID &&
+                        r.status != "Canceled" &&
+                        r.date_time < newEnd &&
+                        r.date_time.AddMinutes(duration) > newStart))
+                    .FirstOrDefaultAsync();
+
+                if (availableTable == null)
+                    throw new Exception("No available tables at the selected time.");
+
+                assignedTableID = availableTable.RestaurantTableID;
+            }
 
             var reservation = new RestaurantReservation
             {
                 UserID = user.UserID,
-                RestaurantTableID = dto.RestaurantTableID,
+                RestaurantTableID = assignedTableID,
                 date_time = dto.DateTime,
-                status = dto.Status
+                status = string.IsNullOrWhiteSpace(dto.Status) ? "Occupied" : dto.Status
             };
 
             _dbContext.RestaurantReservations.Add(reservation);
             await _dbContext.SaveChangesAsync();
 
-            var table = await _dbContext.RestaurantTables.FindAsync(dto.RestaurantTableID);
+            var table = await _dbContext.RestaurantTables.FindAsync(assignedTableID);
 
             return new RestaurantReservationDTO
             {
@@ -217,12 +297,13 @@ namespace HotelMS.Services
                 GuestName = $"{user.FirstName} {user.LastName}",
                 Email = user.Email,
                 PhoneNumber = user.Phone,
-                RestaurantTableID = reservation.RestaurantTableID,
+                RestaurantTableID = assignedTableID,
                 TableNumber = table?.TableNumber ?? 0,
                 DateTime = reservation.date_time,
                 Status = reservation.status
             };
         }
+
 
 
 
@@ -242,12 +323,72 @@ namespace HotelMS.Services
 
         public async Task<bool> UpdateReservationAsync(int id, string newStatus)
         {
-            var reservation = await _dbContext.RestaurantReservations.FindAsync(id);
+            var reservation = await _dbContext.RestaurantReservations
+                .Include(r => r.RestaurantTable)
+                .FirstOrDefaultAsync(r => r.ReservationID == id);
+
             if (reservation == null) return false;
 
             reservation.status = newStatus;
+
+            // Update the status of the table based on reservation status
+         
+
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
+        //public async Task<bool> UpdateReservationAsync(int id, string newStatus)
+        //{
+        //    var reservation = await _dbContext.RestaurantReservations.FindAsync(id);
+        //    if (reservation == null) return false;
+
+        //    reservation.status = newStatus;
+        //    await _dbContext.SaveChangesAsync();
+        //    return true;
+        //}
+
+        public async Task<List<RestaurantReservationDTO>> GetUserReservationsAsync(int userId)
+        {
+            return await _dbContext.RestaurantReservations
+                .Where(r => r.UserID == userId)
+                .Include(r => r.RestaurantTable)
+                .Select(r => new RestaurantReservationDTO
+                {
+                    ReservationID = r.ReservationID,
+                    RestaurantTableID = r.RestaurantTableID,
+                    TableNumber = r.RestaurantTable.TableNumber,
+                    DateTime = r.date_time,
+                    Status = r.status
+                })
+                .ToListAsync();
+        }
+
+        public async Task<bool> UpdateUserReservationAsync(int id, int userId, DateTime dateTime, string status)
+        {
+            var reservation = await _dbContext.RestaurantReservations
+                .FirstOrDefaultAsync(r => r.ReservationID == id && r.UserID == userId);
+
+            if (reservation == null) return false;
+
+            reservation.date_time = dateTime;
+            reservation.status = status;
+
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> CancelUserReservationAsync(int id, int userId)
+        {
+            var reservation = await _dbContext.RestaurantReservations
+                .FirstOrDefaultAsync(r => r.ReservationID == id && r.UserID == userId);
+
+            if (reservation == null) return false;
+
+            _dbContext.RestaurantReservations.Remove(reservation);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
     }
 }

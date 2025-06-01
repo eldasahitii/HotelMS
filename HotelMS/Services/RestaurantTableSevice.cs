@@ -28,7 +28,12 @@ namespace HotelMS.Services
                     RestaurantTableID = t.RestaurantTableID,
                     TableNumber = t.TableNumber,
                     Capacity = t.Capacity,
-                    Status = t.Reservations.Any(r => r.status != "Canceled") ? "Booked" : "Available"
+                    Status = t.Reservations.Any(r =>
+    r.status == "Occupied" &&
+    r.date_time >= DateTime.Now
+) ? "Occupied" : "Available"
+
+
                 });
 
             }

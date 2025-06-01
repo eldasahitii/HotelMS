@@ -10,6 +10,40 @@
 //       location.pathname === path ? 'text-dark border-bottom border-2 border-dark' : 'text-secondary'
 //     }`;
 
+  // Define dashboard links per role
+  const dashboardLinks = {
+    CleaningManager: [
+      { path: "/manager/cleaning-staff", label: "Cleaning Staff" },
+      { path: "/manager/assignments", label: "Assignments" },
+    ],
+  RoomManager: [
+    { path: "/manager/room-dashboard", label: "Room Dashboard" },
+    { path: "/admin/reservation-dashboard", label: "Room Reservations" },
+    { path: "room-manager/review-dashboard", label: "Room Reviews" },
+    { path: "/room-manager-receptionist-management", label: "Manage Recepsionists" },
+  ],
+    RoomRecepsionist: [
+    { path: "/recepsionist-dashboard", label: "Room Availability Dashboard" },
+    { path: "/recepsionist-reservations", label: "Room Reservations" },
+  ],
+      Customer: [
+    { path: "/user/profile", label: "My Profile" },
+  ],
+    // Add other roles here...
+
+    RestaurantManager: [
+      {path: "/manager/restaurant-hosts", label: "Hosts"},
+      {path: "/manager/restaurant-menu", label: "Menu"},
+      {path: "/manager/restaurant-tables", label: "Tables"},
+      {path: "/manager/restaurant-reservations", label: "Reservations"}
+    ],
+
+    RestaurantHost: [
+      { path: "/host/dashboard", label: "Reservations" }
+    ],
+
+    
+  };
 //   // Define dashboard links per role
 //   const dashboardLinks = {
 //     CleaningManager: [

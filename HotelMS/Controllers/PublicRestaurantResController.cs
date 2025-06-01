@@ -3,6 +3,7 @@ using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Controllers
 {
@@ -24,31 +25,38 @@ namespace HotelMS.Controllers
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(dto.Email) &&
-                    string.IsNullOrWhiteSpace(dto.FirstName) &&
-                    string.IsNullOrWhiteSpace(dto.LastName) &&
-                    string.IsNullOrWhiteSpace(dto.PhoneNumber))
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+                if (userIdClaim != null)
                 {
-                    // Logged-in user by email only
-                    var userResult = await _hostService.CreateReservationForUserByEmailAsync(new RestaurantReservationUserDTO
+                    // Logged-in user: use User flow
+                    var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == dto.Email.ToLower());
+                    if (user == null)
+                        return BadRequest("No user found with this email.");
+
+                    var result = await _hostService.CreateReservationForUserByEmailAsync(new RestaurantReservationUserDTO
                     {
                         Email = dto.Email,
                         DateTime = dto.DateTime,
-                       
+                        Status = "Booked",
+                        // You can set RestaurantTableID = 0 and let the service assign a table
                     });
 
-                    return Ok(new { message = "Reservation created for user", result = userResult });
+                    return Ok(new { message = "Reservation created for logged-in user", result });
                 }
-
-                // Otherwise treat as public guest
-                var guestResult = await _hostService.CreateReservationWithGuestAsync(dto);
-                return Ok(new { message = "Reservation created for guest", result = guestResult });
+                else
+                {
+                    // Public guest
+                    var result = await _hostService.CreateReservationWithGuestAsync(dto);
+                    return Ok(new { message = "Reservation created for guest", result });
+                }
             }
             catch (Exception ex)
             {
                 return BadRequest(new { error = "Reservation failed", details = ex.Message });
             }
         }
+
 
 
     }
