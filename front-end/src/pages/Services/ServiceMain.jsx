@@ -1,33 +1,109 @@
 import React, { useState } from 'react';
 import { Button, Container, Row, Col } from 'react-bootstrap';
-import PoolService from './PoolService';
-import SpaService from './SpaService';
-import EventsService from './EventsService';
+import { useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import poolSpaImage from '../../Assets/images/pool1.jpg';
+import EventsImage from '../../Assets/images/mainevents.jpg';
+import heroImage from '../../Assets/images/pool6.jpg'; 
 
-const ServicesMain = () => {
-  const [activeService, setActiveService] = useState('');
+const ServiceMain = () => {
+  const navigate = useNavigate();
 
-  const renderServiceComponent = () => {
-    switch (activeService) {
-      case 'pool': return <PoolService />;
-      case 'spa': return <SpaService />;
-      case 'events': return <EventsService />;
-      default: return <p>Select a service to view details.</p>;
-    }
+  const framedImageStyle = {
+    border: '8px solid white',
+    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
+    padding: '4px',
+    backgroundColor: '#f8f8f8',
+    borderRadius: '4px'
   };
 
   return (
-    <Container className="my-4">
-      <Row className="mb-3">
-        <Col><Button variant="primary" onClick={() => setActiveService('pool')}>Pool</Button></Col>
-        <Col><Button variant="info" onClick={() => setActiveService('spa')}>Spa</Button></Col>
-        <Col><Button variant="success" onClick={() => setActiveService('events')}>Events</Button></Col>
-      </Row>
-      <Row>
-        <Col>{renderServiceComponent()}</Col>
-      </Row>
-    </Container>
+    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
+      {/* Hero Section */}
+      <div
+        style={{
+          backgroundImage: `url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          height: '80vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          textAlign: 'center'
+        }}
+      >
+        <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: '2rem' }}>
+          <h1 className="display-4 fw-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Welcome to Hotel Services
+          </h1>
+          <p className="lead">
+            Discover elegance, comfort, and premium hospitality tailored just for you.
+          </p>
+        </div>
+      </div>
+
+      {/* Pool & Spa Section */}
+      <div className="container py-5">
+        <div className="row align-items-center">
+          <div className="col-md-6 mb-4 mb-md-0">
+            <div style={framedImageStyle}>
+              <img src={poolSpaImage} className="img-fluid" alt="Pool and Spa" />
+            </div>
+          </div>
+          <div className="col-md-6">
+            <h2 style={{ color: '#333' }}>Pool & Spa</h2>
+            <p className="text-muted">
+              Relax and unwind in our luxurious pool and spa facilities. 
+              Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, 
+              sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. 
+              Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.
+            </p>
+            <button
+              className="btn btn-dark"
+              onClick={() => navigate('/services/pool-spa')}
+            >
+              See More
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Events Section */}
+      <div className="container py-5">
+        <div className="row align-items-center flex-md-row-reverse">
+          <div className="col-md-6 mb-4 mb-md-0">
+            <div style={framedImageStyle}>
+              <img src={EventsImage} className="img-fluid" alt="Events" />
+            </div>
+          </div>
+          <div className="col-md-6">
+            <h2 style={{ color: '#333' }}>Events</h2>
+            <p className="text-muted">
+              Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations.
+               Our experienced team will help you plan every detail to ensure a seamless and memorable event. 
+               Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized 
+               service to make your occasion truly special.
+            </p>
+            <button
+              className="btn btn-dark"
+              onClick={() => navigate('/services/event-page')}
+            >
+              See More
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="text-center py-4 bg-light text-muted">
+        <p className="mb-1">
+          Looking for more? Visit our front desk or contact the concierge for exclusive offerings.
+        </p>
+        <small>© 2025 Hotel Management System</small>
+      </footer>
+    </div>
   );
 };
 
-export default ServicesMain;
+export default ServiceMain;

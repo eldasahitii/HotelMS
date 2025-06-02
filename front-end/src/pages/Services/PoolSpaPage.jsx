@@ -1,23 +1,26 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ConferenceRoom from '../../Assets/images/conference.png';
-import WeddingVenue from '../../Assets/images/2.png';
-import heroImage from '../../Assets/images/mainevents.jpg';
+import InsidePool from '../../Assets/images/indoorpool3.png';
+import OutsidePool from '../../Assets/images/pool2.jpg';
+import Spa from '../../Assets/images/spa.jpg';
+import Sauna from '../../Assets/images/4.png';
+import heroImage from '../../Assets/images/pool6.jpg';
 
 const timeSlots = [
-  '10:00 AM - 6:00 PM',
-  '12:00 PM - 8:00 PM',
-  'Whole Day (9:00 AM - 11:00 PM)'
+  '10:00 AM - 11:00 AM',
+  '11:00 AM - 12:00 PM',
+  '12:00 PM - 1:00 PM',
+  '1:00 PM - 2:00 PM',
+  '2:00 PM - 3:00 PM',
+  '3:00 PM - 4:00 PM',
+  '4:00 PM - 5:00 PM',
+  '5:00 PM - 6:00 PM',
+  '6:00 PM - 7:00 PM'
 ];
 
 const parseTimeSlot = (slot) => {
-  let rangeStr = slot;
-  if (slot.includes('(')) {
-    const match = slot.match(/\(([^)]+)\)/);
-    rangeStr = match ? match[1] : '';
-  }
-  const [start, end] = rangeStr.split(' - ');
-
+  const [start, end] = slot.split(' - ');
   const to24Hour = (time) => {
     const [rawTime, meridian] = time.split(' ');
     let [hours, minutes] = rawTime.split(':').map(Number);
@@ -25,14 +28,13 @@ const parseTimeSlot = (slot) => {
     if (meridian === 'AM' && hours === 12) hours = 0;
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
   };
-
   return {
     startTime: to24Hour(start),
     endTime: to24Hour(end)
   };
 };
 
-const Events = () => {
+const PoolSpa = () => {
   const [activeForm, setActiveForm] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
@@ -49,17 +51,31 @@ const Events = () => {
   const sections = [
     {
       id: 1,
-      img: ConferenceRoom,
-      title: 'Modern Conference Room',
-      text: 'Host your next meeting or seminar in our fully equipped conference room...',
-      price: '€200 per session'
+      img: InsidePool,
+      title: 'Heated Indoor Pool',
+      text: 'Relax in our temperature-controlled indoor pool...',
+      price: '€25 per person'
     },
     {
       id: 2,
-      img: WeddingVenue,
-      title: 'Elegant Wedding Venue',
-      text: 'Celebrate your special day in our romantic wedding venue...',
-      price: '€1,500 per day'
+      img: OutsidePool,
+      title: 'Scenic Outdoor Pool',
+      text: 'Escape to our breathtaking outdoor pool area...',
+      price: '€35 per person'
+    },
+    {
+      id: 3,
+      img: Spa,
+      title: 'Massage & Relaxation Room',
+      text: 'Step into our peaceful massage and relaxation room...',
+      price: '€50 per session'
+    },
+    {
+      id: 4,
+      img: Sauna,
+      title: 'Sauna Room',
+      text: 'Experience the soothing warmth of our dedicated sauna room...',
+      price: '€30 per session'
     }
   ];
 
@@ -68,48 +84,15 @@ const Events = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const fetchTakenSlots = async (date) => {
-    console.log('Fetching taken slots for date:', date);
-    try {
-      const response = await fetch(`/api/HotelServiceReservation/TakenSlots?date=${date}`);
-      const data = await response.json();
-      console.log('Taken slots received:', data);
-      setTakenSlots(data);
-    } catch (error) {
-      console.error('Error fetching taken slots:', error);
-      setTakenSlots([]);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedDate) {
-      fetchTakenSlots(selectedDate);
-    }
-  }, [selectedDate]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log('Submitting form...');
-    console.log('Selected Date:', selectedDate);
-    console.log('Selected Slot:', selectedSlot);
-    console.log('Form Data:', formData);
-
-    if (!selectedDate || !selectedSlot) {
-      console.log('Missing date or slot');
-      setConfirmation('Please select a date and time slot.');
-      return;
-    }
-
     if (takenSlots.includes(selectedSlot)) {
-      console.log('Time slot already taken');
       setConfirmation('Selected time is unavailable.');
       return;
     }
 
     const { startTime, endTime } = parseTimeSlot(selectedSlot);
-    console.log('Parsed StartTime:', startTime);
-    console.log('Parsed EndTime:', endTime);
 
     const reservationPayload = {
       reservationID: 0,
@@ -132,33 +115,46 @@ const Events = () => {
       const response = await fetch('/api/HotelServiceReservation/MakeReservation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(reservationPayload)
       });
 
-      const responseText = await response.text();
-      console.log('Response status:', response.status);
-      console.log('Response text:', responseText);
+      const text = await response.text();
 
       if (!response.ok) {
-        let errorMsg = responseText;
+        let errorMsg = text;
         try {
-          const errorData = JSON.parse(responseText);
+          const errorData = JSON.parse(text);
           errorMsg = errorData.message || JSON.stringify(errorData);
-        } catch (e) {
-          console.warn('Failed to parse JSON from response:', e);
-        }
+        } catch { }
         setConfirmation(`Error: ${errorMsg}`);
         return;
       }
 
       setConfirmation('Reservation made successfully.');
-      console.log('Reservation made successfully.');
       setTimeout(() => setActiveForm(null), 1500);
+
     } catch (error) {
-      console.error('Submission error:', error);
       setConfirmation(`Error: ${error.message}`);
     }
   };
+
+  const fetchTakenSlots = async (date) => {
+    try {
+      const response = await fetch(`/api/HotelServiceReservation/TakenSlots?date=${date}`);
+      const data = await response.json();
+      setTakenSlots(data);
+    } catch (error) {
+      console.error('Error fetching taken slots:', error);
+      setTakenSlots([]);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedDate) {
+      fetchTakenSlots(selectedDate);
+    }
+  }, [selectedDate]);
 
   const openForm = (index) => {
     setActiveForm(index);
@@ -197,9 +193,9 @@ const Events = () => {
       >
         <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: '2rem' }}>
           <h1 className="display-4 fw-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Events
+            Pool & Spa Experiences
           </h1>
-          <p className="lead">Discover perfect venues for every occasion.</p>
+          <p className="lead">Refresh, recharge, and relax with our premium water and wellness services.</p>
         </div>
       </div>
 
@@ -307,4 +303,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default PoolSpa;
