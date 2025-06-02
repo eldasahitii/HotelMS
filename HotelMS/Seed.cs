@@ -513,43 +513,7 @@ public class Seed
             }
         }
 
-        //Seed HotelService
-        if (!dataContext.HotelServices.Any())
-        {
-            var services = new List<HotelService>
-            {
-                new HotelService
-                {
-                    Type = "Pool & Spa",
-                    Name = "Sauna Session",
-                    Description = "30-minute sauna to relax your body",
-                    Price = 30.00m
-                },
-                new HotelService
-                {
-                    Type = "Pool & Spa",
-                    Name = "Full Body Massage",
-                    Description = "1-hour relaxing massgae by professionals",
-                    Price = 60.00m
-                },
-                new HotelService
-                {
-                    Type = "Events",
-                    Name = "Wedding Hall Booking",
-                    Description = "Spacious hall for weddings and ceremonies",
-                    Price = 500.00m
-                },
-                new HotelService
-                {
-                    Type = "Events",
-                    Name = "Conference Room Booking",
-                    Description = "Corporate setup with presentation equipment",
-                    Price = 400.00m
-                }
-            };
-            dataContext.HotelServices.AddRange(services);
-            dataContext.SaveChanges();
-        }
+       
 
         if (!dataContext.MenuCategories.Any())
         {
@@ -646,57 +610,10 @@ public class Seed
 
 
 
-        //Seed HotelServiceSchedule
-        if (!dataContext.HotelServiceSchedules.Any())
-        {
-            var scheduleEntries = new List<HotelServiceDetail>();
-
-            var allServices = dataContext.HotelServices.ToList();
-            foreach (var service in allServices)
-            {
-                scheduleEntries.Add(new HotelServiceDetail
-                {
-                    HotelServiceId = service.Id,
-                    StartTime = DateTime.Today.AddHours(10),
-                    EndTime = DateTime.Today.AddHours(11),
-                    IsAvailable = true
-                });
-                scheduleEntries.Add(new HotelServiceDetail
-                {
-                    HotelServiceId = service.Id,
-                    StartTime = DateTime.Today.AddHours(14),
-                    EndTime = DateTime.Today.AddHours(15),
-                    IsAvailable = true
-                });
-            }
-            dataContext.HotelServiceSchedules.AddRange(scheduleEntries);
-            dataContext.SaveChanges();
-        }
+        
 
 
-        //Seed HotelServiceReservation
-        if (!dataContext.HotelServiceReservations.Any())
-        {
-            var customer = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
-            var saunaService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Sauna Session");
-            var schedule = dataContext.HotelServiceSchedules.FirstOrDefault(s => s.HotelServiceId == saunaService.Id);
-
-            if (customer != null && saunaService != null && schedule != null)
-            {
-                var reservation = new HotelServiceReservation
-                {
-                    UserId = customer.UserID,
-                    HotelServiceId = saunaService.Id,
-                    ScheduleId = schedule.Id,
-                    ReservationTime = DateTime.Now,
-                    Status = "Confirmed"
-
-                };
-
-                dataContext.HotelServiceReservations.Add(reservation);
-                dataContext.SaveChanges();
-            }
-        }
+    
 
         if (!dataContext.RestaurantSettings.Any())
         {
