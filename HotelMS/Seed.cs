@@ -607,13 +607,97 @@ public class Seed
             dataContext.SaveChanges();
         }
 
+        if (!dataContext.HotelServices.Any())
+        {
+            var poolSpaService = new HotelService
+            {
+                Name = "Pool & Spa",
+                Description = "Relax and unwind in our luxurious pool and spa facilities. Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.",
+                HeroImageUrl = "images/pool1.jpg"
+            };
+
+            var eventsService = new HotelService
+            {
+                Name = "Events",
+                Description = "Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations. Our experienced team will help you plan every detail to ensure a seamless and memorable event. Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized service to make your occasion truly special.",
+                HeroImageUrl = "images/mainevents.jpg"
+            };
+
+            dataContext.HotelServices.Add(poolSpaService);
+            dataContext.HotelServices.Add(eventsService);
+
+            dataContext.SaveChanges();
+        }
+
+        if (!dataContext.HotelServiceDetails.Any())
+        {
+            var services = new List<HotelServiceDetail>
+            {
+                // Pool & Spa Services
+                new HotelServiceDetail
+                {
+                    Id = 1,
+                    Title = "Heated Indoor Pool",
+                    Description = "Relax in our temperature-controlled indoor pool...",
+                    Price = 25m,
+                    PriceDescription = "€25 per person"
+                },
+                new HotelServiceDetail
+                {
+                    Id = 2,
+                    Title = "Scenic Outdoor Pool",
+                    Description = "Escape to our breathtaking outdoor pool area...",
+                    Price = 35m,
+                    PriceDescription = "€35 per person"
+                },
+                new HotelServiceDetail
+                {
+                    Id = 3,
+                    Title = "Massage & Relaxation Room",
+                    Description = "Step into our peaceful massage and relaxation room...",
+                    Price = 50m,
+                    PriceDescription = "€50 per session"
+                },
+                new HotelServiceDetail
+                {
+                    Id = 4,
+                    Title = "Sauna Room",
+                    Description = "Experience the soothing warmth of our dedicated sauna room...",
+                    Price = 30m,
+                    PriceDescription = "€30 per session"
+                },
+
+                // Events Services
+                 new HotelServiceDetail
+
+                {
+                    Id = 5,
+                    Title = "Modern Conference Room",
+                    Description = "Host your next meeting or seminar in our fully equipped conference room...",
+                    Price = 200m,
+                    PriceDescription = "€200 per session"
+                },
+                new HotelServiceDetail
+                {
+                    Id = 6,
+                    Title = "Elegant Wedding Venue",
+                    Description = "Celebrate your special day in our romantic wedding venue...",
+                    Price = 1500m,
+                    PriceDescription = "€1,500 per day"
+                }
+            };
+
+            dataContext.HotelServiceDetails.AddRange(services);
+            dataContext.SaveChanges();
+        }
 
 
 
-        
 
 
-    
+
+
+
 
         if (!dataContext.RestaurantSettings.Any())
         {
