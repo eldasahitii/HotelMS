@@ -1,24 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace HotelMS.Models
 {
+    //[Table("Services") This maps the model to the SQL table named "Services"
     public class HotelService
     {
         [Key]
+        [Column("ServiceId")] // This maps to the "ServiceId" column in the table
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [Required]
-        public string Type { get; set; }
-        [Required]
-        public string Name { get; set; }
-        public string Description { get; set; }
-        [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be a positive number.")]
-        public decimal Price { get; set; }
-        public bool IsActive { get; set; } = true;
 
-        public ICollection<HotelServiceSchedule> HotelServiceSchedules { get; set; }
-        public ICollection<HotelServiceReservation> HotelServiceReservations { get; set; }
+        [Required]
+        [MaxLength(100)]
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        [MaxLength(255)]
+        public string HeroImageUrl { get; set; } // Optional hero image
+        public ICollection<HotelServiceDetail> HotelServiceDetails { get; set; }
 
     }
 }
+
+
