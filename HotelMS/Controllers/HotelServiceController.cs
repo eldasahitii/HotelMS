@@ -1,74 +1,118 @@
-﻿//using HotelMS.Data.DTO;
-//using HotelMS.Data.Interfaces;
-//using HotelMS.Models;
-//using HotelMS.Services;
-//using Microsoft.AspNetCore.Mvc;
+﻿using HotelMS.Data.DTO;
+using HotelMS.Data.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
+namespace HotelMS.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class HotelServiceController : ControllerBase
+    {
+        private readonly IHotelService _service;
 
+        public HotelServiceController(IHotelService service)
+        {
+            _service = service;
+        }
 
-//namespace HotelMS.Controllers
-//{
-//    [ApiController]
-//    [Route("api/[controller]")]
+        [HttpPost("add")]
+        [Authorize(Roles = "Admin, ServiceManager")]
+        public async Task<IActionResult> AddService([FromBody] HotelServiceDTO request)
+        {
+            try
+            {
+                var result = await _service.AddService(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-//    public class HotelServiceController : ControllerBase
-//    {
-//        private readonly IHotelServiceService _service;
+        [HttpGet("get")]
+        [Authorize(Roles = "Admin,ServiceManager")]
+        public async Task<IActionResult> GetService([FromQuery] int id)
+        {
+            try
+            {
+                var result = await _service.GetService(id);
+                if (result == null) return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-//        public HotelServiceController(IHotelServiceService service)
-//        {
-//            _service = service;
-//        }
+        [HttpGet("getAll")]
+        [Authorize(Roles = "Admin,ServiceManager")]
+        public async Task<IActionResult> GetAllServices()
+        {
+            try
+            {
+                var result = await _service.GetAllServices();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-//        [HttpGet("type/{type}")]
-//        public async Task<ActionResult<IEnumerable<HotelService>>> GetServicesByType (string type)
-//        {
-//            var services = await _service.GetServicesByTypeAsync(type);
-//            return Ok(services);
-//        }
+        //[HttpDelete("delete")]
+        //[Authorize(Roles = "Admin, ServiceManager")]
+        //public async Task<IActionResult> DeleteService([FromQuery] int id)
+        //{
+        //    try
+        //    {
+        //        await _service.DeleteService(id);
+        //        return Ok(new { message = "Service deleted successfully." });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
+        [HttpDelete("delete")]
+        [Authorize(Roles = "Admin, ServiceManager")]
+        public async Task<IActionResult> DeleteService([FromQuery] int id)
+        {
+            try
+            {
+                var existing = await _service.GetService(id);
+                if (existing == null)
+                    return NotFound(new { message = "Service not found." });
 
-//        [HttpGet("{id}")]
-//        public async Task <ActionResult<HotelService>> GetService (int id)
-//        {
-//            var service = await _service.GetServiceByIdAsync(id);
-//            if (service == null) return NotFound();
-//            return Ok(service);
-//        }
+                await _service.DeleteService(id);
+                return Ok(new { message = "Service deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-//        [HttpGet("{id}/schedules")]
-//        public async Task<ActionResult<IEnumerable<HotelServiceDetail>>> GetSchedules (int id)
-//        {
-//            var schedules = await _service.GetSchedulesByServiceIdAsync(id);
-//            return Ok(schedules);
-//        }
-
-//        [HttpPost("reserve")]
-//        public async Task <ActionResult<HotelServiceReservation>> ReserveService(HotelServiceReservation reservation)
-//        {
-//            if (!ModelState.IsValid) return BadRequest(ModelState);
-//            var created = await _service.ReserveServiceAsync(reservation);
-//            return CreatedAtAction(nameof(GetService), new { id = created.HotelServiceId }, created);
-//        }
-
-//        [HttpPut("{id}")]
-//        public async Task<IActionResult> Update(int id, [FromBody] HotelService updated)
-//        {
-//            var result = await _service.UpdateServiceAsync(id, updated);
-//            if (result == null) return NotFound();
-//            return Ok(result);
-//        }
-
-//        [HttpDelete("{id}")]
-//        public async Task<IActionResult> Delete(int id)
-//        {
-//            var success = await _service.DeleteServiceAsync(id);
-//            if (!success) return NotFound();
-//            return NoContent();
-//        }
-
-
-
-//    }
-//}
-
-
+        [HttpPut("update")]
+        [Authorize(Roles = "Admin, ServiceManager")]
+        public async Task<IActionResult> UpdateService(int id, [FromBody] HotelServiceDTO request)
+        {
+            try
+            {
+                var result = await _service.UpdateService(id, request);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+    }
+}
