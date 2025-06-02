@@ -63,12 +63,30 @@ namespace HotelMS.Controllers
             }
         }
 
+        //[HttpDelete("delete")]
+        //[Authorize(Roles = "Admin, ServiceManager")]
+        //public async Task<IActionResult> DeleteService([FromQuery] int id)
+        //{
+        //    try
+        //    {
+        //        await _service.DeleteService(id);
+        //        return Ok(new { message = "Service deleted successfully." });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
         [HttpDelete("delete")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, ServiceManager")]
         public async Task<IActionResult> DeleteService([FromQuery] int id)
         {
             try
             {
+                var existing = await _service.GetService(id);
+                if (existing == null)
+                    return NotFound(new { message = "Service not found." });
+
                 await _service.DeleteService(id);
                 return Ok(new { message = "Service deleted successfully." });
             }
@@ -77,8 +95,9 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPut("update")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, ServiceManager")]
         public async Task<IActionResult> UpdateService(int id, [FromBody] HotelServiceDTO request)
         {
             try

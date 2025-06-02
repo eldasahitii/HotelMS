@@ -35,6 +35,8 @@ import PoolSpaPage from './Components/Services/PoolSpaPage';
 import EventsPage from './Components/Services/EventsPage';
 import ServiceManagerDashboard from './pages/dashboards/servicedashboard/servicemanagerdashboard';
 import ServiceRecepcionist from './pages/dashboards/servicedashboard/servicerecepcionist';
+import ServiceDetailManagerDashboard from './pages/dashboards/servicedashboard/servicedetailmanagerdashboard.jsx';
+import ServiceManagerReservationDashboard from './pages/dashboards/servicedashboard/servicemanagerreservationdashboard.jsx';
 import HomePage from './pages/HomePage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -222,17 +224,43 @@ function App() {
                 </ProtectedRoute>
               }/>
 
-              <Route path="/service/manager-dashboard" element={
-                <ProtectedRoute allowedRoles={['ServiceManager']}>
-                  <ServiceManagerDashboard />
-                </ProtectedRoute>
-              }/>
+              <Route
+  path="/service-manager/dashboard"
+  element={
+    <ProtectedRoute allowedRoles={['ServiceManager']}>
+      <ServiceManagerDashboard />
+    </ProtectedRoute>
+  }
+/>
 
-              <Route path="/service/recepcionist-dashboard" element={
-                <ProtectedRoute allowedRoles={['ServiceRecepsionist']}>
-                  <ServiceRecepcionist />
-                </ProtectedRoute>
-              }/>
+ <Route
+  path="/service-manager/service-recepcionist"
+  element={
+    <ProtectedRoute allowedRoles={['ServiceRecepsionist']}>
+      <ServiceRecepcionist />
+    </ProtectedRoute>
+  }
+/>
+
+
+              <Route
+              path="/service-manager/service-details"
+              element={
+             <ProtectedRoute allowedRoles={['ServiceManager']}>
+             <ServiceDetailManagerDashboard />
+             </ProtectedRoute>
+             }
+            />
+
+            <Route
+  path="/service-manager/reservations"
+  element={
+    <ProtectedRoute allowedRoles={["HotelServiceManager"]}>
+      <ServiceManagerReservationDashboard />
+    </ProtectedRoute>
+  }
+/>
+
 
               <Route path="*" element={<div>Page Not Found</div>} />
             </Routes>

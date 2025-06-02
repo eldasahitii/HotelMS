@@ -63,6 +63,14 @@ const Header = () => {
     { path: "/admin/reservation-dashboard", label: "Room Reservations" },
     { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
   ],
+  ServiceManager: [
+    {path: "/service-manager/dashboard", label: "Service Manager Dashboard" },
+    {path: "/service-manager/service-details", label: "Service Manager Detail Dashboard"},
+    {path: "/service-manager/service-manager-reservation", label: "Service Manager Reservation Dashboard"}
+  ],
+  ServiceRecepsionist: [
+    {path: "/service-manager/service-recepcionist", label: "Service Recepsionist"},
+  ]
     // Add more roles here
   };
 

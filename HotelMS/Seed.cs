@@ -139,15 +139,15 @@ public class Seed
 
             if (roomRecepsionistUser != null && assignedByUser != null)
             {
-                var roomRecepsionist = new RoomRecepsionist
-                {
-                    UserID = roomRecepsionistUser.UserID,
-                    Shift = "Morning",
-                    AssignedByUserID = assignedByUser.UserID
-                };
+                //var roomRecepsionist = new RoomRecepsionist
+                //{
+                //    UserID = roomRecepsionistUser.UserID,
+                //    Shift = "Morning",
+                //    AssignedByUserID = assignedByUser.UserID
+                //};
 
-                dataContext.RoomRecepsionists.Add(roomRecepsionist);
-                dataContext.SaveChanges();
+                //dataContext.RoomRecepsionists.Add(roomRecepsionist);
+                //dataContext.SaveChanges();
             }
         }
 
@@ -221,48 +221,47 @@ public class Seed
 
             if (cleaningStaffUser != null && assignedByUser != null)
             {
-                var cleaningStaff = new CleaningStaff
-                {
-                    UserID = cleaningStaffUser.UserID,
-                    IsActive = true,
-                    Shift = "Morning",
-                    AssignedByUserID = assignedByUser.UserID
-                };
+                //var cleaningStaff = new CleaningStaff
+                //{
+                //    UserID = cleaningStaffUser.UserID,
+                //    IsActive = true,
+                //    Shift = "Morning",
+                //    AssignedByUserID = assignedByUser.UserID
+                //};
 
-                dataContext.CleaningStaff.Add(cleaningStaff);
-                dataContext.SaveChanges();
+                //dataContext.CleaningStaff.Add(cleaningStaff);
+                //dataContext.SaveChanges();
             }
         }
 
         // Seed RoomStatuses
-        if (!dataContext.RoomStatuses.Any())
-        {
-            var roomStatuses = new List<RoomStatus>
-            {
-                new RoomStatus() { RoomStatusName = "Available" },
-                new RoomStatus() { RoomStatusName = "Occupied" },
-                new RoomStatus() { RoomStatusName = "Cleaning" },
-                new RoomStatus() { RoomStatusName = "Completed" }
-            
-            };
+        //if (!dataContext.RoomStatuses.Any())
+        //{
+        //    var roomStatuses = new List<RoomStatus>
+        //    {
+        //        new RoomStatus() { RoomStatusName = "Available" },
+        //        new RoomStatus() { RoomStatusName = "Occupied" },
+        //        new RoomStatus() { RoomStatusName = "Cleaning" },
+        //        new RoomStatus() { RoomStatusName = "Completed" }
+        //    };
 
-            dataContext.RoomStatuses.AddRange(roomStatuses);
-            dataContext.SaveChanges();
-        }
+        //    dataContext.RoomStatuses.AddRange(roomStatuses);
+        //    dataContext.SaveChanges();
+        //}
 
         // Seed ReservationStatuses
-        if (!dataContext.ReservationStatuses.Any())
-        {
-            var reservationStatuses = new List<ReservationStatus>
-            {
-                new ReservationStatus() { ReservationStatusName = "Confirmed" },
-                new ReservationStatus() { ReservationStatusName = "Cancelled" },
-                new ReservationStatus() { ReservationStatusName = "Completed" }
-            };
+        //if (!dataContext.ReservationStatuses.Any())
+        //{
+        //    var reservationStatuses = new List<ReservationStatus>
+        //    {
+        //        new ReservationStatus() { ReservationStatusName = "Confirmed" },
+        //        new ReservationStatus() { ReservationStatusName = "Cancelled" },
+        //        new ReservationStatus() { ReservationStatusName = "Completed" }
+        //    };
 
-            dataContext.ReservationStatuses.AddRange(reservationStatuses);
-            dataContext.SaveChanges();
-        }
+        //    dataContext.ReservationStatuses.AddRange(reservationStatuses);
+        //    dataContext.SaveChanges();
+        //}
 
         // Seed RoomTypes
         if (!dataContext.RoomTypes.Any())
@@ -514,14 +513,16 @@ public class Seed
             }
         }
 
+      
+
         if (!dataContext.MenuCategories.Any())
         {
             var categories = new List<MenuCategory>
         {
-            new MenuCategory {Name = "Appetizers"},
-            new MenuCategory { Name = "Main Courses" },
-            new MenuCategory { Name = "Desserts" },
-            new MenuCategory { Name = "Drinks" }
+            new MenuCategory {Name = "Breakfast"},
+            new MenuCategory { Name = "Lunch" },
+            new MenuCategory { Name = "Dinner" },
+            new MenuCategory { Name = "Dessert" }
         };
 
             dataContext.MenuCategories.AddRange(categories);
@@ -530,17 +531,36 @@ public class Seed
 
         if (!dataContext.MenuItems.Any())
         {
-            var appetizersID = dataContext.MenuCategories.First(c => c.Name == "Appetizers").MenuCategoryID;
-            var mainsID = dataContext.MenuCategories.First(c => c.Name == "Main Courses").MenuCategoryID;
-            var dessertsID = dataContext.MenuCategories.First(c => c.Name == "Desserts").MenuCategoryID;
-            var drinksID = dataContext.MenuCategories.First(c => c.Name == "Drinks").MenuCategoryID;
+            var breakfastID = dataContext.MenuCategories.First(c => c.Name == "Breakfast").MenuCategoryID;
+            var lunchID = dataContext.MenuCategories.First(c => c.Name == "Lunch").MenuCategoryID;
+            var dinnerID = dataContext.MenuCategories.First(c => c.Name == "Dinner").MenuCategoryID;
+            var dessertID = dataContext.MenuCategories.First(c => c.Name == "Dessert").MenuCategoryID;
 
             var menuItems = new List<MenuItem>
     {
-        new MenuItem { Name = "Bruschetta", Description = "Grilled bread with tomato & basil", Price = 4.99, MenuCategoryID = appetizersID },
-        new MenuItem { Name = "Spaghetti Carbonara", Description = "Pasta with eggs, cheese & pancetta", Price = 10.99, MenuCategoryID = mainsID },
-        new MenuItem { Name = "Tiramisu", Description = "Coffee-flavored Italian dessert", Price = 5.50, MenuCategoryID = dessertsID },
-        new MenuItem { Name = "Lemonade", Description = "Freshly squeezed lemonade", Price = 2.99, MenuCategoryID = drinksID }
+        new MenuItem { Name = "Avocado Toast", Description = "Freshly toasted artisan bread topped with creamy avocado and perfectly cooked eggs, finished with a touch of sea salt, chili flakes, and a drizzle of olive oil. A wholesome and flavorful start to your day.", Price = 4.99, image_url="/Images/restaurant/AvocadoToast.png", MenuCategoryID = breakfastID },
+        new MenuItem { Name = "Fluffy Pancakes", Description = "Light, airy pancakes stacked high and served warm, with a golden exterior and soft, melt-in-your-mouth center. Perfectly paired with maple syrup, fresh fruit, or a dusting of powdered sugar.", Price = 10.99, image_url="/Images/restaurant/FluffyPancakes.png", MenuCategoryID = breakfastID },
+        new MenuItem { Name = "Salmon Bagel", Description = "Toasted bagel layered with silky smoked salmon, cream cheese, fresh dill, capers, and thinly sliced red onions. A classic, savory delight perfect for any time of day.", Price = 5.50, image_url="/Images/restaurant/SalmonBagel.png", MenuCategoryID = breakfastID },
+        new MenuItem { Name = "Eggs Benedict", Description = "Two poached eggs served on toasted English muffins with layers of savory ham or smoked salmon, topped with rich, velvety hollandaise sauce. A timeless brunch favorite.", Price = 2.99,image_url="/Images/restaurant/eggsBenedict.jpg", MenuCategoryID = breakfastID },
+        new MenuItem { Name = "French Toast", Description = "Golden-brown brioche slices infused with a herbed egg mixture, pan-seared and served with crispy bacon, sautéed mushrooms, and a sprinkle of parmesan. A rich and satisfying twist on a brunch classic.", Price = 2.99,image_url="/Images/restaurant/frenchtoast.jpg", MenuCategoryID = breakfastID },
+        new MenuItem { Name = "Waffles", Description = "Crispy on the outside, fluffy on the inside—our golden waffles are served warm with your choice of toppings like fresh fruit, whipped cream, and maple syrup. A deliciously comforting treat for any time of day.", Price = 2.99,image_url="/Images/restaurant/waffles.jpg", MenuCategoryID = breakfastID },
+        new MenuItem {Name = "Bruschetta", Description ="Toasted rustic bread topped with a vibrant mix of fresh diced tomatoes, garlic, basil, and a drizzle of extra virgin olive oil. A light and flavorful Italian classic.", Price = 3.55, image_url="/Images/restaurant/bruschetta.jpg", MenuCategoryID = lunchID},
+        new MenuItem { Name = "Teriyaki Chicken Rice", Description ="Tender grilled chicken glazed with a rich teriyaki sauce, served over steamed jasmine rice with sautéed vegetables and a sprinkle of sesame seeds. A savory and satisfying Asian-inspired dish.", Price = 4.34, image_url ="/Images/restaurant/chickenrice.jpg", MenuCategoryID = lunchID},
+        new MenuItem { Name = "Ceaser Salad", Description = "Crisp romaine lettuce tossed with creamy Caesar dressing, crunchy croutons, and grated Parmesan cheese. Finished with a hint of garlic and optional grilled chicken for added protein.", Price = 5.55, image_url = "/Images/restaurant/ceasersalad.jpg", MenuCategoryID = lunchID},
+        new MenuItem { Name = "Shrimp Gyoza", Description = "Delicate dumplings filled with seasoned shrimp and vegetables, pan-seared to a golden crisp and served with a savory soy dipping sauce. A flavorful Japanese appetizer.", Price = 7.88, image_url = "/Images/restaurant/gyoza.jpg", MenuCategoryID = lunchID},
+        new MenuItem { Name = "Shrimp Tacos", Description ="Soft corn tortillas filled with juicy, seasoned shrimp, topped with crisp slaw, fresh lime, and a zesty creamy sauce. A vibrant and refreshing coastal favorite.", Price = 7.55, image_url = "/Images/restaurant/shrimptacos.jpg", MenuCategoryID = lunchID},
+        new MenuItem { Name = "Pasta", Description ="Al dente pasta served with your choice of classic sauces—from rich and creamy Alfredo to bold tomato-based marinara or fragrant pesto. Finished with Parmesan and fresh herbs for a comforting Italian experience. ", Price = 5.55, image_url = "/Images/restaurant/pasta.jpg", MenuCategoryID = lunchID},
+        new MenuItem { Name = "Salmon", Description = "Pan-seared or oven-roasted salmon fillet, cooked to tender perfection and served with seasonal vegetables and a light lemon-butter or herb sauce. A healthy and elegant main course.", Price = 10.0, image_url = "/Images/restaurant/salmon.jpg", MenuCategoryID = dinnerID},
+        new MenuItem { Name = "Chicken Mushroom Risotto", Description = "Creamy Arborio rice slowly cooked with tender chicken, sautéed mushrooms, and Parmesan cheese. Finished with a touch of white wine and herbs for a rich, comforting flavor.", Price = 12.55, image_url="/Images/restaurant/risotto.jpg", MenuCategoryID = dinnerID},
+        new MenuItem { Name = "Steak", Description = "Juicy, grilled-to-perfection steak seasoned with sea salt and cracked pepper, served with your choice of sides and a rich house-made sauce. A timeless and satisfying classic.", Price = 15.55, image_url = "/Images/restaurant/steak.jpg", MenuCategoryID = dinnerID},
+        new MenuItem { Name = "Seafood Pasta", Description = "A medley of fresh seafood—shrimp, mussels, and calamari—tossed with al dente pasta in a fragrant garlic, white wine, and tomato sauce. A rich and flavorful taste of the sea.", Price = 13.33, image_url = "/Images/restaurant/seafoodpasta.jpg", MenuCategoryID = dinnerID},
+        new MenuItem { Name = "Lobster", Description = "Succulent whole lobster, steamed or grilled to perfection, served with melted butter, lemon, and seasonal sides. A luxurious and indulgent seafood delicacy.", Price = 20.0, image_url = "/Images/restaurant/lobster.jpg", MenuCategoryID = dinnerID},
+        new MenuItem { Name = "Sushi", Description ="An elegant selection of handcrafted sushi rolls and nigiri, featuring fresh fish, seasoned rice, and vibrant vegetables. Served with soy sauce, wasabi, and pickled ginger for a refined Japanese experience.", Price = 25.0, image_url="/Images/restaurant/sushi.jpg", MenuCategoryID = dinnerID},
+        new MenuItem {Name = "Tiramisu", Description = "A classic Italian dessert made with layers of espresso-soaked ladyfingers and creamy mascarpone, dusted with cocoa powder. Rich, smooth, and irresistibly indulgent.", Price = 6.0, image_url = "/Images/restaurant/tiramisu.jpg", MenuCategoryID = dessertID},
+        new MenuItem { Name = "Apple Crumble Pie", Description = "Warm spiced apples baked beneath a golden, buttery crumble topping, served with a scoop of vanilla ice cream or a drizzle of caramel. A comforting and timeless dessert favorite.", Price = 5.0, image_url="/Images/restaurant/applecrumble.jpg", MenuCategoryID = dessertID},
+        new MenuItem {Name = "Chocolate Cake", Description = "Rich, moist layers of decadent chocolate sponge filled and frosted with silky chocolate ganache. A timeless dessert for true chocolate lovers.", Price = 4.5, image_url = "/Images/restaurant/chocolate.jpg", MenuCategoryID = dessertID}
+
+
     };
 
             dataContext.MenuItems.AddRange(menuItems);
@@ -563,12 +583,21 @@ public class Seed
         if (!dataContext.RestaurantReservations.Any())
         {
             var tableID = dataContext.RestaurantTables.First().RestaurantTableID;
-            var guestID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
 
+            // Create a restaurant guest
+            var guest = new RestaurantGuest
+            {
+                FirstName = "Velsa",
+                LastName = "Zemaj",
+                Email = "velsa@gmail.com",
+                PhoneNumber = "044-123-456"
+            };
+            dataContext.RestaurantGuests.Add(guest);
+            dataContext.SaveChanges(); // Save first to get the GuestID
 
             var reservation = new RestaurantReservation
             {
-                GuestID = guestID,
+                GuestID = guest.GuestID,
                 date_time = DateTime.Now.AddHours(2),
                 status = "Booked",
                 RestaurantTableID = tableID
@@ -576,23 +605,28 @@ public class Seed
 
             dataContext.RestaurantReservations.Add(reservation);
             dataContext.SaveChanges();
-
         }
 
 
+
+
+       
+
+
+        
 
         if (!dataContext.RestaurantSettings.Any())
         {
             var homepageSettings = new RestaurantSettings
             {
-                WelcomeTitle = "Welcome to Rolve Restaurant",
-                WelcomeMessage = "Discover the essence of fine dining at Rolve Restaurant, where every dish is crafted with organic ingredients, timeless flavors, and a passion for culinary excellence.",
-                WelcomeImageUrl = "/images/restaurant.jpg", // Path should match your frontend assets or be publicly hosted
+                WelcomeTitle = "Welcome to Amé Restaurant",
+                WelcomeMessage = "Discover the essence of fine dining at Amé Restaurant, where every dish is crafted with organic ingredients, timeless flavors, and a passion for culinary excellence.",
+                WelcomeImageUrl = "/Images/restaurant/restaurant.jpg", // Path should match your frontend assets or be publicly hosted
 
-                AboutTitle = "About Rolve Restaurant",
-                AboutMessage = "At Rolve Restaurant, we believe food should not only taste amazing but also be nourishing. Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring every dish to life.",
-                AboutImageUrl1 = "/images/restaurantTerrace.jpg",
-                AboutImageUrl2 = "/images/restaurantInterior.jpg"
+                AboutTitle = "About Amé Restaurant",
+                AboutMessage = "At Amé Restaurant, we believe food should not only taste amazing but also be nourishing. Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring every dish to life.",
+                AboutImageUrl1 = "/Images/restaurant/restaurantTerrace.jpg",
+                AboutImageUrl2 = "/Images/restaurant/restaurantInterior.jpg"
             };
 
             dataContext.RestaurantSettings.Add(homepageSettings);
