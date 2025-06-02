@@ -30,6 +30,19 @@ export default function DashboardNavbar({ role }) {
     { path: "/user/profile", label: "My Profile" },
   ],
     // Add other roles here...
+
+    RestaurantManager: [
+      {path: "/manager/restaurant-hosts", label: "Hosts"},
+      {path: "/manager/restaurant-menu", label: "Menu"},
+      {path: "/manager/restaurant-tables", label: "Tables"},
+      {path: "/manager/restaurant-reservations", label: "Reservations"}
+    ],
+
+    RestaurantHost: [
+      { path: "/host/dashboard", label: "Reservations" }
+    ],
+
+    
   };
 
   const links = dashboardLinks[role] || [];

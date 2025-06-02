@@ -12,6 +12,6 @@
 
         public Boolean is_available { get; set; }
 
-        public int MenuCategoryID { get; set; }
+        public int? MenuCategoryID { get; set; }
     }
 }

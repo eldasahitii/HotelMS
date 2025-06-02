@@ -61,7 +61,11 @@ const Header = () => {
     { path: "/admin/roomstatus", label: "Add Room Status" },
     { path: "/admin/reservationstatus", label: "Add Reservation Status" },
     { path: "/admin/reservation-dashboard", label: "Room Reservations" },
-    { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
+    // { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
+    { path: "/admin/restaurant-hosts", label: "Add Restaurant Host"},
+    { path: "/admin/restaurant-menu", label: "Restaurant Menu"},
+    { path: "/admin/restaurant-tables", label: "Restaurant Tables"},
+    { path: "/admin/restaurant-reservations", label: "Restaurant Reservations"},
   ],
   ServiceManager: [
     {path: "/service-manager/dashboard", label: "Service Manager Dashboard" },
@@ -72,6 +76,16 @@ const Header = () => {
     {path: "/service-manager/service-recepcionist", label: "Service Recepsionist"},
   ]
     // Add more roles here
+    RestaurantManager: [
+      { path: "/manager/restaurant-hosts", label: "Hosts"},
+      { path: "/manager/restaurant-menu", label: "Menu"},
+      { path: "/manager/restaurant-tables", label: "Tables"},
+      { path: "/manager/restaurant-reservations", label: "Reservations"}
+    ],
+    RestaurantHost: [
+      { path: "/host/dashboard", label: "Reservations" }
+    ],
+
   };
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
