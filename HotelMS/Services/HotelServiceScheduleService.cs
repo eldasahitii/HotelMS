@@ -107,7 +107,7 @@ namespace HotelMS.Services
         public async Task<HotelServiceScheduleDTO> CreateAsync(HotelServiceScheduleCreateUpdateDTO dto)
         {
 
-            var schedule = new HotelServiceSchedule
+            var schedule = new HotelServiceDetail
             {
                 HotelServiceId = dto.HotelServiceId,
                 StartTime = dto.StartTime,

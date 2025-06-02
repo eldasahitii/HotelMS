@@ -23,7 +23,7 @@ namespace HotelMS.Data
         public DbSet<RoomStatus> RoomStatuses { get; set; }
         public DbSet<ReservationStatus> ReservationStatuses { get; set; }
         public DbSet<HotelService> HotelServices { get; set; }
-        public DbSet<HotelServiceSchedule> HotelServiceSchedules { get; set; }
+        public DbSet<HotelServiceDetail> HotelServiceSchedules { get; set; }
         public DbSet<HotelServiceReservation> HotelServiceReservations { get; set; }
         public DbSet<RoomImage> RoomImages { get; set; }
         public DbSet<RoomRecepsionist> RoomRecepsionists { get; set; }
@@ -153,7 +153,7 @@ namespace HotelMS.Data
                 .HasConversion<string>();
 
             // HotelService → HotelServiceSchedule
-            modelBuilder.Entity<HotelServiceSchedule>()
+            modelBuilder.Entity<HotelServiceDetail>()
                 .HasOne(s => s.Service)
                 .WithMany(h => h.HotelServiceSchedules)
                 .HasForeignKey(s => s.HotelServiceId)

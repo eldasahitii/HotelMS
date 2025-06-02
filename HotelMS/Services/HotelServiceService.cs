@@ -32,7 +32,7 @@ namespace HotelMS.Services
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        public async Task<IEnumerable<HotelServiceSchedule>> GetSchedulesByServiceIdAsync(int serviceId)
+        public async Task<IEnumerable<HotelServiceDetail>> GetSchedulesByServiceIdAsync(int serviceId)
         {
             return await _context.HotelServiceSchedules
                 .Where(s => s.HotelServiceId == serviceId && s.IsAvailable)

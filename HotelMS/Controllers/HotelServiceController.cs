@@ -36,7 +36,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("{id}/schedules")]
-        public async Task<ActionResult<IEnumerable<HotelServiceSchedule>>> GetSchedules (int id)
+        public async Task<ActionResult<IEnumerable<HotelServiceDetail>>> GetSchedules (int id)
         {
             var schedules = await _service.GetSchedulesByServiceIdAsync(id);
             return Ok(schedules);
