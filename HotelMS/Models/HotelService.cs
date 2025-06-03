@@ -7,18 +7,11 @@ namespace HotelMS.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [Required]
-        public string Type { get; set; }
-        [Required]
-        public string Name { get; set; }
-        public string Description { get; set; }
-        [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be a positive number.")]
-        public decimal Price { get; set; }
-        public bool IsActive { get; set; } = true;
-
-        public ICollection<HotelServiceDetail> HotelServiceDetails { get; set; }
-        public ICollection<HotelServiceReservation> HotelServiceReservations { get; set; }
-
+        //[Required]
+        public required string HeroImage { get; set; }
+        //[Required]
+        public required string HeroTitle { get; set; }
+        //[Required]
+        public required string HeroDescription { get; set; }
     }
 }

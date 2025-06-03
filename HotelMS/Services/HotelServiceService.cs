@@ -17,56 +17,85 @@ namespace HotelMS.Services
 
         }
 
-        public async Task<IEnumerable<HotelService>> GetServicesByTypeAsync(string type)
+        // Hero Image methods
+        public async Task<HotelService> AddHeroImageAsync(int serviceId, string imageUrl)
         {
-            return await _context.HotelServices
-                .Where(s => s.Type == type && s.IsActive)
-                .Include(s => s.HotelServiceDetails)
-                .ToListAsync();
-        }
-
-        public async Task<HotelService> GetServiceByIdAsync(int id)
-        {
-            return await _context.HotelServices
-                .Include(s => s.HotelServiceDetails)
-                .FirstOrDefaultAsync(s => s.Id == id);
-        }
-
-        public async Task<IEnumerable<HotelServiceDetail>> GetSchedulesByServiceIdAsync(int serviceId)
-        {
-            return await _context.HotelServiceDetails
-                .Where(s => s.HotelServiceId == serviceId && s.IsAvailable)
-                .ToListAsync();
-        }
-
-        public async Task<HotelServiceReservation> ReserveServiceAsync (HotelServiceReservation reservation)
-        {
-            _context.HotelServiceReservations.Add(reservation);
-            await _context.SaveChangesAsync();
-            return reservation;
-        }
-
-        public async Task<HotelService> UpdateServiceAsync(int id, HotelService updatedService)
-        {
-            var service = await _context.HotelServices.FindAsync(id);
+            var service = await _context.HotelServices.FindAsync(serviceId);
             if (service == null) return null;
 
-            service.Name = updatedService.Name;
-            service.Description = updatedService.Description;
-            
-
+            service.HeroImage = imageUrl;
             await _context.SaveChangesAsync();
             return service;
         }
 
-        public async Task<bool> DeleteServiceAsync(int id)
+        public async Task<HotelService> UpdateHeroImageAsync(int serviceId, string imageUrl)
         {
-            var service = await _context.HotelServices.FindAsync(id);
-            if (service == null) return false;
+            var service = await _context.HotelServices.FindAsync(serviceId);
+            if (service == null) return null;
 
-            _context.HotelServices.Remove(service);
+            service.HeroImage = imageUrl;
             await _context.SaveChangesAsync();
-            return true;
+            return service;
+        }
+
+        public async Task<string> GetHeroImageAsync(int serviceId)
+        {
+            var service = await _context.HotelServices.FindAsync(serviceId);
+            return service?.HeroImage;
+        }
+
+        // Hero Title methods
+        public async Task<HotelService> AddHeroTitleAsync(int serviceId, string title)
+        {
+            var service = await _context.HotelServices.FindAsync(serviceId);
+            if (service == null) return null;
+
+            service.HeroTitle = title;
+            await _context.SaveChangesAsync();
+            return service;
+        }
+
+        public async Task<HotelService> UpdateHeroTitleAsync(int serviceId, string title)
+        {
+            var service = await _context.HotelServices.FindAsync(serviceId);
+            if (service == null) return null;
+
+            service.HeroTitle = title;
+            await _context.SaveChangesAsync();
+            return service;
+        }
+
+        public async Task<string> GetHeroTitleAsync(int serviceId)
+        {
+            var service = await _context.HotelServices.FindAsync(serviceId);
+            return service?.HeroTitle;
+        }
+
+        // Hero Description methods
+        public async Task<HotelService> AddHeroDescriptionAsync(int serviceId, string description)
+        {
+            var service = await _context.HotelServices.FindAsync(serviceId);
+            if (service == null) return null;
+
+            service.HeroDescription = description;
+            await _context.SaveChangesAsync();
+            return service;
+        }
+
+        public async Task<HotelService> UpdateHeroDescriptionAsync(int serviceId, string description)
+        {
+            var service = await _context.HotelServices.FindAsync(serviceId);
+            if (service == null) return null;
+
+            service.HeroDescription = description;
+            await _context.SaveChangesAsync();
+            return service;
+        }
+
+        public async Task<string> GetHeroDescriptionAsync(int serviceId)
+        {
+            var service = await _context.HotelServices.FindAsync(serviceId);
+            return service?.HeroDescription;
         }
 
     }
