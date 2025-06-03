@@ -169,7 +169,21 @@ export default function AboutUs() {
 
       <div className="bg-white shadow rounded p-4 mb-5">
         <h2 className="fw-bold mb-3">About Us</h2>
-        <p>Welcome to Hotel ROLVE...</p>
+        <p>
+      Welcome to Hotel ROLVE, where timeless elegance meets modern luxury. Nestled in the heart of the city, 
+      our hotel offers an unforgettable experience for travelers seeking both comfort and style. Whether you're here 
+      for a relaxing vacation, a romantic escape, or a productive business trip, our attentive team is committed 
+      to making your stay exceptional.
+    </p>
+    <p>
+      From the moment you step through our doors, you'll be greeted with warm hospitality and refined service. 
+      Enjoy beautifully designed rooms with plush bedding, unwind in our tranquil spa, or savor exquisite cuisine 
+      at our on-site restaurant curated by world-class chefs.
+    </p>
+    <p>
+      At Hotel ROLVE, we believe that true luxury lies in the details—thoughtful amenities, personalized service, 
+      and an environment that feels like home.
+    </p>
       </div>
 
       {userId ? (
