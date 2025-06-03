@@ -520,9 +520,9 @@ public class Seed
             {
                 new HotelService
                 {
-                    HeroImage = "imageUrl",
-                    HeroTitle = "Hero Title",
-                    HeroDescription = "Hero Description"
+                    HeroImage = "pool6.jpg",
+                    HeroTitle = "Welcome to Hotel Services",
+                    HeroDescription = "Discover elegance, comfort, and premium hospitality tailored just for you."
                 }
             };
             dataContext.HotelServices.AddRange(services);

@@ -11,8 +11,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AboutUs from './pages/AboutUs';
 import AssignmentsDashboard from './pages/dashboards/cleaningdashboards/AssignmentsDashboard';
-import RoomManagerDashboard from './pages/dashboards/roomdashboards/managerdashboards/RoomManagerDashboard'; 
-import ReservationDashboard from './pages/dashboards/roomdashboards/managerdashboards/ReservationDashboard';  
+import RoomManagerDashboard from './pages/dashboards/roomdashboards/managerdashboards/RoomManagerDashboard';
+import ReservationDashboard from './pages/dashboards/roomdashboards/managerdashboards/ReservationDashboard';
 import RoomReceptionistDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RoomRecepsionistDashboard';
 import RoomRecepsionistManagement from './pages/dashboards/roomdashboards/managerdashboards/RoomRecepsionistManagement';
 import RoomsPage from './pages/Rooms/RoomsPage';
@@ -32,6 +32,7 @@ import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReser
 import HomePage from './pages/HomePage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ServiceMain from './pages/Services/ServiceMain';
 
 
 
@@ -72,12 +73,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 function App() {
   return (
-    
+
     <Router>
       <AuthProvider> {/*  Wrap the whole app */}
         <div>
           {!["/login"].includes(window.location.pathname) && <Header />}
-     <ToastContainer position="top-right" autoClose={4000} />
+          <ToastContainer position="top-right" autoClose={4000} />
 
           <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
             <Routes>
@@ -94,60 +95,60 @@ function App() {
                 <Route path="menu" element={<RestaurantMenuPage />} />
               </Route>
 
-            {/* Room Reservation route */}
-            <Route path="/reserve" element={
-<ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
-  <ReservationPage />
-</ProtectedRoute>
-            } />
+              {/* Room Reservation route */}
+              <Route path="/reserve" element={
+                <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
+                  <ReservationPage />
+                </ProtectedRoute>
+              } />
 
               <Route path="/room-manager-receptionist-management" element={
                 <ProtectedRoute allowedRoles={['Admin', 'RoomManager']}>
                   <RoomRecepsionistManagement />
                 </ProtectedRoute>
-              }/>
+              } />
 
               <Route path="/reservations" element={
                 <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist']}>
                   <ReservationPage />
                 </ProtectedRoute>
-              }/>
+              } />
 
               <Route path="/manager/cleaning-staff" element={
                 <ProtectedRoute allowedRoles={['CleaningManager']}>
                   <CleaningManagerDashboard />
                 </ProtectedRoute>
-              }/>
+              } />
 
               <Route path="/manager/assignments" element={
                 <ProtectedRoute allowedRoles={['CleaningManager']}>
                   <AssignmentsDashboard />
                 </ProtectedRoute>
-              }/>
+              } />
 
               <Route path="/cleaningstaff/dashboard" element={
                 <ProtectedRoute allowedRoles={['CleaningStaff']}>
                   <CleaningStaffDashboard />
                 </ProtectedRoute>
-              }/>
+              } />
 
               <Route path="/manager/room-dashboard" element={
                 <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
                   <RoomManagerDashboard />
                 </ProtectedRoute>
-              }/>
+              } />
 
               <Route path="/admin/reservation-dashboard" element={
                 <ProtectedRoute allowedRoles={['RoomManager', 'Admin']}>
                   <ReservationDashboard />
                 </ProtectedRoute>
-              }/>
+              } />
 
               <Route path="/recepsionist-dashboard" element={
                 <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
                   <RoomReceptionistDashboard />
                 </ProtectedRoute>
-              }/>
+              } />
 
               {/* <Route path="/restaurant-manager/dashboard" element={
                 <ProtectedRoute allowedRoles={['RestaurantManager']}>
@@ -157,26 +158,26 @@ function App() {
 
               <Route path="/manager/restaurant-hosts" element={
                 <ProtectedRoute allowedRoles={['RestaurantManager']}>
-                 <HostAssignmentDashboard />
-               </ProtectedRoute>
+                  <HostAssignmentDashboard />
+                </ProtectedRoute>
               } />
 
               <Route path="/manager/restaurant-menu" element={
                 <ProtectedRoute allowedRoles={['RestaurantManager']}>
-                 <MenuDashboard />
+                  <MenuDashboard />
                 </ProtectedRoute>
               } />
 
               <Route path="/manager/restaurant-tables" element={
                 <ProtectedRoute allowedRoles={['RestaurantManager']}>
-                 <TableDashboard />
+                  <TableDashboard />
                 </ProtectedRoute>
               } />
 
               <Route path="/manager/restaurant-reservations" element={
                 <ProtectedRoute allowedRoles={['RestaurantManager']}>
-                 <ReservationOverviewDashboard />
-               </ProtectedRoute>
+                  <ReservationOverviewDashboard />
+                </ProtectedRoute>
               } />
 
 
@@ -184,85 +185,91 @@ function App() {
                 <ProtectedRoute allowedRoles={['RestaurantHost']}>
                   <RestaurantHostDashboard />
                 </ProtectedRoute>
-              }/>
+              } />
 
               <Route path="/recepsionist-reservations" element={
                 <ProtectedRoute allowedRoles={['RoomRecepsionist', 'Admin']}>
                   <RecepsionistReservationDashboard />
                 </ProtectedRoute>
-              }/>
+              } />
 
               <Route path="/admin/room-types" element={
                 <ProtectedRoute allowedRoles={['Admin']}>
                   <AdminRoomTypeDashboard />
                 </ProtectedRoute>
-              }/>
+              } />
 
-           <Route
-             path="/admin/add-manager"
-             element={
-            <ProtectedRoute allowedRoles={['Admin']}>
-            <AdminAddManager />
-            </ProtectedRoute>
-  }
-/>
-           <Route
-             path="/admin/roomstatus"
-             element={
-            <ProtectedRoute allowedRoles={['Admin']}>
-            <AdminRoomStatus />
-            </ProtectedRoute>
-  }
-/>
-           <Route
-             path="/admin/reservationstatus"
-             element={
-            <ProtectedRoute allowedRoles={['Admin']}>
-            <AdminRoomReservationStatus />
-            </ProtectedRoute>
-  }
-/>
-           <Route
-             path="/user/profile"
-             element={
-            <ProtectedRoute allowedRoles={['Customer']}>
-            <UserInfo />
-            </ProtectedRoute>
-  }
-/>
-           <Route
-             path="/user/userroomreservation"
-             element={
-            <ProtectedRoute allowedRoles={['Customer']}>
-            <UserRoomReservations />
-            </ProtectedRoute>
-  }
-/>
+              <Route
+                path="/admin/add-manager"
+                element={
+                  <ProtectedRoute allowedRoles={['Admin']}>
+                    <AdminAddManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/roomstatus"
+                element={
+                  <ProtectedRoute allowedRoles={['Admin']}>
+                    <AdminRoomStatus />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/reservationstatus"
+                element={
+                  <ProtectedRoute allowedRoles={['Admin']}>
+                    <AdminRoomReservationStatus />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/user/profile"
+                element={
+                  <ProtectedRoute allowedRoles={['Customer']}>
+                    <UserInfo />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/user/userroomreservation"
+                element={
+                  <ProtectedRoute allowedRoles={['Customer']}>
+                    <UserRoomReservations />
+                  </ProtectedRoute>
+                }
+              />
 
-            
- <Route path="/admin/restaurant-hosts" element={
-  <ProtectedRoute allowedRoles={['Admin']}>
-    <AssignHostSection />
-  </ProtectedRoute>
-} />
 
-<Route path="/admin/restaurant-menu" element={
-  <ProtectedRoute allowedRoles={['Admin']}>
-    <MenuSection />
-  </ProtectedRoute>
-} />
+              <Route path="/admin/restaurant-hosts" element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <AssignHostSection />
+                </ProtectedRoute>
+              } />
 
-<Route path="/admin/restaurant-tables" element={
-  <ProtectedRoute allowedRoles={['Admin']}>
-    <TableSection />
-  </ProtectedRoute>
-} />
+              <Route path="/admin/restaurant-menu" element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <MenuSection />
+                </ProtectedRoute>
+              } />
 
-<Route path="/admin/restaurant-reservations" element={
-  <ProtectedRoute allowedRoles={['Admin']}>
-    <ReservationSection />
-  </ProtectedRoute>
-} />
+              <Route path="/admin/restaurant-tables" element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <TableSection />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/admin/restaurant-reservations" element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <ReservationSection />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/services" element={
+                <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'ServiceRecepsionist']}>
+                  <ServiceMain />
+                </ProtectedRoute>
+              } />
 
 
               <Route path="/restaurant-manager/dashboard" element={<Navigate to="/manager/restaurant-hosts" />} />
