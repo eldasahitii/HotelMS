@@ -74,7 +74,7 @@ const Header = () => {
   ],
   ServiceRecepsionist: [
     {path: "/service-manager/service-recepcionist", label: "Service Recepsionist"},
-  ]
+  ],
     // Add more roles here
     RestaurantManager: [
       { path: "/manager/restaurant-hosts", label: "Hosts"},
