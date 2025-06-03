@@ -67,19 +67,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Services
 {
-    public class HotelServiceScheduleService : IHotelServiceScheduleService
+    public class HotelServiceDetailService : IHotelServiceDetailService
     {
         private readonly DataContext _context;
 
-        public HotelServiceScheduleService(DataContext context)
+        public HotelServiceDetailService(DataContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<HotelServiceScheduleDTO>> GetAllAsync()
+        public async Task<IEnumerable<HotelServiceDetailDTO>> GetAllAsync()
         {
-            return await _context.HotelServiceSchedules
-                .Select(x => new HotelServiceScheduleDTO
+            return await _context.HotelServiceDetails
+                .Select(x => new HotelServiceDetailDTO
                 {
                     Id = x.Id,
                     HotelServiceId = x.HotelServiceId,
@@ -89,12 +89,12 @@ namespace HotelMS.Services
                 }).ToListAsync();
         }
 
-        public async Task<HotelServiceScheduleDTO> GetByIdAsync(int id)
+        public async Task<HotelServiceDetailDTO> GetByIdAsync(int id)
         {
-            var schedule = await _context.HotelServiceSchedules.FindAsync(id);
+            var schedule = await _context.HotelServiceDetails.FindAsync(id);
             if (schedule == null) return null;
 
-            return new HotelServiceScheduleDTO
+            return new HotelServiceDetailDTO
             {
                 Id = schedule.Id,
                 HotelServiceId = schedule.HotelServiceId,
@@ -104,10 +104,10 @@ namespace HotelMS.Services
             };
         }
 
-        public async Task<HotelServiceScheduleDTO> CreateAsync(HotelServiceScheduleCreateUpdateDTO dto)
+        public async Task<HotelServiceDetailDTO> CreateAsync(HotelServiceScheduleCreateUpdateDTO dto)
         {
 
-            var schedule = new HotelServiceSchedule
+            var schedule = new HotelServiceDetail
             {
                 HotelServiceId = dto.HotelServiceId,
                 StartTime = dto.StartTime,
@@ -115,10 +115,10 @@ namespace HotelMS.Services
                 IsAvailable = dto.IsAvailable
             };
 
-            _context.HotelServiceSchedules.Add(schedule);
+            _context.HotelServiceDetails.Add(schedule);
             await _context.SaveChangesAsync();
 
-            return new HotelServiceScheduleDTO
+            return new HotelServiceDetailDTO
             {
                 Id = schedule.Id,
                 HotelServiceId = schedule.HotelServiceId,
@@ -131,7 +131,7 @@ namespace HotelMS.Services
 
         public async Task<bool> UpdateAsync(int id, HotelServiceScheduleCreateUpdateDTO DTO)
         {
-            var schedule = await _context.HotelServiceSchedules.FindAsync(id);
+            var schedule = await _context.HotelServiceDetails.FindAsync(id);
             if (schedule == null) return false;
 
             schedule.HotelServiceId = DTO.HotelServiceId;
@@ -139,17 +139,17 @@ namespace HotelMS.Services
             schedule.EndTime = DTO.EndTime;
             schedule.IsAvailable = DTO.IsAvailable;
 
-            _context.HotelServiceSchedules.Update(schedule);
+            _context.HotelServiceDetails.Update(schedule);
             await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var schedule = await _context.HotelServiceSchedules.FindAsync(id);
-            if (schedule == null) return false;
+            var schedule = await _context.HotelServiceDetails.FindAsync(id);
+            if (schedule == null) return false; 
 
-            _context.HotelServiceSchedules.Remove(schedule);
+            _context.HotelServiceDetails.Remove(schedule);
             await _context.SaveChangesAsync();
             return true;
         }

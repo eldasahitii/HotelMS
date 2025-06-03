@@ -21,20 +21,20 @@ namespace HotelMS.Services
         {
             return await _context.HotelServices
                 .Where(s => s.Type == type && s.IsActive)
-                .Include(s => s.HotelServiceSchedules)
+                .Include(s => s.HotelServiceDetails)
                 .ToListAsync();
         }
 
         public async Task<HotelService> GetServiceByIdAsync(int id)
         {
             return await _context.HotelServices
-                .Include(s => s.HotelServiceSchedules)
+                .Include(s => s.HotelServiceDetails)
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        public async Task<IEnumerable<HotelServiceSchedule>> GetSchedulesByServiceIdAsync(int serviceId)
+        public async Task<IEnumerable<HotelServiceDetail>> GetSchedulesByServiceIdAsync(int serviceId)
         {
-            return await _context.HotelServiceSchedules
+            return await _context.HotelServiceDetails
                 .Where(s => s.HotelServiceId == serviceId && s.IsAvailable)
                 .ToListAsync();
         }

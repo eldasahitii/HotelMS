@@ -69,23 +69,23 @@ namespace HotelMS.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HotelServiceScheduleController : ControllerBase
+    public class HotelServiceDetailController : ControllerBase
     {
-        private readonly IHotelServiceScheduleService _service;
+        private readonly IHotelServiceDetailService _service;
 
-        public HotelServiceScheduleController(IHotelServiceScheduleService service)
+        public HotelServiceDetailController(IHotelServiceDetailService service)
         {
             _service = service;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<HotelServiceScheduleDTO>> GetAll()
+        public async Task<IEnumerable<HotelServiceDetailDTO>> GetAll()
         {
             return await _service.GetAllAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<HotelServiceScheduleDTO>> GetById(int id)
+        public async Task<ActionResult<HotelServiceDetailDTO>> GetById(int id)
         {
             var schedule = await _service.GetByIdAsync(id);
             if (schedule == null) return NotFound();
@@ -93,7 +93,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<HotelServiceScheduleDTO>> Create(HotelServiceScheduleCreateUpdateDTO DTO)
+        public async Task<ActionResult<HotelServiceDetailDTO>> Create(HotelServiceScheduleCreateUpdateDTO DTO)
         {
             //if (DTO.EndTime <= DTO.StartTime)
             //{

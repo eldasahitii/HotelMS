@@ -18,7 +18,7 @@ using HotelMS.Models.DTOs;
 
 namespace HotelMS.Services
 {
-    public interface IHotelServiceDetailsService
+    public interface IHotelServiceDetailService
     {
         Task<IEnumerable<HotelServiceDetailDTO>> GetAllAsync();
         Task<HotelServiceDetailDTO> GetByIdAsync(int id);

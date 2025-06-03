@@ -17,7 +17,7 @@ namespace HotelMS.Models
         public decimal Price { get; set; }
         public bool IsActive { get; set; } = true;
 
-        public ICollection<HotelServiceSchedule> HotelServiceSchedules { get; set; }
+        public ICollection<HotelServiceDetail> HotelServiceDetails { get; set; }
         public ICollection<HotelServiceReservation> HotelServiceReservations { get; set; }
 
     }

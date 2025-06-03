@@ -12,7 +12,7 @@
 namespace HotelMS.Models.DTOs
 {
     // For reading data (returns to client)
-    public class HotelServiceScheduleDTO
+    public class HotelServiceDetailDTO
     {
         public int Id { get; set; }
         public int HotelServiceId { get; set; }

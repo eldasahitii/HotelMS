@@ -647,21 +647,21 @@ public class Seed
 
 
         //Seed HotelServiceSchedule
-        if (!dataContext.HotelServiceSchedules.Any())
+        if (!dataContext.HotelServiceDetails.Any())
         {
-            var scheduleEntries = new List<HotelServiceSchedule>();
+            var scheduleEntries = new List<HotelServiceDetail>();
 
             var allServices = dataContext.HotelServices.ToList();
             foreach (var service in allServices)
             {
-                scheduleEntries.Add(new HotelServiceSchedule
+                scheduleEntries.Add(new HotelServiceDetail
                 {
                     HotelServiceId = service.Id,
                     StartTime = DateTime.Today.AddHours(10),
                     EndTime = DateTime.Today.AddHours(11),
                     IsAvailable = true
                 });
-                scheduleEntries.Add(new HotelServiceSchedule
+                scheduleEntries.Add(new HotelServiceDetail
                 {
                     HotelServiceId = service.Id,
                     StartTime = DateTime.Today.AddHours(14),
@@ -669,7 +669,7 @@ public class Seed
                     IsAvailable = true
                 });
             }
-            dataContext.HotelServiceSchedules.AddRange(scheduleEntries);
+            dataContext.HotelServiceDetails.AddRange(scheduleEntries);
             dataContext.SaveChanges();
         }
 
@@ -679,7 +679,7 @@ public class Seed
         {
             var customer = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
             var saunaService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Sauna Session");
-            var schedule = dataContext.HotelServiceSchedules.FirstOrDefault(s => s.HotelServiceId == saunaService.Id);
+            var schedule = dataContext.HotelServiceDetails.FirstOrDefault(s => s.HotelServiceId == saunaService.Id);
 
             if (customer != null && saunaService != null && schedule != null)
             {

@@ -34,7 +34,7 @@ using Newtonsoft.Json;
 
 namespace HotelMS.Models
 {
-    public class HotelServiceSchedule
+    public class HotelServiceDetail
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
