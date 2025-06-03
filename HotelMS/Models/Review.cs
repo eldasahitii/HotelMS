@@ -3,6 +3,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using System.Collections.Generic;
+
 
 namespace HotelMS.Models
 {
@@ -35,6 +37,10 @@ namespace HotelMS.Models
 
         public string? ManagerReply { get; set; }
         public DateTime? ReplyDate { get; set; }
+
+        public ICollection<ReviewImage>? Images { get; set; }
+
+
 
 
 

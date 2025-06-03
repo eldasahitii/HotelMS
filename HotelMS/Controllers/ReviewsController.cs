@@ -27,7 +27,8 @@ namespace HotelMS.Controllers
         {
             return await _context.Reviews
                 .Include(r => r.User)
-                .Include(r => r.Category) //  Include the ReviewCategory
+                .Include(r => r.Category)//  Include the ReviewCategory
+                .Include(r => r.Images)
                 .ToListAsync();
         }
 
@@ -50,32 +51,44 @@ namespace HotelMS.Controllers
         // POST: api/reviews
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Review>> PostReview([FromBody] Review review) // ✅ Add [FromBody]
+        public async Task<ActionResult<Review>> PostReview([FromBody] ReviewWithImageDTO dto)
         {
-            // ✅ This returns helpful validation errors instead of generic 400
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdClaim))
-                return Unauthorized("User ID not found in token.");
-
-            //  review.UserID = int.Parse(userIdClaim);
             if (!int.TryParse(userIdClaim, out int userId))
                 return Unauthorized("Invalid user ID in token.");
 
-            review.UserID = userId; // ✅ safe assignment
-
-
-            review.Date = DateTime.Now;
+            var review = new Review
+            {
+                UserID = userId,
+                Comment = dto.Comment,
+                Rating = dto.Rating,
+                ReviewCategoryID = dto.ReviewCategoryID,
+                Date = DateTime.Now
+            };
 
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync();
 
+            if (!string.IsNullOrWhiteSpace(dto.Base64Image))
+            {
+                var imageBytes = Convert.FromBase64String(dto.Base64Image);
+                var fileName = $"review_{review.ReviewID}_{Guid.NewGuid()}.jpg";
+                var folderPath = Path.Combine("wwwroot", "reviewimages");
+                Directory.CreateDirectory(folderPath);
+                var filePath = Path.Combine(folderPath, fileName);
+                await System.IO.File.WriteAllBytesAsync(filePath, imageBytes);
+
+                _context.ReviewImages.Add(new ReviewImage
+                {
+                    ReviewID = review.ReviewID,
+                    ImageUrl = $"/reviewimages/{fileName}"
+                });
+                await _context.SaveChangesAsync();
+            }
+
             return CreatedAtAction(nameof(GetAllReviews), new { id = review.ReviewID }, review);
         }
+
 
 
         // DELETE: api/reviews/{id}
