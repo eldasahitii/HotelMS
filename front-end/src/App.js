@@ -29,6 +29,13 @@ import AdminRoomStatus from './pages/dashboards/admindashboard/AdminRoomStatus';
 import AdminRoomReservationStatus from './pages/dashboards/admindashboard/AdminReservationStatus';
 import UserInfo from './pages/dashboards/userdashboard/UserInfo';
 import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReservations';
+import ServiceMain from './pages/Services/ServiceMain';
+import PoolSpaPage from './pages/Services/PoolSpaPage';
+import EventsPage from './pages/Services/EventsPage';
+// import ServiceManagerDashboard from './pages/dashboards/servicedashboard/servicemanagerdashboard';
+// import ServiceRecepcionist from './pages/dashboards/servicedashboard/servicerecepcionist';
+// import ServiceDetailManagerDashboard from './pages/dashboards/servicedashboard/servicedetailmanagerdashboard.jsx';
+// import ServiceManagerReservationDashboard from './pages/dashboards/servicedashboard/servicemanagerreservationdashboard.jsx';
 import HomePage from './pages/HomePage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -264,6 +271,25 @@ function App() {
   </ProtectedRoute>
 } />
 
+
+
+                 <Route path="/services" element={
+                <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Recepcionist']}>
+                  <ServiceMain />
+                </ProtectedRoute>
+              }/>
+
+              <Route path="/services/pool-spa" element={
+                <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Receptionist']}>
+                  <PoolSpaPage />
+                </ProtectedRoute>
+              }/>
+
+              <Route path="/services/event-page" element={
+                <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'Receptionist']}>
+                  <EventsPage />
+                </ProtectedRoute>
+              }/>
 
               <Route path="/restaurant-manager/dashboard" element={<Navigate to="/manager/restaurant-hosts" />} />
 

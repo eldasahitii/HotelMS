@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelMS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250602131622_ServicesFix")]
+    [Migration("20250602145521_ServicesFix")]
     partial class ServicesFix
     {
         /// <inheritdoc />
@@ -143,8 +143,8 @@ namespace HotelMS.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<decimal?>("Price")
-                        .HasColumnType("decimal(10,2)");
+                    b.Property<string>("Price")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");

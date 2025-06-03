@@ -513,7 +513,7 @@ public class Seed
             }
         }
 
-       
+
 
         if (!dataContext.MenuCategories.Any())
         {
@@ -606,92 +606,82 @@ public class Seed
             dataContext.RestaurantReservations.Add(reservation);
             dataContext.SaveChanges();
         }
-
         if (!dataContext.HotelServices.Any())
         {
             var poolSpaService = new HotelService
             {
                 Name = "Pool & Spa",
-                Description = "Relax and unwind in our luxurious pool and spa facilities. Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.",
+                Description = "Relax and unwind in our luxurious pool and spa facilities...",
                 HeroImageUrl = "images/pool1.jpg"
             };
 
             var eventsService = new HotelService
             {
                 Name = "Events",
-                Description = "Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations. Our experienced team will help you plan every detail to ensure a seamless and memorable event. Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized service to make your occasion truly special.",
+                Description = "Host your special moments in our elegant venues...",
                 HeroImageUrl = "images/mainevents.jpg"
             };
 
             dataContext.HotelServices.Add(poolSpaService);
             dataContext.HotelServices.Add(eventsService);
-
-            dataContext.SaveChanges();
+            dataContext.SaveChanges(); // Generates IDs
         }
+
 
         if (!dataContext.HotelServiceDetails.Any())
         {
+            var poolSpaServiceId = dataContext.HotelServices.First(s => s.Name == "Pool & Spa").Id;
+            var eventsServiceId = dataContext.HotelServices.First(s => s.Name == "Events").Id;
+
             var services = new List<HotelServiceDetail>
-            {
-                // Pool & Spa Services
-                new HotelServiceDetail
-                {
-                    Id = 1,
-                    Title = "Heated Indoor Pool",
-                    Description = "Relax in our temperature-controlled indoor pool...",
-                    Price = 25m,
-                    PriceDescription = "€25 per person"
-                },
-                new HotelServiceDetail
-                {
-                    Id = 2,
-                    Title = "Scenic Outdoor Pool",
-                    Description = "Escape to our breathtaking outdoor pool area...",
-                    Price = 35m,
-                    PriceDescription = "€35 per person"
-                },
-                new HotelServiceDetail
-                {
-                    Id = 3,
-                    Title = "Massage & Relaxation Room",
-                    Description = "Step into our peaceful massage and relaxation room...",
-                    Price = 50m,
-                    PriceDescription = "€50 per session"
-                },
-                new HotelServiceDetail
-                {
-                    Id = 4,
-                    Title = "Sauna Room",
-                    Description = "Experience the soothing warmth of our dedicated sauna room...",
-                    Price = 30m,
-                    PriceDescription = "€30 per session"
-                },
-
-                // Events Services
-                 new HotelServiceDetail
-
-                {
-                    Id = 5,
-                    Title = "Modern Conference Room",
-                    Description = "Host your next meeting or seminar in our fully equipped conference room...",
-                    Price = 200m,
-                    PriceDescription = "€200 per session"
-                },
-                new HotelServiceDetail
-                {
-                    Id = 6,
-                    Title = "Elegant Wedding Venue",
-                    Description = "Celebrate your special day in our romantic wedding venue...",
-                    Price = 1500m,
-                    PriceDescription = "€1,500 per day"
-                }
-            };
+    {
+        new HotelServiceDetail
+        {
+            Title = "Heated Indoor Pool",
+            Description = "Relax in our temperature-controlled indoor pool...",
+            Price = "€25.70",
+            ServiceId = poolSpaServiceId
+        },
+        new HotelServiceDetail
+        {
+            Title = "Scenic Outdoor Pool",
+            Description = "Escape to our breathtaking outdoor pool area...",
+            Price = "€35.00",
+            ServiceId = poolSpaServiceId
+        },
+        new HotelServiceDetail
+        {
+            Title = "Massage & Relaxation Room",
+            Description = "Step into our peaceful massage and relaxation room...",
+            Price = "€50.00",
+            ServiceId = poolSpaServiceId
+        },
+        new HotelServiceDetail
+        {
+            Title = "Sauna Room",
+            Description = "Experience the soothing warmth of our dedicated sauna room...",
+            Price = "€30.00",
+            ServiceId = poolSpaServiceId
+        },
+        new HotelServiceDetail
+        {
+            Title = "Modern Conference Room",
+            Description = "Host your next meeting or seminar...",
+            Price = "€200.00",
+            ServiceId = eventsServiceId
+        },
+        new HotelServiceDetail
+        {
+            Title = "Elegant Wedding Venue",
+            Description = "Celebrate your special day...",
+            Price = "€1,500.00",
+            ServiceId = eventsServiceId
+        }
+    };
 
             dataContext.HotelServiceDetails.AddRange(services);
             dataContext.SaveChanges();
         }
-
-
 
 
 

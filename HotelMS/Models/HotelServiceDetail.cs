@@ -27,7 +27,7 @@ namespace HotelMS.Models
         [MaxLength(255)]
         public string ImageUrl { get; set; }
 
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal? Price { get; set; }
+        //[Column(TypeName = "decimal(10,2)")]
+        public string? Price { get; set; }
     }
 }
