@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { useAuth } from '../Context/AuthContext'; //  Import AuthContext
+import { useAuth } from '../Context/AuthContext'; 
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,7 +13,7 @@ const Login = () => {
   const [formErrors, setFormErrors] = useState({});
 
   const navigate = useNavigate();
-  const { fetchUser } = useAuth(); //  Access fetchUser from context
+  const { fetchUser } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,7 +36,7 @@ const Login = () => {
       );
 
       if (loginRes.data.isLoggedIn) {
-        await fetchUser(); // Immediately update context state
+        await fetchUser(); 
 
         const meRes = await axios.get('https://localhost:7117/api/Auth/me', {
           withCredentials: true,
