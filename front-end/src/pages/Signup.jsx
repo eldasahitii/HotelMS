@@ -58,7 +58,7 @@ const SignupPage = () => {
         const { role } = meRes.data;
 
         switch (role) {
-          case 'Customer': navigate('/rooms'); break;
+          case 'Customer': navigate('/homepage'); break;
           case 'Admin': navigate('/admin/room-types'); break;
           case 'RoomManager': navigate('/manager/room-dashboard'); break;
           case 'RoomRecepsionist': navigate('/recepsionist-dashboard'); break;
