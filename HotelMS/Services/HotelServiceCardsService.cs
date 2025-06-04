@@ -15,12 +15,12 @@ namespace HotelMS.Services
         }
 
         // Card Image methods
-        public async Task<HotelServiceCards> AddCardImageAsync(int cardId, string imageUrl)
+        public async Task<HotelServiceCards> AddCardImageAsync(int cardId, string CardImageUrl)
         {
             var card = await _context.HotelServiceCards.FindAsync(cardId);
             if (card == null) return null;
 
-            card.CardImage = imageUrl;
+            card.CardImage = CardImageUrl;
             await _context.SaveChangesAsync();
             return card;
         }

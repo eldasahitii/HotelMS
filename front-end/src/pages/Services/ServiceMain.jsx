@@ -5,12 +5,20 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // import EventsImage from '../../Assets/images/mainevents.jpg';
 import heroImage from '../../Assets/images/pool6.jpg';
 import axios from "axios";
+import { CardTitle } from 'react-bootstrap';
 
 const ServiceMain = () => {
   const navigate = useNavigate();
   const [imageUrl, setImageUrl] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [cardImageUrl, setCardImageUrl] = useState('');
+  const [CardTitle, setCardTitle] = useState('');
+  const [CardDescription, setCardDescription] = useState('');
+  const [eventCardImage, setEventCardImage] = useState('');
+  const [eventCardTitle, setEventCardTitle] = useState('');
+  const [eventCardDescription, setEventCardDescription] = useState('');
+
 
   const framedImageStyle = {
     border: '8px solid white',
@@ -24,6 +32,12 @@ const ServiceMain = () => {
     fetchHeroImage();
     fetchHeroTitle();
     fetchHeroDescription();
+    fetchCardImage();
+    fetchCardTitle();
+    fetchCardDescription();
+    fetchEventCardImage();
+    fetchEventCardTitle();
+    fetchEventCardDescription();
   }, [])
 
   async function fetchHeroImage() {
@@ -69,6 +83,77 @@ const ServiceMain = () => {
     }
   }
 
+  async function fetchCardImage() {
+    try {
+      const res = await axios.get(
+        "https://localhost:7117/api/HotelServiceCards/1/card-image",
+        {
+          withCredentials: true,
+        }
+      );
+      setCardImageUrl(res.data); // Use new state
+      console.log("Card image:", res.data);
+    } catch (err) {
+      console.error("Failed to get card image!");
+    }
+  }
+
+  async function fetchCardTitle() {
+    try {
+      const res = await axios.get("https://localhost:7117/api/HotelServiceCards/1/card-title", {
+        withCredentials: true,
+      });
+      setCardTitle(res.data);
+    } catch (err) {
+      console.error("Failed to get card title!", err);
+    }
+  }
+
+  async function fetchCardDescription() {
+    try {
+      const res = await axios.get("https://localhost:7117/api/HotelServiceCards/1/card-description", {
+        withCredentials: true,
+      });
+      setCardDescription(res.data);
+    } catch (err) {
+      console.error("Failed to get card description!", err);
+    }
+  }
+
+  async function fetchEventCardImage() {
+  try {
+    const res = await axios.get("https://localhost:7117/api/HotelServiceCards/2/card-image", {
+      withCredentials: true,
+    });
+    setEventCardImage(res.data);
+  } catch (err) {
+    console.error("Failed to get event card image!", err);
+  }
+}
+
+async function fetchEventCardTitle() {
+  try {
+    const res = await axios.get("https://localhost:7117/api/HotelServiceCards/2/card-title", {
+      withCredentials: true,
+    });
+    setEventCardTitle(res.data);
+  } catch (err) {
+    console.error("Failed to get event card title!", err);
+  }
+}
+
+async function fetchEventCardDescription() {
+  try {
+    const res = await axios.get("https://localhost:7117/api/HotelServiceCards/2/card-description", {
+      withCredentials: true,
+    });
+    setEventCardDescription(res.data);
+  } catch (err) {
+    console.error("Failed to get event card description!", err);
+  }
+}
+
+
   return (
     <div style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
       {/* Hero Section */}
@@ -96,20 +181,17 @@ const ServiceMain = () => {
       </div>
 
       {/* Pool & Spa Section */}
-      {/* <div className="container py-5">
+      <div className="container py-5">
         <div className="row align-items-center">
           <div className="col-md-6 mb-4 mb-md-0">
             <div style={framedImageStyle}>
-              <img src={poolSpaImage} className="img-fluid" alt="Pool and Spa" />
+              <img src={`https://localhost:7117/Images/Services/${cardImageUrl}`} className="img-fluid" alt="Pool and Spa" />
             </div>
           </div>
           <div className="col-md-6">
-            <h2 style={{ color: '#333' }}>Pool & Spa</h2>
+            <h2 style={{ color: '#333' }}>{CardTitle}</h2>
             <p className="text-muted">
-              Relax and unwind in our luxurious pool and spa facilities. 
-              Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, 
-              sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. 
-              Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.
+              {CardDescription}
             </p>
             <button
               className="btn btn-dark"
@@ -119,23 +201,20 @@ const ServiceMain = () => {
             </button>
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* Events Section */}
-      {/* <div className="container py-5">
+      <div className="container py-5">
         <div className="row align-items-center flex-md-row-reverse">
           <div className="col-md-6 mb-4 mb-md-0">
             <div style={framedImageStyle}>
-              <img src={EventsImage} className="img-fluid" alt="Events" />
+              <img src={`https://localhost:7117/Images/Services/${eventCardImage}`} className="img-fluid" alt="Events" />
             </div>
           </div>
           <div className="col-md-6">
-            <h2 style={{ color: '#333' }}>Events</h2>
+            <h2 style={{ color: '#333' }}>{eventCardTitle}</h2>
             <p className="text-muted">
-              Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations.
-               Our experienced team will help you plan every detail to ensure a seamless and memorable event. 
-               Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized 
-               service to make your occasion truly special.
+              {eventCardDescription}
             </p>
             <button
               className="btn btn-dark"
@@ -145,7 +224,7 @@ const ServiceMain = () => {
             </button>
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* Footer */}
       <footer className="text-center py-4 bg-light text-muted">
