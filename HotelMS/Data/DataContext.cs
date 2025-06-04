@@ -24,6 +24,7 @@ namespace HotelMS.Data
         public DbSet<ReservationStatus> ReservationStatuses { get; set; }
         public DbSet<HotelService> HotelServices { get; set; }
         public DbSet<HotelServiceDetail> HotelServiceDetails { get; set; }
+        public DbSet<HotelServiceCards> HotelServiceCards { get; set; }
         public DbSet<HotelServiceReservation> HotelServiceReservations { get; set; }
         public DbSet<RoomImage> RoomImages { get; set; }
         public DbSet<RoomRecepsionist> RoomRecepsionists { get; set; }
