@@ -85,7 +85,6 @@ namespace HotelMS.Services
             {
                 CleaningAssignmentID = a.CleaningAssignmentID,
                 RoomID = a.RoomID,
-
                 RoomNumber = a.Room.RoomNumber,
                 CleaningStaffID = a.CleaningStaffID,
                 StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,
