@@ -33,6 +33,7 @@ import HomePage from './pages/HomePage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CleaningReviewDashboard from "./pages/dashboards/cleaningdashboards/CleaningReviewDashboard";
+import RestaurantReviewDashboard from './pages/dashboards/restaurantdashboards/managerdashboards/RestaurantReviewDashboard';
 
 
 
@@ -267,6 +268,13 @@ function App() {
     <ReservationSection />
   </ProtectedRoute>
 } />
+
+<Route path="/restaurant-manager/review-dashboard" element={
+  <ProtectedRoute allowedRoles={['RestaurantManager']}>
+    <RestaurantReviewDashboard />
+  </ProtectedRoute>
+} />
+
 
 
               <Route path="/restaurant-manager/dashboard" element={<Navigate to="/manager/restaurant-hosts" />} />

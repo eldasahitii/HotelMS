@@ -74,7 +74,9 @@ const Header = () => {
       { path: "/manager/restaurant-hosts", label: "Hosts"},
       { path: "/manager/restaurant-menu", label: "Menu"},
       { path: "/manager/restaurant-tables", label: "Tables"},
-      { path: "/manager/restaurant-reservations", label: "Reservations"}
+      { path: "/manager/restaurant-reservations", label: "Reservations"},
+      { path: "/restaurant-manager/review-dashboard", label: "Restaurant Reviews" }
+
     ],
     RestaurantHost: [
       { path: "/host/dashboard", label: "Reservations" }
