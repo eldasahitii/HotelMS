@@ -540,9 +540,16 @@ public class Seed
                     CardTitle = "Welcome to Hotel Services",
                     CardDescription = "Discover elegance, comfort, and premium hospitality tailored just for you.",
                     CardLink = "See more button"
+                },
+                new HotelServiceCards
+                {
+                    CardImage = "pool6.jpg",
+                    CardTitle = "Welcome to Hotel Services",
+                    CardDescription = "Discover elegance, comfort, and premium hospitality tailored just for you.",
+                    CardLink = "See more button"
                 }
             };
-            dataContext.HotelServices.AddRange();
+            dataContext.HotelServiceCards.AddRange(services);
             dataContext.SaveChanges();
         }
 
