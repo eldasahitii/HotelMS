@@ -32,6 +32,8 @@ import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReser
 import HomePage from './pages/HomePage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CleaningReviewDashboard from "./pages/dashboards/cleaningdashboards/CleaningReviewDashboard";
+
 
 
 
@@ -89,6 +91,8 @@ function App() {
               <Route path="/about" element={<AboutUs />} />
               <Route path="/homepage" element={<HomePage />} />
               <Route path="/room-manager/review-dashboard" element={<ReviewDashboard />} />
+             <Route path="/cleaning-manager/review-dashboard" element={<CleaningReviewDashboard />} />
+
               <Route path="/restaurant" >
                 <Route index element={<RestaurantHomePage />} />
                 <Route path="menu" element={<RestaurantMenuPage />} />

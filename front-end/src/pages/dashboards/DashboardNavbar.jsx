@@ -15,6 +15,7 @@ export default function DashboardNavbar({ role }) {
     CleaningManager: [
       { path: "/manager/cleaning-staff", label: "Cleaning Staff" },
       { path: "/manager/assignments", label: "Assignments" },
+       { path: "cleaning-manager/review-dashboard", label: "Cleaning Reviews" },
     ],
   RoomManager: [
     { path: "/manager/room-dashboard", label: "Room Dashboard" },
