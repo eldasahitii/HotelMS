@@ -33,6 +33,8 @@ import HomePage from './pages/HomePage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ServiceMain from './pages/Services/ServiceMain';
+import PoolSpaPage from './pages/Services/PoolSpaPage';
+import EventsPage from './pages/Services/EventsPage';
 
 
 
@@ -268,6 +270,19 @@ function App() {
               <Route path="/services" element={
                 <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'ServiceRecepsionist']}>
                   <ServiceMain />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/services/pool-spa" element={
+                <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'ServiceRecepsionist']}>
+                  <PoolSpaPage />
+                </ProtectedRoute>
+              } />
+
+
+              <Route path="/services" element={
+                <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'ServiceRecepsionist']}>
+                  <EventsPage />
                 </ProtectedRoute>
               } />
 

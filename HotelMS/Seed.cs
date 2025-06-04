@@ -523,6 +523,12 @@ public class Seed
                     HeroImage = "pool6.jpg",
                     HeroTitle = "Welcome to Hotel Services",
                     HeroDescription = "Discover elegance, comfort, and premium hospitality tailored just for you."
+                },
+                new HotelService
+                {
+                    HeroImage = "pool6.jpg",
+                    HeroTitle = "Pool & Spa Experiences",
+                    HeroDescription = "Refresh, recharge, and relax with our premium water and wellness services."
                 }
             };
             dataContext.HotelServices.AddRange(services);
