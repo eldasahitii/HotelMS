@@ -8,6 +8,7 @@ const ReviewDashboard = () => {
   const [replyText, setReplyText] = useState('');
   const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [error, setError] = useState("");
+  const [deletingImageId, setDeletingImageId] = useState(null);
 
   useEffect(() => {
     fetchReviews();
@@ -32,6 +33,19 @@ const ReviewDashboard = () => {
     }
   };
 
+  const handleDeleteImage = async (imageId) => {
+    if (!window.confirm("Are you sure you want to delete this image?")) return;
+    try {
+      setDeletingImageId(imageId);
+      await axios.delete(`/api/reviews/deleteimage/${imageId}`, { withCredentials: true });
+      fetchReviews();
+    } catch (err) {
+      setError("Failed to delete image.");
+    } finally {
+      setDeletingImageId(null);
+    }
+  };
+
   const submitReply = async () => {
     if (!selectedReviewId || !replyText.trim()) return;
     try {
@@ -51,37 +65,6 @@ const ReviewDashboard = () => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-  
-      {/* <aside
-        className="text-white p-4"
-        style={{ width: "240px", backgroundColor: "#324b6b" }}
-      >
-        <h4 className="fw-bold mb-4">
-          <i className="bi bi-building"></i> HotelMS
-        </h4>
-        <ul className="nav flex-column">
-          <button
-            className="btn btn-outline-light w-100 mb-3"
-         onClick={() => navigate("/manager/room-dashboard")}
-
-
-          >
-            <i className="bi bi-building me-2"></i> Room Manager Dashboard
-          </button>
-
-          <button
-            className="btn btn-outline-light w-100"
-            onClick={() => {
-              localStorage.removeItem("token");
-              navigate("/login");
-            }}
-          >
-            <i className="bi bi-box-arrow-right me-2"></i> Logout
-          </button>
-        </ul>
-      </aside> */}
-
-      {/* Main Content */}
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-chat-left-text me-2"></i> Review Management
@@ -94,9 +77,40 @@ const ReviewDashboard = () => {
             <div className="col-md-6" key={review.reviewID}>
               <div className="card shadow-sm border">
                 <div className="card-body">
+
+                  {/* Review Images with Delete Option */}
+                  {review.images && review.images.length > 0 && (
+                    <div className="mb-3 d-flex align-items-start gap-2 flex-wrap">
+                      {review.images.map((img) => (
+                        <div key={img.reviewImageID} className="position-relative">
+                          <img
+                            src={img.imageUrl}
+                            alt="Review"
+                            className="img-thumbnail"
+                            style={{
+                              height: "100px",
+                              width: "100px",
+                              objectFit: "cover",
+                              borderRadius: "10px"
+                            }}
+                          />
+                          <button
+                            className="btn btn-sm btn-danger position-absolute top-0 end-0"
+                            onClick={() => handleDeleteImage(img.reviewImageID)}
+                            disabled={deletingImageId === img.reviewImageID}
+                            style={{ borderRadius: "50%", padding: "0.3rem 0.5rem" }}
+                          >
+                            <i className="bi bi-x-lg"></i>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   <h5>{review.user?.firstName} {review.user?.lastName}</h5>
                   <h6 className="text-muted">{review.category?.categoryName}</h6>
                   <p>{review.comment}</p>
+
                   <div className="mb-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <i
@@ -106,6 +120,7 @@ const ReviewDashboard = () => {
                     ))}
                   </div>
 
+                  {/* Reply Section */}
                   {review.managerReply ? (
                     <div className="border-start ps-3 mt-3">
                       <strong>Manager Reply:</strong>
@@ -121,18 +136,21 @@ const ReviewDashboard = () => {
                           value={replyText}
                           onChange={(e) => setReplyText(e.target.value)}
                         />
-                        <button className="btn btn-success btn-sm me-2" onClick={submitReply}>Submit</button>
-                        <button className="btn btn-secondary btn-sm" onClick={() => setSelectedReviewId(null)}>Cancel</button>
+                        <div className="d-flex gap-2 mb-2">
+                          <button className="btn btn-success px-4 py-2 rounded" onClick={submitReply}>Submit</button>
+                          <button className="btn btn-secondary px-4 py-2 rounded" onClick={() => setSelectedReviewId(null)}>Cancel</button>
+                        </div>
                       </>
                     ) : (
-                      <button className="btn btn-outline-success btn-sm me-2" onClick={() => setSelectedReviewId(review.reviewID)}>
+                      <button className="btn btn-outline-success px-4 py-2 rounded me-2" onClick={() => setSelectedReviewId(review.reviewID)}>
                         Reply
                       </button>
                     )
                   )}
 
+                  {/* Delete Review Button */}
                   <button
-                    className="btn btn-outline-danger btn-sm mt-2"
+                    className="btn btn-outline-danger px-4 py-2 rounded"
                     onClick={() => handleDelete(review.reviewID)}
                   >
                     Delete
@@ -148,3 +166,4 @@ const ReviewDashboard = () => {
 };
 
 export default ReviewDashboard;
+

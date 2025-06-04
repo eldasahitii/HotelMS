@@ -169,6 +169,19 @@ namespace HotelMS.Controllers
             return Ok(review);
         }
 
+        // Example in ReviewsController.cs
+        [HttpDelete("deleteimage/{imageId}")]
+        public async Task<IActionResult> DeleteImage(int imageId)
+        {
+            var image = await _context.ReviewImages.FindAsync(imageId);
+            if (image == null) return NotFound();
+
+            _context.ReviewImages.Remove(image);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+
 
 
 

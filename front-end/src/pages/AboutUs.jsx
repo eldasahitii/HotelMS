@@ -16,6 +16,8 @@ export default function AboutUs() {
   const [categories, setCategories] = useState([]);
   const [editingReview, setEditingReview] = useState(null);
   const [base64Image, setBase64Image] = useState(null);
+  const [editBase64Image, setEditBase64Image] = useState(null);
+
 
 
   useEffect(() => {
@@ -100,17 +102,30 @@ export default function AboutUs() {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put("/api/Reviews/updatereview", {
-        reviewID: editingReview.reviewID,
-        comment: editingReview.comment,
-        rating: editingReview.rating
-      }, { withCredentials: true });
+     await axios.put("/api/Reviews/updatereview", {
+  reviewID: editingReview.reviewID,
+  comment: editingReview.comment,
+  rating: editingReview.rating,
+  base64Image: editBase64Image  // Send it only if changed
+}, { withCredentials: true });
+
       setEditingReview(null);
       fetchReviews();
     } catch (err) {
       console.error("Error updating review:", err);
     }
   };
+
+  const handleDeleteImage = async (imageId) => {
+  if (!window.confirm("Are you sure you want to delete this image?")) return;
+  try {
+    await axios.delete(`/api/reviews/deleteimage/${imageId}`, { withCredentials: true });
+    fetchReviews(); // rifresko
+  } catch (err) {
+    console.error("Error deleting image:", err);
+  }
+};
+
 
   return (
     <div className="container py-4" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -255,17 +270,18 @@ export default function AboutUs() {
         />
       </div>
 
-      {base64Image && (
-        <div className="mb-3 text-center">
-          <p className="text-muted small mb-2">Image preview:</p>
-          <img
-            src={`data:image/jpeg;base64,${base64Image}`}
-            alt="Preview"
-            className="img-fluid rounded shadow"
-            style={{ maxHeight: "200px", objectFit: "cover" }}
-          />
-        </div>
-      )}
+{base64Image && (
+  <div className="mb-3 text-center">
+    <p className="text-muted small mb-2">Image preview:</p>
+    <img
+      src={`data:image/jpeg;base64,${base64Image}`}
+      alt="Preview"
+      className="img-thumbnail mb-3"
+      style={{ width: "100%", maxHeight: "140px", objectFit: "cover", borderRadius: "8px" }}
+    />
+  </div>
+)}
+
 
       <button type="submit" className="btn btn-dark w-100">Submit Review</button>
     </form>
@@ -280,72 +296,115 @@ export default function AboutUs() {
 )}
 
 
-      <div className="mt-5">
+  <div className="mt-5">
   <h3 className="fw-bold mb-3">All Reviews</h3>
   <div className="row g-4">
     {reviews.map((review) => (
       <div className="col-md-6" key={review.reviewID}>
         <div className="card shadow-sm border">
-          <div className="card-body">
-
-            {/* ✅ Review Image Display */}
+          <div className="card-body d-flex">
+            {/* ✅ Image aligned to top-left */}
             {review.images && review.images.length > 0 && (
               <img
                 src={review.images[0].imageUrl}
                 alt="Review"
-                className="img-fluid rounded shadow mb-3"
-                style={{ maxHeight: "200px", width: "100%", objectFit: "cover" }}
+                className="img-thumbnail me-3"
+                style={{
+                  height: "100px",
+                  width: "100px",
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                }}
               />
             )}
 
-            {/* ✅ Manager Reply if available */}
-            {review.managerReply && (
-              <div className="mt-3 border-start ps-3">
-                <strong>Manager Reply:</strong>
-                <p className="mb-1">{review.managerReply}</p>
-                <small className="text-muted">{new Date(review.replyDate).toLocaleDateString()}</small>
-              </div>
-            )}
+            <div className="flex-grow-1">
+              <h5 className="card-title">{review.user?.firstName} {review.user?.lastName}</h5>
+              <h6 className="card-subtitle mb-2 text-muted">{review.category?.categoryName}</h6>
 
-            <h5 className="card-title">{review.user?.firstName} {review.user?.lastName}</h5>
-            <h6 className="card-subtitle mb-2 text-muted">{review.category?.categoryName}</h6>
+              {editingReview?.reviewID === review.reviewID ? (
+                <form onSubmit={handleEditSubmit}>
+                  {/* Show image + delete button if available */}
+{review.images && review.images.length > 0 && (
+  <div className="mb-3">
+    <div className="position-relative d-inline-block">
+      <img
+        src={review.images[0].imageUrl}
+        alt="Review"
+        className="img-thumbnail"
+        style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "8px" }}
+      />
+      <button
+        type="button"
+        className="btn btn-sm btn-danger position-absolute top-0 end-0"
+        onClick={() => handleDeleteImage(review.images[0].reviewImageID)}
+        style={{ borderRadius: "50%", padding: "0.3rem 0.5rem" }}
+      >
+        <i className="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+)}
 
-            {editingReview?.reviewID === review.reviewID ? (
-              <form onSubmit={handleEditSubmit}>
-                <textarea
-                  className="form-control mb-2"
-                  value={editingReview.comment}
-                  onChange={(e) => setEditingReview({ ...editingReview, comment: e.target.value })}
-                />
-                <div className="mb-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <i
-                      key={star}
-                      className={`bi ${editingReview.rating >= star ? "bi-star-fill" : "bi-star"} text-warning me-1`}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => setEditingReview({ ...editingReview, rating: star })}
-                    ></i>
-                  ))}
+  <textarea
+    className="form-control mb-2"
+    value={editingReview.comment}
+    onChange={(e) => setEditingReview({ ...editingReview, comment: e.target.value })}
+  />
+  <div className="mb-2">
+    {[1, 2, 3, 4, 5].map((star) => (
+      <i
+        key={star}
+        className={`bi ${editingReview.rating >= star ? "bi-star-fill" : "bi-star"} text-warning me-1`}
+        style={{ cursor: "pointer" }}
+        onClick={() => setEditingReview({ ...editingReview, rating: star })}
+      ></i>
+    ))}
+  </div>
+  <div className="d-flex gap-2 mb-2">
+    <button type="submit" className="btn btn-success btn-sm px-3">Save</button>
+    <button type="button" className="btn btn-secondary btn-sm px-3" onClick={() => setEditingReview(null)}>Cancel</button>
+    <button
+      type="button"
+      className="btn btn-outline-danger btn-sm px-3"
+      onClick={() => {
+        if (window.confirm("Are you sure you want to delete this review?")) {
+          handleDelete(editingReview.reviewID);
+          setEditingReview(null);
+        }
+      }}
+    >
+      Delete
+    </button>
+  </div>
+</form>
+
+              ) : (
+                <>
+                  <p className="card-text">{review.comment}</p>
+                  <div className="d-flex align-items-center mb-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <i key={star} className={`bi ${review.rating >= star ? "bi-star-fill" : "bi-star"} text-warning me-1`} />
+                    ))}
+                    {review.userID === userId && (
+                      <>
+                        <button className="btn btn-sm btn-outline-primary me-2" onClick={() => setEditingReview(review)}>Edit</button>
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(review.reviewID)}>Delete</button>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* ✅ Manager Reply section */}
+              {review.managerReply && (
+                <div className="mt-2 border-start ps-3">
+                  <strong>Manager Reply:</strong>
+                  <p className="mb-1">{review.managerReply}</p>
+                  <small className="text-muted">{new Date(review.replyDate).toLocaleDateString()}</small>
                 </div>
-                <button type="submit" className="btn btn-sm btn-success me-2">Save</button>
-                <button type="button" className="btn btn-sm btn-secondary" onClick={() => setEditingReview(null)}>Cancel</button>
-              </form>
-            ) : (
-              <>
-                <p className="card-text">{review.comment}</p>
-                <div className="d-flex align-items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <i key={star} className={`bi ${review.rating >= star ? "bi-star-fill" : "bi-star"} text-warning me-1`} />
-                  ))}
-                  {review.userID === userId && (
-                    <>
-                      <button className="btn btn-sm btn-outline-primary me-2" onClick={() => setEditingReview(review)}>Edit</button>
-                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(review.reviewID)}>Delete</button>
-                    </>
-                  )}
-                </div>
-              </>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -355,3 +414,8 @@ export default function AboutUs() {
 </div>
   );
 }
+   
+
+
+
+
