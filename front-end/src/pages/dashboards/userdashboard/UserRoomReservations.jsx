@@ -5,12 +5,18 @@ import Swal from 'sweetalert2';
 
 export default function UserRoomReservations() {
   const [reservations, setReservations] = useState([]);
+  const [restaurantReservations, setRestaurantReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingReservation, setEditingReservation] = useState(null);
+  const [editingRestaurantRes, setEditingRestaurantRes] = useState(null);
   const [formData, setFormData] = useState({
     checkInDate: "",
     checkOutDate: "",
     specialRequests: "", 
+  });
+  const [restaurantFormData, setRestaurantFormData] = useState({
+    dateTime: "",
+    status: ""
   });
 
   const [error, setError] = useState("");
@@ -19,6 +25,7 @@ export default function UserRoomReservations() {
 
   useEffect(() => {
     fetchReservations();
+    fetchRestaurantReservations();
   }, []);
 
   async function fetchReservations() {
@@ -38,6 +45,17 @@ export default function UserRoomReservations() {
     }
   }
 
+   const fetchRestaurantReservations = async () => {
+    try {
+      const res = await axios.get("/api/RestaurantResUser/getUserReservations", {
+        withCredentials: true
+      });
+      setRestaurantReservations(res.data);
+    } catch {
+      toast.error("Failed to load restaurant reservations.");
+    }
+  };
+
   function startEdit(reservation) {
     setEditingReservation(reservation);
     setFormData({
@@ -49,16 +67,32 @@ export default function UserRoomReservations() {
     setSuccessMsg("");
   }
 
+  const startEditRestaurant = (res) => {
+    setEditingRestaurantRes(res);
+    setRestaurantFormData({
+      dateTime: res.dateTime.slice(0, 16),
+      status: res.status
+    });
+  };
   function cancelEdit() {
     setEditingReservation(null);
     setError("");
     setSuccessMsg("");
   }
+  const cancelEditRestaurant = () => {
+  setEditingRestaurantRes(null);
+  setRestaurantFormData({ dateTime: "", status: "" });
+};
+
 
   function handleInputChange(e) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
+  const handleRestaurantInputChange = (e) => {
+    const { name, value } = e.target;
+    setRestaurantFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   function toISOStringWithTime(dateStr) {
     return new Date(dateStr + "T00:00:00Z").toISOString();
@@ -109,6 +143,23 @@ async function handleEditSubmit(e) {
   }
 }
 
+const handleRestaurantUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`/api/RestaurantResUser/updateUserReservation/${editingRestaurantRes.reservationID}`, {
+        dateTime: restaurantFormData.dateTime,
+        status: restaurantFormData.status
+      }, { withCredentials: true });
+
+      toast.success("Restaurant reservation updated.");
+      setEditingRestaurantRes(null);
+      fetchRestaurantReservations();
+    } catch {
+      toast.error("Failed to update restaurant reservation.");
+    }
+  };
+
+
 async function handleCancel(id) {
   const result = await Swal.fire({
     title: 'Are you sure?',
@@ -149,6 +200,26 @@ async function handleCancel(id) {
     });
   }
 }
+  const cancelRestaurantReservation = async (id) => {
+    const result = await Swal.fire({
+      title: "Cancel restaurant reservation?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes"
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await axios.delete(`/api/RestaurantResUser/cancelUserReservation?id=${id}`, {
+        withCredentials: true
+      });
+      toast.success("Restaurant reservation cancelled.");
+      fetchRestaurantReservations();
+    } catch {
+      toast.error("Failed to cancel restaurant reservation.");
+    }
+  };
 
   if (loading)
     return <p style={{ color: "#555", fontStyle: "italic" }}>Loading reservations...</p>;
@@ -384,6 +455,87 @@ async function handleCancel(id) {
             );
           })}
         </div>
+      )}
+
+      <hr className="my-5" />
+      <h2 className="mb-4"  style={{
+    color: "#2f4f4f",
+    fontWeight: "700",
+    borderBottom: "3px solid #6c8ea4",
+    paddingBottom: 8,
+    textShadow: "1px 1px 1px rgba(255,255,255,0.7)",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+  }}>My Restaurant Reservations</h2>
+
+      {editingRestaurantRes ? (
+        <form onSubmit={handleRestaurantUpdate} className="card p-4 mb-4 shadow">
+          <h5 className="mb-3">Edit Restaurant Reservation</h5>
+          <input name="dateTime" type="datetime-local" className="form-control mb-2" value={restaurantFormData.dateTime} onChange={handleRestaurantInputChange} required />
+          <input name="status" className="form-control mb-3" placeholder="Status" value={restaurantFormData.status} onChange={handleRestaurantInputChange} required />
+          <div className="d-flex gap-2">
+            <button type="submit" className="btn btn-primary">Save</button>
+            <button type="button" className="btn btn-secondary" onClick={cancelEditRestaurant}>Cancel</button>
+          </div>
+        </form>
+      ) : (
+        restaurantReservations.length === 0 ? <p>You have no restaurant reservations.</p> :
+          restaurantReservations.map((res) => (
+            <div key={res.reservationID}style={{
+    boxShadow: "0 4px 15px rgba(108, 142, 164, 0.25)",
+    borderRadius: 12,
+    padding: 25,
+    backgroundColor: "#e9f0f7",
+    border: "1px solid #b0c4d1",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  }}
+>
+  <h5 style={{ color: "#2f4f4f", marginBottom: 8 }}>
+    Table #{res.tableNumber || res.restaurantTableID}
+  </h5>
+  <p className="mb-1" style={{ color: "#47585a" }}>
+    <strong>Date & Time:</strong> {new Date(res.dateTime).toLocaleString()}
+  </p>
+  <p className="mb-1" style={{ color: "#47585a" }}>
+    <strong>Status:</strong> {res.status}
+  </p>
+
+  <div className="d-flex gap-2 mt-3">
+    <button
+      className="btn"
+      style={{
+        flex: 1,
+        borderRadius: 6,
+        border: "1.8px solid #54778a",
+        backgroundColor: "#a4bdd9",
+        color: "#2f4f4f",
+        fontWeight: "600",
+        transition: "background-color 0.3s ease, box-shadow 0.3s ease",
+        boxShadow: "0 2px 8px rgba(84, 119, 138, 0.4)",
+      }}
+      onClick={() => startEditRestaurant(res)}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = "#7b9ab7";
+        e.currentTarget.style.boxShadow =
+          "0 4px 12px rgba(84, 119, 138, 0.7)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = "#a4bdd9";
+        e.currentTarget.style.boxShadow =
+          "0 2px 8px rgba(84, 119, 138, 0.4)";
+      }}
+    >
+      Edit
+    </button>
+    <button
+      className="btn btn-outline-secondary flex-grow-1"
+      onClick={() => cancelRestaurantReservation(res.reservationID)}
+      style={{ fontWeight: "600", borderRadius: 6 }}
+    >
+      Cancel
+    </button>
+  </div>
+</div>
+          ))
       )}
     </div>
   );

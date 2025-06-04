@@ -19,19 +19,19 @@ namespace HotelMS.Controllers
             _service = service;
         }
 
-        [HttpPost("addHost")]
-        public async Task<IActionResult> AddHost([FromBody] HostDTO request)
-        {
-            try
-            {
-                var result = await _service.CreateHostAsync(request);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //[HttpPost("addHost")]
+        //public async Task<IActionResult> AddHost([FromBody] HostDTO request)
+        //{
+        //    try
+        //    {
+        //        var result = await _service.CreateHostAsync(request);
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
         [HttpPost("assignHostRole")]
         public async Task<IActionResult> AssignHostRole([FromBody] AssignHostDTO dto)
