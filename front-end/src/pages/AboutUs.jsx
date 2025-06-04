@@ -7,7 +7,7 @@ import imageOwner from '../Assets/images/oi.jpg';
 import imageRoom from '../Assets/images/room.png';
 import imageSpa from '../Assets/images/spa.png';
 import imageRestaurant from '../Assets/images/restaurant.png';
-import heroImage from '../Assets/images/bak.png';
+import heroImage from '../Assets/images/bak1.png';
 
 export default function AboutUs() {
   const [userId, setUserId] = useState(null);
@@ -134,7 +134,7 @@ export default function AboutUs() {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  color: 'white',
+  color: 'black',
   textShadow: '2px 2px 4px rgba(0,0,0,0.6)',
   padding: '0 1rem',
   fontFamily: "'Playfair Display', serif"
