@@ -1,6 +1,7 @@
 ﻿using HotelMS.Data;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Services
 {
