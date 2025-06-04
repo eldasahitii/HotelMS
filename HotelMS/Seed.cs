@@ -529,6 +529,23 @@ public class Seed
             dataContext.SaveChanges();
         }
 
+        //Seed HotelServiceCards
+        if (!dataContext.HotelServiceCards.Any())
+        {
+            var services = new List<HotelServiceCards>
+            {
+                new HotelServiceCards
+                {
+                    CardImage = "pool6.jpg",
+                    CardTitle = "Welcome to Hotel Services",
+                    CardDescription = "Discover elegance, comfort, and premium hospitality tailored just for you.",
+                    CardLink = "See more button"
+                }
+            };
+            dataContext.HotelServices.AddRange();
+            dataContext.SaveChanges();
+        }
+
         if (!dataContext.MenuCategories.Any())
         {
             var categories = new List<MenuCategory>
