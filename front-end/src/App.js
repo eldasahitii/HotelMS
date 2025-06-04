@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { AuthProvider } from './Context/AuthContext'; //  import context
+import { AuthProvider } from './Context/AuthContext'; 
 import Header from './Components/Header';
 import Footer from './Components/Footer';
 import Login from './pages/Login';
@@ -74,7 +74,7 @@ function App() {
   return (
     
     <Router>
-      <AuthProvider> {/*  Wrap the whole app */}
+      <AuthProvider> 
         <div>
           {!["/login"].includes(window.location.pathname) && <Header />}
      <ToastContainer position="top-right" autoClose={4000} />
@@ -94,7 +94,6 @@ function App() {
                 <Route path="menu" element={<RestaurantMenuPage />} />
               </Route>
 
-            {/* Room Reservation route */}
             <Route path="/reserve" element={
 <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
   <ReservationPage />

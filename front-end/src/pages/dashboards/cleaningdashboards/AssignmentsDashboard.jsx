@@ -174,8 +174,6 @@ export default function AssignmentsDashboard() {
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-list-task me-2"></i>Cleaning Assignments
         </h2>
-
-        {/* Add Assignment Form */}
         <div className="card mb-4">
           <div className="card-header" style={{ backgroundColor: '#5cb85c', color: '#fff' }}>
             <i className="bi bi-plus-circle me-2"></i>Add New Assignment
@@ -208,8 +206,6 @@ export default function AssignmentsDashboard() {
             </button>
           </div>
         </div>
-
-        {/* Assignments Table */}
         <div className="card">
           <div className="card-header" style={{ backgroundColor: '#7ca8d8', color: '#fff' }}>
             <i className="bi bi-table me-2"></i>Assignments List

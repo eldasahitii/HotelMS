@@ -147,9 +147,6 @@ namespace HotelMS.Services
                 throw new Exception("An error occurred while attempting to update cleaning staff.");
             }
         }
-
-
-
         public async Task DeleteCleaningStaff(int id)
         {
             try

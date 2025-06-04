@@ -48,8 +48,6 @@ namespace HotelMS.Services
 
             return assignment;
         }
-
-
         public async Task<CleaningAssignmentDTO> GetAssignment(int id)
         {
             var assignment = await _dbContext.CleaningAssignments
