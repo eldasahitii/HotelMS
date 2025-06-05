@@ -7,6 +7,8 @@ namespace HotelMS.Models.DTOs
     
     public class HotelServiceDetailDTO
     {
+        
+        public int Id { get; set; }
         //[Required]
         public required string DetailImage { get; set; }
         //[Required]

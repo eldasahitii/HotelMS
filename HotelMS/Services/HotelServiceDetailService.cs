@@ -1,157 +1,97 @@
-﻿//using HotelMS.Data;
-//using HotelMS.Data.DTO;
-//using HotelMS.Data.Interfaces;
-//using HotelMS.Models;
-//using Microsoft.EntityFrameworkCore;
-//using static System.Runtime.InteropServices.JavaScript.JSType;
-
-//namespace HotelMS.Services
-//{
-//    public class HotelServiceScheduleService : IHotelServiceScheduleService
-//    {
-//        private readonly DataContext _context;
-
-//        public HotelServiceScheduleService(DataContext context)
-//        {
-//            _context = context;
-//        } 
-//        public async Task <IEnumerable<HotelServiceSchedule>> GetAllSchedulesAsync ()
-//        {
-//            return await _context.HotelServiceSchedules
-//                .Include(s => s.Service)
-//                .ToListAsync();
-//        }
-//        public async Task<HotelServiceSchedule> GetScheduleByIdAsync(int id)
-//        {
-//            return await _context.HotelServiceSchedules
-//                .Include(s => s.Service)
-//                .FirstOrDefaultAsync(s => s.Id == id);
-//        }
-//        public async Task <HotelServiceSchedule> CreateScheduleAsync(HotelServiceSchedule schedule)
-//        {
-//            if (schedule.EndTime <= schedule.StartTime)
-//                throw new ArgumentException("End time must be after start time.");
-
-//            var hasOverlap = await _context.HotelServiceSchedules.AnyAsync(s =>
-//            s.HotelServiceId == schedule.HotelServiceId &&
-//            s.IsAvailable &&
-//            s.StartTime < schedule.EndTime &&
-//            schedule.StartTime < s.EndTime
-//            );
-
-//            if (hasOverlap)
-//                throw new InvalidOperationException("Schedule overlaps with an existing available slot.");
-
-//            _context.HotelServiceSchedules.Add(schedule);
-//            await _context.SaveChangesAsync();
-//            return schedule;
-//        }
-//        public async Task<bool> DeleteScheduleAsync(int id)
-//        {
-//            var schedule = await _context.HotelServiceSchedules.FindAsync(id);
-//            if (schedule == null) return false;
-
-//            _context.HotelServiceSchedules.Remove(schedule);
-//            await _context.SaveChangesAsync();
-//            return true;
-//        }
-//    }
-//}
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using HotelMS.Data;
+﻿using HotelMS.Data;
+using HotelMS.Data.DTO;
+using HotelMS.Data.Interfaces;
 using HotelMS.Models;
 using HotelMS.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HotelMS.Services
 {
     public class HotelServiceDetailService : IHotelServiceDetailService
     {
-        private readonly DataContext _context;
+        private readonly DataContext _dbContext;
 
-        public HotelServiceDetailService(DataContext context)
+        public HotelServiceDetailService(DataContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<HotelServiceDetailDTO>> GetAllAsync()
+        // CREATE
+        public async Task<HotelServiceDetailDTO> AddServiceDetailAsync(HotelServiceDetailDTO request)
         {
-            return await _context.HotelServiceDetails
-                .Select(x => new HotelServiceDetailDTO
-                {
-                    Id = x.Id,
-                    HotelServiceId = x.HotelServiceId,
-                    StartTime = x.StartTime,
-                    EndTime = x.EndTime,
-                    IsAvailable = x.IsAvailable
-                }).ToListAsync();
+            var detail = new HotelServiceDetail
+            {
+                DetailImage = request.DetailImage,
+                DetailTitle = request.DetailTitle,
+                DetailDescription = request.DetailDescription,
+                Price = request.Price
+            };
+
+            _dbContext.HotelServiceDetails.Add(detail);
+            await _dbContext.SaveChangesAsync();
+
+            return await GetServiceDetailAsync(detail.Id);
         }
 
-        public async Task<HotelServiceDetailDTO> GetByIdAsync(int id)
+        // READ ONE
+        public async Task<HotelServiceDetailDTO> GetServiceDetailAsync(int id)
         {
-            var schedule = await _context.HotelServiceDetails.FindAsync(id);
-            if (schedule == null) return null;
+            var detail = await _dbContext.HotelServiceDetails.FindAsync(id);
+            if (detail == null) return null;
 
             return new HotelServiceDetailDTO
             {
-                Id = schedule.Id,
-                HotelServiceId = schedule.HotelServiceId,
-                StartTime = schedule.StartTime,
-                EndTime = schedule.EndTime,
-                IsAvailable = schedule.IsAvailable
+                Id = detail.Id,
+                DetailImage = detail.DetailImage,
+                DetailTitle = detail.DetailTitle,
+                DetailDescription = detail.DetailDescription,
+                Price = detail.Price
             };
         }
 
-        public async Task<HotelServiceDetailDTO> CreateAsync(HotelServiceScheduleCreateUpdateDTO dto)
+        // READ ALL
+        public async Task<IEnumerable<HotelServiceDetailDTO>> GetAllServiceDetailsAsync()
         {
+            var details = await _dbContext.HotelServiceDetails.ToListAsync();
 
-            var schedule = new HotelServiceDetail
+            return details.Select(detail => new HotelServiceDetailDTO
             {
-                HotelServiceId = dto.HotelServiceId,
-                StartTime = dto.StartTime,
-                EndTime = dto.EndTime,
-                IsAvailable = dto.IsAvailable
-            };
+                Id = detail.Id,
+                DetailImage = detail.DetailImage,
+                DetailTitle = detail.DetailTitle,
+                DetailDescription = detail.DetailDescription,
+                Price = detail.Price
+            });
+        }
 
-            _context.HotelServiceDetails.Add(schedule);
-            await _context.SaveChangesAsync();
+        // UPDATE
+        public async Task<HotelServiceDetailDTO> UpdateServiceDetailAsync(int id, HotelServiceDetailDTO request)
+        {
+            var detail = await _dbContext.HotelServiceDetails.FindAsync(id);
+            if (detail == null) return null;
 
-            return new HotelServiceDetailDTO
+            detail.DetailImage = request.DetailImage;
+            detail.DetailTitle = request.DetailTitle;
+            detail.DetailDescription = request.DetailDescription;
+            detail.Price = request.Price;
+
+            await _dbContext.SaveChangesAsync();
+
+            return await GetServiceDetailAsync(id);
+        }
+
+        // DELETE
+        public async Task DeleteServiceDetailAsync(int id)
+        {
+            var detail = await _dbContext.HotelServiceDetails.FindAsync(id);
+            if (detail != null)
             {
-                Id = schedule.Id,
-                HotelServiceId = schedule.HotelServiceId,
-                StartTime = schedule.StartTime,
-                EndTime = schedule.EndTime,
-                IsAvailable = schedule.IsAvailable
-            };
-        }
-
-
-        public async Task<bool> UpdateAsync(int id, HotelServiceScheduleCreateUpdateDTO DTO)
-        {
-            var schedule = await _context.HotelServiceDetails.FindAsync(id);
-            if (schedule == null) return false;
-
-            schedule.HotelServiceId = DTO.HotelServiceId;
-            schedule.StartTime = DTO.StartTime;
-            schedule.EndTime = DTO.EndTime;
-            schedule.IsAvailable = DTO.IsAvailable;
-
-            _context.HotelServiceDetails.Update(schedule);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var schedule = await _context.HotelServiceDetails.FindAsync(id);
-            if (schedule == null) return false; 
-
-            _context.HotelServiceDetails.Remove(schedule);
-            await _context.SaveChangesAsync();
-            return true;
+                _dbContext.HotelServiceDetails.Remove(detail);
+                await _dbContext.SaveChangesAsync();
+            }
         }
     }
 }
