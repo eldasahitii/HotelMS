@@ -36,7 +36,6 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetServiceDetail/{id}")]
-        //[Authorize(Roles = "Admin,ServiceManager")]
         public async Task<IActionResult> GetServiceDetail(int id)
         {
             try
@@ -53,7 +52,6 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetAllServiceDetails")]
-        //[Authorize(Roles = "Admin,ServiceManager")]
         public async Task<IActionResult> GetAllServiceDetails()
         {
             try
@@ -92,6 +90,72 @@ namespace HotelMS.Controllers
             {
                 await _service.DeleteServiceDetailAsync(id);
                 return Ok(new { message = $"Service detail with ID {id} deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // New endpoints for getting individual properties
+
+        [HttpGet("GetServiceDetailImage/{id}")]
+        public async Task<IActionResult> GetServiceDetailImage(int id)
+        {
+            try
+            {
+                var result = await _service.GetServiceDetailImageAsync(id);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetServiceDetailTitle/{id}")]
+        public async Task<IActionResult> GetServiceDetailTitle(int id)
+        {
+            try
+            {
+                var result = await _service.GetServiceDetailTitleAsync(id);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetServiceDetailDescription/{id}")]
+        public async Task<IActionResult> GetServiceDetailDescription(int id)
+        {
+            try
+            {
+                var result = await _service.GetServiceDetailDescriptionAsync(id);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetServiceDetailPrice/{id}")]
+        public async Task<IActionResult> GetServiceDetailPrice(int id)
+        {
+            try
+            {
+                var result = await _service.GetServiceDetailPriceAsync(id);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
             }
             catch (Exception ex)
             {
