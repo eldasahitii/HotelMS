@@ -529,6 +529,12 @@ public class Seed
                     HeroImage = "pool6.jpg",
                     HeroTitle = "Pool & Spa Experiences",
                     HeroDescription = "Refresh, recharge, and relax with our premium water and wellness services."
+                },
+                 new HotelService
+                {
+                    HeroImage = "mainevents.jpg",
+                    HeroTitle = "Events",
+                    HeroDescription = "Discover perfect venues for every occasion."
                 }
             };
             dataContext.HotelServices.AddRange(services);
@@ -654,33 +660,58 @@ public class Seed
 
 
 
-        //Seed HotelServiceSchedule
+        //Seed HotelServiceDetail
         if (!dataContext.HotelServiceDetails.Any())
         {
-            var scheduleEntries = new List<HotelServiceDetail>();
+            var serviceDetails = new List<HotelServiceDetail>
+    {
+        new HotelServiceDetail
+        {
+            DetailImage = "indoorpool3.jpg",
+            DetailTitle = "Heated Indoor Pool",
+            DetailDescription = "\"Enjoy year-round relaxation in our luxurious heated indoor pool. Perfect for a refreshing swim or peaceful downtime, the pool offers a calm, comfortable atmosphere with warm water, elegant surroundings, and convenient access to lounge chairs and changing rooms. Ideal for both leisure and light exercise, it's your serene escape — no matter the weather.\"\r\n\r\n",
+            Price = "€25 per person"
+        },
+        new HotelServiceDetail
+        {
+            DetailImage = "pool2.jpg",
+            DetailTitle = "Scenic Outdoor Pool",
+            DetailDescription = "\"Immerse yourself in tranquility at our scenic outdoor pool, nestled amidst lush greenery and breathtaking views. Whether you're lounging under the sun or taking a leisurely swim, this pool offers the perfect blend of natural beauty and refreshing comfort. Surrounded by comfortable seating and shaded areas, it’s an ideal spot to unwind, socialize, or soak up the peaceful ambiance of the outdoors.\"",
+            Price = "€35 per person"
+        },
+        new HotelServiceDetail
+        {
+            DetailImage = "spa.jpg",
+            DetailTitle = "Massage & Relaxation Room",
+            DetailDescription = "\"Step into our serene Massage & Relaxation Room, where expert therapists help you unwind and recharge. Enjoy soothing massages tailored to your needs in a calm, tranquil setting designed for ultimate comfort. Soft lighting, gentle aromas, and peaceful music create the perfect atmosphere to melt away stress and restore balance to your body and mind.\"",
+            Price = "€50 per session"
+        },
+        new HotelServiceDetail
+        {
+            DetailImage = "4.png",
+            DetailTitle = "Sauna Room",
+            DetailDescription = "\"Experience the rejuvenating warmth of our Sauna Room, designed to help you detoxify and relax. The dry heat promotes circulation, eases muscle tension, and refreshes your mind in a calm, soothing environment. Perfect for unwinding after a busy day or complementing your wellness routine.\"",
+            Price = "€30 per session"
+        },
+        new HotelServiceDetail
+        {
+            DetailImage = "conference.png",
+            DetailTitle = "Modern Conference Room",
+            DetailDescription = "Host your meetings and events in our Modern Conference Room, equipped with cutting-edge technology and stylish furnishings. Designed to foster productivity and collaboration, the space offers high-speed Wi-Fi, audiovisual equipment, and comfortable seating. Whether it's a business presentation, workshop, or seminar, this room provides the perfect setting to make your event a success",
+            Price = "€200 per session"
+        },
+        new HotelServiceDetail
+        {
+            DetailImage = "2.png",
+            DetailTitle = "Elegant Wedding Venue",
+            DetailDescription = "\"Celebrate your special day in our Elegant Wedding Venue, where timeless beauty meets exceptional service. With graceful décor, spacious layouts, and stunning details, the venue creates a romantic and memorable atmosphere for your ceremony and reception. Our dedicated team ensures every moment is perfect, making your wedding truly unforgettable.\"",
+            Price = "€1,500 per day"
+        }
+    };
 
-            var allServices = dataContext.HotelServices.ToList();
-            foreach (var service in allServices)
-            {
-                scheduleEntries.Add(new HotelServiceDetail
-                {
-                    HotelServiceId = service.Id,
-                    StartTime = DateTime.Today.AddHours(10),
-                    EndTime = DateTime.Today.AddHours(11),
-                    IsAvailable = true
-                });
-                scheduleEntries.Add(new HotelServiceDetail
-                {
-                    HotelServiceId = service.Id,
-                    StartTime = DateTime.Today.AddHours(14),
-                    EndTime = DateTime.Today.AddHours(15),
-                    IsAvailable = true
-                });
-            }
-            dataContext.HotelServiceDetails.AddRange(scheduleEntries);
+            dataContext.HotelServiceDetails.AddRange(serviceDetails);
             dataContext.SaveChanges();
         }
-
 
         //Seed HotelServiceReservation
         //if (!dataContext.HotelServiceReservations.Any())
