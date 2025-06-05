@@ -19,35 +19,59 @@ export default function AboutUs() {
   const [base64Image, setBase64Image] = useState(null);
   const [editBase64Image, setEditBase64Image] = useState(null);
 
+
+
   useEffect(() => {
     fetchReviews();
     fetchCategories();
     fetchRole();
   }, []);
 
-  const fetchRole = async () => {
-    try {
-      const res = await axios.get("/api/Auth/me", { withCredentials: true });
-      const fetchedRoleId = parseInt(res.data.roleID || res.data.roleId);
-      const fetchedUserId = parseInt(res.data.userID || res.data.userId);
-      setRoleId(fetchedRoleId);
-      setUserId(fetchedUserId);
-    } catch (err) {
-      if (err.response && err.response.status === 401) {
-        setRoleId(null);
-        setUserId(null);
-      }
-    }
-  };
 
-  const fetchReviews = async () => {
-    try {
-      const res = await axios.get("/api/Reviews/GetAll");
-      setReviews(res.data);
-    } catch (err) {
-      console.error("Error fetching reviews:", err);
+const fetchRole = async () => {
+  try {
+    const res = await axios.get("/api/Auth/me", { withCredentials: true });
+    const fetchedUserId = res.data.userID || res.data.userId;
+    const fetchedRoleId = res.data.roleID || res.data.roleId;
+
+    if (!fetchedUserId) {
+      return; // Don't set anything if not logged in
     }
-  };
+
+    setUserId(parseInt(fetchedUserId));
+    setRoleId(parseInt(fetchedRoleId));
+  } catch (err) {
+  if (err.response?.status === 401) {
+    setUserId(null);
+    setRoleId(null);
+    // 👇 Do NOT log this to console
+  } else {
+    if (process.env.NODE_ENV === "development") {
+      console.error("Unexpected error:", err);
+    }
+  }
+}
+
+};
+
+
+
+
+
+
+
+const fetchReviews = async () => {
+  try {
+    const res = await axios.get("/api/Reviews/GetAll", {
+      withCredentials: true,
+    });
+    setReviews(res.data);
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+  }
+};
+
+
 
   const fetchCategories = async () => {
     try {
@@ -366,6 +390,8 @@ export default function AboutUs() {
 
 <div className="mt-5">
   <h3 className="fw-bold mb-3">All Reviews</h3>
+
+
   <div className="row g-4">
     {reviews.map((review) => (
       <div className="col-md-6" key={review.reviewID}>

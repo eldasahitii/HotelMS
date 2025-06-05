@@ -23,14 +23,31 @@ namespace HotelMS.Controllers
         // GET: api/reviews
         // GET: api/reviews/GetAll
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews()
+        public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews(
+     [FromQuery] int? categoryId,
+     [FromQuery] int? minRating,
+     [FromQuery] string? search)
+
         {
-            return await _context.Reviews
+            var query = _context.Reviews
                 .Include(r => r.User)
-                .Include(r => r.Category)//  Include the ReviewCategory
+                .Include(r => r.Category)
                 .Include(r => r.Images)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (categoryId.HasValue)
+                query = query.Where(r => r.ReviewCategoryID == categoryId.Value);
+
+            if (minRating.HasValue)
+                query = query.Where(r => r.Rating >= minRating.Value);
+
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(r => r.Comment.Contains(search));
+
+            var result = await query.ToListAsync();
+            return Ok(result);
         }
+
 
 
         // GET: api/reviews/{id}
