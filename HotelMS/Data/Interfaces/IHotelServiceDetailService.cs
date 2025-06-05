@@ -15,9 +15,6 @@ namespace HotelMS.Data.Interfaces
 
         Task<IEnumerable<HotelServiceDetailDTO>> GetFeaturedServiceDetailsAsync();
 
-        Task<string> GetServiceDetailImageAsync(int id);
-        Task<string> GetServiceDetailTitleAsync(int id);
-        Task<string> GetServiceDetailDescriptionAsync(int id);
-        Task<string> GetServiceDetailPriceAsync(int id);
+        
     }
 }

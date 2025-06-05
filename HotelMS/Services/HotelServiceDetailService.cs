@@ -94,31 +94,6 @@ namespace HotelMS.Services
             }
         }
 
-        // ✅ New Methods
-
-        public async Task<string> GetServiceDetailImageAsync(int id)
-        {
-            var detail = await _dbContext.HotelServiceDetails.FindAsync(id);
-            return detail?.DetailImage;
-        }
-
-        public async Task<string> GetServiceDetailTitleAsync(int id)
-        {
-            var detail = await _dbContext.HotelServiceDetails.FindAsync(id);
-            return detail?.DetailTitle;
-        }
-
-        public async Task<string> GetServiceDetailDescriptionAsync(int id)
-        {
-            var detail = await _dbContext.HotelServiceDetails.FindAsync(id);
-            return detail?.DetailDescription;
-        }
-
-        public async Task<string> GetServiceDetailPriceAsync(int id)
-        {
-            var detail = await _dbContext.HotelServiceDetails.FindAsync(id);
-            return detail?.Price ?? string.Empty;
-        }
 
         public async Task<IEnumerable<HotelServiceDetailDTO>> GetFeaturedServiceDetailsAsync()
         {
