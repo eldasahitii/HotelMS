@@ -38,7 +38,7 @@ namespace HotelMS.Controllers
                     {
                         Email = dto.Email,
                         DateTime = dto.DateTime,
-                        Status = "Booked",
+                        Status = "Occupied",
                         // You can set RestaurantTableID = 0 and let the service assign a table
                     });
 

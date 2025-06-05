@@ -71,62 +71,6 @@ export default function RestaurantHostDashboard() {
     fetchCurrentUser();
   }, []);
 
-  // useEffect(() => {
-  //   if (message) {
-  //     const timeout = setTimeout(() => setMessage(''), 3000);
-  //     return () => clearTimeout(timeout);
-  //   }
-  // }, [message]);
-
-//   const handleReservationSubmit = async () => {
-//   const isUser = newReservation.email.toLowerCase() === loggedInEmail?.toLowerCase();
-
-//   if (
-//     !newReservation.email.trim() ||
-//     !newReservation.dateTime ||
-//     !newReservation.restaurantTableID
-//   ) {
-//     toast.warning("Please fill in all fields.");
-//     return;
-//   }
-
-//   const payload = {
-//     ...newReservation,
-//     restaurantTableID: parseInt(newReservation.restaurantTableID),
-//   };
-
-//   try {
-//     if (isUser) {
-//       await axios.post("/api/Host/createReservationByEmail", payload, {
-//         withCredentials: true,
-//       });
-//     } else {
-//       await axios.post("/api/Host/createReservationWithGuest", payload, {
-//         withCredentials: true,
-//       });
-//     }
-
-//     toast.success("Reservation created successfully.");
-//     setNewReservation({
-//       firstName: '',
-//       lastName: '',
-//       email: '',
-//       phoneNumber: '',
-//       restaurantTableID: '',
-//       dateTime: '',
-//       status: 'Booked'
-//     });
-//     fetchReservations();
-//   } catch (error) {
-//     const validationErrors = error.response?.data?.errors;
-//     if (validationErrors) {
-//       toast.error(Object.values(validationErrors).flat().join(" "));
-//     } else {
-//       toast.error(error.response?.data || "Reservation failed.");
-//     }
-//   }
-// };
-
 
   const handleAddReservation = async () => {
   if (
@@ -162,7 +106,7 @@ export default function RestaurantHostDashboard() {
       phoneNumber: '',
       restaurantTableID: '',
       dateTime: '',
-      status: 'Booked'
+      status: 'Occupied'
     });
 
     fetchReservations();
@@ -215,7 +159,7 @@ const handleUserEmailReservation = async () => {
       email: '',
       restaurantTableID: '',
       dateTime: '',
-      status: 'Booked'
+      status: 'Occupied'
     });
     fetchReservations();
   } catch (error) {

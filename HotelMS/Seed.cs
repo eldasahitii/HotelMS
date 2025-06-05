@@ -635,7 +635,7 @@ public class Seed
             {
                 GuestID = guest.GuestID,
                 date_time = DateTime.Now.AddHours(2),
-                status = "Booked",
+                status = "Occupied",
                 RestaurantTableID = tableID
             };
 
@@ -701,7 +701,7 @@ public class Seed
             {
                 WelcomeTitle = "Welcome to Amé Restaurant",
                 WelcomeMessage = "Discover the essence of fine dining at Amé Restaurant, where every dish is crafted with organic ingredients, timeless flavors, and a passion for culinary excellence.",
-                WelcomeImageUrl = "/Images/restaurant/restaurant.jpg", // Path should match your frontend assets or be publicly hosted
+                WelcomeImageUrl = "/Images/restaurant/restaurant.jpg", 
 
                 AboutTitle = "About Amé Restaurant",
                 AboutMessage = "At Amé Restaurant, we believe food should not only taste amazing but also be nourishing. Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring every dish to life.",
