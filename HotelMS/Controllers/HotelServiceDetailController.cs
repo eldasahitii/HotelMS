@@ -1,6 +1,7 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models.DTOs;
+using HotelMS.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -162,5 +163,12 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("featured")]
+        public async Task<IActionResult> GetFeaturedServiceDetails()
+        {
+            var featuredServices = await _service.GetFeaturedServiceDetailsAsync();
+            return Ok(featuredServices);
+        }
+
     }
 }

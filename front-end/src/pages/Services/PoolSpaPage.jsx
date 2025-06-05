@@ -1,12 +1,5 @@
-import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, useRef } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from "axios";
-// import InsidePool from '../../Assets/images/indoorpool3.png';
-// import OutsidePool from '../../Assets/images/pool2.jpg';
-// import Spa from '../../Assets/images/spa.jpg';
-// import Sauna from '../../Assets/images/4.png';
-// import heroImage from '../../Assets/images/pool6.jpg';
+import axios from 'axios';
 
 const timeSlots = [
     '10:00 AM - 11:00 AM',
@@ -36,85 +29,62 @@ const PoolSpa = () => {
     const [HeroDescription, setHeroDescription] = useState('');
     const formRefs = useRef([]);
 
+    const [services, setServices] = useState([]);
+
     useEffect(() => {
         fetchHeroImage();
         fetchHeroTitle();
         fetchHeroDescription();
-      }, [])
+        fetchFeaturedServices();
+    }, []);
 
-      async function fetchHeroImage() {
-    try {
-      const res = await axios.get(
-        "https://localhost:7117/api/HotelService/2/hero-image",
-        {
-          withCredentials: true,
+    async function fetchHeroImage() {
+        try {
+            const res = await axios.get(
+                "https://localhost:7117/api/HotelService/2/hero-image",
+                { withCredentials: true }
+            );
+            setHeroImageUrl(res.data);
+        } catch (err) {
+            console.error("Failed to get hero image!");
         }
-      );
-      setHeroImageUrl(res.data);
-      console.log(res.data)
-    } catch (err) {
-      console.error("Failed to get hero image!");
     }
-  }
 
-  async function fetchHeroTitle() {
-    try {
-      const res = await axios.get(
-        "https://localhost:7117/api/HotelService/2/hero-title",
-        {
-          withCredentials: true,
+    async function fetchHeroTitle() {
+        try {
+            const res = await axios.get(
+                "https://localhost:7117/api/HotelService/2/hero-title",
+                { withCredentials: true }
+            );
+            setHeroTitle(res.data);
+        } catch (err) {
+            console.error("Failed to get hero title!");
         }
-      );
-      setHeroTitle(res.data);
-    } catch (err) {
-      console.error("Failed to get hero title!");
     }
-  }
 
-  async function fetchHeroDescription() {
-    try {
-      const res = await axios.get(
-        "https://localhost:7117/api/HotelService/2/hero-description",
-        {
-          withCredentials: true,
+    async function fetchHeroDescription() {
+        try {
+            const res = await axios.get(
+                "https://localhost:7117/api/HotelService/2/hero-description",
+                { withCredentials: true }
+            );
+            setHeroDescription(res.data);
+        } catch (err) {
+            console.error("Failed to get hero description!");
         }
-      );
-      setHeroDescription(res.data);
-    } catch (err) {
-      console.error("Failed to get hero description!");
     }
-  }
 
-    // const sections = [
-    //     {
-    //         id: 1,
-    //         img: InsidePool,
-    //         title: 'Heated Indoor Pool',
-    //         text: 'Relax in our temperature-controlled indoor pool...',
-    //         price: '€25 per person'
-    //     },
-    //     {
-    //         id: 2,
-    //         img: OutsidePool,
-    //         title: 'Scenic Outdoor Pool',
-    //         text: 'Escape to our breathtaking outdoor pool area...',
-    //         price: '€35 per person'
-    //     },
-    //     {
-    //         id: 3,
-    //         img: Spa,
-    //         title: 'Massage & Relaxation Room',
-    //         text: 'Step into our peaceful massage and relaxation room...',
-    //         price: '€50 per session'
-    //     },
-    //     {
-    //         id: 4,
-    //         img: Sauna,
-    //         title: 'Sauna Room',
-    //         text: 'Experience the soothing warmth of our dedicated sauna room...',
-    //         price: '€30 per session'
-    //     }
-    // ];
+    async function fetchFeaturedServices() {
+        try {
+            const res = await axios.get(
+                "https://localhost:7117/api/HotelServiceDetail/featured",
+                { withCredentials: true }
+            );
+            setServices(res.data);
+        } catch (err) {
+            console.error("Failed to get featured services!", err);
+        }
+    }
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -169,18 +139,27 @@ const PoolSpa = () => {
                 </div>
             </div>
 
-            {/* <div className="container py-5">
-                {sections.map((section, idx) => (
-                    <div className={`row align-items-center mb-5 ${idx % 2 !== 0 ? 'flex-md-row-reverse' : ''}`} key={idx}>
+            <div className="container py-5">
+                {services.map((section, idx) => (
+                    <div
+                        key={section.id}
+                        className={`row align-items-center mb-5 ${idx % 2 !== 0 ? 'flex-md-row-reverse' : ''}`}
+                    >
                         <div className="col-md-6 mb-4 mb-md-0">
                             <div style={framedImageStyle}>
-                                <img src={section.img} alt={section.title} className="img-fluid" />
+                                <img
+                                    src={`https://localhost:7117/Images/Services/${section.detailImage}`}
+                                    alt={section.detailTitle}
+                                    className="img-fluid"
+                                />
                             </div>
                         </div>
                         <div className="col-md-6" ref={el => formRefs.current[idx] = el}>
-                            <h3 style={{ color: '#333' }}>{section.title}</h3>
-                            <p className="text-muted">{section.text}</p>
-                            <p className="fw-semibold mt-2">Price: <span className="text-primary">{section.price}</span></p>
+                            <h3 style={{ color: '#333' }}>{section.detailTitle}</h3>
+                            <p className="text-muted">{section.detailDescription}</p>
+                            <p className="fw-semibold mt-2">
+                                Price: <span className="text-primary">{section.price}</span>
+                            </p>
                             <button className="btn btn-dark" onClick={() => openForm(idx)}>Reserve</button>
 
                             {activeForm === idx && (
@@ -266,7 +245,7 @@ const PoolSpa = () => {
                         </div>
                     </div>
                 ))}
-            </div> */}
+            </div>
         </div>
     );
 };

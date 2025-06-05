@@ -667,7 +667,7 @@ public class Seed
     {
         new HotelServiceDetail
         {
-            DetailImage = "indoorpool3.jpg",
+            DetailImage = "indoorpool3.png",
             DetailTitle = "Heated Indoor Pool",
             DetailDescription = "\"Enjoy year-round relaxation in our luxurious heated indoor pool. Perfect for a refreshing swim or peaceful downtime, the pool offers a calm, comfortable atmosphere with warm water, elegant surroundings, and convenient access to lounge chairs and changing rooms. Ideal for both leisure and light exercise, it's your serene escape — no matter the weather.\"\r\n\r\n",
             Price = "€25 per person"

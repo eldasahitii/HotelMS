@@ -120,5 +120,21 @@ namespace HotelMS.Services
             return detail?.Price ?? string.Empty;
         }
 
+        public async Task<IEnumerable<HotelServiceDetailDTO>> GetFeaturedServiceDetailsAsync()
+        {
+            var serviceIds = new List<int> { 1, 2, 3, 4 };
+            var results = new List<HotelServiceDetailDTO>();
+
+            foreach (var id in serviceIds)
+            {
+                var serviceDetail = await GetServiceDetailAsync(id);
+                if (serviceDetail != null)
+                    results.Add(serviceDetail);
+            }
+            return results;
+        }
+
+
+
     }
 }
