@@ -155,26 +155,24 @@ export default function CleaningStaffDashboard() {
                     <td>{a.assignedByName || '-'}</td>
                     <td>{a.startedAt ? new Date(a.startedAt).toLocaleString() : '-'}</td>
                     <td>{a.finishedAt ? new Date(a.finishedAt).toLocaleString() : '-'}</td>
-                    <td>
-                      <div className="btn-group">
-                        <button
-                          className="btn btn-sm btn-outline-secondary"
-                          onClick={() => handleStart(a.cleaningAssignmentID)}
-                          disabled={a.status !== 'Pending' || a.cleaningStaffID !== currentCleaningStaffID}
-                          title={a.cleaningStaffID !== loggedInUserID ? "You cannot start another staff's assignment" : ""}
+                   <td>
+                   <div className="d-flex gap-2">
+                    <button className="btn btn-sm btn-outline-secondary"
+                    onClick={() => handleStart(a.cleaningAssignmentID)}
+                     disabled={a.status !== 'Pending' || a.cleaningStaffID !== currentCleaningStaffID}
+                    title={a.cleaningStaffID !== loggedInUserID ? "You cannot start another staff's assignment" : ""}
+                    >
+                     <i className="bi bi-play-fill"></i>
+                       </button>
+                       <button className="btn btn-sm btn-outline-success"
+                       onClick={() => handleComplete(a.cleaningAssignmentID)}
+                       disabled={a.status !== 'InProgress' || a.cleaningStaffID !== currentCleaningStaffID}
+                       title={a.cleaningStaffID !== loggedInUserID ? "You cannot complete another staff's assignment" : ""}
                         >
-                          <i className="bi bi-play-fill"></i>
-                        </button>
-                        <button
-                          className="btn btn-sm btn-outline-success"
-                          onClick={() => handleComplete(a.cleaningAssignmentID)}
-                          disabled={a.status !== 'InProgress' || a.cleaningStaffID !== currentCleaningStaffID}
-                          title={a.cleaningStaffID !== loggedInUserID ? "You cannot complete another staff's assignment" : ""}
-                        >
-                          <i className="bi bi-check-circle"></i>
-                        </button>
-                      </div>
-                    </td>
+                       <i className="bi bi-check-circle"></i>
+                       </button>
+                     </div>
+                   </td>
                   </tr>
                 ))}
               </tbody>

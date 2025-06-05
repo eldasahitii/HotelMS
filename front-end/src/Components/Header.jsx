@@ -4,22 +4,22 @@ import axios from "axios";
 import logo from "../Assets/images/logo.png";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useAuth } from "../Context/AuthContext"; //  import context
+import { useAuth } from "../Context/AuthContext"; 
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const { userRole, setUserRole, loading } = useAuth(); //  use global role
+  const { userRole, setUserRole, loading } = useAuth(); 
 
   const logout = async () => {
     try {
       await axios.post("https://localhost:7117/api/Auth/logout", {}, { withCredentials: true });
     } catch (e) {
-      // ignore errors
+      
     }
-    setUserRole(null); //  clear role in context
+    setUserRole(null); 
     navigate("/login");
   };
 
@@ -31,7 +31,7 @@ const Header = () => {
     }`;
 
   if (location.pathname === "/login") return null;
-  if (loading) return null; // still loading role
+  if (loading) return null; 
 
   const dashboardLinks = {
     CleaningManager: [
@@ -66,8 +66,9 @@ const Header = () => {
     { path: "/admin/restaurant-menu", label: "Restaurant Menu"},
     { path: "/admin/restaurant-tables", label: "Restaurant Tables"},
     { path: "/admin/restaurant-reservations", label: "Restaurant Reservations"},
+    { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
+    { path: "/admin/cleaning-dashboard", label: "Cleaning Dashboard" },
   ],
-    // Add more roles here
     RestaurantManager: [
       { path: "/manager/restaurant-hosts", label: "Hosts"},
       { path: "/manager/restaurant-menu", label: "Menu"},
@@ -154,38 +155,48 @@ const Header = () => {
               </li>
             )}
 
-            {userRole && (
-              <li className="nav-item dropdown position-relative">
-                <button
-                  className="btn nav-link text-secondary d-flex align-items-center gap-1"
-                  type="button"
-                  onClick={toggleDropdown}
-                  aria-expanded={showDropdown}
-                  style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
-                >
-                  <i className="bi bi-person-circle fs-4"></i>
-                  <span className="d-none d-lg-inline fw-semibold">DASHBOARD</span>
-                </button>
+                  {userRole && (
+                 <li className="nav-item dropdown position-relative">
+               <button className="btn nav-link text-secondary d-flex align-items-center gap-1" type="button"onClick={toggleDropdown}
+              aria-expanded={showDropdown}style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+               >
+                <i className="bi bi-person-circle fs-4"></i>
+               <span className="d-none d-lg-inline fw-semibold">
+                 {userRole === "Customer" ? "My Profile" : "DASHBOARD"}
+                 </span>
+                  </button>
 
-                {showDropdown && (
-                  <ul
-                    className="dropdown-menu dropdown-menu-end show mt-2 shadow"
-                    style={{ minWidth: "160px" }}
-                    onMouseLeave={closeDropdown}
-                  >
-                    {dashboardLinks[userRole]?.map(({ path, label }) => (
-                      <li key={path}>
-                        <Link to={path} className="dropdown-item" onClick={closeDropdown}>{label}</Link>
-                      </li>
-                    ))}
-                    <li>
-                      <button className="dropdown-item text-danger" onClick={() => { logout(); closeDropdown(); }}>
-                        Logout
-                      </button>
-                    </li>
-                  </ul>
-                )}
+                    {showDropdown && (
+                      <ul className="dropdown-menu dropdown-menu-end show mt-2 shadow" style={{ minWidth: "160px" }} onMouseLeave={closeDropdown}
+                         >
+                      {userRole === "Customer" ? (
+                           <>
+                           <li>
+                  <Link to="/user/profile" className="dropdown-item" onClick={closeDropdown}>My Profile</Link>
+            </li>
+            <li>
+              <button className="dropdown-item text-danger" onClick={() => { logout(); closeDropdown(); }}>
+                Logout
+              </button>
+            </li>
+          </>
+        ) : (
+          <>
+            {dashboardLinks[userRole]?.map(({ path, label }) => (
+              <li key={path}>
+                <Link to={path} className="dropdown-item" onClick={closeDropdown}>{label}</Link>
               </li>
+            ))}
+            <li>
+              <button className="dropdown-item text-danger" onClick={() => { logout(); closeDropdown(); }}>
+                Logout
+              </button>
+                   </li>
+                  </>
+                 )}
+               </ul>
+               )}
+            </li>
             )}
           </ul>
         </div>

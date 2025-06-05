@@ -12,7 +12,7 @@ export default function CleaningManagerDashboard() {
   const [users, setUsers] = useState([]);
   const [newStaff, setNewStaff] = useState({ userID: '', shift: '', isActive: true });
   const [shiftFilter, setShiftFilter] = useState('');
-  const [editingStaff, setEditingStaff] = useState(null);
+  const [editingStaffID, setEditingStaffID] = useState(null);
   const [editShift, setEditShift] = useState('');
   const [editIsActive, setEditIsActive] = useState(true);
   const [currentUserID, setCurrentUserID] = useState(null);
@@ -69,7 +69,7 @@ export default function CleaningManagerDashboard() {
   };
 
   const openEditForm = (staff) => {
-    setEditingStaff(staff);
+    setEditingStaffID(staff.cleaningStaffID);
     setEditShift(staff.shift);
     setEditIsActive(staff.isActive);
   };
@@ -77,16 +77,17 @@ export default function CleaningManagerDashboard() {
   const handleConfirmUpdate = async () => {
     try {
       await axios.put(
-        `/api/CleaningStaff/updateCleaningStaff?id=${editingStaff.cleaningStaffID}`,
+        `/api/CleaningStaff/updateCleaningStaff?id=${editingStaffID}`,
         {
-          ...editingStaff,
+          cleaningStaffID: editingStaffID,
           shift: editShift,
-          isActive: editIsActive
+          isActive: editIsActive,
+          assignedByUserID: currentUserID
         },
         { withCredentials: true }
       );
       toast.success("Staff updated successfully.");
-      setEditingStaff(null);
+      setEditingStaffID(null);
       fetchData();
     } catch (err) {
       toast.error("Failed to update staff.");
@@ -249,11 +250,39 @@ export default function CleaningManagerDashboard() {
                   <td>{index + 1}</td>
                   <td>{s.firstName} {s.lastName}</td>
                   <td>{s.email}</td>
-                  <td>{s.shift}</td>
-                  <td>{s.isActive ? "Active" : "Inactive"}</td>
                   <td>
-                    <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteStaff(s.cleaningStaffID)}><i className="bi bi-trash"></i></button>
-                    <button className="btn btn-sm btn-outline-secondary" onClick={() => openEditForm(s)}><i className="bi bi-pencil-square"></i></button>
+                    {editingStaffID === s.cleaningStaffID ? (
+                      <select className="form-select form-select-sm" value={editShift} onChange={e => setEditShift(e.target.value)}>
+                        <option value="Morning">Morning</option>
+                        <option value="Afternoon">Afternoon</option>
+                        <option value="Night">Night</option>
+                      </select>
+                    ) : s.shift}
+                  </td>
+                  <td>
+                    {editingStaffID === s.cleaningStaffID ? (
+                      <select className="form-select form-select-sm" value={editIsActive} onChange={e => setEditIsActive(e.target.value === "true")}>
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                      </select>
+                    ) : (s.isActive ? "Active" : "Inactive")}
+                  </td>
+                  <td>
+                    {editingStaffID === s.cleaningStaffID ? (
+                      <>
+                        <button className="btn btn-sm btn-dark me-2" onClick={handleConfirmUpdate}>Save</button>
+                        <button className="btn btn-sm btn-secondary" onClick={() => setEditingStaffID(null)}>Cancel</button>
+                      </>
+                    ) : (
+                      <>
+                        <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDeleteStaff(s.cleaningStaffID)}>
+                          <i className="bi bi-trash"></i>
+                        </button>
+                        <button className="btn btn-sm btn-outline-dark me-2" onClick={() => openEditForm(s)}>
+                          <i className="bi bi-pencil"></i>
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -261,31 +290,6 @@ export default function CleaningManagerDashboard() {
           </table>
         </div>
       </div>
-
-      {editingStaff && (
-        <div className="card mt-4">
-          <div className="card-header bg-warning text-dark"><i className="bi bi-pencil-square me-2"></i>Update Staff Info</div>
-          <div className="card-body">
-            <div className="row g-2 mb-3">
-              <div className="col-md-6">
-                <select className="form-control" value={editShift} onChange={e => setEditShift(e.target.value)}>
-                  <option value="Morning">Morning</option>
-                  <option value="Afternoon">Afternoon</option>
-                  <option value="Night">Night</option>
-                </select>
-              </div>
-              <div className="col-md-6">
-                <div className="form-check form-switch">
-                  <input className="form-check-input" type="checkbox" checked={editIsActive} onChange={e => setEditIsActive(e.target.checked)} />
-                  <label className="form-check-label">Active</label>
-                </div>
-              </div>
-            </div>
-            <button className="btn btn-primary me-2" onClick={handleConfirmUpdate}><i className="bi bi-check2"></i> Save</button>
-            <button className="btn btn-secondary" onClick={() => setEditingStaff(null)}><i className="bi bi-x"></i> Cancel</button>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

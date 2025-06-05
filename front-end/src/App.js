@@ -4,7 +4,9 @@ import axios from 'axios';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { AuthProvider } from './Context/AuthContext'; //  import context
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './Context/AuthContext'; 
 import Header from './Components/Header';
 import Footer from './Components/Footer';
 import Login from './pages/Login';
@@ -20,7 +22,6 @@ import RoomsDetails from './pages/Rooms/RoomsDetails';
 import ReservationPage from './pages/Rooms/ReservationPage';
 import RecepsionistReservationDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RecepsionistReservationDashboard';
 import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/RoomAdmin/AdminRoomType';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
 import ReviewDashboard from './pages/dashboards/roomdashboards/managerdashboards/ReviewDashboard';
 import RestaurantHomePage from './pages/restaurant/RestaurantHomePage';
@@ -30,8 +31,7 @@ import AdminRoomReservationStatus from './pages/dashboards/admindashboard/AdminR
 import UserInfo from './pages/dashboards/userdashboard/UserInfo';
 import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReservations';
 import HomePage from './pages/HomePage';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import AdminCleaningStaffDashboard from './pages/dashboards/admindashboard/AdminCleaningStaffDashboard';
 
 
 
@@ -74,7 +74,7 @@ function App() {
   return (
     
     <Router>
-      <AuthProvider> {/*  Wrap the whole app */}
+      <AuthProvider> 
         <div>
           {!["/login"].includes(window.location.pathname) && <Header />}
      <ToastContainer position="top-right" autoClose={4000} />
@@ -94,7 +94,6 @@ function App() {
                 <Route path="menu" element={<RestaurantMenuPage />} />
               </Route>
 
-            {/* Room Reservation route */}
             <Route path="/reserve" element={
 <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
   <ReservationPage />
@@ -203,6 +202,14 @@ function App() {
              element={
             <ProtectedRoute allowedRoles={['Admin']}>
             <AdminAddManager />
+            </ProtectedRoute>
+  }
+/>
+                <Route
+             path="/admin/cleaning-dashboard"
+             element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+            <AdminCleaningStaffDashboard />
             </ProtectedRoute>
   }
 />
