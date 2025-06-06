@@ -280,7 +280,7 @@ function App() {
               } />
 
 
-              <Route path="/services" element={
+              <Route path="/services/event-page" element={
                 <ProtectedRoute allowedRoles={['Admin', 'ServiceManager', 'ServiceRecepsionist']}>
                   <EventsPage />
                 </ProtectedRoute>
