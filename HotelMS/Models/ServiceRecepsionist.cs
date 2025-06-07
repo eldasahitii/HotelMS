@@ -11,14 +11,14 @@ namespace HotelMS.Models
 
         [ForeignKey("User")]
         public int UserID { get; set; }
-        public User User { get; set; }
+        public User? User { get; set; }  // Nullable navigation property
 
         [Required]
         public string Shift { get; set; }
 
         [ForeignKey("AssignedByUser")]
         public int AssignedByUserID { get; set; }
-        public User AssignedByUser { get; set; }
+        public User? AssignedByUser { get; set; }  // Nullable navigation property
 
         public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
     }

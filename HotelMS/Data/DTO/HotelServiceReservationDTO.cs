@@ -8,6 +8,7 @@ namespace HotelMS.Data.DTO
 
         // Service info (e.g., service name)
         public string ServiceName { get; set; } = null!;
+        //public int ServiceId { get; set; }
 
         // User info (customer)
         public int UserID { get; set; }
