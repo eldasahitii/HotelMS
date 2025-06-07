@@ -77,6 +77,9 @@ const Header = () => {
     RestaurantHost: [
       { path: "/host/dashboard", label: "Reservations" }
     ],
+    ServiceManager: [
+      {path: "/manager/service-manager", label: "Services Dashboard"}
+    ]
 
   };
 

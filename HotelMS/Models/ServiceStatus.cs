@@ -17,3 +17,5 @@ namespace HotelMS.Models
         public ICollection<HotelServiceReservation> ServiceReservations { get; set; }
     }
 }
+
+

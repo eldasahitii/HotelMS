@@ -49,6 +49,8 @@ const AssignHostSection = lazy(() => import('./pages/dashboards/admindashboard/R
 const MenuSection = lazy(() => import('./pages/dashboards/admindashboard/RestaurantAdmin/MenuSection'));
 const TableSection = lazy(() => import('./pages/dashboards/admindashboard/RestaurantAdmin/TableSection'));
 const ReservationSection = lazy(() => import('./pages/dashboards/admindashboard/RestaurantAdmin/ReservationSection'));
+const ServiceManagerDashboard = lazy(() => import('./pages/dashboards/servicesdashboard/managerdashboard/servicemanager'));
+
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const [authorized, setAuthorized] = React.useState(null);
@@ -285,6 +287,13 @@ function App() {
                   <EventsPage />
                 </ProtectedRoute>
               } />
+
+              <Route path="/manager/service-manager" element={
+              <ProtectedRoute allowedRoles={['ServiceManager']}>
+              <ServiceManagerDashboard />
+              </ProtectedRoute>
+               } />
+
 
 
               <Route path="/restaurant-manager/dashboard" element={<Navigate to="/manager/restaurant-hosts" />} />
