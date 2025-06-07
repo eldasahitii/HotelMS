@@ -31,8 +31,6 @@ namespace HotelMS.Controllers
             }
         }
 
-
-
         [HttpGet("getAllAssignments")]
         public async Task<IActionResult> GetAll()
         {

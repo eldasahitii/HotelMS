@@ -48,8 +48,6 @@ namespace HotelMS.Services
 
             return assignment;
         }
-
-
         public async Task<CleaningAssignmentDTO> GetAssignment(int id)
         {
             var assignment = await _dbContext.CleaningAssignments
@@ -85,7 +83,6 @@ namespace HotelMS.Services
             {
                 CleaningAssignmentID = a.CleaningAssignmentID,
                 RoomID = a.RoomID,
-
                 RoomNumber = a.Room.RoomNumber,
                 CleaningStaffID = a.CleaningStaffID,
                 StaffName = a.CleaningStaff.User.FirstName + " " + a.CleaningStaff.User.LastName,

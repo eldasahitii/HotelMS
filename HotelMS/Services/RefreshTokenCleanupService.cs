@@ -7,7 +7,7 @@ namespace HotelMS.Services
     public class RefreshTokenCleanupService : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly TimeSpan _cleanupInterval = TimeSpan.FromDays(1); // Run daily
+        private readonly TimeSpan _cleanupInterval = TimeSpan.FromDays(1); 
 
         public RefreshTokenCleanupService(IServiceProvider serviceProvider)
         {
@@ -36,7 +36,7 @@ namespace HotelMS.Services
                         await context.SaveChangesAsync();
                 }
 
-                await Task.Delay(_cleanupInterval, stoppingToken); // Wait 24 hours
+                await Task.Delay(_cleanupInterval, stoppingToken);
             }
         }
     }

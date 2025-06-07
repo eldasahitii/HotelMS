@@ -15,20 +15,6 @@ namespace HotelMS.Controllers
         {
             _service = service;
         }
-
-        //[HttpPost("addCleaningStaff")]
-        //public async Task<IActionResult> AddCleaningStaff([FromBody] CleaningStaffDTO request)
-        //{
-        //    try
-        //    {
-        //        var result = await _service.AddCleaningStaff(request);
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
         [HttpPost("addCleaningStaff")]
         public async Task<IActionResult> AddCleaningStaff([FromBody] CleaningStaffDTO dto)
         {

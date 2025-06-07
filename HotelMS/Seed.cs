@@ -653,9 +653,6 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-
-
-
         //Seed HotelServiceSchedule
         if (!dataContext.HotelServiceSchedules.Any())
         {
