@@ -28,6 +28,7 @@ namespace HotelMS.Data.DTO
         public string TimeSlot { get; set; } = null!;
 
         // Reservation status
+        public string ServiceStatusName { get; set; } = null!;
         public string ReservationStatusName { get; set; } = null!;
 
         // Optional special requests (you had it commented out, I included it here)

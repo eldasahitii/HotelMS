@@ -155,6 +155,7 @@ namespace HotelMS.Data
                 .Property(cs => cs.Shift)
                 .HasConversion<string>();
 
+            //SERVICES
             // HotelServiceReservation ↔ HotelService (many-to-one)
             modelBuilder.Entity<HotelServiceReservation>()
                 .HasOne(r => r.Service)
@@ -175,7 +176,6 @@ namespace HotelMS.Data
                .HasForeignKey(r => r.ServiceStatusID)
                .OnDelete(DeleteBehavior.Restrict);
 
-
             // HotelServiceReservation ↔ ServiceRecepsionist (many-to-one, nullable)
             modelBuilder.Entity<HotelServiceReservation>()
                 .HasOne(r => r.CreatedByServiceReceptionist)
@@ -185,10 +185,11 @@ namespace HotelMS.Data
 
             // HotelServiceReservation ↔ ReservationStatus (many-to-one)
             modelBuilder.Entity<HotelServiceReservation>()
-                .HasOne(r => r.ReservationStatus)
-                .WithMany(rs => rs.ServiceReservations)
-                .HasForeignKey(r => r.ReservationStatusID)
-                .OnDelete(DeleteBehavior.Restrict);
+              .HasOne(r => r.ServiceStatus)
+              .WithMany(ss => ss.ServiceReservations)
+              .HasForeignKey(r => r.ServiceStatusID)
+              .OnDelete(DeleteBehavior.Restrict);
+
 
             // ServiceRecepsionist ↔ User (one-to-one)
             modelBuilder.Entity<ServiceRecepsionist>()
@@ -206,10 +207,10 @@ namespace HotelMS.Data
 
             // ServiceStatus ↔ HotelServiceReservation (one-to-many)
             modelBuilder.Entity<ServiceStatus>()
-                .HasMany(ss => ss.ServiceReservations)
-                .WithOne(r => r.HotelServiceReservation)
-                .HasForeignKey(r => r.ReservationStatusID)
-                .OnDelete(DeleteBehavior.Restrict);
+              .HasMany(ss => ss.ServiceReservations)
+              .WithOne(r => r.ServiceStatus)  // Correct navigation property
+              .HasForeignKey(r => r.ServiceStatusID)    // Correct FK property
+              .OnDelete(DeleteBehavior.Restrict);
 
 
             modelBuilder.Entity<ServiceRecepsionist>()
