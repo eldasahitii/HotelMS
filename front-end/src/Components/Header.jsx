@@ -78,7 +78,8 @@ const Header = () => {
       { path: "/host/dashboard", label: "Reservations" }
     ],
     ServiceManager: [
-      {path: "/manager/service-manager", label: "Services Dashboard"}
+      {path: "/manager/service-manager", label: "Services Dashboard"},
+      {path: "/manager/service-reservation", label: "Service Reservations"}
     ]
 
   };

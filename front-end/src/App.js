@@ -35,6 +35,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import ServiceMain from './pages/Services/ServiceMain';
 import PoolSpaPage from './pages/Services/PoolSpaPage';
 import EventsPage from './pages/Services/EventsPage';
+import ServiceReservation from './pages/dashboards/servicesdashboard/managerdashboard/servicereservation';
+
 
 
 
@@ -291,6 +293,12 @@ function App() {
               <Route path="/manager/service-manager" element={
               <ProtectedRoute allowedRoles={['ServiceManager']}>
               <ServiceManagerDashboard />
+              </ProtectedRoute>
+               } />
+
+                <Route path="/manager/service-reservation" element={
+              <ProtectedRoute allowedRoles={['ServiceManager']}>
+              <ServiceReservation />
               </ProtectedRoute>
                } />
 
