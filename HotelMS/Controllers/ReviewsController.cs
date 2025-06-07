@@ -23,13 +23,31 @@ namespace HotelMS.Controllers
         // GET: api/reviews
         // GET: api/reviews/GetAll
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews()
+        public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews(
+     [FromQuery] int? categoryId,
+     [FromQuery] int? minRating,
+     [FromQuery] string? search)
+
         {
-            return await _context.Reviews
+            var query = _context.Reviews
                 .Include(r => r.User)
-                .Include(r => r.Category) //  Include the ReviewCategory
-                .ToListAsync();
+                .Include(r => r.Category)
+                .Include(r => r.Images)
+                .AsQueryable();
+
+            if (categoryId.HasValue)
+                query = query.Where(r => r.ReviewCategoryID == categoryId.Value);
+
+            if (minRating.HasValue)
+                query = query.Where(r => r.Rating >= minRating.Value);
+
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(r => r.Comment.Contains(search));
+
+            var result = await query.ToListAsync();
+            return Ok(result);
         }
+
 
 
         // GET: api/reviews/{id}
@@ -50,32 +68,44 @@ namespace HotelMS.Controllers
         // POST: api/reviews
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Review>> PostReview([FromBody] Review review) // ✅ Add [FromBody]
+        public async Task<ActionResult<Review>> PostReview([FromBody] ReviewWithImageDTO dto)
         {
-            // ✅ This returns helpful validation errors instead of generic 400
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdClaim))
-                return Unauthorized("User ID not found in token.");
-
-            //  review.UserID = int.Parse(userIdClaim);
             if (!int.TryParse(userIdClaim, out int userId))
                 return Unauthorized("Invalid user ID in token.");
 
-            review.UserID = userId; // ✅ safe assignment
-
-
-            review.Date = DateTime.Now;
+            var review = new Review
+            {
+                UserID = userId,
+                Comment = dto.Comment,
+                Rating = dto.Rating,
+                ReviewCategoryID = dto.ReviewCategoryID,
+                Date = DateTime.Now
+            };
 
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync();
 
+            if (!string.IsNullOrWhiteSpace(dto.Base64Image))
+            {
+                var imageBytes = Convert.FromBase64String(dto.Base64Image);
+                var fileName = $"review_{review.ReviewID}_{Guid.NewGuid()}.jpg";
+                var folderPath = Path.Combine("wwwroot", "reviewimages");
+                Directory.CreateDirectory(folderPath);
+                var filePath = Path.Combine(folderPath, fileName);
+                await System.IO.File.WriteAllBytesAsync(filePath, imageBytes);
+
+                _context.ReviewImages.Add(new ReviewImage
+                {
+                    ReviewID = review.ReviewID,
+                    ImageUrl = $"/reviewimages/{fileName}"
+                });
+                await _context.SaveChangesAsync();
+            }
+
             return CreatedAtAction(nameof(GetAllReviews), new { id = review.ReviewID }, review);
         }
+
 
 
         // DELETE: api/reviews/{id}
@@ -155,6 +185,19 @@ namespace HotelMS.Controllers
             await _context.SaveChangesAsync();
             return Ok(review);
         }
+
+        // Example in ReviewsController.cs
+        [HttpDelete("deleteimage/{imageId}")]
+        public async Task<IActionResult> DeleteImage(int imageId)
+        {
+            var image = await _context.ReviewImages.FindAsync(imageId);
+            if (image == null) return NotFound();
+
+            _context.ReviewImages.Remove(image);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
 
 
 

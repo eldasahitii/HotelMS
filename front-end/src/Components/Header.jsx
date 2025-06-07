@@ -37,6 +37,8 @@ const Header = () => {
     CleaningManager: [
       { path: "/manager/cleaning-staff", label: "Cleaning Staff" },
       { path: "/manager/assignments", label: "Assignments" },
+      { path: "/cleaning-manager/review-dashboard", label: "Cleaning Reviews" },
+
     ],
   RoomManager: [
   { path: "/manager/room-dashboard", label: "Room Dashboard" },
@@ -73,7 +75,9 @@ const Header = () => {
       { path: "/manager/restaurant-hosts", label: "Hosts"},
       { path: "/manager/restaurant-menu", label: "Menu"},
       { path: "/manager/restaurant-tables", label: "Tables"},
-      { path: "/manager/restaurant-reservations", label: "Reservations"}
+      { path: "/manager/restaurant-reservations", label: "Reservations"},
+      { path: "/restaurant-manager/review-dashboard", label: "Restaurant Reviews" }
+
     ],
     RestaurantHost: [
       { path: "/host/dashboard", label: "Reservations" }
