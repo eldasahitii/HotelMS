@@ -1,0 +1,79 @@
+﻿using HotelMS.Data;
+using HotelMS.Data.DTO;
+using HotelMS.Models;
+using HotelMS.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
+namespace HotelMS.Services
+{
+    public class ServiceRecepsionistService : IServiceRecepsionistService
+    {
+        private readonly DataContext _context;
+
+        public ServiceRecepsionistService(DataContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<ServiceRecepsionistDTO>> GetAllRecepsionistsAsync()
+        {
+            return await _context.ServiceRecepsionists
+                .Select(r => new ServiceRecepsionistDTO
+                {
+                    Id = r.Id,
+                    FirstName = r.FirstName,
+                    LastName = r.LastName,
+                    Email = r.Email
+                }).ToListAsync();
+        }
+
+        public async Task<ServiceRecepsionistDTO?> GetRecepsionistByIdAsync(int id)
+        {
+            var recep = await _context.ServiceRecepsionists.FindAsync(id);
+            if (recep == null) return null;
+
+            return new ServiceRecepsionistDTO
+            {
+                Id = recep.Id,
+                FirstName = recep.FirstName,
+                LastName = recep.LastName,
+                Email = recep.Email
+            };
+        }
+
+        public async Task<int> CreateRecepsionistAsync(ServiceRecepsionistDTO dto)
+        {
+            var recep = new ServiceRecepsionist
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email
+            };
+            _context.ServiceRecepsionists.Add(recep);
+            await _context.SaveChangesAsync();
+            return recep.Id;
+        }
+
+        public async Task<bool> UpdateRecepsionistAsync(ServiceRecepsionistDTO dto)
+        {
+            var recep = await _context.ServiceRecepsionists.FindAsync(dto.Id);
+            if (recep == null) return false;
+
+            recep.FirstName = dto.FirstName;
+            recep.LastName = dto.LastName;
+            recep.Email = dto.Email;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteRecepsionistAsync(int id)
+        {
+            var recep = await _context.ServiceRecepsionists.FindAsync(id);
+            if (recep == null) return false;
+
+            _context.ServiceRecepsionists.Remove(recep);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+    }
+}
