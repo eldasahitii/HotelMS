@@ -36,6 +36,7 @@ import ServiceMain from './pages/Services/ServiceMain';
 import PoolSpaPage from './pages/Services/PoolSpaPage';
 import EventsPage from './pages/Services/EventsPage';
 import ServiceReservation from './pages/dashboards/servicesdashboard/managerdashboard/servicereservation';
+import ServiceAddRecepcionist from './pages/dashboards/servicesdashboard/managerdashboard/serviceaddrecepcionist';
 
 
 
@@ -299,6 +300,12 @@ function App() {
                 <Route path="/manager/service-reservation" element={
               <ProtectedRoute allowedRoles={['ServiceManager']}>
               <ServiceReservation />
+              </ProtectedRoute>
+               } />
+
+                 <Route path="/manager/service-add-recepcionist" element={
+              <ProtectedRoute allowedRoles={['ServiceManager']}>
+              <ServiceAddRecepcionist />
               </ProtectedRoute>
                } />
 
