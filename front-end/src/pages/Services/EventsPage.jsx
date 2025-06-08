@@ -65,32 +65,66 @@ const Events = () => {
     }
   }
 
-async function fetchFeaturedServices() {
-  try {
-    const idsToFetch = [5, 6];
-    // Fetch service details by ID concurrently
-    const requests = idsToFetch.map(id =>
-      axios.get(`https://localhost:7117/api/HotelServiceDetail/GetServiceDetail/${id}`, {
-        withCredentials: true
-      })
-    );
-
-    const responses = await Promise.all(requests);
-    const fetchedServices = responses.map(res => res.data);
-    setServices(fetchedServices);
-  } catch (err) {
-    console.error("Failed to get featured services!", err);
+  async function fetchFeaturedServices() {
+    try {
+      const idsToFetch = [5, 6];
+      const requests = idsToFetch.map(id =>
+        axios.get(`https://localhost:7117/api/HotelServiceDetail/GetServiceDetail/${id}`, {
+          withCredentials: true
+        })
+      );
+      const responses = await Promise.all(requests);
+      const fetchedServices = responses.map(res => res.data);
+      setServices(fetchedServices);
+    } catch (err) {
+      console.error("Failed to get featured services!", err);
+    }
   }
-}
-
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const submitReservation = async (service, formData, selectedDate, selectedSlot) => {
+    try {
+      const reservationPayload = {
+        reservationID: 0,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        reservationDate: selectedDate,
+        timeSlot: selectedSlot,
+        hotelServiceDetailID: service.id,
+        hotelServiceName: service.detailTitle,
+        reservationStatusID: 1,
+        createdAt: new Date().toISOString(),
+        serviceRecepsionistId: 1,
+        receptionistFirstName: "Erblina",
+        receptionistLastName: "Kadriu",
+        receptionistEmail: "erblina@gmail.com"
+      };
+
+      const response = await axios.post(
+        'https://localhost:7117/api/HotelServiceReservation/CreateReservation',
+        reservationPayload,
+        { withCredentials: true }
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        setConfirmation('Reservation made successfully.');
+        setTimeout(() => setActiveForm(null), 1500);
+      } else {
+        setConfirmation('Failed to submit reservation.');
+      }
+    } catch (error) {
+      console.error('Error submitting reservation:', error);
+      setConfirmation('Error submitting reservation. Please try again.');
+    }
+  };
+
+  const handleSubmit = (e, service) => {
     e.preventDefault();
 
     if (!selectedDate || !selectedSlot) {
@@ -98,8 +132,7 @@ async function fetchFeaturedServices() {
       return;
     }
 
-    setConfirmation('Reservation made successfully.');
-    setTimeout(() => setActiveForm(null), 1500);
+    submitReservation(service, formData, selectedDate, selectedSlot);
   };
 
   const openForm = (index) => {
@@ -123,7 +156,6 @@ async function fetchFeaturedServices() {
 
   return (
     <div style={{ backgroundColor: '#ffffff' }}>
-      {/* Hero Section - unchanged as requested */}
       <div
         style={{
           backgroundImage: `url('https://localhost:7117/Images/Services/${ImageUrl}')`,
@@ -145,7 +177,6 @@ async function fetchFeaturedServices() {
         </div>
       </div>
 
-      {/* Services Section (only IDs 5 & 6) */}
       <div className="container py-5">
         {services.map((section, idx) => (
           <div
@@ -170,7 +201,7 @@ async function fetchFeaturedServices() {
               <button className="btn btn-dark" onClick={() => openForm(idx)}>Reserve</button>
 
               {activeForm === idx && (
-                <form onSubmit={handleSubmit} className="border mt-4 p-4 rounded bg-light">
+                <form onSubmit={(e) => handleSubmit(e, section)} className="border mt-4 p-4 rounded bg-light">
                   <div className="row mb-3">
                     <div className="col">
                       <input

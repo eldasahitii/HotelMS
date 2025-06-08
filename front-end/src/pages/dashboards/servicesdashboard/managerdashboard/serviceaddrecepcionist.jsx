@@ -1,61 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-
-const shifts = ["Morning", "Afternoon", "Night"];
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 export default function ServiceRecepsionistManager() {
-  const navigate = useNavigate();
-
-  const [currentUserId, setCurrentUserId] = useState(null);
-  const [currentUserName, setCurrentUserName] = useState("");
-
-  const [users, setUsers] = useState([]);
   const [receps, setReceps] = useState([]);
-  const [form, setForm] = useState({ userID: "", shift: "" });
+  const [form, setForm] = useState({
+    id: 0,
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    totalReservationsHandled: 0,
+  });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const fetchCurrentUser = async () => {
-    try {
-      const res = await axios.get("https://localhost:7117/api/Auth/me", {
-        withCredentials: true,
-      });
-      setCurrentUserId(res.data.userID);
-      setCurrentUserName(res.data.userName);
-    } catch (err) {
-      toast.error("Failed to fetch logged-in user info.");
-    }
-  };
 
   useEffect(() => {
-    fetchCurrentUser();
+    fetchReceps();
   }, []);
 
-  useEffect(() => {
-    if (currentUserId) {
-      fetchUsers();
-      fetchServiceRecepsionists();
-    }
-  }, [currentUserId]);
-
-  const fetchUsers = async () => {
-    try {
-      const res = await axios.get("/api/User/getAllCustomers");
-      setUsers(res.data);
-    } catch (err) {
-      toast.error("Failed to load customers.");
-    }
-  };
-
-  const fetchServiceRecepsionists = async () => {
+  const fetchReceps = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/api/ServiceRecepsionist/getAllServiceRecepsionists");
-      setReceps(res.data);
+      const res = await axios.get("/api/ServiceRecepsionist/");
+      // Normalize null phone to empty string and ensure totalReservationsHandled is a number
+      const normalized = res.data.map((r) => ({
+        ...r,
+        phone: r.phone || "",
+        totalReservationsHandled: r.totalReservationsHandled ?? 0,
+      }));
+      setReceps(normalized);
     } catch (err) {
       toast.error("Failed to load service recepsionists.");
     } finally {
@@ -63,137 +38,138 @@ export default function ServiceRecepsionistManager() {
     }
   };
 
-  const handleEditClick = (recep) => {
-    setEditingId(recep.serviceRecepsionistID);
-    setForm({ userID: recep.userID.toString(), shift: recep.shift });
+  const handleEdit = (recep) => {
+    setEditingId(recep.id);
+    setForm({
+      ...recep,
+      phone: recep.phone || "",
+      totalReservationsHandled: recep.totalReservationsHandled ?? 0,
+    });
   };
 
-  const handleDeleteClick = async (id) => {
+  const handleDelete = async (id) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'This will permanently delete the service recepsionist.',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "This will permanently delete the service recepsionist.",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: "Yes, delete it!",
     });
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`/api/ServiceRecepsionist/deleteServiceRecepsionist/${id}`);
-        toast.success("Service recepsionist deleted successfully");
-        fetchServiceRecepsionists();
+        await axios.delete(`/api/ServiceRecepsionist/${id}`);
+        toast.success("Deleted successfully");
+        fetchReceps();
       } catch (err) {
-        toast.error("Delete failed: " + (err.response?.data || err.message));
+        toast.error("Failed to delete");
       }
     }
-  };
-
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
-    if (!form.userID) return setError("Please select a user.");
-    if (!form.shift) return setError("Please select a shift.");
+    const dto = { ...form };
 
     try {
       if (editingId) {
-        const existingRecep = receps.find((r) => r.serviceRecepsionistID === Number(editingId));
-        if (!existingRecep) return setError("Recepsionist to update not found.");
-
-        const updateDto = {
-          ...existingRecep,
-          shift: form.shift,
-        };
-
-        await axios.put(`/api/ServiceRecepsionist/updateServiceRecepsionist/${existingRecep.serviceRecepsionistID}`, updateDto);
-        toast.success("Service recepsionist updated successfully");
+        await axios.put(`/api/ServiceRecepsionist/${editingId}`, dto);
+        toast.success("Updated successfully");
       } else {
-        const selectedUser = users.find((u) => u.userID.toString() === form.userID);
-        if (!selectedUser) return toast.error("Selected user not found.");
-
-        const dto = {
-          serviceRecepsionistID: 0,
-          userID: selectedUser.userID,
-          firstName: selectedUser.firstName,
-          lastName: selectedUser.lastName,
-          email: selectedUser.email,
-          shift: form.shift,
-          assignedByUserID: currentUserId,
-          assignedByUserName: currentUserName,
-          assignedAt: new Date().toISOString(),
-        };
-
-        await axios.post(`/api/ServiceRecepsionist/addServiceRecepsionist/${currentUserId}`, dto);
-        toast.success("Service recepsionist added successfully");
+        await axios.post("/api/ServiceRecepsionist/", dto);
+        toast.success("Added successfully");
       }
 
-      setForm({ userID: "", shift: "" });
+      setForm({
+        id: 0,
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        totalReservationsHandled: 0,
+      });
       setEditingId(null);
-      fetchServiceRecepsionists();
+      fetchReceps();
     } catch (err) {
-      const msg = err.response?.data?.title || err.response?.data?.errors || err.message;
-      toast.error(JSON.stringify(msg));
+      toast.error("Failed to save data");
     }
   };
 
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "";
-    let isoString = dateString.endsWith("Z") ? dateString : dateString + "Z";
-    const dt = new Date(isoString);
-    return isNaN(dt) ? "" : dt.toLocaleString(undefined, { timeZoneName: "short" });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]:
+        name === "totalReservationsHandled"
+          ? value === ""
+            ? 0
+            : parseInt(value)
+          : value,
+    }));
   };
 
   return (
     <div className="container py-4">
-      <h2 className="text-primary mb-4">
-        <i className="bi bi-person-plus-fill me-2"></i> Service Recepsionist Management
-      </h2>
-
-      {error && <div className="alert alert-danger">{error}</div>}
+      <h2>Service Recepsionist Management</h2>
 
       <form onSubmit={handleSubmit} className="mb-4">
         <div className="mb-3">
-          <label htmlFor="userID" className="form-label">User</label>
-          <select
-            id="userID"
-            name="userID"
-            className="form-select"
-            value={form.userID}
+          <label>First Name</label>
+          <input
+            type="text"
+            name="firstName"
+            value={form.firstName}
             onChange={handleChange}
-            disabled={!!editingId}
-          >
-            <option value="">-- Select User --</option>
-            {users.map((user) => (
-              <option key={user.userID} value={user.userID}>
-                {user.firstName} {user.lastName} ({user.email})
-              </option>
-            ))}
-          </select>
+            className="form-control"
+            required
+          />
         </div>
-
         <div className="mb-3">
-          <label htmlFor="shift" className="form-label">Shift</label>
-          <select
-            id="shift"
-            name="shift"
-            className="form-select"
-            value={form.shift}
+          <label>Last Name</label>
+          <input
+            type="text"
+            name="lastName"
+            value={form.lastName}
             onChange={handleChange}
-          >
-            <option value="">-- Select Shift --</option>
-            {shifts.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
+            className="form-control"
+            required
+          />
         </div>
-
+        <div className="mb-3">
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            className="form-control"
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label>Phone</label>
+          <input
+            type="text"
+            name="phone"
+            value={form.phone}
+            onChange={handleChange}
+            className="form-control"
+          />
+        </div>
+        <div className="mb-3">
+          <label>Total Reservations Handled</label>
+          <input
+            type="number"
+            name="totalReservationsHandled"
+            value={form.totalReservationsHandled}
+            onChange={handleChange}
+            className="form-control"
+            min="0"
+          />
+        </div>
         <button type="submit" className="btn btn-success">
-          {editingId ? "Update Service Recepsionist" : "Add Service Recepsionist"}
+          {editingId ? "Update" : "Add"} Recepsionist
         </button>
         {editingId && (
           <button
@@ -201,8 +177,14 @@ export default function ServiceRecepsionistManager() {
             className="btn btn-secondary ms-2"
             onClick={() => {
               setEditingId(null);
-              setForm({ userID: "", shift: "" });
-              setError("");
+              setForm({
+                id: 0,
+                firstName: "",
+                lastName: "",
+                email: "",
+                phone: "",
+                totalReservationsHandled: 0,
+              });
             }}
           >
             Cancel
@@ -210,36 +192,46 @@ export default function ServiceRecepsionistManager() {
         )}
       </form>
 
-      <h4 className="mb-3">Assigned Service Recepsionists</h4>
+      <h4>All Service Recepsionists</h4>
       {loading ? (
         <p>Loading...</p>
       ) : receps.length === 0 ? (
-        <p>No service recepsionists assigned yet.</p>
+        <p>No recepsionists found.</p>
       ) : (
-        <table className="table table-striped table-bordered">
+        <table className="table table-bordered">
           <thead>
             <tr>
               <th>ID</th>
               <th>Name</th>
               <th>Email</th>
-              <th>Shift</th>
-              <th>Assigned By</th>
-              <th>Assigned At</th>
+              <th>Phone</th>
+              <th>Reservations</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {receps.map((r) => (
-              <tr key={r.serviceRecepsionistID}>
-                <td>{r.serviceRecepsionistID}</td>
-                <td>{r.firstName} {r.lastName}</td>
-                <td>{r.email}</td>
-                <td>{r.shift}</td>
-                <td>{r.assignedByUserName}</td>
-                <td>{formatDateTime(r.assignedAt)}</td>
+              <tr key={r.id}>
+                <td>{r.id}</td>
                 <td>
-                  <button className="btn btn-sm btn-info me-2" onClick={() => handleEditClick(r)}>Edit</button>
-                  <button className="btn btn-sm btn-danger" onClick={() => handleDeleteClick(r.serviceRecepsionistID)}>Delete</button>
+                  {r.firstName} {r.lastName}
+                </td>
+                <td>{r.email}</td>
+                <td>{r.phone}</td>
+                <td>{r.totalReservationsHandled}</td>
+                <td>
+                  <button
+                    className="btn btn-info btn-sm me-2"
+                    onClick={() => handleEdit(r)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDelete(r.id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}

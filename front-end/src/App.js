@@ -38,8 +38,7 @@ import EventsPage from './pages/Services/EventsPage';
 import ServiceReservation from './pages/dashboards/servicesdashboard/managerdashboard/servicereservation';
 import ServiceAddRecepcionist from './pages/dashboards/servicesdashboard/managerdashboard/serviceaddrecepcionist';
 import Reservations from './pages/dashboards/servicesdashboard/servicerecepcionist/reservations.jsx';
-
-
+//import ServiceReceptionistDashboard from './pages/dashboards/servicesdashboard/servicerecepcionist/ServiceReceptionistDashboard.jsx';
 
 
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
@@ -54,6 +53,8 @@ const MenuSection = lazy(() => import('./pages/dashboards/admindashboard/Restaur
 const TableSection = lazy(() => import('./pages/dashboards/admindashboard/RestaurantAdmin/TableSection'));
 const ReservationSection = lazy(() => import('./pages/dashboards/admindashboard/RestaurantAdmin/ReservationSection'));
 const ServiceManagerDashboard = lazy(() => import('./pages/dashboards/servicesdashboard/managerdashboard/servicemanager'));
+const ServiceReceptionistDashboard = lazy(() => import('./pages/dashboards/servicesdashboard/servicerecepcionist/ServiceReceptionistDashboard.jsx'));
+
 
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -313,6 +314,12 @@ function App() {
                  <Route path="/service/reservations" element={
               <ProtectedRoute allowedRoles={['ServiceRecepsionist']}>
               <Reservations />
+              </ProtectedRoute>
+               } /> 
+
+               <Route path="/service/Receptionist-Dashboard" element={
+              <ProtectedRoute allowedRoles={['ServiceRecepsionist']}>
+              <ServiceReceptionistDashboard />
               </ProtectedRoute>
                } />
 

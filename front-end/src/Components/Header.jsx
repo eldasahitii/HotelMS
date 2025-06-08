@@ -83,7 +83,8 @@ const Header = () => {
       {path: "/manager/service-add-recepcionist", label: "Manage Recepcionists"}
     ],
     ServiceRecepsionist: [
-      {path: "/service/reservations", label: "Service Reservations"}
+      {path: "/service/reservations", label: "Service Reservations"},
+      {path: "/service/Receptionist-Dashboard", label: "Receptionist Dashboard"} 
     ]
 
   };
