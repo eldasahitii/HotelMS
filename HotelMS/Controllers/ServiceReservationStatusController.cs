@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using HotelMS.Data.DTO;
 using HotelMS.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelMS.Controllers
@@ -18,6 +19,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, ServiceRecepsionist")]
         public async Task<ActionResult<IEnumerable<ServiceReservationStatusDTO>>> GetAll()
         {
             var statuses = await _statusService.GetAllStatusesAsync();
@@ -25,6 +27,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, ServiceRecepsionist")]
         public async Task<ActionResult<ServiceReservationStatusDTO>> GetById(int id)
         {
             var status = await _statusService.GetStatusByIdAsync(id);
@@ -34,6 +37,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, ServiceRecepsionist")]
         public async Task<ActionResult<int>> Create([FromBody] ServiceReservationStatusDTO dto)
         {
             if (dto == null)
@@ -44,6 +48,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, ServiceRecepsionist")]
         public async Task<ActionResult> Update(int id, [FromBody] ServiceReservationStatusDTO dto)
         {
             if (dto == null || dto.Id != id)
@@ -57,6 +62,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin, ServiceRecepsionist")]
         public async Task<ActionResult> Delete(int id)
         {
             var deleted = await _statusService.DeleteStatusAsync(id);

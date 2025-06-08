@@ -156,67 +156,26 @@ namespace HotelMS.Data
                 .HasConversion<string>();
 
             //SERVICES
-            // HotelServiceReservation ↔ HotelService (many-to-one)
-           // modelBuilder.Entity<HotelServiceReservation>()
-           //     .HasOne(r => r.Service)
-           //     .WithMany()  // Assuming HotelService does NOT have navigation property for reservations
-           //     .HasForeignKey(r => r.ServiceID)
-           //     .OnDelete(DeleteBehavior.Restrict);
+            // HotelServiceReservation ↔ HotelServiceDetail (many-to-one)
+            modelBuilder.Entity<HotelServiceReservation>()
+                .HasOne(r => r.HotelServiceDetail)
+                .WithMany() // No navigation property on HotelServiceDetail for reservations
+                .HasForeignKey(r => r.HotelServiceDetailID)
+                .OnDelete(DeleteBehavior.Restrict);
 
-           // // HotelServiceReservation ↔ User (many-to-one)
-           // modelBuilder.Entity<HotelServiceReservation>()
-           //     .HasOne(r => r.User)
-           //     .WithMany()  // Assuming User does NOT have collection of reservations
-           //     .HasForeignKey(r => r.UserID)
-           //     .OnDelete(DeleteBehavior.Restrict);
+            // HotelServiceReservation ↔ ServiceReservationStatus (many-to-one, optional)
+            modelBuilder.Entity<HotelServiceReservation>()
+                .HasOne(r => r.ReservationStatus)
+                .WithMany() // No navigation property on ServiceReservationStatus for reservations
+                .HasForeignKey(r => r.ReservationStatusID)
+                .OnDelete(DeleteBehavior.Restrict);
 
-           //     modelBuilder.Entity<ServiceStatus>()
-           //    .HasMany(s => s.ServiceReservations)
-           //    .WithOne(r => r.ServiceStatus)
-           //    .HasForeignKey(r => r.ServiceStatusID)
-           //    .OnDelete(DeleteBehavior.Restrict);
-
-           // // HotelServiceReservation ↔ ServiceRecepsionist (many-to-one, nullable)
-           // modelBuilder.Entity<HotelServiceReservation>()
-           //     .HasOne(r => r.CreatedByServiceReceptionist)
-           //     .WithMany()  // Assuming ServiceRecepsionist does NOT have collection of reservations
-           //     .HasForeignKey(r => r.CreatedByServiceReceptionistID)
-           //     .OnDelete(DeleteBehavior.SetNull);
-
-           // // HotelServiceReservation ↔ ReservationStatus (many-to-one)
-           // modelBuilder.Entity<HotelServiceReservation>()
-           //   .HasOne(r => r.ServiceStatus)
-           //   .WithMany(ss => ss.ServiceReservations)
-           //   .HasForeignKey(r => r.ServiceStatusID)
-           //   .OnDelete(DeleteBehavior.Restrict);
-
-
-           // // ServiceRecepsionist ↔ User (one-to-one)
-           // modelBuilder.Entity<ServiceRecepsionist>()
-           //     .HasOne(sr => sr.User)
-           //     .WithOne()
-           //     .HasForeignKey<ServiceRecepsionist>(sr => sr.UserID)
-           //     .OnDelete(DeleteBehavior.Restrict);
-
-           // // ServiceRecepsionist ↔ User (AssignedByUser) (many-to-one)
-           // modelBuilder.Entity<ServiceRecepsionist>()
-           //     .HasOne(sr => sr.AssignedByUser)
-           //     .WithMany()
-           //     .HasForeignKey(sr => sr.AssignedByUserID)
-           //     .OnDelete(DeleteBehavior.Restrict);
-
-           // // ServiceStatus ↔ HotelServiceReservation (one-to-many)
-           // modelBuilder.Entity<ServiceStatus>()
-           //   .HasMany(ss => ss.ServiceReservations)
-           //   .WithOne(r => r.ServiceStatus)  // Correct navigation property
-           //   .HasForeignKey(r => r.ServiceStatusID)    // Correct FK property
-           //   .OnDelete(DeleteBehavior.Restrict);
-
-
-           // modelBuilder.Entity<ServiceRecepsionist>()
-           //.HasOne(sr => sr.User)
-           //.WithMany() // or .WithOne(u => u.ServiceRecepsionist) if you have that navigation
-           //.HasForeignKey(sr => sr.UserID);
+            // HotelServiceReservation ↔ ServiceRecepsionist (many-to-one, optional)
+            modelBuilder.Entity<HotelServiceReservation>()
+                .HasOne(r => r.ServiceRecepsionist)
+                .WithMany(s => s.Reservations) // Navigation property on ServiceRecepsionist for reservations
+                .HasForeignKey(r => r.ServiceRecepsionistId)
+                .OnDelete(DeleteBehavior.SetNull);
 
 
 
