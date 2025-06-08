@@ -630,7 +630,6 @@ public class Seed
         {
             var tableID = dataContext.RestaurantTables.First().RestaurantTableID;
 
-            // Create a restaurant guest
             var guest = new RestaurantGuest
             {
                 FirstName = "Velsa",
@@ -639,7 +638,7 @@ public class Seed
                 PhoneNumber = "044-123-456"
             };
             dataContext.RestaurantGuests.Add(guest);
-            dataContext.SaveChanges(); // Save first to get the GuestID
+            dataContext.SaveChanges(); 
 
             var reservation = new RestaurantReservation
             {

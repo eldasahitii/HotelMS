@@ -29,9 +29,9 @@ namespace HotelMS.Services
                     TableNumber = t.TableNumber,
                     Capacity = t.Capacity,
                     Status = t.Reservations.Any(r =>
-    r.status == "Occupied" &&
-    r.date_time >= DateTime.Now
-) ? "Occupied" : "Available"
+                    r.status == "Occupied" &&
+                    r.date_time >= DateTime.Now
+                    ) ? "Occupied" : "Available"
 
 
                 });
@@ -44,18 +44,7 @@ namespace HotelMS.Services
             }
         }
 
-        //public async Task<IEnumerable<RestaurantTable>> GetAllTables()
-        //{
-        //    try
-        //    {
-        //        return await _dbContext.RestaurantTables.ToListAsync();
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        throw new Exception("Error retrieving tables.");
-        //    }
-        //}
+      
         public async Task<RestaurantTable> GetTable(int id)
         {
             try
@@ -99,20 +88,7 @@ namespace HotelMS.Services
             }
         }
 
-        //public async Task<RestaurantTable> AddTable(RestaurantTable table)
-        //{
-        //    try
-        //    {
-        //        _dbContext.RestaurantTables.Add(table);
-        //        await _dbContext.SaveChangesAsync();
-        //        return table;
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        throw new Exception("Error adding table.");
-        //    }
-        //}
+       
 
 
         public async Task<RestaurantTableDTO> UpdateTable(int id, RestaurantTableDTO dto)
@@ -144,26 +120,7 @@ namespace HotelMS.Services
             }
         }
 
-        //public async Task<RestaurantTable> UpdateTable(int id, RestaurantTable request)
-        //{
-        //    try
-        //    {
-        //        var table = await _dbContext.RestaurantTables.FindAsync(id);
-        //        if (table == null) return null;
-
-        //        table.TableNumber = request.TableNumber;
-        //        table.Status = request.Status;
-
-        //        await _dbContext.SaveChangesAsync();
-        //        return table;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        throw new Exception("Error updating table");
-        //    }
-
-        //}
+       
         public async Task DeleteTable(int id)
         {
             try

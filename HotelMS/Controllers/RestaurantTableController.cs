@@ -67,18 +67,7 @@ namespace HotelMS.Controllers
             });
         }
 
-        //public async Task<IActionResult> GetAllTables()
-        //{
-        //    try
-        //    {
-        //        var result = await _service.GetAllTables();
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+     
 
         [HttpDelete("deleteTable")]
         public async Task<IActionResult> DeleteTable(int id)
