@@ -37,6 +37,7 @@ import PoolSpaPage from './pages/Services/PoolSpaPage';
 import EventsPage from './pages/Services/EventsPage';
 import ServiceReservation from './pages/dashboards/servicesdashboard/managerdashboard/servicereservation';
 import ServiceAddRecepcionist from './pages/dashboards/servicesdashboard/managerdashboard/serviceaddrecepcionist';
+import Reservations from './pages/dashboards/servicesdashboard/servicerecepcionist/reservations.jsx';
 
 
 
@@ -306,6 +307,12 @@ function App() {
                  <Route path="/manager/service-add-recepcionist" element={
               <ProtectedRoute allowedRoles={['ServiceManager']}>
               <ServiceAddRecepcionist />
+              </ProtectedRoute>
+               } />
+
+                 <Route path="/service/reservations" element={
+              <ProtectedRoute allowedRoles={['ServiceRecepsionist']}>
+              <Reservations />
               </ProtectedRoute>
                } />
 

@@ -81,6 +81,9 @@ const Header = () => {
       {path: "/manager/service-manager", label: "Services Dashboard"},
       {path: "/manager/service-reservation", label: "Service Reservations"},
       {path: "/manager/service-add-recepcionist", label: "Manage Recepcionists"}
+    ],
+    ServiceRecepsionist: [
+      {path: "/service/reservations", label: "Service Reservations"}
     ]
 
   };
