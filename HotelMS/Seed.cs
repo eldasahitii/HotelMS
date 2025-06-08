@@ -713,29 +713,44 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-        //Seed HotelServiceReservation
-        //if (!dataContext.HotelServiceReservations.Any())
-        //{
-        //    var customer = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
-        //   // var saunaService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Sauna Session");
-        //    var schedule = dataContext.HotelServiceDetails.FirstOrDefault(s => s.HotelServiceId == saunaService.Id);
+        // Seed ServiceRecepsionists
+        if (!dataContext.ServiceRecepsionists.Any())
+        {
+            // Example: find a user by email to seed as recepsionist
+            var recepsionistUser = dataContext.Users.FirstOrDefault(u => u.Email == "erblina@gmail.com");
+            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "rona@gmail.com");
 
-        //    if (customer != null && saunaService != null && schedule != null)
-        //    {
-        //        var reservation = new HotelServiceReservation
-        //        {
-        //            UserId = customer.UserID,
-        //            HotelServiceId = saunaService.Id,
-        //            ScheduleId = schedule.Id,
-        //            ReservationTime = DateTime.Now,
-        //            Status = "Confirmed"
+            if (recepsionistUser != null && assignedByUser != null)
+            {
+                var serviceRecepsionist = new ServiceRecepsionist
+                {
+                    FirstName = "Erblina",          // fill with real data or from user entity if available
+                    LastName = "Service",
+                    Email = recepsionistUser.Email, // link email from user
+                    Phone = "123-456-7890",         // provide valid phone or pull from user entity if exists
+                                                    // Reservations can be left empty for seed
+                };
 
-        //        };
+                dataContext.ServiceRecepsionists.Add(serviceRecepsionist);
+                dataContext.SaveChanges();
+            }
+        }
 
-        //        dataContext.HotelServiceReservations.Add(reservation);
-        //        dataContext.SaveChanges();
-        //    }
-        //}
+        // Seed ServiceReservationStatuses
+        if (!dataContext.ServiceReservastionStatuses.Any())
+        {
+            var serviceStatuses = new List<ServiceReservationStatus>
+    {
+        new ServiceReservationStatus { StatusName = "Pending" },
+        new ServiceReservationStatus { StatusName = "Confirmed" },
+        new ServiceReservationStatus { StatusName = "Cancelled" },
+        new ServiceReservationStatus { StatusName = "Completed" }
+    };
+
+            dataContext.ServiceReservastionStatuses.AddRange(serviceStatuses);
+            dataContext.SaveChanges();
+        }
+
 
         if (!dataContext.RestaurantSettings.Any())
         {
