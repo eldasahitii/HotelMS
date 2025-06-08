@@ -15,7 +15,7 @@ const ServiceReservation = () => {
   const navigate = useNavigate();
 
   const api = axios.create({
-    baseURL: 'https://localhost:7117/api/HotelServiceReservation',
+    baseURL: 'https://localhost:7117/api/HotelServiceReservation/GetAllReservations',
     withCredentials: true,
   });
 

@@ -15,6 +15,6 @@ namespace HotelMS.Data.DTO
         public string Phone { get; set; }
 
         // Optional: Total reservations handled
-        public int? TotalReservationsHandled { get; set; }
+        public int TotalReservationsHandled { get; set; }
     }
 }

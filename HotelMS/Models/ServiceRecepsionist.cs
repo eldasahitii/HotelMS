@@ -25,6 +25,7 @@ namespace HotelMS.Models
         [Phone]
         [MaxLength(20)]
         public string Phone { get; set; }
+        public int TotalReservationsHandled { get; set; }
 
         // Navigation property: Reservations handled by this recepsionist
         public ICollection<HotelServiceReservation> Reservations { get; set; }

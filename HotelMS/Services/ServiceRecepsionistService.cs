@@ -47,7 +47,9 @@ namespace HotelMS.Services
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
-                Email = dto.Email
+                Email = dto.Email,
+                Phone = dto.Phone,
+                TotalReservationsHandled = dto.TotalReservationsHandled
             };
             _context.ServiceRecepsionists.Add(recep);
             await _context.SaveChangesAsync();
@@ -62,6 +64,8 @@ namespace HotelMS.Services
             recep.FirstName = dto.FirstName;
             recep.LastName = dto.LastName;
             recep.Email = dto.Email;
+            recep.Phone = dto.Phone;
+            recep.TotalReservationsHandled = dto.TotalReservationsHandled;
             await _context.SaveChangesAsync();
             return true;
         }
