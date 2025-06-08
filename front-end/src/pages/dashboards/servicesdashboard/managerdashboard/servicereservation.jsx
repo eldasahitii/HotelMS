@@ -14,11 +14,6 @@ const ServiceReservation = () => {
   const [filterStatus, setFilterStatus] = useState('');
   const navigate = useNavigate();
 
-  const api = axios.create({
-    baseURL: 'https://localhost:7117/api/HotelServiceReservation/GetAllReservations',
-    withCredentials: true,
-  });
-
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -34,7 +29,10 @@ const ServiceReservation = () => {
 
   const fetchReservations = async () => {
     try {
-      const res = await api.get('/all'); // Adjust to match your controller route
+      const res = await axios.get('https://localhost:7117/api/HotelServiceReservation/GetAllReservations', {
+        withCredentials: true,
+      });
+
       const data = res.data.map((r) => ({
         reservationID: r.reservationID,
         serviceName: r.service?.detailTitle || 'Unknown',
@@ -48,7 +46,6 @@ const ServiceReservation = () => {
 
       setReservations(data);
       setFilteredReservations(data);
-
       setServices([...new Set(data.map((r) => r.serviceName))]);
       setStatuses([...new Set(data.map((r) => r.status))]);
     } catch (err) {
