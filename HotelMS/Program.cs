@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using HotelMS.Data.Interfaces;
 using System.Text;
 using System.Security.Claims;
+using HotelMS.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,8 +77,11 @@ builder.Services.AddScoped<ICleaningStaffService, CleaningStaffService>();
 builder.Services.AddScoped<ICleaningAssignmentService, CleaningAssignmentService>();
 builder.Services.AddScoped<IRoomStatusService, RoomStatusService>();
 builder.Services.AddScoped<IHotelServiceService, HotelServiceService>();
-builder.Services.AddScoped<IHotelServiceScheduleService, HotelServiceScheduleService>();
+builder.Services.AddScoped<IHotelServiceCards, HotelServiceCardsService>();
+builder.Services.AddScoped<IHotelServiceDetailService, HotelServiceDetailService>();
 builder.Services.AddScoped<IHotelServiceReservationService, HotelServiceReservationService>();
+builder.Services.AddScoped<IServiceRecepsionistService, ServiceRecepsionistService>();
+builder.Services.AddScoped<IServiceReservationStatusService, ServiceReservationStatusService>();
 builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 builder.Services.AddScoped<IReservationStatusService, ReservationStatusService>();
 builder.Services.AddScoped<IRoomReservationService, RoomReservationService>();

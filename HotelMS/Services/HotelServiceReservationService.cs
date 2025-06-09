@@ -1,9 +1,11 @@
 ﻿using HotelMS.Data;
 using HotelMS.Data.DTO;
-using HotelMS.Data.Interfaces;
 using HotelMS.Models;
+using HotelMS.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HotelMS.Services
 {
@@ -11,56 +13,113 @@ namespace HotelMS.Services
     {
         private readonly DataContext _context;
 
-        public HotelServiceReservationService (DataContext context)
+        public HotelServiceReservationService(DataContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<HotelServiceReservation>> GetAllReservationsAsync()
+        public async Task<IEnumerable<HotelServiceReservationDTO>> GetAllReservationsAsync()
         {
-            return await _context.HotelServiceReservations
-                .Include(r => r.Service)
-                .Include(r => r.Schedule)
-                .Include(r => r.User)
+            var reservations = await _context.HotelServiceReservations
+                .Include(r => r.HotelServiceDetail)
+                .Include(r => r.ServiceRecepsionist)
                 .ToListAsync();
+
+            return reservations.Select(r => new HotelServiceReservationDTO
+            {
+                ReservationID = r.ReservationID,
+                FirstName = r.FirstName,
+                LastName = r.LastName,
+                Email = r.Email,
+                Phone = r.Phone,
+                ReservationDate = r.ReservationDate,
+                TimeSlot = r.TimeSlot,
+                HotelServiceDetailID = r.HotelServiceDetailID,
+                HotelServiceName = r.HotelServiceDetail?.DetailTitle,
+                ReservationStatusID = r.ReservationStatusID,
+                ReservationStatusName = r.ReservationStatusID.HasValue ? r.ReservationStatusID.Value.ToString() : null,
+                CreatedAt = r.CreatedAt,
+                ServiceRecepsionistId = r.ServiceRecepsionistId,
+                ReceptionistFirstName = r.ServiceRecepsionist?.FirstName,
+                ReceptionistLastName = r.ServiceRecepsionist?.LastName,
+                ReceptionistEmail = r.ServiceRecepsionist?.Email
+            });
         }
 
-        public async Task<HotelServiceReservation> GetReservationByIdAsync (int id)
+        public async Task<HotelServiceReservationDTO?> GetReservationByIdAsync(int reservationId)
         {
-            return await _context.HotelServiceReservations
-                .Include(r => r.Service)
-                .Include(r => r.Schedule)
-                .Include(r => r.User)
-                .FirstOrDefaultAsync (r => r.Id == id);
+            var r = await _context.HotelServiceReservations
+                .Include(h => h.HotelServiceDetail)
+                .Include(h => h.ServiceRecepsionist)
+                .FirstOrDefaultAsync(h => h.ReservationID == reservationId);
+
+            if (r == null) return null;
+
+            return new HotelServiceReservationDTO
+            {
+                ReservationID = r.ReservationID,
+                FirstName = r.FirstName,
+                LastName = r.LastName,
+                Email = r.Email,
+                Phone = r.Phone,
+                ReservationDate = r.ReservationDate,
+                TimeSlot = r.TimeSlot,
+                HotelServiceDetailID = r.HotelServiceDetailID,
+                HotelServiceName = r.HotelServiceDetail?.DetailTitle,
+                ReservationStatusID = r.ReservationStatusID,
+                ReservationStatusName = r.ReservationStatusID.HasValue ? r.ReservationStatusID.Value.ToString() : null,
+                CreatedAt = r.CreatedAt,
+                ServiceRecepsionistId = r.ServiceRecepsionistId,
+                ReceptionistFirstName = r.ServiceRecepsionist?.FirstName,
+                ReceptionistLastName = r.ServiceRecepsionist?.LastName,
+                ReceptionistEmail = r.ServiceRecepsionist?.Email
+            };
         }
 
-        public async Task <HotelServiceReservation> CreateReservationAsync(HotelServiceReservation reservation)
+        public async Task<int> CreateReservationAsync(HotelServiceReservationDTO dto)
         {
+            var reservation = new HotelServiceReservation
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                Phone = dto.Phone,
+                ReservationDate = dto.ReservationDate,
+                TimeSlot = dto.TimeSlot,
+                HotelServiceDetailID = dto.HotelServiceDetailID,
+                ReservationStatusID = dto.ReservationStatusID,
+                ServiceRecepsionistId = dto.ServiceRecepsionistId,
+                CreatedAt = dto.CreatedAt
+            };
+
             _context.HotelServiceReservations.Add(reservation);
             await _context.SaveChangesAsync();
-            return reservation;
+            return reservation.ReservationID;
         }
 
-        public async Task<HotelServiceReservation> UpdateReservationAsync(int id, HotelServiceReservation updatedReservation)
+        public async Task<bool> UpdateReservationAsync(HotelServiceReservationDTO dto)
         {
-            var existing = await _context.HotelServiceReservations.FindAsync(id);
-            if (existing == null)
-                return null;
+            var reservation = await _context.HotelServiceReservations.FindAsync(dto.ReservationID);
+            if (reservation == null)
+                return false;
 
-            // Update fields (add only fields you want to allow editing)
-            //existing.ScheduleId = updatedReservation.ScheduleId;
-            //existing.ServiceId = updatedReservation.ServiceId;
-            //existing.UserId = updatedReservation.UserId;
-            //existing.ReservationDate = updatedReservation.ReservationDate;
-            // Add more fields as necessary
+            reservation.FirstName = dto.FirstName;
+            reservation.LastName = dto.LastName;
+            reservation.Email = dto.Email;
+            reservation.Phone = dto.Phone;
+            reservation.ReservationDate = dto.ReservationDate;
+            reservation.TimeSlot = dto.TimeSlot;
+            reservation.HotelServiceDetailID = dto.HotelServiceDetailID;
+            reservation.ReservationStatusID = dto.ReservationStatusID;
+            reservation.ServiceRecepsionistId = dto.ServiceRecepsionistId;
 
             await _context.SaveChangesAsync();
-            return existing;
+            return true;
         }
 
-        public async Task<bool> DeleteReservationAsync(int id)
+        public async Task<bool> DeleteReservationAsync(int reservationId)
         {
-            var reservation = await _context.HotelServiceReservations.FindAsync(id);
+            var reservation = await _context.HotelServiceReservations.FindAsync(reservationId);
             if (reservation == null)
                 return false;
 
@@ -68,6 +127,5 @@ namespace HotelMS.Services
             await _context.SaveChangesAsync();
             return true;
         }
-
     }
 }
