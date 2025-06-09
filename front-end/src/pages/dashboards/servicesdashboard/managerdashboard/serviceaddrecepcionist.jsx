@@ -24,6 +24,7 @@ export default function ServiceRecepsionistManager() {
     try {
       setLoading(true);
       const res = await axios.get("/api/ServiceRecepsionist/");
+      console.log("API response data:", res.data);
       // Normalize null phone to empty string and ensure totalReservationsHandled is a number
       const normalized = res.data.map((r) => ({
         ...r,

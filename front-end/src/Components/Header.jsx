@@ -132,7 +132,7 @@ const Header = () => {
               <Link to="/restaurant" className={navLinkStyle("/restaurant")}>RESTAURANT</Link>
             </li>
             <li className="nav-item">
-              <Link to="/services" className={navLinkStyle("/services")}>POOL & SPA</Link>
+              <Link to="/services" className={navLinkStyle("/services")}>POOL AND SPA</Link>
             </li>
             <li className="nav-item">
               <Link to="/book" className={navLinkStyle("/book")}>BOOK NOW</Link>

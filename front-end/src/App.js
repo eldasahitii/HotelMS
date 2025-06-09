@@ -104,6 +104,10 @@ function App() {
               <Route path="/room-manager/review-dashboard" element={<ReviewDashboard />} />
               <Route path="/cleaning-manager/review-dashboard" element={<CleaningReviewDashboard />} />
               <Route path="/restaurant-manager/review-dashboard" element={<RestaurantReviewDashboard />} />
+              <Route path="/services" element={<ServiceMain />} />
+             <Route path="/services/pool-spa" element={<PoolSpaPage />} />
+             <Route path="/services/event-page" element={<EventsPage />} />
+
 
               <Route path="/restaurant">
                 <Route index element={<RestaurantHomePage />} />

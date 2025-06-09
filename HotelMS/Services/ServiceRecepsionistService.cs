@@ -23,7 +23,9 @@ namespace HotelMS.Services
                     Id = r.Id,
                     FirstName = r.FirstName,
                     LastName = r.LastName,
-                    Email = r.Email
+                    Email = r.Email,
+                    //Phone = r.Phone,  // <-- add this
+                    //TotalReservationsHandled = r.TotalReservationsHandled // 
                 }).ToListAsync();
         }
 
@@ -37,7 +39,9 @@ namespace HotelMS.Services
                 Id = recep.Id,
                 FirstName = recep.FirstName,
                 LastName = recep.LastName,
-                Email = recep.Email
+                Email = recep.Email,
+                // Phone = recep.Phone,
+                //TotalReservationsHandled = recep.TotalReservationsHandled
             };
         }
 
@@ -48,8 +52,8 @@ namespace HotelMS.Services
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Email = dto.Email,
-                Phone = dto.Phone,
-                TotalReservationsHandled = dto.TotalReservationsHandled
+               // Phone = dto.Phone,
+                //TotalReservationsHandled = dto.TotalReservationsHandled
             };
             _context.ServiceRecepsionists.Add(recep);
             await _context.SaveChangesAsync();

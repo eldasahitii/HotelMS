@@ -106,7 +106,7 @@ const PoolSpa = () => {
                 hotelServiceName: service.detailTitle,
                 reservationStatusID: 1,  // Adjust as needed
                 createdAt: new Date().toISOString(),
-                serviceRecepsionistId: 1, // Adjust if you want dynamic receptionist
+                serviceReceptionistId: 1,  // Adjust if you want dynamic receptionist
                 receptionistFirstName: "Erblina",
                 receptionistLastName: "Kadriu",
                 receptionistEmail: "erblina@gmail.com"
