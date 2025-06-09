@@ -31,6 +31,10 @@ import AdminRoomReservationStatus from './pages/dashboards/admindashboard/AdminR
 import UserInfo from './pages/dashboards/userdashboard/UserInfo';
 import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReservations';
 import HomePage from './pages/HomePage';
+import CleaningReviewDashboard from './pages/dashboards/cleaningdashboards/CleaningReviewDashboard';
+import RestaurantReviewDashboard from './pages/dashboards/restaurantdashboards/managerdashboards/RestaurantReviewDashboard';
+import AdminCleaningStaffDashboard from './pages/dashboards/admindashboard/AdminCleaningStaffDashboard';
+
 import ServiceMain from './pages/Services/ServiceMain';
 import PoolSpaPage from './pages/Services/PoolSpaPage';
 import EventsPage from './pages/Services/EventsPage';
