@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import poolSpaImage from '../../Assets/images/pool1.jpg';
-// import EventsImage from '../../Assets/images/mainevents.jpg';
-import heroImage from '../../Assets/images/pool6.jpg';
 import axios from "axios";
-import { CardTitle } from 'react-bootstrap';
 
 const ServiceMain = () => {
   const navigate = useNavigate();
@@ -18,15 +14,6 @@ const ServiceMain = () => {
   const [eventCardImage, setEventCardImage] = useState('');
   const [eventCardTitle, setEventCardTitle] = useState('');
   const [eventCardDescription, setEventCardDescription] = useState('');
-
-
-  const framedImageStyle = {
-    border: '8px solid white',
-    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
-    padding: '4px',
-    backgroundColor: '#f8f8f8',
-    borderRadius: '4px'
-  };
 
   useEffect(() => {
     fetchHeroImage();
@@ -44,159 +31,139 @@ const ServiceMain = () => {
     try {
       const res = await axios.get(
         "https://localhost:7117/api/HotelService/1/hero-image",
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       setImageUrl(res.data);
-      console.log(res.data)
     } catch (err) {
       console.error("Failed to get hero image!");
     }
   }
-
   async function fetchHeroTitle() {
     try {
       const res = await axios.get(
         "https://localhost:7117/api/HotelService/1/hero-title",
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       setTitle(res.data);
     } catch (err) {
       console.error("Failed to get hero title!");
     }
   }
-
   async function fetchHeroDescription() {
     try {
       const res = await axios.get(
         "https://localhost:7117/api/HotelService/1/hero-description",
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       setDescription(res.data);
     } catch (err) {
       console.error("Failed to get hero description!");
     }
   }
-
   async function fetchCardImage() {
     try {
       const res = await axios.get(
         "https://localhost:7117/api/HotelServiceCards/1/card-image",
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
-      setCardImageUrl(res.data); // Use new state
-      console.log("Card image:", res.data);
+      setCardImageUrl(res.data);
     } catch (err) {
       console.error("Failed to get card image!");
     }
   }
-
   async function fetchCardTitle() {
     try {
-      const res = await axios.get("https://localhost:7117/api/HotelServiceCards/1/card-title", {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        "https://localhost:7117/api/HotelServiceCards/1/card-title",
+        { withCredentials: true }
+      );
       setCardTitle(res.data);
     } catch (err) {
-      console.error("Failed to get card title!", err);
+      console.error("Failed to get card title!");
     }
   }
-
   async function fetchCardDescription() {
     try {
-      const res = await axios.get("https://localhost:7117/api/HotelServiceCards/1/card-description", {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        "https://localhost:7117/api/HotelServiceCards/1/card-description",
+        { withCredentials: true }
+      );
       setCardDescription(res.data);
     } catch (err) {
-      console.error("Failed to get card description!", err);
+      console.error("Failed to get card description!");
+    }
+  }
+  async function fetchEventCardImage() {
+    try {
+      const res = await axios.get(
+        "https://localhost:7117/api/HotelServiceCards/2/card-image",
+        { withCredentials: true }
+      );
+      setEventCardImage(res.data);
+    } catch (err) {
+      console.error("Failed to get event card image!");
+    }
+  }
+  async function fetchEventCardTitle() {
+    try {
+      const res = await axios.get(
+        "https://localhost:7117/api/HotelServiceCards/2/card-title",
+        { withCredentials: true }
+      );
+      setEventCardTitle(res.data);
+    } catch (err) {
+      console.error("Failed to get event card title!");
+    }
+  }
+  async function fetchEventCardDescription() {
+    try {
+      const res = await axios.get(
+        "https://localhost:7117/api/HotelServiceCards/2/card-description",
+        { withCredentials: true }
+      );
+      setEventCardDescription(res.data);
+    } catch (err) {
+      console.error("Failed to get event card description!");
     }
   }
 
-  async function fetchEventCardImage() {
-  try {
-    const res = await axios.get("https://localhost:7117/api/HotelServiceCards/2/card-image", {
-      withCredentials: true,
-    });
-    setEventCardImage(res.data);
-  } catch (err) {
-    console.error("Failed to get event card image!", err);
-  }
-}
-
-async function fetchEventCardTitle() {
-  try {
-    const res = await axios.get("https://localhost:7117/api/HotelServiceCards/2/card-title", {
-      withCredentials: true,
-    });
-    setEventCardTitle(res.data);
-  } catch (err) {
-    console.error("Failed to get event card title!", err);
-  }
-}
-
-async function fetchEventCardDescription() {
-  try {
-    const res = await axios.get("https://localhost:7117/api/HotelServiceCards/2/card-description", {
-      withCredentials: true,
-    });
-    setEventCardDescription(res.data);
-  } catch (err) {
-    console.error("Failed to get event card description!", err);
-  }
-}
-
-
   return (
-    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
+    <div className="bg-white min-vh-100 d-flex flex-column">
       {/* Hero Section */}
       <div
+        className="d-flex align-items-center justify-content-center text-center text-white"
         style={{
           backgroundImage: `url('https://localhost:7117/Images/Services/${imageUrl}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           height: '80vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#fff',
-          textAlign: 'center'
+          position: 'relative',
         }}
       >
-        <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: '2rem' }}>
+        <div className="bg-dark bg-opacity-50 p-4 w-100">
           <h1 className="display-4 fw-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
             {title}
           </h1>
-          <p className="lead">
-            {description}
-          </p>
+          <p className="lead">{description}</p>
         </div>
       </div>
 
       {/* Pool & Spa Section */}
-      <div className="container py-5">
+      <div className="container py-5 flex-grow-1">
         <div className="row align-items-center">
           <div className="col-md-6 mb-4 mb-md-0">
-            <div style={framedImageStyle}>
-              <img src={`https://localhost:7117/Images/Services/${cardImageUrl}`} className="img-fluid" alt="Pool and Spa" />
+            <div className="border border-4 border-white shadow-sm rounded bg-light p-2">
+              <img
+                src={`https://localhost:7117/Images/Services/${cardImageUrl}`}
+                className="img-fluid rounded"
+                alt="Pool and Spa"
+              />
             </div>
           </div>
           <div className="col-md-6">
-            <h2 style={{ color: '#333' }}>{CardTitle}</h2>
-            <p className="text-muted">
-              {CardDescription}
-            </p>
-            <button
-              className="btn btn-dark"
-              onClick={() => navigate('/services/pool-spa')}
-            >
+            <h2 className="text-dark">{CardTitle}</h2>
+            <p className="text-muted">{CardDescription}</p>
+            <button className="btn btn-dark" onClick={() => navigate('/services/pool-spa')}>
               See More
             </button>
           </div>
@@ -207,32 +174,25 @@ async function fetchEventCardDescription() {
       <div className="container py-5">
         <div className="row align-items-center flex-md-row-reverse">
           <div className="col-md-6 mb-4 mb-md-0">
-            <div style={framedImageStyle}>
-              <img src={`https://localhost:7117/Images/Services/${eventCardImage}`} className="img-fluid" alt="Events" />
+            <div className="border border-4 border-white shadow-sm rounded bg-light p-2">
+              <img
+                src={`https://localhost:7117/Images/Services/${eventCardImage}`}
+                className="img-fluid rounded"
+                alt="Events"
+              />
             </div>
           </div>
           <div className="col-md-6">
-            <h2 style={{ color: '#333' }}>{eventCardTitle}</h2>
-            <p className="text-muted">
-              {eventCardDescription}
-            </p>
-            <button
-              className="btn btn-dark"
-              onClick={() => navigate('/services/event-page')}
-            >
+            <h2 className="text-dark">{eventCardTitle}</h2>
+            <p className="text-muted">{eventCardDescription}</p>
+            <button className="btn btn-dark" onClick={() => navigate('/services/event-page')}>
               See More
             </button>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="text-center py-4 bg-light text-muted">
-        <p className="mb-1">
-          Looking for more? Visit our front desk or contact the concierge for exclusive offerings.
-        </p>
-        <small>© 2025 Hotel Management System</small>
-      </footer>
+      
     </div>
   );
 };
