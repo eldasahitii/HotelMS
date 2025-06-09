@@ -25,7 +25,6 @@ namespace HotelMS.Services
             _configuration = configuration;
 
         }
-    
         public async Task<User> Register(UserRegistrationDTO request)
         {
             try
@@ -75,13 +74,11 @@ namespace HotelMS.Services
             if (!VerifyingPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
                 throw new ArgumentException("Incorrect password.");
 
-            // Create Refresh Token
             string refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
             await _context.SaveChangesAsync();
 
-            // Create Access Token
             var accessToken = await CreateToken(user);
 
             return $"{accessToken}|||{refreshToken}";
@@ -142,7 +139,7 @@ namespace HotelMS.Services
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(2),
+                expires: DateTime.UtcNow.AddMinutes(30),
                 signingCredentials: credentials
             );
 
@@ -173,12 +170,10 @@ namespace HotelMS.Services
             if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
                 return (null, null);
 
-            // Generate new refresh token
             var newRefreshToken = GenerateRefreshToken();
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
-            // Generate new access token
             var newAccessToken = await CreateToken(user);
 
             await _context.SaveChangesAsync();

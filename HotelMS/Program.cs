@@ -13,10 +13,8 @@ using HotelMS.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//  Load appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-//  Consistent key loading from Jwt section (not AppSettings)
 var jwtSecret = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtSecret))
 {
@@ -24,7 +22,6 @@ if (string.IsNullOrEmpty(jwtSecret))
 }
 var jwtKeyBytes = Encoding.UTF8.GetBytes(jwtSecret);
 
-//  JWT Authentication Setup
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -55,7 +52,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-//Proper CORS policy for cookie-based auth
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", builder =>
@@ -65,14 +61,10 @@ builder.Services.AddCors(options =>
                .AllowCredentials());
 });
 
-
-//  Database setup
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
-//JSON handling to prevent reference loops
 builder.Services.AddControllers()
     .AddJsonOptions(x =>
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);

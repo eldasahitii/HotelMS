@@ -21,6 +21,9 @@
     <None Remove="FrontEnd\**" />
     <None Remove="wwwroot\**" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\Images\reviewimages\sample-review.png" />
+  </ItemGroup>
 
   <!-- Package dependencies -->
   <ItemGroup>

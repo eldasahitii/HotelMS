@@ -4,7 +4,9 @@ import axios from 'axios';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { AuthProvider } from './Context/AuthContext'; //  import context
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './Context/AuthContext';
 import Header from './Components/Header';
 import Footer from './Components/Footer';
 import Login from './pages/Login';
@@ -20,7 +22,6 @@ import RoomsDetails from './pages/Rooms/RoomsDetails';
 import ReservationPage from './pages/Rooms/ReservationPage';
 import RecepsionistReservationDashboard from './pages/dashboards/roomdashboards/recpsionistdashboards/RecepsionistReservationDashboard';
 import AdminRoomTypeDashboard from './pages/dashboards/admindashboard/RoomAdmin/AdminRoomType';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import AdminAddManager from './pages/dashboards/admindashboard/AdminAddManager';
 import ReviewDashboard from './pages/dashboards/roomdashboards/managerdashboards/ReviewDashboard';
 import RestaurantHomePage from './pages/restaurant/RestaurantHomePage';
@@ -30,8 +31,6 @@ import AdminRoomReservationStatus from './pages/dashboards/admindashboard/AdminR
 import UserInfo from './pages/dashboards/userdashboard/UserInfo';
 import UserRoomReservations from './pages/dashboards/userdashboard/UserRoomReservations';
 import HomePage from './pages/HomePage';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import ServiceMain from './pages/Services/ServiceMain';
 import PoolSpaPage from './pages/Services/PoolSpaPage';
 import EventsPage from './pages/Services/EventsPage';
@@ -64,7 +63,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     const checkAuth = async () => {
       try {
         const res = await axios.get('https://localhost:7117/api/Auth/me', {
-          withCredentials: true
+          withCredentials: true,
         });
         const role = res.data.role;
         setAuthorized(allowedRoles.includes(role));
@@ -84,7 +83,7 @@ function App() {
   return (
 
     <Router>
-      <AuthProvider> {/*  Wrap the whole app */}
+      <AuthProvider>
         <div>
           {!["/login"].includes(window.location.pathname) && <Header />}
           <ToastContainer position="top-right" autoClose={4000} />
@@ -99,7 +98,10 @@ function App() {
               <Route path="/about" element={<AboutUs />} />
               <Route path="/homepage" element={<HomePage />} />
               <Route path="/room-manager/review-dashboard" element={<ReviewDashboard />} />
-              <Route path="/restaurant" >
+              <Route path="/cleaning-manager/review-dashboard" element={<CleaningReviewDashboard />} />
+              <Route path="/restaurant-manager/review-dashboard" element={<RestaurantReviewDashboard />} />
+
+              <Route path="/restaurant">
                 <Route index element={<RestaurantHomePage />} />
                 <Route path="menu" element={<RestaurantMenuPage />} />
               </Route>
@@ -326,8 +328,6 @@ function App() {
 
 
               <Route path="/restaurant-manager/dashboard" element={<Navigate to="/manager/restaurant-hosts" />} />
-
-
               <Route path="*" element={<div>Page Not Found</div>} />
             </Routes>
           </Suspense>
@@ -339,3 +339,4 @@ function App() {
 }
 
 export default App;
+

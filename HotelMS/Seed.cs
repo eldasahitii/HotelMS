@@ -470,11 +470,11 @@ public class Seed
         {
             dataContext.ReviewCategories.AddRange(new[]
             {
-                new ReviewCategory { CategoryName = "Room" },
-                new ReviewCategory { CategoryName = "Restaurant" },
-                new ReviewCategory { CategoryName = "Cleaning Staff" },
-                new ReviewCategory { CategoryName = "Service" }
-            });
+        new ReviewCategory { CategoryName = "Room" },
+        new ReviewCategory { CategoryName = "Restaurant" },
+        new ReviewCategory { CategoryName = "Cleaning Staff" },
+        new ReviewCategory { CategoryName = "Service" }
+    });
 
             dataContext.SaveChanges();
         }
@@ -487,31 +487,41 @@ public class Seed
 
             if (customer != null && roomCategory != null)
             {
-                dataContext.Reviews.AddRange(new[]
+                var review1 = new Review
                 {
-                    new Review
-                    {
-                        UserID = customer.UserID,
-                        Rating = 5,
-                        Comment = "Excellent service and very clean rooms!",
-                        Date = DateTime.Now.AddDays(-2),
-                        ReviewCategoryID = roomCategory.ReviewCategoryID
-                    },
-                    new Review
-                    {
-                        UserID = customer.UserID,
-                        Rating = 4,
-                        Comment = "Nice hotel, breakfast could improve.",
-                        Date = DateTime.Now.AddDays(-1),
-                        ReviewCategoryID = roomCategory.ReviewCategoryID,
-                        ManagerReply = "Thanks for the feedback! We'll work on improving breakfast.",
-                        ReplyDate = DateTime.Now
-                    }
-                });
+                    UserID = customer.UserID,
+                    Rating = 5,
+                    Comment = "Excellent service and very clean rooms!",
+                    Date = DateTime.Now.AddDays(-2),
+                    ReviewCategoryID = roomCategory.ReviewCategoryID
+                };
 
+                var review2 = new Review
+                {
+                    UserID = customer.UserID,
+                    Rating = 4,
+                    Comment = "Nice hotel, breakfast could improve.",
+                    Date = DateTime.Now.AddDays(-1),
+                    ReviewCategoryID = roomCategory.ReviewCategoryID,
+                    ManagerReply = "Thanks for the feedback! We'll work on improving breakfast.",
+                    ReplyDate = DateTime.Now
+                };
+
+                dataContext.Reviews.AddRange(review1, review2);
+                dataContext.SaveChanges(); // needed to get ReviewIDs
+
+                // ✅ Seed ReviewImage for review1
+                var reviewImage = new ReviewImage
+                {
+                    ReviewID = review1.ReviewID,
+                    ImageUrl = "/Images/reviewimages/sample-review.png"  // ✅ relative path
+                };
+
+                dataContext.ReviewImages.Add(reviewImage);
                 dataContext.SaveChanges();
             }
         }
+
 
         //Seed HotelService
         if (!dataContext.HotelServices.Any())
