@@ -1,24 +1,34 @@
-﻿namespace HotelMS.Data.DTO
+﻿using System;
+
+namespace HotelMS.Data.DTO
 {
     public class HotelServiceReservationDTO
     {
-        public int ReservationId { get; set; }
+        public int ReservationID { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string Email { get; set; }
+
+        public string Phone { get; set; }
+
         public DateTime ReservationDate { get; set; }
+
+        public string TimeSlot { get; set; }
+
+        public int HotelServiceDetailID { get; set; }
+        public string? HotelServiceName { get; set; }
+
+        public int? ReservationStatusID { get; set; }
+        public string? ReservationStatusName { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public int? ServiceRecepsionistId { get; set; }
+        public string? ReceptionistFirstName { get; set; }
+        public string? ReceptionistLastName { get; set; }
+        public string? ReceptionistEmail { get; set; }
     }
 }
-
-//using System.ComponentModel.DataAnnotations;
-
-//namespace HotelMS.Data.DTO
-//{
-//    public class HotelServiceReservationDTO
-//    {
-//        public int UserId { get; set; }
-//        public int HotelServiceId { get; set; }
-//        public int? ScheduleId { get; set; }
-//        public DateTime ReservationTime { get; set; }
-
-//        [RegularExpression("^(Confirmed|Pending|Cancelled)$", ErrorMessage = "Status must be 'Confirmed', 'Pending', or 'Cancelled'.")]
-//        public string Status { get; set; } = "Pending";
-//    }
-//}

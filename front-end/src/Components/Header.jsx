@@ -82,6 +82,15 @@ const Header = () => {
     RestaurantHost: [
       { path: "/host/dashboard", label: "Reservations" }
     ],
+    ServiceManager: [
+      {path: "/manager/service-manager", label: "Services Dashboard"},
+      {path: "/manager/service-reservation", label: "Service Reservations"},
+      {path: "/manager/service-add-recepcionist", label: "Manage Recepcionists"}
+    ],
+    ServiceRecepsionist: [
+      {path: "/service/reservations", label: "Service Reservations"},
+      {path: "/service/Receptionist-Dashboard", label: "Receptionist Dashboard"} 
+    ]
 
   };
 
@@ -123,7 +132,7 @@ const Header = () => {
               <Link to="/restaurant" className={navLinkStyle("/restaurant")}>RESTAURANT</Link>
             </li>
             <li className="nav-item">
-              <Link to="/spa" className={navLinkStyle("/spa")}>POOL & SPA</Link>
+              <Link to="/services" className={navLinkStyle("/services")}>POOL & SPA</Link>
             </li>
             <li className="nav-item">
               <Link to="/book" className={navLinkStyle("/book")}>BOOK NOW</Link>

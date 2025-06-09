@@ -1,14 +1,15 @@
-﻿using HotelMS.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using HotelMS.Data.DTO;
 
-namespace HotelMS.Data.Interfaces
+namespace HotelMS.Services.Interfaces
 {
     public interface IHotelServiceReservationService
     {
-        Task<IEnumerable<HotelServiceReservation>> GetAllReservationsAsync();
-        Task<HotelServiceReservation> GetReservationByIdAsync(int id);
-        Task<HotelServiceReservation> CreateReservationAsync(HotelServiceReservation reservation);
-        Task<HotelServiceReservation> UpdateReservationAsync(int id, HotelServiceReservation updatedReservation);
-        Task<bool> DeleteReservationAsync(int id);
+        Task<IEnumerable<HotelServiceReservationDTO>> GetAllReservationsAsync();
+        Task<HotelServiceReservationDTO?> GetReservationByIdAsync(int reservationId);
+        Task<int> CreateReservationAsync(HotelServiceReservationDTO reservationDto);
+        Task<bool> UpdateReservationAsync(HotelServiceReservationDTO reservationDto);
+        Task<bool> DeleteReservationAsync(int reservationId);
     }
 }
