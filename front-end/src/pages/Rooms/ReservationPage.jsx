@@ -62,7 +62,7 @@ const ReservationPage = () => {
       });
   }, [userID]);
 
-  const phoneRegex = /^\+383\d{8}$/;
+  const phoneRegex = /^\+?\d{7,15}$/;
 
   const getFriendlyMessage = (serverMessage) => {
     if (!serverMessage) return "Something went wrong. Please try again.";
