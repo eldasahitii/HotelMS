@@ -4,6 +4,7 @@ using System.Security.Claims;
 using HotelMS.Data;
 using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using HotelMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +51,6 @@ namespace HotelMS.Controllers
                 return StatusCode(500, new { message = "Registration failed: " + ex.Message });
             }
         }
-
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDTO request)
         {
@@ -77,7 +77,12 @@ namespace HotelMS.Controllers
                     Expires = DateTime.UtcNow.AddDays(7)
                 });
 
-                return Ok(new { isLoggedIn = true });
+               
+                var handler = new JwtSecurityTokenHandler();
+                var token = handler.ReadJwtToken(accessToken);
+                var role = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+                return Ok(new { isLoggedIn = true, role }); // tani role është valid
             }
             catch (ArgumentException ex)
             {
@@ -88,6 +93,7 @@ namespace HotelMS.Controllers
                 return StatusCode(500, new { message = "An internal server error occurred." });
             }
         }
+
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()

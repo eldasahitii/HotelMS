@@ -139,8 +139,8 @@ namespace HotelMS.Services
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                //expires: DateTime.UtcNow.AddMinutes(1),//per testim
-                expires: DateTime.UtcNow.AddMinutes(30),
+                expires: DateTime.UtcNow.AddMinutes(1),//per testim
+                //expires: DateTime.UtcNow.AddMinutes(30),
                 signingCredentials: credentials
             );
 
@@ -173,15 +173,15 @@ namespace HotelMS.Services
 
             var newRefreshToken = GenerateRefreshToken();
             user.RefreshToken = newRefreshToken;
-            //user.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(2);//per testim
-            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(3);//per testim
+            //user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
             var newAccessToken = await CreateToken(user);
 
             await _context.SaveChangesAsync();
 
             return (newAccessToken, newRefreshToken);
-        }
+        } 
 
         private bool VerifyingPasswordHash(string password, byte[] hash, byte[] salt)
         {
