@@ -1,4 +1,5 @@
 ﻿using HotelMS.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +7,7 @@ namespace HotelMS.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "RestaurantManager,Admin")]
     public class MenuCategoryController : ControllerBase
     {
         private readonly DataContext _context;

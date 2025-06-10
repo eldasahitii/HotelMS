@@ -31,6 +31,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPut("update")]
+        [Authorize(Roles = "RestaurantManager,Admin")]
         public async Task<IActionResult> UpdateSettings([FromBody] RestaurantSettings updated)
         {
             var existing = await _context.RestaurantSettings.FirstOrDefaultAsync();
