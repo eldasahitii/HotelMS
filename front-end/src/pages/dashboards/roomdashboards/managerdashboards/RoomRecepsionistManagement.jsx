@@ -182,17 +182,18 @@ const handleDeleteClick = async (id) => {
     return isNaN(dt) ? "" : dt.toLocaleString(undefined, { timeZoneName: "short" });
   };
 
-  return (
-    <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-      <main className="flex-grow-1 p-4">
-        <h2 className="fw-bold text-primary mb-4">
-          <i className="bi bi-person-lines-fill me-2"></i> Room Receptionist Management
-        </h2>
+ return (
+  <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
+    <main className="container-fluid flex-grow-1 p-4">
+      <h2 className="fw-bold text-primary mb-4">
+        <i className="bi bi-person-lines-fill me-2"></i> Room Receptionist Management
+      </h2>
 
-        {error && <div className="alert alert-danger">{error}</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="mb-4">
-          <div className="mb-3">
+      <form onSubmit={handleSubmit} className="mb-4">
+        <div className="row">
+          <div className="mb-3 col-md-6">
             <label htmlFor="userID" className="form-label">User</label>
             <select
               id="userID"
@@ -211,7 +212,7 @@ const handleDeleteClick = async (id) => {
             </select>
           </div>
 
-          <div className="mb-3">
+          <div className="mb-3 col-md-6">
             <label htmlFor="shift" className="form-label">Shift</label>
             <select
               id="shift"
@@ -226,33 +227,35 @@ const handleDeleteClick = async (id) => {
               ))}
             </select>
           </div>
+        </div>
 
-          <button type="submit" className="btn btn-primary">
-            {editingId ? "Update Receptionist" : "Add Receptionist"}
+        <button type="submit" className="btn btn-primary">
+          {editingId ? "Update Receptionist" : "Add Receptionist"}
+        </button>
+        {editingId && (
+          <button
+            type="button"
+            className="btn btn-secondary ms-2"
+            onClick={() => {
+              setEditingId(null);
+              setForm({ userID: "", shift: "" });
+              setError("");
+            }}
+          >
+            Cancel
           </button>
-          {editingId && (
-            <button
-              type="button"
-              className="btn btn-secondary ms-2"
-              onClick={() => {
-                setEditingId(null);
-                setForm({ userID: "", shift: "" });
-                setError("");
-              }}
-            >
-              Cancel
-            </button>
-          )}
-        </form>
+        )}
+      </form>
 
-        <h3>Existing Receptionists</h3>
-        {loading ? (
-          <p>Loading...</p>
-        ) : receps.length === 0 ? (
-          <p>No receptionists found.</p>
-        ) : (
-          <table className="table table-bordered">
-            <thead>
+      <h3>Existing Receptionists</h3>
+      {loading ? (
+        <p>Loading...</p>
+      ) : receps.length === 0 ? (
+        <p>No receptionists found.</p>
+      ) : (
+        <div className="table-responsive">
+          <table className="table table-bordered table-hover">
+            <thead className="table-light">
               <tr>
                 <th>ID</th>
                 <th>User</th>
@@ -280,8 +283,9 @@ const handleDeleteClick = async (id) => {
               ))}
             </tbody>
           </table>
-        )}
-      </main>
-    </div>
-  );
+        </div>
+      )}
+    </main>
+  </div>
+);
 }
