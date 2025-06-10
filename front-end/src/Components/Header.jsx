@@ -37,6 +37,8 @@ const Header = () => {
     CleaningManager: [
       { path: "/manager/cleaning-staff", label: "Cleaning Staff" },
       { path: "/manager/assignments", label: "Assignments" },
+      { path: "/cleaning-manager/review-dashboard", label: "Cleaning Reviews" },
+
     ],
   RoomManager: [
   { path: "/manager/room-dashboard", label: "Room Dashboard" },
@@ -73,11 +75,22 @@ const Header = () => {
       { path: "/manager/restaurant-hosts", label: "Hosts"},
       { path: "/manager/restaurant-menu", label: "Menu"},
       { path: "/manager/restaurant-tables", label: "Tables"},
-      { path: "/manager/restaurant-reservations", label: "Reservations"}
+      { path: "/manager/restaurant-reservations", label: "Reservations"},
+      { path: "/restaurant-manager/review-dashboard", label: "Restaurant Reviews" }
+
     ],
     RestaurantHost: [
       { path: "/host/dashboard", label: "Reservations" }
     ],
+    ServiceManager: [
+      {path: "/manager/service-manager", label: "Services Dashboard"},
+      {path: "/manager/service-reservation", label: "Service Reservations"},
+      {path: "/manager/service-add-recepcionist", label: "Manage Recepcionists"}
+    ],
+    ServiceRecepsionist: [
+      {path: "/service/reservations", label: "Service Reservations"},
+      {path: "/service/Receptionist-Dashboard", label: "Receptionist Dashboard"} 
+    ]
 
   };
 
@@ -119,7 +132,7 @@ const Header = () => {
               <Link to="/restaurant" className={navLinkStyle("/restaurant")}>RESTAURANT</Link>
             </li>
             <li className="nav-item">
-              <Link to="/spa" className={navLinkStyle("/spa")}>POOL & SPA</Link>
+              <Link to="/services" className={navLinkStyle("/services")}>POOL & SPA</Link>
             </li>
             <li className="nav-item">
               <Link to="/book" className={navLinkStyle("/book")}>BOOK NOW</Link>

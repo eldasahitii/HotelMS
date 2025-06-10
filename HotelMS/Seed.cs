@@ -470,11 +470,11 @@ public class Seed
         {
             dataContext.ReviewCategories.AddRange(new[]
             {
-                new ReviewCategory { CategoryName = "Room" },
-                new ReviewCategory { CategoryName = "Restaurant" },
-                new ReviewCategory { CategoryName = "Cleaning Staff" },
-                new ReviewCategory { CategoryName = "Service" }
-            });
+        new ReviewCategory { CategoryName = "Room" },
+        new ReviewCategory { CategoryName = "Restaurant" },
+        new ReviewCategory { CategoryName = "Cleaning Staff" },
+        new ReviewCategory { CategoryName = "Service" }
+    });
 
             dataContext.SaveChanges();
         }
@@ -487,31 +487,41 @@ public class Seed
 
             if (customer != null && roomCategory != null)
             {
-                dataContext.Reviews.AddRange(new[]
+                var review1 = new Review
                 {
-                    new Review
-                    {
-                        UserID = customer.UserID,
-                        Rating = 5,
-                        Comment = "Excellent service and very clean rooms!",
-                        Date = DateTime.Now.AddDays(-2),
-                        ReviewCategoryID = roomCategory.ReviewCategoryID
-                    },
-                    new Review
-                    {
-                        UserID = customer.UserID,
-                        Rating = 4,
-                        Comment = "Nice hotel, breakfast could improve.",
-                        Date = DateTime.Now.AddDays(-1),
-                        ReviewCategoryID = roomCategory.ReviewCategoryID,
-                        ManagerReply = "Thanks for the feedback! We'll work on improving breakfast.",
-                        ReplyDate = DateTime.Now
-                    }
-                });
+                    UserID = customer.UserID,
+                    Rating = 5,
+                    Comment = "Excellent service and very clean rooms!",
+                    Date = DateTime.Now.AddDays(-2),
+                    ReviewCategoryID = roomCategory.ReviewCategoryID
+                };
 
+                var review2 = new Review
+                {
+                    UserID = customer.UserID,
+                    Rating = 4,
+                    Comment = "Nice hotel, breakfast could improve.",
+                    Date = DateTime.Now.AddDays(-1),
+                    ReviewCategoryID = roomCategory.ReviewCategoryID,
+                    ManagerReply = "Thanks for the feedback! We'll work on improving breakfast.",
+                    ReplyDate = DateTime.Now
+                };
+
+                dataContext.Reviews.AddRange(review1, review2);
+                dataContext.SaveChanges(); // needed to get ReviewIDs
+
+                // ✅ Seed ReviewImage for review1
+                var reviewImage = new ReviewImage
+                {
+                    ReviewID = review1.ReviewID,
+                    ImageUrl = "/Images/reviewimages/sample-review.png"  // ✅ relative path
+                };
+
+                dataContext.ReviewImages.Add(reviewImage);
                 dataContext.SaveChanges();
             }
         }
+
 
         //Seed HotelService
         if (!dataContext.HotelServices.Any())
@@ -520,34 +530,48 @@ public class Seed
             {
                 new HotelService
                 {
-                    Type = "Pool & Spa",
-                    Name = "Sauna Session",
-                    Description = "30-minute sauna to relax your body",
-                    Price = 30.00m
+                    HeroImage = "pool6.jpg",
+                    HeroTitle = "Welcome to Hotel Services",
+                    HeroDescription = "Discover elegance, comfort, and premium hospitality tailored just for you."
                 },
                 new HotelService
                 {
-                    Type = "Pool & Spa",
-                    Name = "Full Body Massage",
-                    Description = "1-hour relaxing massgae by professionals",
-                    Price = 60.00m
+                    HeroImage = "pool6.jpg",
+                    HeroTitle = "Pool & Spa Experiences",
+                    HeroDescription = "Refresh, recharge, and relax with our premium water and wellness services."
                 },
-                new HotelService
+                 new HotelService
                 {
-                    Type = "Events",
-                    Name = "Wedding Hall Booking",
-                    Description = "Spacious hall for weddings and ceremonies",
-                    Price = 500.00m
-                },
-                new HotelService
-                {
-                    Type = "Events",
-                    Name = "Conference Room Booking",
-                    Description = "Corporate setup with presentation equipment",
-                    Price = 400.00m
+                    HeroImage = "mainevents.jpg",
+                    HeroTitle = "Events",
+                    HeroDescription = "Discover perfect venues for every occasion."
                 }
             };
             dataContext.HotelServices.AddRange(services);
+            dataContext.SaveChanges();
+        }
+
+        //Seed HotelServiceCards
+        if (!dataContext.HotelServiceCards.Any())
+        {
+            var services = new List<HotelServiceCards>
+            {
+                new HotelServiceCards
+                {
+                    CardImage = "pool1.jpg",
+                    CardTitle = "Pool & Spa",
+                    CardDescription = "  Relax and unwind in our luxurious pool and spa facilities. \r\n              Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, \r\n              sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. \r\n              Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.",
+                    CardLink = "See more button"
+                },
+                new HotelServiceCards
+                {
+                    CardImage = "mainevents.jpg",
+                    CardTitle = "Events",
+                    CardDescription = "Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations.\r\n               Our experienced team will help you plan every detail to ensure a seamless and memorable event. \r\n               Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized \r\n               service to make your occasion truly special.",
+                    CardLink = "See more button"
+                }
+            };
+            dataContext.HotelServiceCards.AddRange(services);
             dataContext.SaveChanges();
         }
 
@@ -643,57 +667,100 @@ public class Seed
             dataContext.SaveChanges();
         }
 
-        //Seed HotelServiceSchedule
-        if (!dataContext.HotelServiceSchedules.Any())
-        {
-            var scheduleEntries = new List<HotelServiceSchedule>();
 
-            var allServices = dataContext.HotelServices.ToList();
-            foreach (var service in allServices)
-            {
-                scheduleEntries.Add(new HotelServiceSchedule
-                {
-                    HotelServiceId = service.Id,
-                    StartTime = DateTime.Today.AddHours(10),
-                    EndTime = DateTime.Today.AddHours(11),
-                    IsAvailable = true
-                });
-                scheduleEntries.Add(new HotelServiceSchedule
-                {
-                    HotelServiceId = service.Id,
-                    StartTime = DateTime.Today.AddHours(14),
-                    EndTime = DateTime.Today.AddHours(15),
-                    IsAvailable = true
-                });
-            }
-            dataContext.HotelServiceSchedules.AddRange(scheduleEntries);
+
+
+        //Seed HotelServiceDetail
+        if (!dataContext.HotelServiceDetails.Any())
+        {
+            var serviceDetails = new List<HotelServiceDetail>
+    {
+        new HotelServiceDetail
+        {
+            DetailImage = "indoorpool3.png",
+            DetailTitle = "Heated Indoor Pool",
+            DetailDescription = "\"Enjoy year-round relaxation in our luxurious heated indoor pool. Perfect for a refreshing swim or peaceful downtime, the pool offers a calm, comfortable atmosphere with warm water, elegant surroundings, and convenient access to lounge chairs and changing rooms. Ideal for both leisure and light exercise, it's your serene escape — no matter the weather.\"\r\n\r\n",
+            Price = "€25 per person"
+        },
+        new HotelServiceDetail
+        {
+            DetailImage = "pool2.jpg",
+            DetailTitle = "Scenic Outdoor Pool",
+            DetailDescription = "\"Immerse yourself in tranquility at our scenic outdoor pool, nestled amidst lush greenery and breathtaking views. Whether you're lounging under the sun or taking a leisurely swim, this pool offers the perfect blend of natural beauty and refreshing comfort. Surrounded by comfortable seating and shaded areas, it’s an ideal spot to unwind, socialize, or soak up the peaceful ambiance of the outdoors.\"",
+            Price = "€35 per person"
+        },
+        new HotelServiceDetail
+        {
+            DetailImage = "spa.jpg",
+            DetailTitle = "Massage & Relaxation Room",
+            DetailDescription = "\"Step into our serene Massage & Relaxation Room, where expert therapists help you unwind and recharge. Enjoy soothing massages tailored to your needs in a calm, tranquil setting designed for ultimate comfort. Soft lighting, gentle aromas, and peaceful music create the perfect atmosphere to melt away stress and restore balance to your body and mind.\"",
+            Price = "€50 per session"
+        },
+        new HotelServiceDetail
+        {
+            DetailImage = "4.png",
+            DetailTitle = "Sauna Room",
+            DetailDescription = "\"Experience the rejuvenating warmth of our Sauna Room, designed to help you detoxify and relax. The dry heat promotes circulation, eases muscle tension, and refreshes your mind in a calm, soothing environment. Perfect for unwinding after a busy day or complementing your wellness routine.\"",
+            Price = "€30 per session"
+        },
+        new HotelServiceDetail
+        {
+            DetailImage = "conference.png",
+            DetailTitle = "Modern Conference Room",
+            DetailDescription = "Host your meetings and events in our Modern Conference Room, equipped with cutting-edge technology and stylish furnishings. Designed to foster productivity and collaboration, the space offers high-speed Wi-Fi, audiovisual equipment, and comfortable seating. Whether it's a business presentation, workshop, or seminar, this room provides the perfect setting to make your event a success",
+            Price = "€200 per session"
+        },
+        new HotelServiceDetail
+        {
+            DetailImage = "2.png",
+            DetailTitle = "Elegant Wedding Venue",
+            DetailDescription = "\"Celebrate your special day in our Elegant Wedding Venue, where timeless beauty meets exceptional service. With graceful décor, spacious layouts, and stunning details, the venue creates a romantic and memorable atmosphere for your ceremony and reception. Our dedicated team ensures every moment is perfect, making your wedding truly unforgettable.\"",
+            Price = "€1,500 per day"
+        }
+    };
+
+            dataContext.HotelServiceDetails.AddRange(serviceDetails);
             dataContext.SaveChanges();
         }
 
-
-        //Seed HotelServiceReservation
-        if (!dataContext.HotelServiceReservations.Any())
+        // Seed ServiceRecepsionists
+        if (!dataContext.ServiceRecepsionists.Any())
         {
-            var customer = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
-            var saunaService = dataContext.HotelServices.FirstOrDefault(s => s.Name == "Sauna Session");
-            var schedule = dataContext.HotelServiceSchedules.FirstOrDefault(s => s.HotelServiceId == saunaService.Id);
+            // Example: find a user by email to seed as recepsionist
+            var recepsionistUser = dataContext.Users.FirstOrDefault(u => u.Email == "erblina@gmail.com");
+            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "rona@gmail.com");
 
-            if (customer != null && saunaService != null && schedule != null)
+            if (recepsionistUser != null && assignedByUser != null)
             {
-                var reservation = new HotelServiceReservation
+                var serviceRecepsionist = new ServiceRecepsionist
                 {
-                    UserId = customer.UserID,
-                    HotelServiceId = saunaService.Id,
-                    ScheduleId = schedule.Id,
-                    ReservationTime = DateTime.Now,
-                    Status = "Confirmed"
-
+                    FirstName = "Erblina",          // fill with real data or from user entity if available
+                    LastName = "Service",
+                    Email = recepsionistUser.Email, // link email from user
+                    Phone = "123-456-7890",         // provide valid phone or pull from user entity if exists
+                                                    // Reservations can be left empty for seed
                 };
 
-                dataContext.HotelServiceReservations.Add(reservation);
+                dataContext.ServiceRecepsionists.Add(serviceRecepsionist);
                 dataContext.SaveChanges();
             }
         }
+
+        // Seed ServiceReservationStatuses
+        if (!dataContext.ServiceReservastionStatuses.Any())
+        {
+            var serviceStatuses = new List<ServiceReservationStatus>
+    {
+        new ServiceReservationStatus { StatusName = "Pending" },
+        new ServiceReservationStatus { StatusName = "Confirmed" },
+        new ServiceReservationStatus { StatusName = "Cancelled" },
+        new ServiceReservationStatus { StatusName = "Completed" }
+    };
+
+            dataContext.ServiceReservastionStatuses.AddRange(serviceStatuses);
+            dataContext.SaveChanges();
+        }
+
 
         if (!dataContext.RestaurantSettings.Any())
         {

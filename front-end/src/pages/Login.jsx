@@ -53,6 +53,8 @@ const Login = () => {
           case 'CleaningStaff': navigate('/cleaningstaff/dashboard'); break;
           case 'RestaurantManager': navigate('/restaurant-manager/dashboard'); break;
           case 'RestaurantHost': navigate('/host/dashboard'); break;
+          case 'ServiceManager': navigate('/manager/service-manager'); break;
+          case 'ServiceRecepsionist': navigate ('/manager/service-recepcionist'); break;
           default:
             setError('Unknown role. Access denied.');
             break;

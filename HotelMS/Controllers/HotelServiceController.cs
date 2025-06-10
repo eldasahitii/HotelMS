@@ -20,54 +20,86 @@ namespace HotelMS.Controllers
             _service = service;
         }
 
-        [HttpGet("type/{type}")]
-        public async Task<ActionResult<IEnumerable<HotelService>>> GetServicesByType (string type)
+        // GET Hero Image
+        [HttpGet("{id}/hero-image")]
+        public async Task<ActionResult<string>> GetHeroImage(int id)
         {
-            var services = await _service.GetServicesByTypeAsync(type);
-            return Ok(services);
-        }
-
-        [HttpGet("{id}")]
-        public async Task <ActionResult<HotelService>> GetService (int id)
-        {
-            var service = await _service.GetServiceByIdAsync(id);
-            if (service == null) return NotFound();
-            return Ok(service);
-        }
-
-        [HttpGet("{id}/schedules")]
-        public async Task<ActionResult<IEnumerable<HotelServiceSchedule>>> GetSchedules (int id)
-        {
-            var schedules = await _service.GetSchedulesByServiceIdAsync(id);
-            return Ok(schedules);
-        }
-
-        [HttpPost("reserve")]
-        public async Task <ActionResult<HotelServiceReservation>> ReserveService(HotelServiceReservation reservation)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            var created = await _service.ReserveServiceAsync(reservation);
-            return CreatedAtAction(nameof(GetService), new { id = created.HotelServiceId }, created);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] HotelService updated)
-        {
-            var result = await _service.UpdateServiceAsync(id, updated);
+            var result = await _service.GetHeroImageAsync(id);
             if (result == null) return NotFound();
             return Ok(result);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        // POST Hero Image (Create)
+        [HttpPost("{id}/hero-image")]
+        public async Task<ActionResult<HotelService>> AddHeroImage(int id, [FromBody] string imageUrl)
         {
-            var success = await _service.DeleteServiceAsync(id);
-            if (!success) return NotFound();
-            return NoContent();
+            var result = await _service.AddHeroImageAsync(id, imageUrl);
+            if (result == null) return NotFound();
+            return CreatedAtAction(nameof(GetHeroImage), new { id = result.Id }, result);
         }
 
+        // PUT Hero Image (Update)
+        [HttpPut("{id}/hero-image")]
+        public async Task<ActionResult<HotelService>> UpdateHeroImage(int id, [FromBody] string imageUrl)
+        {
+            var result = await _service.UpdateHeroImageAsync(id, imageUrl);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
 
+        // GET Hero Title
+        [HttpGet("{id}/hero-title")]
+        public async Task<ActionResult<string>> GetHeroTitle(int id)
+        {
+            var result = await _service.GetHeroTitleAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
 
+        // POST Hero Title
+        [HttpPost("{id}/hero-title")]
+        public async Task<ActionResult<HotelService>> AddHeroTitle(int id, [FromBody] string title)
+        {
+            var result = await _service.AddHeroTitleAsync(id, title);
+            if (result == null) return NotFound();
+            return CreatedAtAction(nameof(GetHeroTitle), new { id = result.Id }, result);
+        }
+
+        // PUT Hero Title
+        [HttpPut("{id}/hero-title")]
+        public async Task<ActionResult<HotelService>> UpdateHeroTitle(int id, [FromBody] string title)
+        {
+            var result = await _service.UpdateHeroTitleAsync(id, title);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+
+        // GET Hero Description
+        [HttpGet("{id}/hero-description")]
+        public async Task<ActionResult<string>> GetHeroDescription(int id)
+        {
+            var result = await _service.GetHeroDescriptionAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+
+        // POST Hero Description
+        [HttpPost("{id}/hero-description")]
+        public async Task<ActionResult<HotelService>> AddHeroDescription(int id, [FromBody] string description)
+        {
+            var result = await _service.AddHeroDescriptionAsync(id, description);
+            if (result == null) return NotFound();
+            return CreatedAtAction(nameof(GetHeroDescription), new { id = result.Id }, result);
+        }
+
+        // PUT Hero Description
+        [HttpPut("{id}/hero-description")]
+        public async Task<ActionResult<HotelService>> UpdateHeroDescription(int id, [FromBody] string description)
+        {
+            var result = await _service.UpdateHeroDescriptionAsync(id, description);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
     }
 }
 
