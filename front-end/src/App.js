@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate,useLocation } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -34,7 +34,6 @@ import HomePage from './pages/HomePage';
 import CleaningReviewDashboard from './pages/dashboards/cleaningdashboards/CleaningReviewDashboard';
 import RestaurantReviewDashboard from './pages/dashboards/restaurantdashboards/managerdashboards/RestaurantReviewDashboard';
 import AdminCleaningStaffDashboard from './pages/dashboards/admindashboard/AdminCleaningStaffDashboard';
-
 import ServiceMain from './pages/Services/ServiceMain';
 import PoolSpaPage from './pages/Services/PoolSpaPage';
 import EventsPage from './pages/Services/EventsPage';
@@ -42,8 +41,6 @@ import ServiceReservation from './pages/dashboards/servicesdashboard/managerdash
 import ServiceAddRecepcionist from './pages/dashboards/servicesdashboard/managerdashboard/serviceaddrecepcionist';
 import Reservations from './pages/dashboards/servicesdashboard/servicerecepcionist/reservations.jsx';
 //import ServiceReceptionistDashboard from './pages/dashboards/servicesdashboard/servicerecepcionist/ServiceReceptionistDashboard.jsx';
-
-
 const CleaningManagerDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningManagerDashboard'));
 const CleaningStaffDashboard = lazy(() => import('./pages/dashboards/cleaningdashboards/CleaningStaffDashboard'));
 const HostAssignmentDashboard = lazy(() => import('./pages/dashboards/restaurantdashboards/managerdashboards/HostAssignmentDashboard'));
@@ -58,11 +55,9 @@ const ReservationSection = lazy(() => import('./pages/dashboards/admindashboard/
 const ServiceManagerDashboard = lazy(() => import('./pages/dashboards/servicesdashboard/managerdashboard/servicemanager'));
 const ServiceReceptionistDashboard = lazy(() => import('./pages/dashboards/servicesdashboard/servicerecepcionist/ServiceReceptionistDashboard.jsx'));
 
-
-
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const [authorized, setAuthorized] = React.useState(null);
-
+  
   React.useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -85,11 +80,10 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 function App() {
   return (
-
     <Router>
       <AuthProvider>
         <div>
-          {!["/login"].includes(window.location.pathname) && <Header />}
+          <Header />
           <ToastContainer position="top-right" autoClose={4000} />
 
           <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
@@ -109,7 +103,6 @@ function App() {
                 <Route index element={<RestaurantHomePage />} />
                 <Route path="menu" element={<RestaurantMenuPage />} />
               </Route>
-
               {/* Room Reservation route */}
               <Route path="/reserve" element={
                 <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
@@ -328,14 +321,11 @@ function App() {
               <ServiceReceptionistDashboard />
               </ProtectedRoute>
                } />
-
-
-
               <Route path="/restaurant-manager/dashboard" element={<Navigate to="/manager/restaurant-hosts" />} />
               <Route path="*" element={<div>Page Not Found</div>} />
             </Routes>
           </Suspense>
-          <Footer />
+         <Footer />
         </div>
       </AuthProvider>
     </Router>

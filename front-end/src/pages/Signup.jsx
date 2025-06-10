@@ -82,9 +82,9 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="container-fluid d-flex align-items-center justify-content-center py-5" style={{ minHeight: '100vh', fontFamily: "'Playfair Display', serif", backgroundColor: '#e6f3fb' }}>
+    <div className="container-fluid d-flex align-items-center justify-content-center" style={{ minHeight: '100dvh', fontFamily: "'Playfair Display', serif", backgroundColor: '#e6f3fb',  paddingTop: '180px',paddingBottom: '60px'}}>
       <div className="w-100 px-3" style={{ maxWidth: '720px' }}>
-        <form className="bg-white p-4 p-md-5 shadow-lg rounded" onSubmit={handleSubmit}>
+        <form className="bg-white p-3 p-md-5 shadow-lg rounded" onSubmit={handleSubmit}>
           <h3 className="fw-bold text-center mb-3">Hotel Amé</h3>
           <h2 className="fw-bold text-center mb-3">Join the Experience</h2>
           <div className="row">

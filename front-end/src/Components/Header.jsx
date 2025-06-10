@@ -10,8 +10,10 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
-
   const { userRole, setUserRole, loading } = useAuth(); 
+  
+  const hideHeaderPaths = ['/login'];
+  if (hideHeaderPaths.includes(location.pathname)) return null;
 
   const logout = async () => {
     try {
@@ -98,10 +100,11 @@ const Header = () => {
   const closeDropdown = () => setShowDropdown(false);
 
   return (
-    <header className="bg-white shadow-sm border-bottom py-2">
+  <header className="bg-white shadow-sm border-bottom py-2 fixed-top">
+
       <nav className="navbar navbar-expand-lg navbar-light container">
         <Link to="/" className="navbar-brand d-flex align-items-center">
-          <img src={logo} alt="Hotel Logo" style={{ height: "120px" }} className="img-fluid" />
+          <img src={logo} alt="Hotel Logo" style={{ height: "95px" }} className="img-fluid" />
         </Link>
 
         <button
