@@ -8,26 +8,25 @@ const ReviewDashboard = () => {
   const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [replyText, setReplyText] = useState("");
   const [deletingImageId, setDeletingImageId] = useState(null);
+
   const [selectedCategory, setSelectedCategory] = useState('');
-const [categories, setCategories] = useState([]);
-
-
+  const [minRating, setMinRating] = useState('');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetchReviews();
     fetchCategories();
-
   }, []);
 
-const fetchCategories = async () => {
-  try {
-    const res = await axios.get("https://localhost:7117/api/ReviewCategories");
-    setCategories(res.data);
-  } catch {
-    toast.error("Failed to load categories");
-  }
-};
-
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get("https://localhost:7117/api/ReviewCategories");
+      setCategories(res.data);
+    } catch {
+      toast.error("Failed to load categories");
+    }
+  };
 
   const fetchReviews = async () => {
     try {
@@ -104,13 +103,19 @@ const fetchCategories = async () => {
   };
 
   const filteredReviews = reviews.filter((r) => {
-  return selectedCategory === '' || r.reviewCategoryID === parseInt(selectedCategory);
-});
+    const matchesCategory = selectedCategory === '' || r.reviewCategoryID === parseInt(selectedCategory);
+    const matchesRating = minRating === '' || r.rating >= parseInt(minRating);
+    return matchesCategory && matchesRating;
+  });
 
-const pendingReviews = filteredReviews.filter((r) => !r.managerReply);
+  const sortedReviews = [...filteredReviews].sort((a, b) => {
+    return sortOrder === 'asc'
+      ? new Date(a.date) - new Date(b.date)
+      : new Date(b.date) - new Date(a.date);
+  });
 
-
-
+  const pendingReviews = sortedReviews.filter((r) => !r.managerReply);
+  const topReviews = sortedReviews.filter((r) => r.rating >= 4);
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
@@ -121,26 +126,54 @@ const pendingReviews = filteredReviews.filter((r) => !r.managerReply);
 
         <div className="card p-3 shadow-sm">
           <h4>All Reviews</h4>
+
+          {/* Filters */}
+          <div className="mb-3 d-flex flex-wrap gap-3 justify-content-start">
+            <div>
+              <label className="form-label fw-semibold">Filter by Category</label>
+              <select
+                className="form-select"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat.reviewCategoryID} value={cat.reviewCategoryID}>
+                    {cat.categoryName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="form-label fw-semibold">Min Rating</label>
+              <select
+                className="form-select"
+                value={minRating}
+                onChange={(e) => setMinRating(e.target.value)}
+              >
+                <option value="">All</option>
+                {[1, 2, 3, 4, 5].map((r) => (
+                  <option key={r} value={r}>{r} Stars & up</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="form-label fw-semibold">Sort by Date</label>
+              <select
+                className="form-select"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <option value="desc">Newest First</option>
+                <option value="asc">Oldest First</option>
+              </select>
+            </div>
+          </div>
+
+          {/* All Reviews Table */}
           <div className="table-responsive">
-            <div className="mb-3 d-flex justify-content-end">
-  <div style={{ maxWidth: "250px" }}>
-    <label className="form-label fw-semibold">Filter by Category</label>
-    <select
-      className="form-select"
-      value={selectedCategory}
-      onChange={(e) => setSelectedCategory(e.target.value)}
-    >
-      <option value="">All Categories</option>
-      {categories.map((cat) => (
-        <option key={cat.reviewCategoryID} value={cat.reviewCategoryID}>
-          {cat.categoryName}
-        </option>
-      ))}
-    </select>
-  </div>
-</div>
-
-
             <table className="table table-striped table-hover mt-3">
               <thead className="table-primary">
                 <tr>
@@ -154,10 +187,7 @@ const pendingReviews = filteredReviews.filter((r) => !r.managerReply);
                 </tr>
               </thead>
               <tbody>
-               {filteredReviews.map((review) => (
-
-              
-
+                {sortedReviews.map((review) => (
                   <tr key={review.reviewID}>
                     <td>{review.user?.firstName} {review.user?.lastName}</td>
                     <td>{review.category?.categoryName}</td>
@@ -172,7 +202,7 @@ const pendingReviews = filteredReviews.filter((r) => !r.managerReply);
                     <td>{review.comment}</td>
                     <td>
                       <div className="d-flex flex-wrap gap-2">
-                        {review.images && review.images.map((img) => (
+                        {review.images?.map((img) => (
                           <div key={img.reviewImageID} className="position-relative">
                             <img
                               src={img.imageUrl}
@@ -242,58 +272,88 @@ const pendingReviews = filteredReviews.filter((r) => !r.managerReply);
                     </td>
                   </tr>
                 ))}
-                {reviews.length === 0 && (
+                {sortedReviews.length === 0 && (
                   <tr>
                     <td colSpan="7" className="text-center text-muted">No reviews found.</td>
                   </tr>
                 )}
               </tbody>
             </table>
+
+            {/* Pending Replies Table */}
             <h5 className="mt-5 fw-bold text-danger">Pending Replies</h5>
-<table className="table table-bordered table-hover mt-3">
-  <thead className="table-danger">
-    <tr>
-      <th>User</th>
-      <th>Category</th>
-      <th>Rating</th>
-      <th>Comment</th>
-      <th>Reply</th>
-    </tr>
-  </thead>
-  <tbody>
-    {pendingReviews.length === 0 ? (
-      <tr>
-        <td colSpan="5" className="text-center text-muted">No pending replies.</td>
-      </tr>
-    ) : (
-      pendingReviews.map((review) => (
-        <tr key={review.reviewID}>
-          <td>{review.user?.firstName} {review.user?.lastName}</td>
-          <td>{review.category?.categoryName}</td>
-          <td>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <i
-                key={star}
-                className={`bi ${review.rating >= star ? "bi-star-fill" : "bi-star"} text-warning`}
-              />
-            ))}
-          </td>
-          <td>{review.comment}</td>
-          <td>
-            <button
-              className="btn btn-outline-success btn-sm"
-              onClick={() => setSelectedReviewId(review.reviewID)}
-            >
-              Reply
-            </button>
-          </td>
-        </tr>
-      ))
-    )}
-  </tbody>
-</table>
+            <table className="table table-bordered table-hover mt-3">
+              <thead className="table-danger">
+                <tr>
+                  <th>User</th>
+                  <th>Category</th>
+                  <th>Rating</th>
+                  <th>Comment</th>
+                  <th>Reply</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pendingReviews.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="text-center text-muted">No pending replies.</td>
+                  </tr>
+                ) : (
+                  pendingReviews.map((review) => (
+                    <tr key={review.reviewID}>
+                      <td>{review.user?.firstName} {review.user?.lastName}</td>
+                      <td>{review.category?.categoryName}</td>
+                      <td>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <i key={star} className={`bi ${review.rating >= star ? "bi-star-fill" : "bi-star"} text-warning`} />
+                        ))}
+                      </td>
+                      <td>{review.comment}</td>
+                      <td>
+                        <button
+                          className="btn btn-outline-success btn-sm"
+                          onClick={() => setSelectedReviewId(review.reviewID)}
+                        >
+                          Reply
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
 
-
+            {/* Top Reviews Table */}
+            <h5 className="mt-5 fw-bold text-success">Top Reviews (4★ and 5★)</h5>
+            <table className="table table-bordered table-hover mt-3">
+              <thead className="table-success">
+                <tr>
+                  <th>User</th>
+                  <th>Category</th>
+                  <th>Rating</th>
+                  <th>Comment</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topReviews.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="text-center text-muted">No top reviews.</td>
+                  </tr>
+                ) : (
+                  topReviews.map((r) => (
+                    <tr key={r.reviewID}>
+                      <td>{r.user?.firstName} {r.user?.lastName}</td>
+                      <td>{r.category?.categoryName}</td>
+                      <td>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <i key={star} className={`bi ${r.rating >= star ? "bi-star-fill" : "bi-star"} text-warning`} />
+                        ))}
+                      </td>
+                      <td>{r.comment}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </main>
@@ -302,6 +362,7 @@ const pendingReviews = filteredReviews.filter((r) => !r.managerReply);
 };
 
 export default ReviewDashboard;
+
 
 
 
