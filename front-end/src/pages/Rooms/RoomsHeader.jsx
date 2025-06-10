@@ -7,16 +7,16 @@ function RoomsHeader() {
     backgroundSize: "cover",
     backgroundPosition: "center",
     height: "600px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     color: "white",
     textShadow: "2px 2px 6px rgba(0,0,0,0.7)",
   };
 
   return (
     <div className="container-fluid p-0">
-      <div style={bgStyle}>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={bgStyle}
+      >
         <h2
           className="text-center slide-in-text"
           style={{ fontFamily: "'Crimson Text', serif", fontSize: "55px" }}
