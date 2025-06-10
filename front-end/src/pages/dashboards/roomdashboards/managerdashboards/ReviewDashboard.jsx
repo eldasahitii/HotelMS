@@ -8,12 +8,25 @@ const ReviewDashboard = () => {
   const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [replyText, setReplyText] = useState("");
   const [deletingImageId, setDeletingImageId] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('');
+const [categories, setCategories] = useState([]);
+
 
 
   useEffect(() => {
     fetchReviews();
+    fetchCategories();
+
   }, []);
 
+const fetchCategories = async () => {
+  try {
+    const res = await axios.get("https://localhost:7117/api/ReviewCategories");
+    setCategories(res.data);
+  } catch {
+    toast.error("Failed to load categories");
+  }
+};
 
 
   const fetchReviews = async () => {
@@ -90,6 +103,11 @@ const ReviewDashboard = () => {
     }
   };
 
+  const filteredReviews = reviews.filter((r) => {
+  return selectedCategory === '' || r.reviewCategoryID === parseInt(selectedCategory);
+});
+
+
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
@@ -101,6 +119,25 @@ const ReviewDashboard = () => {
         <div className="card p-3 shadow-sm">
           <h4>All Reviews</h4>
           <div className="table-responsive">
+            <div className="mb-3 d-flex justify-content-end">
+  <div style={{ maxWidth: "250px" }}>
+    <label className="form-label fw-semibold">Filter by Category</label>
+    <select
+      className="form-select"
+      value={selectedCategory}
+      onChange={(e) => setSelectedCategory(e.target.value)}
+    >
+      <option value="">All Categories</option>
+      {categories.map((cat) => (
+        <option key={cat.reviewCategoryID} value={cat.reviewCategoryID}>
+          {cat.categoryName}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
+
+
             <table className="table table-striped table-hover mt-3">
               <thead className="table-primary">
                 <tr>
@@ -114,7 +151,8 @@ const ReviewDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {reviews.map((review) => (
+               {filteredReviews.map((review) => (
+
               
 
                   <tr key={review.reviewID}>
