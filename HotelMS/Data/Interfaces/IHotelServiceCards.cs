@@ -47,12 +47,15 @@ namespace HotelMS.Data.Interfaces
         Task<IEnumerable<HotelServiceCards>> GetAllCardsAsync();
 
         // Unified Add method
-        Task<HotelServiceCards> AddCardDataAsync(int cardId, string? imageUrl = null, string? title = null, string? description = null, string? link = null);
+        //Task<HotelServiceCards> AddCardDataAsync(int cardId, string? imageUrl = null, string? title = null, string? description = null, string? link = null);
+        Task<HotelServiceCards> CreateNewCardAsync(string? imageUrl, string? title, string? description, string? link);
 
         // Unified Update method
         Task<HotelServiceCards> UpdateCardDataAsync(int cardId, string? imageUrl = null, string? title = null, string? description = null, string? link = null);
 
         // Unified Delete method
-        Task<bool> DeleteCardDataAsync(int cardId, bool deleteImage = false, bool deleteTitle = false, bool deleteDescription = false, bool deleteLink = false);
+        //Task<bool> DeleteCardDataAsync(int cardId, bool deleteImage = false, bool deleteTitle = false, bool deleteDescription = false, bool deleteLink = false);
+        Task<bool> DeleteCardAsync(int cardId);
+
     }
 }
