@@ -90,6 +90,10 @@ namespace HotelMS.Data
                 .HasForeignKey(r => r.RoomTypeID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<RoomType>()
+               .Property(rt => rt.Price)
+               .HasColumnType("decimal(18,2)");
+
             // RoomReservation ↔ Room
             modelBuilder.Entity<RoomReservation>()
                 .HasOne(rr => rr.Room)
