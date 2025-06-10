@@ -24,8 +24,8 @@ namespace HotelMS.Services
                     FirstName = r.FirstName,
                     LastName = r.LastName,
                     Email = r.Email,
-                    //Phone = r.Phone,  // <-- add this
-                    //TotalReservationsHandled = r.TotalReservationsHandled // 
+                    Phone = r.Phone,  // <-- add this
+                    TotalReservationsHandled = r.TotalReservationsHandled // 
                 }).ToListAsync();
         }
 
@@ -40,11 +40,25 @@ namespace HotelMS.Services
                 FirstName = recep.FirstName,
                 LastName = recep.LastName,
                 Email = recep.Email,
-                // Phone = recep.Phone,
-                //TotalReservationsHandled = recep.TotalReservationsHandled
+                Phone = recep.Phone,
+                TotalReservationsHandled = recep.TotalReservationsHandled
             };
         }
 
+        //public async Task<int> CreateRecepsionistAsync(ServiceRecepsionistDTO dto)
+        //{
+        //    var recep = new ServiceRecepsionist
+        //    {
+        //        FirstName = dto.FirstName,
+        //        LastName = dto.LastName,
+        //        Email = dto.Email,
+        //       Phone = dto.Phone,
+        //        TotalReservationsHandled = dto.TotalReservationsHandled
+        //    };
+        //    _context.ServiceRecepsionists.Add(recep);
+        //    await _context.SaveChangesAsync();
+        //    return recep.Id;
+        //}
         public async Task<int> CreateRecepsionistAsync(ServiceRecepsionistDTO dto)
         {
             var recep = new ServiceRecepsionist
@@ -52,13 +66,14 @@ namespace HotelMS.Services
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Email = dto.Email,
-               // Phone = dto.Phone,
-                //TotalReservationsHandled = dto.TotalReservationsHandled
+                Phone = dto.Phone,  // <-- assign Phone here
+                TotalReservationsHandled = dto.TotalReservationsHandled  // optional, but recommended
             };
             _context.ServiceRecepsionists.Add(recep);
             await _context.SaveChangesAsync();
             return recep.Id;
         }
+
 
         public async Task<bool> UpdateRecepsionistAsync(ServiceRecepsionistDTO dto)
         {

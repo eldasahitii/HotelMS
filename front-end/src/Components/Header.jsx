@@ -70,6 +70,7 @@ const Header = () => {
     { path: "/admin/restaurant-reservations", label: "Restaurant Reservations"},
     { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
     { path: "/admin/cleaning-dashboard", label: "Cleaning Dashboard" },
+     { path: "/admin/service-add", label: "Add Services"},
   ],
     RestaurantManager: [
       { path: "/manager/restaurant-hosts", label: "Hosts"},

@@ -561,14 +561,14 @@ public class Seed
                     CardImage = "pool1.jpg",
                     CardTitle = "Pool & Spa",
                     CardDescription = "  Relax and unwind in our luxurious pool and spa facilities. \r\n              Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, \r\n              sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. \r\n              Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.",
-                    CardLink = "See more button"
+                    CardLink = "/services/pool-spa"
                 },
                 new HotelServiceCards
                 {
                     CardImage = "mainevents.jpg",
                     CardTitle = "Events",
                     CardDescription = "Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations.\r\n               Our experienced team will help you plan every detail to ensure a seamless and memorable event. \r\n               Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized \r\n               service to make your occasion truly special.",
-                    CardLink = "See more button"
+                    CardLink = "/services/event-page"
                 }
             };
             dataContext.HotelServiceCards.AddRange(services);
