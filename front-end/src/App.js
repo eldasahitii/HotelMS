@@ -35,6 +35,7 @@ import CleaningReviewDashboard from './pages/dashboards/cleaningdashboards/Clean
 import RestaurantReviewDashboard from './pages/dashboards/restaurantdashboards/managerdashboards/RestaurantReviewDashboard';
 import AdminCleaningStaffDashboard from './pages/dashboards/admindashboard/AdminCleaningStaffDashboard';
 import AddServices from './pages/dashboards/admindashboard/ServiceAdmin/AddServices.jsx';
+import ServiceReservations from './pages/dashboards/admindashboard/ServiceAdmin/ServiceReservations.jsx';
 import ServiceMain from './pages/Services/ServiceMain';
 import PoolSpaPage from './pages/Services/PoolSpaPage';
 import EventsPage from './pages/Services/EventsPage';
@@ -336,6 +337,11 @@ function App() {
                <Route path="/admin/service-add" element={
                 <ProtectedRoute allowedRoles={['Admin']}>
                   <AddServices />
+                </ProtectedRoute>
+              } />
+                <Route path="/admin/service-reservations" element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <ServiceReservations />
                 </ProtectedRoute>
               } />
 

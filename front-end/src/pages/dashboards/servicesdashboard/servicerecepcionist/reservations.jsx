@@ -7,19 +7,20 @@ const RecepsionistReservationDashboard = () => {
   const [reservations, setReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
   const [serviceNames, setServiceNames] = useState([]);
-  const [reservationStatuses, setReservationStatuses] = useState([]);
   const [filterServiceName, setFilterServiceName] = useState("");
   const [filterReservationStatus, setFilterReservationStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [editReservation, setEditReservation] = useState(null);
-  const [replyMessage, setReplyMessage] = useState("");
 
   const navigate = useNavigate();
   const api = axios.create({
     baseURL: "https://localhost:7117/api/HotelServiceReservation",
     withCredentials: true,
   });
+
+  // Fixed statuses
+  const reservationStatuses = ["Pending", "Confirmed", "Cancelled"];
 
   const fetchReservations = async () => {
     setLoading(true);
@@ -36,7 +37,7 @@ const RecepsionistReservationDashboard = () => {
           : "N/A",
         timeSlot: r.timeSlot || "",
         hotelServiceName: r.hotelServiceName || "Unknown",
-        reservationStatusName: r.reservationStatusName || "Unknown",
+        reservationStatusName: r.reservationStatusName || "Pending",
         createdAt: r.createdAt
           ? new Date(r.createdAt).toLocaleDateString()
           : "",
@@ -50,9 +51,6 @@ const RecepsionistReservationDashboard = () => {
 
       setServiceNames([
         ...new Set(data.map((r) => r.hotelServiceName).filter(Boolean)),
-      ]);
-      setReservationStatuses([
-        ...new Set(data.map((r) => r.reservationStatusName).filter(Boolean)),
       ]);
     } catch (error) {
       if (error.response?.status === 401) {
@@ -101,7 +99,6 @@ const RecepsionistReservationDashboard = () => {
 
   const openEditModal = (reservation) => {
     setEditReservation({ ...reservation });
-    setReplyMessage("");
   };
 
   const handleDelete = async (id) => {
@@ -134,7 +131,7 @@ const RecepsionistReservationDashboard = () => {
         reservationDate: new Date(editReservation.reservationDate).toISOString(),
         timeSlot: editReservation.timeSlot,
         hotelServiceDetailID: editReservation.hotelServiceDetailID || 1,
-        reservationStatusID: parseInt(editReservation.reservationStatusName) || 1,
+        reservationStatusName: editReservation.reservationStatusName, // Send string status
         serviceRecepsionistId: 1,
         createdAt: new Date().toISOString(),
       };
@@ -146,15 +143,6 @@ const RecepsionistReservationDashboard = () => {
     } catch (err) {
       toast.error("Failed to update reservation.");
     }
-  };
-
-  const handleSendReply = () => {
-    if (!replyMessage.trim()) {
-      toast.error("Reply message cannot be empty.");
-      return;
-    }
-    toast.success(`Reply sent to client: "${replyMessage}" (simulated)`);
-    setReplyMessage("");
   };
 
   const closeModal = () => setEditReservation(null);
@@ -212,14 +200,13 @@ const RecepsionistReservationDashboard = () => {
                 <th scope="col">Date</th>
                 <th scope="col">Time Slot</th>
                 <th scope="col">Status</th>
-                <th scope="col">Receptionist</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredReservations.length === 0 ? (
                 <tr>
-                  <td colSpan="10" className="text-center">
+                  <td colSpan="9" className="text-center">
                     No reservations found.
                   </td>
                 </tr>
@@ -234,7 +221,6 @@ const RecepsionistReservationDashboard = () => {
                     <td>{r.reservationDate}</td>
                     <td>{r.timeSlot}</td>
                     <td>{r.reservationStatusName}</td>
-                    <td>{`${r.receptionistFirstName} ${r.receptionistLastName}`}</td>
                     <td>
                       <button
                         className="btn btn-sm btn-primary me-2 mb-1"
@@ -380,27 +366,6 @@ const RecepsionistReservationDashboard = () => {
                         ))}
                       </select>
                     </div>
-                  </div>
-
-                  {/* Reply Message */}
-                  <div className="mt-3">
-                    <label htmlFor="replyMessage" className="form-label">
-                      Reply Message
-                    </label>
-                    <textarea
-                      id="replyMessage"
-                      className="form-control"
-                      rows="3"
-                      value={replyMessage}
-                      onChange={(e) => setReplyMessage(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-secondary mt-2"
-                      onClick={handleSendReply}
-                    >
-                      Send Reply
-                    </button>
                   </div>
                 </div>
                 <div className="modal-footer">

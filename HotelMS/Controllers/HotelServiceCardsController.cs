@@ -19,8 +19,6 @@ namespace HotelMS.Controllers
             _service = service;
         }
 
-        // ========== GET methods ==========
-
         [HttpGet("{id}/card-image")]
         public async Task<ActionResult<string>> GetCardImage(int id)
         {
@@ -60,27 +58,6 @@ namespace HotelMS.Controllers
             return Ok(result);
         }
 
-        // ========== POST: Add Card Data ==========
-
-        //[HttpPost("{id}/card-data")]
-        //public async Task<ActionResult<HotelServiceCards>> AddCardData(int id, [FromBody] HotelServiceCardsDTO data)
-        //{
-        //    var result = await _service.AddCardDataAsync(id, data.CardImage, data.CardTitle, data.CardDescription, data.CardLink);
-        //    if (result == null) return NotFound();
-        //    return CreatedAtAction(nameof(GetAllCards), new { id = result.Id }, result);
-        //}
-        // ========== POST: Create New Card ==========
-
-        //[HttpPost]
-        //public async Task<ActionResult<HotelServiceCards>> CreateCard([FromBody] HotelServiceCardsDTO data)
-        //{
-        //    var result = await _service.CreateNewCardAsync(data.CardImage, data.CardTitle, data.CardDescription, data.CardLink);
-
-        //    if (result == null)
-        //        return BadRequest("Failed to create new card."); // optional fallback
-
-        //    return CreatedAtAction(nameof(GetAllCards), new { id = result.Id }, result);
-        //}
         [HttpPost]
         public async Task<ActionResult<HotelServiceCards>> CreateCard([FromBody] HotelServiceCardsDTO data)
         {
@@ -90,8 +67,6 @@ namespace HotelMS.Controllers
         }
 
 
-        // ========== PUT: Update Card Data ==========
-
         [HttpPut("{id}/card-data")]
         public async Task<ActionResult<HotelServiceCards>> UpdateCardData(int id, [FromBody] HotelServiceCardsDTO data)
         {
@@ -100,20 +75,6 @@ namespace HotelMS.Controllers
             return Ok(result);
         }
 
-        // ========== DELETE: Specific Card Fields ==========
-
-        //[HttpDelete("{id}/card-data")]
-        //public async Task<IActionResult> DeleteCardData(
-        //    int id,
-        //    [FromQuery] bool deleteImage = false,
-        //    [FromQuery] bool deleteTitle = false,
-        //    [FromQuery] bool deleteDescription = false,
-        //    [FromQuery] bool deleteLink = false)
-        //{
-        //    var success = await _service.DeleteCardDataAsync(id, deleteImage, deleteTitle, deleteDescription, deleteLink);
-        //    if (!success) return NotFound();
-        //    return NoContent();
-        //}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCard(int id)
         {

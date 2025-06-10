@@ -19,7 +19,7 @@ namespace HotelMS.Services
             _dbContext = dbContext;
         }
 
-        // CREATE
+        
         public async Task<HotelServiceDetailDTO> AddServiceDetailAsync(HotelServiceDetailDTO request)
         {
             var detail = new HotelServiceDetail
@@ -36,7 +36,7 @@ namespace HotelMS.Services
             return await GetServiceDetailAsync(detail.Id);
         }
 
-        // READ ONE
+       
         public async Task<HotelServiceDetailDTO> GetServiceDetailAsync(int id)
         {
             var detail = await _dbContext.HotelServiceDetails.FindAsync(id);
@@ -52,7 +52,7 @@ namespace HotelMS.Services
             };
         }
 
-        // READ ALL
+        
         public async Task<IEnumerable<HotelServiceDetailDTO>> GetAllServiceDetailsAsync()
         {
             var details = await _dbContext.HotelServiceDetails.ToListAsync();
@@ -67,7 +67,7 @@ namespace HotelMS.Services
             });
         }
 
-        // UPDATE
+        
         public async Task<HotelServiceDetailDTO> UpdateServiceDetailAsync(int id, HotelServiceDetailDTO request)
         {
             var detail = await _dbContext.HotelServiceDetails.FindAsync(id);
@@ -83,7 +83,7 @@ namespace HotelMS.Services
             return await GetServiceDetailAsync(id);
         }
 
-        // DELETE
+       
         public async Task DeleteServiceDetailAsync(int id)
         {
             var detail = await _dbContext.HotelServiceDetails.FindAsync(id);

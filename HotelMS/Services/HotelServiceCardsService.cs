@@ -44,19 +44,7 @@ namespace HotelMS.Services
             return await _context.HotelServiceCards.ToListAsync();
         }
 
-        //public async Task<HotelServiceCards> AddCardDataAsync(int cardId, string? imageUrl = null, string? title = null, string? description = null, string? link = null)
-        //{
-        //    var card = await _context.HotelServiceCards.FindAsync(cardId);
-        //    if (card == null) return null;
-
-        //    if (!string.IsNullOrEmpty(imageUrl)) card.CardImage = imageUrl;
-        //    if (!string.IsNullOrEmpty(title)) card.CardTitle = title;
-        //    if (!string.IsNullOrEmpty(description)) card.CardDescription = description;
-        //    if (!string.IsNullOrEmpty(link)) card.CardLink = link;
-
-        //    await _context.SaveChangesAsync();
-        //    return card;
-        //}
+       
         public async Task<HotelServiceCards> CreateNewCardAsync(string? imageUrl, string? title, string? description, string? link)
         {
             var newCard = new HotelServiceCards
@@ -67,7 +55,7 @@ namespace HotelMS.Services
                 CardLink = link
             };
 
-            _context.HotelServiceCards.Add(newCard); // assumes you injected your DbContext
+            _context.HotelServiceCards.Add(newCard);
             await _context.SaveChangesAsync();
 
             return newCard;
@@ -87,19 +75,7 @@ namespace HotelMS.Services
             return card;
         }
 
-        //public async Task<bool> DeleteCardDataAsync(int cardId, bool deleteImage = false, bool deleteTitle = false, bool deleteDescription = false, bool deleteLink = false)
-        //{
-        //    var card = await _context.HotelServiceCards.FindAsync(cardId);
-        //    if (card == null) return false;
-
-        //    if (deleteImage) card.CardImage = null!;
-        //    if (deleteTitle) card.CardTitle = null!;
-        //    if (deleteDescription) card.CardDescription = null!;
-        //    if (deleteLink) card.CardLink = null!;
-
-        //    await _context.SaveChangesAsync();
-        //    return true;
-        //}
+        
         public async Task<bool> DeleteCardAsync(int cardId)
         {
             var card = await _context.HotelServiceCards.FindAsync(cardId);

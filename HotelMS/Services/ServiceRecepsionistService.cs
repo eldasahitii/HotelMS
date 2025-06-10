@@ -24,8 +24,8 @@ namespace HotelMS.Services
                     FirstName = r.FirstName,
                     LastName = r.LastName,
                     Email = r.Email,
-                    Phone = r.Phone,  // <-- add this
-                    TotalReservationsHandled = r.TotalReservationsHandled // 
+                    Phone = r.Phone, 
+                    TotalReservationsHandled = r.TotalReservationsHandled 
                 }).ToListAsync();
         }
 
@@ -45,20 +45,6 @@ namespace HotelMS.Services
             };
         }
 
-        //public async Task<int> CreateRecepsionistAsync(ServiceRecepsionistDTO dto)
-        //{
-        //    var recep = new ServiceRecepsionist
-        //    {
-        //        FirstName = dto.FirstName,
-        //        LastName = dto.LastName,
-        //        Email = dto.Email,
-        //       Phone = dto.Phone,
-        //        TotalReservationsHandled = dto.TotalReservationsHandled
-        //    };
-        //    _context.ServiceRecepsionists.Add(recep);
-        //    await _context.SaveChangesAsync();
-        //    return recep.Id;
-        //}
         public async Task<int> CreateRecepsionistAsync(ServiceRecepsionistDTO dto)
         {
             var recep = new ServiceRecepsionist
@@ -66,8 +52,8 @@ namespace HotelMS.Services
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Email = dto.Email,
-                Phone = dto.Phone,  // <-- assign Phone here
-                TotalReservationsHandled = dto.TotalReservationsHandled  // optional, but recommended
+                Phone = dto.Phone,  
+                TotalReservationsHandled = dto.TotalReservationsHandled  
             };
             _context.ServiceRecepsionists.Add(recep);
             await _context.SaveChangesAsync();
