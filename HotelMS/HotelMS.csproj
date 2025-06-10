@@ -49,6 +49,7 @@
   <!-- Folder includes -->
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="wwwroot\Images\Services\" />
     <Folder Include="wwwroot\Images\roomtypes\" />
   </ItemGroup>
 
