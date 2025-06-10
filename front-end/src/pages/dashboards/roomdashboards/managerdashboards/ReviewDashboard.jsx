@@ -9,9 +9,12 @@ const ReviewDashboard = () => {
   const [replyText, setReplyText] = useState("");
   const [deletingImageId, setDeletingImageId] = useState(null);
 
+
   useEffect(() => {
     fetchReviews();
   }, []);
+
+
 
   const fetchReviews = async () => {
     try {
@@ -87,6 +90,7 @@ const ReviewDashboard = () => {
     }
   };
 
+
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
       <main className="flex-grow-1 p-4">
@@ -111,6 +115,8 @@ const ReviewDashboard = () => {
               </thead>
               <tbody>
                 {reviews.map((review) => (
+              
+
                   <tr key={review.reviewID}>
                     <td>{review.user?.firstName} {review.user?.lastName}</td>
                     <td>{review.category?.categoryName}</td>
