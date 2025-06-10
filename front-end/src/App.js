@@ -61,7 +61,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   React.useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get('https://localhost:7117/api/Auth/me', {
+        const res = await axios.get('http://localhost:7117/api/Auth/me', {
           withCredentials: true,
         });
         const role = res.data.role;
