@@ -107,6 +107,9 @@ const fetchCategories = async () => {
   return selectedCategory === '' || r.reviewCategoryID === parseInt(selectedCategory);
 });
 
+const pendingReviews = filteredReviews.filter((r) => !r.managerReply);
+
+
 
 
   return (
@@ -246,6 +249,51 @@ const fetchCategories = async () => {
                 )}
               </tbody>
             </table>
+            <h5 className="mt-5 fw-bold text-danger">Pending Replies</h5>
+<table className="table table-bordered table-hover mt-3">
+  <thead className="table-danger">
+    <tr>
+      <th>User</th>
+      <th>Category</th>
+      <th>Rating</th>
+      <th>Comment</th>
+      <th>Reply</th>
+    </tr>
+  </thead>
+  <tbody>
+    {pendingReviews.length === 0 ? (
+      <tr>
+        <td colSpan="5" className="text-center text-muted">No pending replies.</td>
+      </tr>
+    ) : (
+      pendingReviews.map((review) => (
+        <tr key={review.reviewID}>
+          <td>{review.user?.firstName} {review.user?.lastName}</td>
+          <td>{review.category?.categoryName}</td>
+          <td>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <i
+                key={star}
+                className={`bi ${review.rating >= star ? "bi-star-fill" : "bi-star"} text-warning`}
+              />
+            ))}
+          </td>
+          <td>{review.comment}</td>
+          <td>
+            <button
+              className="btn btn-outline-success btn-sm"
+              onClick={() => setSelectedReviewId(review.reviewID)}
+            >
+              Reply
+            </button>
+          </td>
+        </tr>
+      ))
+    )}
+  </tbody>
+</table>
+
+
           </div>
         </div>
       </main>
