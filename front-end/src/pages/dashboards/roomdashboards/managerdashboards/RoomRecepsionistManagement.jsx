@@ -27,8 +27,8 @@ const fetchCurrentUser = async () => {
     });
     console.log("fetchCurrentUser response:", res.data);
 
-    setCurrentUserId(res.data.userID); // Fix capitalization here
-    setCurrentUserName(res.data.userName); // Use userName string directly
+    setCurrentUserId(res.data.userID); 
+    setCurrentUserName(res.data.userName); 
 
   } catch (err) {
     toast.error("Failed to fetch logged-in user info.");

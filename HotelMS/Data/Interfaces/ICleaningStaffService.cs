@@ -5,7 +5,6 @@ namespace HotelMS.Data.Interfaces
 {
     public interface ICleaningStaffService
     {
-        //Task<CleaningStaff> AddCleaningStaff(CleaningStaffDTO request);
         Task<object> AddCleaningStaff(CleaningStaffDTO dto);
         Task<CleaningStaffDTO> GetCleaningStaff(int id);
         Task<IEnumerable<CleaningStaffDTO>> GetAllCleaningStaff();
