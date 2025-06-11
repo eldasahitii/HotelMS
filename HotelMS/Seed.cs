@@ -753,8 +753,8 @@ public class Seed
     {
         new ServiceReservationStatus { StatusName = "Pending" },
         new ServiceReservationStatus { StatusName = "Confirmed" },
-        new ServiceReservationStatus { StatusName = "Cancelled" },
-        new ServiceReservationStatus { StatusName = "Completed" }
+        new ServiceReservationStatus { StatusName = "Cancelled" }
+        
     };
 
             dataContext.ServiceReservastionStatuses.AddRange(serviceStatuses);

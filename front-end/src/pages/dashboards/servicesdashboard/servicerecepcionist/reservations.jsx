@@ -19,7 +19,7 @@ const RecepsionistReservationDashboard = () => {
     withCredentials: true,
   });
 
-  // Fixed statuses
+  
   const reservationStatuses = ["Pending", "Confirmed", "Cancelled"];
 
   const fetchReservations = async () => {
@@ -131,7 +131,7 @@ const RecepsionistReservationDashboard = () => {
         reservationDate: new Date(editReservation.reservationDate).toISOString(),
         timeSlot: editReservation.timeSlot,
         hotelServiceDetailID: editReservation.hotelServiceDetailID || 1,
-        reservationStatusName: editReservation.reservationStatusName, // Send string status
+        reservationStatusName: editReservation.reservationStatusName, 
         serviceRecepsionistId: 1,
         createdAt: new Date().toISOString(),
       };
@@ -153,7 +153,7 @@ const RecepsionistReservationDashboard = () => {
         Recepcionist Reservations Dashboard
       </h2>
 
-      {/* Filters */}
+      
       <div className="mb-3 d-flex flex-column flex-md-row gap-3">
         <select
           className="form-select"
@@ -243,7 +243,7 @@ const RecepsionistReservationDashboard = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
+      
       {editReservation && (
         <div
           className="modal show d-block"

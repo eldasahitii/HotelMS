@@ -17,7 +17,7 @@ const ServiceReceptionistDashboard = () => {
       const res = await axios.get('https://localhost:7117/api/HotelServiceDetail/GetAllServiceDetails', {
         withCredentials: true,
       });
-      console.log('Services from API:', res.data); // Debug to see price values
+      
       setServices(res.data);
     } catch (error) {
       console.error('Error fetching service data:', error);

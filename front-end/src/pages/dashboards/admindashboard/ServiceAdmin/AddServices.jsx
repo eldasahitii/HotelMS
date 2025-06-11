@@ -12,7 +12,7 @@ const AdminServiceCardsDashboard = () => {
     cardTitle: "",
     cardDescription: "",
     cardImage: "",
-    cardLink: "",  // Added cardLink here
+    cardLink: "",  
   });
   const [imagePreview, setImagePreview] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -62,7 +62,7 @@ const AdminServiceCardsDashboard = () => {
       cardTitle: "",
       cardDescription: "",
       cardImage: "",
-      cardLink: "",  // Reset cardLink as well
+      cardLink: "",  
     });
     setImagePreview("");
     setIsEditing(false);
@@ -80,7 +80,7 @@ const AdminServiceCardsDashboard = () => {
         cardTitle,
         cardDescription,
         cardImage,
-        cardLink: cardLink || "", // Make sure to send cardLink, empty if not set
+        cardLink: cardLink || "", 
       });
       toast.success("Service card added successfully!");
       resetForm();
@@ -97,7 +97,7 @@ const AdminServiceCardsDashboard = () => {
       cardTitle: card.cardTitle || "",
       cardDescription: card.cardDescription || "",
       cardImage: card.cardImage || "",
-      cardLink: card.cardLink || "", // Add cardLink here
+      cardLink: card.cardLink || "", 
     });
     setImagePreview(
       card.cardImage?.startsWith("data:image")

@@ -85,7 +85,7 @@ const ServiceReservations = () => {
     try {
       await axios.post('https://localhost:7117/api/Auth/logout', null, { withCredentials: true });
     } catch {
-      // silently fail
+      
     }
     navigate('/login');
   };
