@@ -13,10 +13,6 @@ namespace HotelMS.Data.Interfaces
 
         Task<string> AssignHostRoleByEmailAsync(string email);
 
-
-
-        //Task<HostDTO> CreateHostAsync(HostDTO hostDto);
-
         Task<bool> DeleteHostAsync(int userId);
     }
 }
