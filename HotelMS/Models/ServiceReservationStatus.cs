@@ -9,6 +9,6 @@ namespace HotelMS.Models
 
         [Required]
         [MaxLength(50)]
-        public string StatusName { get; set; }  // E.g. Pending, Confirmed, Cancelled
+        public string StatusName { get; set; }  
     }
 }

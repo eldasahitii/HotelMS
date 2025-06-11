@@ -65,7 +65,7 @@ namespace HotelMS.Services
                         MenuItemID = mi.MenuItemID,
                         Name = mi.Name,
                         Description = mi.Description,
-                        Price = mi.Price, // Frontend can choose to ignore this
+                        Price = mi.Price, 
                         image_url = mi.image_url,
                         is_available = mi.is_available,
                         CategoryName = mi.MenuCategory.Name
@@ -80,18 +80,6 @@ namespace HotelMS.Services
         }
 
 
-        //public async Task<IEnumerable<MenuItem>> GetAllMenuItems()
-        //{
-        //    try
-        //    {
-        //        return await _dbContext.MenuItems.ToListAsync();
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        throw new Exception("Error retrieving menu items.");
-        //    }
-        //}
 
         public async Task<MenuItem> UpdateMenuItem(int id, MenuItemCreateDTO request)
         {

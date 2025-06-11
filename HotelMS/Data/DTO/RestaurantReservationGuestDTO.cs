@@ -12,8 +12,6 @@
         
         public DateTime DateTime { get; set; }
 
-        //public int RestaurantTableID { get; set; }
-
-        //public string Status { get; set; } = "Booked";
+        
     }
 }

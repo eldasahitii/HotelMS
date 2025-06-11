@@ -63,13 +63,13 @@ const Header = () => {
     { path: "/admin/roomstatus", label: "Add Room Status" },
     { path: "/admin/reservationstatus", label: "Add Reservation Status" },
     { path: "/admin/reservation-dashboard", label: "Room Reservations" },
-    // { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
     { path: "/admin/restaurant-hosts", label: "Add Restaurant Host"},
     { path: "/admin/restaurant-menu", label: "Restaurant Menu"},
     { path: "/admin/restaurant-tables", label: "Restaurant Tables"},
     { path: "/admin/restaurant-reservations", label: "Restaurant Reservations"},
-    { path: "/admin/restaurant-dashboard", label: "Restaurant Dashboard" },
     { path: "/admin/cleaning-dashboard", label: "Cleaning Dashboard" },
+     { path: "/admin/service-add", label: "Add Services"},
+     { path: "/admin/service-reservations", label: "View Service Reservations"}
   ],
     RestaurantManager: [
       { path: "/manager/restaurant-hosts", label: "Hosts"},
@@ -132,7 +132,7 @@ const Header = () => {
               <Link to="/restaurant" className={navLinkStyle("/restaurant")}>RESTAURANT</Link>
             </li>
             <li className="nav-item">
-              <Link to="/services" className={navLinkStyle("/services")}>POOL & SPA</Link>
+              <Link to="/services" className={navLinkStyle("/services")}>AMENITIES</Link>
             </li>
             <li className="nav-item">
               <Link to="/book" className={navLinkStyle("/book")}>BOOK NOW</Link>

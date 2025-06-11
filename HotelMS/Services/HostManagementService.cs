@@ -50,34 +50,7 @@ namespace HotelMS.Services
                 Email = user.Email
             };
         }
-        //public async Task<HostDTO> CreateHostAsync(HostDTO hostDto)
-        //{
-        //    var hostRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == "RestaurantHost");
-        //    if (hostRole == null) throw new Exception("Host role not found");
-
-        //    CreatePasswordHash(hostDto.Password, out byte[] hash, out byte[] salt);
-
-        //    var user = new User
-        //    {
-        //        FirstName = hostDto.FirstName,
-        //        LastName = hostDto.LastName,
-        //        Email = hostDto.Email,
-        //        PasswordHash = hash,
-        //        PasswordSalt = salt,
-        //        RoleID = hostRole.RoleID
-        //    };
-
-        //    _dbContext.Users.Add(user);
-        //    await _dbContext.SaveChangesAsync();
-
-        //    return new HostDTO
-        //    {
-        //        UserID = user.UserID,
-        //        FirstName = user.FirstName,
-        //        LastName = user.LastName,
-        //        Email = user.Email
-        //    };
-        //}
+        
         public async Task<HostDTO> UpdateHostAsync(int id, HostDTO updatedHost)
         {
             var user = await _dbContext.Users.FindAsync(id);
@@ -119,12 +92,7 @@ namespace HotelMS.Services
                 throw new Exception("Failed to delete user due to related data: " + ex.Message);
             }
         }
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using var hmac = new HMACSHA512();
-            passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-        }
+
 
         public async Task<string> AssignHostRoleByEmailAsync(string email)
         {

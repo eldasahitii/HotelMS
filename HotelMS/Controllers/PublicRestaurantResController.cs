@@ -29,7 +29,7 @@ namespace HotelMS.Controllers
 
                 if (userIdClaim != null)
                 {
-                    // Logged-in user: use User flow
+                    
                     var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == dto.Email.ToLower());
                     if (user == null)
                         return BadRequest("No user found with this email.");
@@ -38,15 +38,15 @@ namespace HotelMS.Controllers
                     {
                         Email = dto.Email,
                         DateTime = dto.DateTime,
-                        Status = "Booked",
-                        // You can set RestaurantTableID = 0 and let the service assign a table
+                        Status = "Occupied",
+                       
                     });
 
                     return Ok(new { message = "Reservation created for logged-in user", result });
                 }
                 else
                 {
-                    // Public guest
+                   
                     var result = await _hostService.CreateReservationWithGuestAsync(dto);
                     return Ok(new { message = "Reservation created for guest", result });
                 }

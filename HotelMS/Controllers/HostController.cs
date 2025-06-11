@@ -68,19 +68,6 @@ namespace HotelMS.Controllers
                 }
             }
 
-        //[HttpPost("createReservation")]
-        //public async Task<IActionResult> CreateReservation([FromBody] RestaurantReservationCreateDTO request)
-        //{
-        //    try
-        //    {
-        //        var result = await _service.CreateReservationAsync(request);
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
 
         [HttpPost("createReservationWithGuest")]
         public async Task<IActionResult> CreateReservationWithGuest([FromBody] RestaurantReservationGuestDTO dto)

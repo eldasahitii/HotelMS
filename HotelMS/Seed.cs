@@ -561,14 +561,14 @@ public class Seed
                     CardImage = "pool1.jpg",
                     CardTitle = "Pool & Spa",
                     CardDescription = "  Relax and unwind in our luxurious pool and spa facilities. \r\n              Take a dip in our heated indoor and outdoor pools, or melt away stress in the hot tub, \r\n              sauna, or steam room. Indulge in a soothing massage or a refreshing facial from our skilled therapists. \r\n              Whether you're looking for quiet time or a bit of pampering, this is your perfect escape.",
-                    CardLink = "See more button"
+                    CardLink = "/services/pool-spa"
                 },
                 new HotelServiceCards
                 {
                     CardImage = "mainevents.jpg",
                     CardTitle = "Events",
                     CardDescription = "Host your special moments in our elegant venues, perfect for weddings, conferences, and celebrations.\r\n               Our experienced team will help you plan every detail to ensure a seamless and memorable event. \r\n               Whether it’s an intimate gathering or a large celebration, we provide the ideal setting and personalized \r\n               service to make your occasion truly special.",
-                    CardLink = "See more button"
+                    CardLink = "/services/event-page"
                 }
             };
             dataContext.HotelServiceCards.AddRange(services);
@@ -644,7 +644,6 @@ public class Seed
         {
             var tableID = dataContext.RestaurantTables.First().RestaurantTableID;
 
-            // Create a restaurant guest
             var guest = new RestaurantGuest
             {
                 FirstName = "Velsa",
@@ -653,13 +652,13 @@ public class Seed
                 PhoneNumber = "044-123-456"
             };
             dataContext.RestaurantGuests.Add(guest);
-            dataContext.SaveChanges(); // Save first to get the GuestID
+            dataContext.SaveChanges(); 
 
             var reservation = new RestaurantReservation
             {
                 GuestID = guest.GuestID,
                 date_time = DateTime.Now.AddHours(2),
-                status = "Booked",
+                status = "Occupied",
                 RestaurantTableID = tableID
             };
 
@@ -753,8 +752,8 @@ public class Seed
     {
         new ServiceReservationStatus { StatusName = "Pending" },
         new ServiceReservationStatus { StatusName = "Confirmed" },
-        new ServiceReservationStatus { StatusName = "Cancelled" },
-        new ServiceReservationStatus { StatusName = "Completed" }
+        new ServiceReservationStatus { StatusName = "Cancelled" }
+        
     };
 
             dataContext.ServiceReservastionStatuses.AddRange(serviceStatuses);
@@ -768,7 +767,7 @@ public class Seed
             {
                 WelcomeTitle = "Welcome to Amé Restaurant",
                 WelcomeMessage = "Discover the essence of fine dining at Amé Restaurant, where every dish is crafted with organic ingredients, timeless flavors, and a passion for culinary excellence.",
-                WelcomeImageUrl = "/Images/restaurant/restaurant.jpg", // Path should match your frontend assets or be publicly hosted
+                WelcomeImageUrl = "/Images/restaurant/restaurant.jpg", 
 
                 AboutTitle = "About Amé Restaurant",
                 AboutMessage = "At Amé Restaurant, we believe food should not only taste amazing but also be nourishing. Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring every dish to life.",
