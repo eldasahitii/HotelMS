@@ -88,7 +88,7 @@ namespace HotelMS.Services
             if (receptionistRole == null)
                 throw new Exception("Role 'RoomRecepsionist' does not exist.");
 
-           
+
             user.RoleID = receptionistRole.RoleID;
 
             var recepsionist = new RoomRecepsionist
@@ -102,13 +102,11 @@ namespace HotelMS.Services
             _context.RoomRecepsionists.Add(recepsionist);
             await _context.SaveChangesAsync();
 
-            
+
             dto.RoomReceptionistID = recepsionist.RoomReceptionistID;
             dto.AssignedByUserID = assignedByUserId;
             dto.AssignedByUserName = $"{assigner.FirstName} {assigner.LastName}";
             dto.AssignedAt = recepsionist.AssignedAt;
-
-        
             dto.FirstName = user.FirstName;
             dto.LastName = user.LastName;
             dto.Email = user.Email;

@@ -200,7 +200,7 @@ export default function UserRoomReservations() {
                   <p><strong>Check-out:</strong> {checkOut.toLocaleDateString()}</p>
                   <p><strong>Duration:</strong> {nights} night{nights > 1 ? "s" : ""}</p>
                   <div className="d-grid gap-2">
-             <button className="btn btn-outline-primary" onClick={() => startEdit(res)} disabled={isCancelled}>Edit</button>
+                    <button className="btn btn-outline-primary" onClick={() => startEdit(res)} disabled={isCancelled}>Edit</button>
                     <button className="btn btn-outline-secondary" onClick={() => handleCancel(res.reservationID)} disabled={isCancelled}>Cancel</button>
                   </div>
                 </div>

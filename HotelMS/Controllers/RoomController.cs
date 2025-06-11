@@ -32,7 +32,6 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetRoom")]
-      
         public async Task<IActionResult> GetRoom(int id)
         {
             try
@@ -133,9 +132,6 @@ namespace HotelMS.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-       
-
 
     }
 }

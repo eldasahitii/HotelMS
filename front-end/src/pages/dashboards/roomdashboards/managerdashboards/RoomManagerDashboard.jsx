@@ -234,7 +234,6 @@ const handleDeleteRoom = async (roomID) => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
           <i className="bi bi-building me-2"></i> Room Manager Dashboard
@@ -299,7 +298,7 @@ const handleDeleteRoom = async (roomID) => {
       disabled
     />
   ) : (
-    // Editable dropdown when adding
+
 <select
   id="roomStatusID"
   name="roomStatusID"
@@ -309,7 +308,7 @@ const handleDeleteRoom = async (roomID) => {
 >
   <option value="">Select Status</option>
   {roomStatuses
-    .filter(rs => rs.roomStatusName !== "Cleaning") 
+    .filter(rs => rs.roomStatusName !== "Cleaning")  
     .map((rs) => (
       <option key={rs.roomStatusID} value={rs.roomStatusID}>
         {rs.roomStatusName}
@@ -469,8 +468,6 @@ const handleDeleteRoom = async (roomID) => {
   const roomStatus = roomStatuses.find((rs) => rs.roomStatusID === room.roomStatusID);
   const cleaningStatus = roomStatuses.find(rs => rs.roomStatusName === "Cleaning");
 
-  console.log("Room:", room.roomNumber, "Room StatusID:", room.roomStatusID);
-  console.log("Cleaning StatusID:", cleaningStatus?.roomStatusID);
 
   return (
     <tr key={room.roomID}>

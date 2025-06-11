@@ -14,5 +14,6 @@ namespace HotelMS.Data.Interfaces
         Task<RoomDTO> UpdateRoom(int id, RoomDTO request);
         Task<RoomDetailsDTO> GetRoomDetails(int id);
         Task BulkCreateRoomsAsync(BulkRoomCreateDTO dto);
+ 
     }
 }

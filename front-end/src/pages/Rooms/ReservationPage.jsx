@@ -110,7 +110,7 @@ const ReservationPage = () => {
       return;
     }
 
-   
+ 
     console.log("Sending reservation data:", {
       roomID: roomId,
       checkInDate,

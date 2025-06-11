@@ -33,7 +33,6 @@ namespace HotelMS.Services
             }
         }
 
-
         public async Task<IEnumerable<UserDTO>> GetAll()
         {
             try

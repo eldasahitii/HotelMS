@@ -31,7 +31,6 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetRoomType")]
-      
         public async Task<IActionResult> GetRoomType(int id)
         {
             try
@@ -52,7 +51,7 @@ namespace HotelMS.Controllers
             }
         }
         [HttpGet("GetAllRoomTypes")]
-    
+
 
         public async Task<IActionResult> GetAllRoomTypes()
         {

@@ -168,7 +168,6 @@ namespace HotelMS.Services
             if (reservation == null)
                 return "Reservation not found";
 
-          
             if (reservation.ReservationStatus.ReservationStatusName == "Completed" ||
                 reservation.ReservationStatus.ReservationStatusName == "Cancelled")
             {

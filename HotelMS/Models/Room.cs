@@ -20,7 +20,7 @@ namespace HotelMS.Models
         public RoomStatus RoomStatus { get; set; }
 
         public ICollection<RoomReservation> Reservations { get; set; }
-      
+
     }
 
 }
