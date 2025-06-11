@@ -54,7 +54,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAllCleaningStaff")]
-        [Authorize(Roles = "Admin,CleaningManager, CleaningStaff")]
+        [Authorize(Roles = "Admin,CleaningManager,CleaningStaff")]
         public async Task<IActionResult> GetAllCleaningStaff()
         {
             try
@@ -69,6 +69,7 @@ namespace HotelMS.Controllers
 
         }
         [HttpPut("updateCleaningStaff")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> UpdateCleaningStaff(int id, [FromBody] CleaningStaffDTO request)
         {
             try
@@ -86,6 +87,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpDelete("deleteCleaningStaff")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> DeleteCleaningStaff(int id)
         {
             try
@@ -101,12 +103,14 @@ namespace HotelMS.Controllers
 
         }
         [HttpGet("getAllActive")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> GetAllActive()
         {
             var result = await _service.GetAllActive();
             return Ok(result);
         }
         [HttpPut("changeShift")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> ChangeShift(int id, [FromQuery] string newShift)
         {
             var result = await _service.ChangeShift(id, newShift);

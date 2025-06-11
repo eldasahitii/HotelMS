@@ -25,7 +25,6 @@ export default function AdminCleaningDashboard() {
   useEffect(() => {
     fetchCurrentUser();
     fetchStaff();
-    fetchUsers();
     fetchAssignments();
     fetchRooms();
   }, []);
@@ -47,16 +46,6 @@ export default function AdminCleaningDashboard() {
       toast.error("Failed to load cleaning staff");
     }
   };
-
-  const fetchUsers = async () => {
-    try {
-      const res = await api.get("/User/getAllCustomers");
-      setUsers(res.data);
-    } catch {
-      toast.error("Failed to load users");
-    }
-  };
-
   const fetchAssignments = async () => {
     try {
       const res = await api.get("/CleaningAssignment/getAllAssignments");
@@ -74,27 +63,6 @@ export default function AdminCleaningDashboard() {
       toast.error("Failed to load rooms");
     }
   };
-
-  const handleAddStaff = async () => {
-    if (!newStaff.userID || !newStaff.shift || !currentUserID) {
-      toast.warn("Select user and shift");
-      return;
-    }
-    try {
-      await api.post("/CleaningStaff/addCleaningStaff", {
-        userID: parseInt(newStaff.userID),
-        shift: newStaff.shift,
-        isActive: newStaff.isActive,
-        assignedByUserID: currentUserID
-      });
-      toast.success("Staff added successfully");
-      setNewStaff({ userID: '', shift: '', isActive: true });
-      fetchStaff();
-    } catch {
-      toast.error("Failed to add staff");
-    }
-  };
-
   const handleEditClick = (staff) => {
     setEditingStaffID(staff.cleaningStaffID);
     setEditShift(staff.shift);
@@ -147,41 +115,6 @@ export default function AdminCleaningDashboard() {
       <h2 className="fw-bold text-primary mb-4">
         <i className="bi bi-tools me-2"></i> Admin Cleaning Dashboard
       </h2>
-
-      {/* Add Staff Form */}
-      <div className="card mb-4">
-        <div className="card-header fw-semibold fs-5">
-          <i className="bi bi-person-plus me-2"></i>Add Cleaning Staff
-        </div>
-        <div className="card-body">
-          <div className="row g-3">
-            <div className="col-md-6">
-              <label className="form-label fw-semibold">Select User</label>
-              <Select
-                options={users.map(u => ({ value: u.userID, label: `${u.firstName} ${u.lastName}` }))}
-                value={users.find(u => u.userID.toString() === newStaff.userID) ? { value: newStaff.userID, label: users.find(u => u.userID.toString() === newStaff.userID).firstName + ' ' + users.find(u => u.userID.toString() === newStaff.userID).lastName } : null}
-                onChange={opt => setNewStaff({ ...newStaff, userID: opt?.value || '' })}
-                placeholder="Select User..."
-                isClearable
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label fw-semibold">Select Shift</label>
-              <select className="form-select" value={newStaff.shift} onChange={e => setNewStaff({ ...newStaff, shift: e.target.value })}>
-                <option value="">Select Shift</option>
-                <option value="Morning">Morning</option>
-                <option value="Afternoon">Afternoon</option>
-                <option value="Night">Night</option>
-              </select>
-            </div>
-          </div>
-          <button className="btn btn-outline-dark fw-semibold mt-3 w-100" onClick={handleAddStaff}>
-            <i className="bi bi-check-circle me-2"></i>Add Staff
-          </button>
-        </div>
-      </div>
-
-      {/* Staff Table */}
       <div className="card mb-4">
         <div className="card-header fw-semibold fs-5">
           <i className="bi bi-people me-2"></i>Cleaning Staff List

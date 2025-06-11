@@ -35,7 +35,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAllAssignments")]
-        [Authorize(Roles = "Admin,CleaningManager, CleaningStaff")]
+        [Authorize(Roles = "Admin,CleaningManager,CleaningStaff")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetAllAssignments();
@@ -103,7 +103,7 @@ namespace HotelMS.Controllers
             }
         }
         [HttpGet("getAssignmentsByStaffName")]
-        [Authorize(Roles = "Admin,CleaningManager, CleaningStaff")]
+        [Authorize(Roles = "Admin,CleaningManager,CleaningStaff")]
         public async Task<IActionResult> GetAssignmentsByStaffName([FromQuery] string name)
         {
             var result = await _service.GetAssignmentsByStaffName(name);
