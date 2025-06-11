@@ -165,12 +165,7 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              {/* <Route path="/restaurant-manager/dashboard" element={
-                <ProtectedRoute allowedRoles={['RestaurantManager']}>
-                  <RestaurantManagerDashboard />
-                </ProtectedRoute>
-              }/> */}
-
+        
               <Route path="/manager/restaurant-hosts" element={
                 <ProtectedRoute allowedRoles={['RestaurantManager']}>
                   <HostAssignmentDashboard />

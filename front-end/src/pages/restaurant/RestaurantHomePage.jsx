@@ -86,7 +86,7 @@ if (typeof errorData === 'string') {
   if(!settings) return <div>Loading...</div>
 };
   return (
-   <div>
+   <div style={{ fontFamily: "'Crimson Text', serif" }}>
      <section className="container-fluid p-0 position-relative">
        
         <div
@@ -152,7 +152,7 @@ if (typeof errorData === 'string') {
       .sort(() => 0.5 - Math.random())
       .slice(0, 3)
       .map((item) => (
-        <div className="col-sm-6 col-md-4 col-1g-3" key={item.menuItemID}>
+        <div className="col-sm-6 col-md-4 col-lg-3" key={item.menuItemID}>
           <div className="card shadow-sm">
             <img src={item.image_url} className="card-img-top" alt={item.name} style={{ height: '200px', objectFit: 'cover' }} />
             <div className="card-body">
@@ -175,23 +175,6 @@ if (typeof errorData === 'string') {
       <section className="py-5 bg-light">
         <div className="container">
           <h2 className="text-center mb-4">Book a Table</h2>
-           <style>
-    {`
-      input.form-control:focus {
-        border-color: #495057;
-        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.25);
-      }
-      .fade-in {
-  animation: fadeIn 0.8s ease-in;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-    `}
-  </style>
 
           <form className="row g-3 fade-in" onSubmit={handleSubmit}>
             <div className="col-md-6">
