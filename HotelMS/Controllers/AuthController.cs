@@ -133,7 +133,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("me")]
-        [Authorize]
+       
         public async Task<IActionResult> Me()
         {
             try
@@ -165,23 +165,26 @@ namespace HotelMS.Controllers
                 return Unauthorized(new { message = "Invalid token or user not found" });
             }
         }
+
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh()
         {
             var oldRefreshToken = Request.Cookies["refresh"];
-            if (string.IsNullOrEmpty(oldRefreshToken))
-                return Unauthorized(new { message = "Refresh token not found" });
+            Console.WriteLine(" Refresh triggered, cookie: " + oldRefreshToken);
 
             var (newAccessToken, newRefreshToken) = await _service.RotateRefreshToken(oldRefreshToken);
+
             if (newAccessToken == null || newRefreshToken == null)
+            {
                 return Unauthorized(new { message = "Refresh token is invalid or expired" });
+            }
 
             Response.Cookies.Append("jwt", newAccessToken, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddHours(2)
+                Expires = DateTime.UtcNow.AddMinutes(2) // ose 15 për prodhim
             });
 
             Response.Cookies.Append("refresh", newRefreshToken, new CookieOptions
@@ -192,8 +195,9 @@ namespace HotelMS.Controllers
                 Expires = DateTime.UtcNow.AddDays(7)
             });
 
-            return Ok(new { message = "Token refreshed successfully" });
+            return Ok(new { refreshed = true });
         }
+
 
     }
 }

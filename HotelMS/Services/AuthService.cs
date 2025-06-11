@@ -76,7 +76,7 @@ namespace HotelMS.Services
 
             string refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(3);
             await _context.SaveChangesAsync();
 
             var accessToken = await CreateToken(user);
@@ -147,7 +147,7 @@ namespace HotelMS.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private string GenerateRefreshToken()
+        public string GenerateRefreshToken()
         {
             var randomBytes = new byte[64];
             using (var rng = RandomNumberGenerator.Create())
@@ -173,7 +173,7 @@ namespace HotelMS.Services
 
             var newRefreshToken = GenerateRefreshToken();
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(3);//per testim
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(4);//per testim
             //user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
             var newAccessToken = await CreateToken(user);

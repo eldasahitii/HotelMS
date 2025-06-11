@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { useAuth } from '../Context/AuthContext'; 
+import { useAuth } from '../Context/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -29,20 +29,13 @@ const Login = () => {
     if (Object.values(errors).some(Boolean)) return;
 
     try {
-      const loginRes = await axios.post(
-        'https://localhost:7117/api/Auth/login',
-        { email, password },
-        { withCredentials: true }
-      );
+      const loginRes = await axios.post('/api/Auth/login', { email, password });
 
       if (loginRes.data.isLoggedIn) {
-        await fetchUser(); 
+        await fetchUser(); // Merr rolin nga /me përmes context
 
-        const meRes = await axios.get('https://localhost:7117/api/Auth/me', {
-          withCredentials: true,
-        });
-
-        const { role } = meRes.data;
+        // ose nëse loginRes kthen `role`, përdore direkt:
+        const role = loginRes.data.role;
 
         switch (role) {
           case 'Customer': navigate('/homepage'); break;
@@ -54,7 +47,7 @@ const Login = () => {
           case 'RestaurantManager': navigate('/restaurant-manager/dashboard'); break;
           case 'RestaurantHost': navigate('/host/dashboard'); break;
           case 'ServiceManager': navigate('/manager/service-manager'); break;
-          case 'ServiceRecepsionist': navigate ('/manager/service-recepcionist'); break;
+          case 'ServiceRecepsionist': navigate('/manager/service-recepcionist'); break;
           default:
             setError('Unknown role. Access denied.');
             break;
@@ -77,19 +70,10 @@ const Login = () => {
   };
 
   return (
-    <div
-      className="container-fluid d-flex align-items-center justify-content-center py-5"
-      style={{
-        minHeight: '100vh',
-        backgroundColor: '#e6f3fb',
-        fontFamily: "'Playfair Display', serif"
-      }}
-    >
+    <div className="container-fluid d-flex align-items-center justify-content-center py-5"
+         style={{ minHeight: '100vh', backgroundColor: '#e6f3fb', fontFamily: "'Playfair Display', serif" }}>
       <div className="w-100 px-3" style={{ maxWidth: '500px' }}>
-        <form
-          onSubmit={handleLogin}
-          className="bg-white p-4 p-md-5 rounded shadow-lg"
-        >
+        <form onSubmit={handleLogin} className="bg-white p-4 p-md-5 rounded shadow-lg">
           <h3 className="fw-bold text-center mb-3">Hotel Amé</h3>
           <h2 className="fw-bold text-center mb-3">Welcome Back</h2>
           <p className="text-center text-muted mb-4">
@@ -126,12 +110,8 @@ const Login = () => {
                   setFormErrors(prev => ({ ...prev, password: false }));
                 }}
               />
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-              >
+              <button type="button" className="btn btn-outline-secondary"
+                      onClick={() => setShowPassword(!showPassword)} tabIndex={-1}>
                 <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
               </button>
             </div>

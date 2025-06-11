@@ -45,12 +45,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         options.Events = new JwtBearerEvents
         {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.ContainsKey("jwt"))
+                {
+                    context.Token = context.Request.Cookies["jwt"];
+                }
+                return Task.CompletedTask;
+            },
             OnAuthenticationFailed = context =>
             {
                 Console.WriteLine("JWT authentication failed: " + context.Exception.ToString());
                 return Task.CompletedTask;
             }
         };
+
     });
 
 builder.Services.AddCors(options =>
@@ -142,10 +151,10 @@ app.UseCors("AllowFrontend");
 
 app.Use(async (context, next) =>
 {
-    var token = context.Request.Cookies["jwt"];
-    if (!string.IsNullOrEmpty(token) && !context.Request.Headers.ContainsKey("Authorization"))
+    Console.WriteLine("---- COOKIES RECEIVED FROM BROWSER ----");
+    foreach (var cookie in context.Request.Cookies)
     {
-        context.Request.Headers.Append("Authorization", $"Bearer {token}");
+        Console.WriteLine($"Key: {cookie.Key}, Value: {cookie.Value}");
     }
     await next();
 });

@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { AuthProvider } from './Context/AuthContext';
+import { AuthProvider ,useAuth} from './Context/AuthContext';
 import Header from './Components/Header';
 import Footer from './Components/Footer';
 import Login from './pages/Login';
@@ -55,26 +55,16 @@ const ReservationSection = lazy(() => import('./pages/dashboards/admindashboard/
 const ServiceManagerDashboard = lazy(() => import('./pages/dashboards/servicesdashboard/managerdashboard/servicemanager'));
 const ServiceReceptionistDashboard = lazy(() => import('./pages/dashboards/servicesdashboard/servicerecepcionist/ServiceReceptionistDashboard.jsx'));
 
-const ProtectedRoute = ({ children, allowedRoles }) => {
-  const [authorized, setAuthorized] = React.useState(null);
-  
-  React.useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axios.get('http://localhost:7117/api/Auth/me', {
-          withCredentials: true,
-        });
-        const role = res.data.role;
-        setAuthorized(allowedRoles.includes(role));
-      } catch {
-        setAuthorized(false);
-      }
-    };
-    checkAuth();
-  }, [allowedRoles]);
 
-  if (authorized === null) return <div className="text-center mt-5">Loading...</div>;
-  if (!authorized) return <Navigate to="/login" />;
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { userRole, loading } = useAuth();
+
+  if (loading) return <div className="text-center mt-5">Loading...</div>;
+
+  if (!userRole || !allowedRoles.includes(userRole)) {
+    return <Navigate to="/login" replace />;
+  }
+
   return children;
 };
 
