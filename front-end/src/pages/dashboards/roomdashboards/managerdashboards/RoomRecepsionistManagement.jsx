@@ -25,10 +25,9 @@ const fetchCurrentUser = async () => {
     const res = await axios.get("https://localhost:7117/api/Auth/me", {
       withCredentials: true,
     });
-    console.log("fetchCurrentUser response:", res.data);
 
-    setCurrentUserId(res.data.userID); // Fix capitalization here
-    setCurrentUserName(res.data.userName); // Use userName string directly
+    setCurrentUserId(res.data.userID);
+    setCurrentUserName(res.data.userName);
 
   } catch (err) {
     toast.error("Failed to fetch logged-in user info.");
@@ -44,7 +43,6 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
-  console.log("currentUserId changed:", currentUserId);
   if (currentUserId) {
     fetchUsers();
     fetchRecepsionists();
@@ -52,23 +50,18 @@ useEffect(() => {
 }, [currentUserId]);
 
 const fetchUsers = async () => {
-  console.log("fetchUsers called");
   try {
     const res = await axios.get("/api/User/getAllCustomers");
-    console.log("fetchUsers response:", res.data);
     setUsers(res.data);
   } catch (err) {
-    console.error("fetchUsers error:", err);
     toast.error("Failed to load customers.");
   }
 };
 
 const fetchRecepsionists = async () => {
-  console.log("fetchRecepsionists called");
   try {
     setLoading(true);
     const res = await axios.get("/api/RoomRecepsionist/getAllRoomRecepsionists");
-    console.log("fetchRecepsionists response:", res.data);
     setReceps(res.data);
   } catch (err) {
     console.error("fetchRecepsionists error:", err);
