@@ -49,7 +49,6 @@ export default function RestaurantHostDashboard() {
         withCredentials: true
       });
       setTables(res.data);
-      console.log("Updated tables:", res.data);
     } catch (err) {
       toast.error("Failed to fetch tables.");
     }
@@ -294,10 +293,6 @@ const handleSearch = () => {
       ))}
     </select>
 
-
-   {/* <button className="btn btn-primary w-100" onClick={handleReservationSubmit}>
-  <i className="bi bi-check2-circle me-2"></i>Reserve
-</button> */}
 
     <button className="btn btn-primary w-100" onClick={handleAddReservation}>
       <i className="bi bi-check2-circle me-2"></i>Add
