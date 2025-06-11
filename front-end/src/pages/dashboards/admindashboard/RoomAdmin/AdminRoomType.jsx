@@ -293,7 +293,7 @@ const handleDeleteImage = async (imageId) => {
               className="form-control"
               onChange={handleImageChange}
             />
-            {/* Show existing images on edit */}
+           
             
 {isEditing && newRoomType.images && newRoomType.images.length > 0 && (
   <div className="mt-2">
@@ -340,7 +340,7 @@ const handleDeleteImage = async (imageId) => {
 )}
 
 
-            {/* Show previews for newly selected images */}
+           
             {imagePreviews.length > 0 && (
               <div className="mt-2">
                 <p>New Image Previews:</p>

@@ -214,12 +214,6 @@ namespace HotelMS.Services
         }
 
 
-
-
-
-
-
-
         public async Task<bool> CancelReservationAsync(int id)
         {
             var reservation = await _dbContext.RestaurantReservations.FindAsync(id);

@@ -165,21 +165,21 @@ namespace HotelMS.Data
             // HotelServiceReservation ↔ HotelServiceDetail (many-to-one)
             modelBuilder.Entity<HotelServiceReservation>()
                 .HasOne(r => r.HotelServiceDetail)
-                .WithMany() // No navigation property on HotelServiceDetail for reservations
+                .WithMany() 
                 .HasForeignKey(r => r.HotelServiceDetailID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // HotelServiceReservation ↔ ServiceReservationStatus (many-to-one, optional)
             modelBuilder.Entity<HotelServiceReservation>()
                 .HasOne(r => r.ReservationStatus)
-                .WithMany() // No navigation property on ServiceReservationStatus for reservations
+                .WithMany() 
                 .HasForeignKey(r => r.ReservationStatusID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // HotelServiceReservation ↔ ServiceRecepsionist (many-to-one, optional)
             modelBuilder.Entity<HotelServiceReservation>()
                 .HasOne(r => r.ServiceRecepsionist)
-                .WithMany(s => s.Reservations) // Navigation property on ServiceRecepsionist for reservations
+                .WithMany(s => s.Reservations) 
                 .HasForeignKey(r => r.ServiceRecepsionistId)
                 .OnDelete(DeleteBehavior.SetNull);
 

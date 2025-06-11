@@ -17,6 +17,5 @@ namespace HotelMS.Data.DTO
 
         public int? CustomerUserID { get; set; }  
 
-        //public int? ReceptionistID { get; set; }
     }
 }
