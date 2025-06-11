@@ -1,5 +1,6 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,7 @@ namespace HotelMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,CleaningManager")]
     public class CleaningStaffController : ControllerBase
     {
         private readonly ICleaningStaffService _service;
@@ -16,6 +18,7 @@ namespace HotelMS.Controllers
             _service = service;
         }
         [HttpPost("addCleaningStaff")]
+
         public async Task<IActionResult> AddCleaningStaff([FromBody] CleaningStaffDTO dto)
         {
             if (!ModelState.IsValid)

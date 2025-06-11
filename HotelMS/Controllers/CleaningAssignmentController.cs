@@ -1,12 +1,14 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,CleaningManager, CleaningStaff")]
     public class CleaningAssignmentController : ControllerBase
     {
         private readonly ICleaningAssignmentService _service;

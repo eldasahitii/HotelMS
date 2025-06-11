@@ -66,8 +66,7 @@ namespace HotelMS.Controllers
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.None,
-                    //Expires = DateTime.UtcNow.AddHours(2)
-                    Expires = DateTime.UtcNow.AddSeconds(10)
+                    Expires = DateTime.UtcNow.AddMinutes(30)
                 });
 
                 Response.Cookies.Append("refresh", refreshToken, new CookieOptions
@@ -75,8 +74,7 @@ namespace HotelMS.Controllers
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.None,
-                    //Expires = DateTime.UtcNow.AddDays(7)
-                    Expires = DateTime.UtcNow.AddSeconds(20)
+                    Expires = DateTime.UtcNow.AddDays(7)
                 });
 
                 return Ok(new { isLoggedIn = true });
@@ -164,7 +162,6 @@ namespace HotelMS.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh()
         {
-         
             var oldRefreshToken = Request.Cookies["refresh"];
             if (string.IsNullOrEmpty(oldRefreshToken))
                 return Unauthorized(new { message = "Refresh token not found" });
@@ -178,8 +175,7 @@ namespace HotelMS.Controllers
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
-                //Expires = DateTime.UtcNow.AddHours(2)
-                Expires = DateTime.UtcNow.AddMinutes(1)
+                Expires = DateTime.UtcNow.AddMinutes(30)
             });
 
             Response.Cookies.Append("refresh", newRefreshToken, new CookieOptions
