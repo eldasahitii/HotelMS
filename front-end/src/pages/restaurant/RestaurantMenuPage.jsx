@@ -37,7 +37,7 @@ const RestaurantMenuPage = () => {
 
 
     return (
-         <div>
+         <div style={{ fontFamily: "'Crimson Text', serif" }}>
             <section className="container-fluid p-0 position-relative">
        
       

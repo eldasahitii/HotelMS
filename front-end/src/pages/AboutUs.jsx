@@ -22,6 +22,8 @@ export default function AboutUs() {
   const [minRating, setMinRating] = useState('');
   const [searchText, setSearchText] = useState('');
 
+  
+
 
 
   useEffect(() => {
@@ -38,7 +40,7 @@ const fetchRole = async () => {
     const fetchedRoleId = res.data.roleID || res.data.roleId;
 
     if (!fetchedUserId) {
-      return; // Don't set anything if not logged in
+      return; 
     }
 
     setUserId(parseInt(fetchedUserId));
@@ -47,7 +49,7 @@ const fetchRole = async () => {
   if (err.response?.status === 401) {
     setUserId(null);
     setRoleId(null);
-    // 👇 Do NOT log this to console
+   
   } else {
     if (process.env.NODE_ENV === "development") {
       console.error("Unexpected error:", err);
@@ -158,30 +160,32 @@ const fetchReviews = async () => {
 });
 
   return (
-    <div style={{ fontFamily: "'Playfair Display', serif" }}>
+   <div style={{ fontFamily: "'Crimson Text', serif" }}>
       {/* Hero Section */}
-   <div style={{
-  height: '80vh',
+  <div style={{
+  minHeight: '600px',
   backgroundImage: `url(${heroImage})`,
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  paddingTop: '140px',   
+  paddingBottom: '80px',  
   color: 'black',
-  textShadow: '2px 2px 4px rgba(0,0,0,0.6)',
-  padding: '0 1rem',
-  fontFamily: "'Playfair Display', serif"
+  fontFamily: "'Crimson Text', serif"
 }}>
+
   <div className="text-center">
-    <h1 style={{
-      fontSize: '3rem',
-      fontWeight: '500',
-      letterSpacing: '0.5px',
-      marginBottom: '1rem'
-    }}>
-      Meet the Heart Behind Amé
-    </h1>
+<h1 style={{
+  fontSize: '60px',
+  fontWeight: '400',
+  marginBottom: '1rem',
+  color: 'black'
+}}>
+  Meet the Heart Behind Amé
+</h1>
+
     <p style={{
       fontSize: '1.25rem',
       fontWeight: '300',
@@ -401,7 +405,7 @@ const fetchReviews = async () => {
 <div className="mt-5">
   <h3 className="fw-bold mb-3">All Reviews</h3>
 
-  {/* ✅ Filter UI Section */}
+  {/*  Filter UI Section */}
   <div className="bg-light p-3 rounded mb-4">
     <h5 className="fw-bold">Filter Reviews</h5>
     <div className="row g-3 mt-2">
@@ -452,7 +456,7 @@ const fetchReviews = async () => {
     Showing {filteredReviews.length} of {reviews.length} reviews
   </p>
 
-  {/* ✅ Review Cards */}
+  {/* Review Cards */}
   <div className="row g-4">
     {filteredReviews.map((review) => (
       <div className="col-md-6" key={review.reviewID}>
