@@ -28,7 +28,7 @@ namespace HotelMS.Models
         [Required]
         public byte[] PasswordSalt { get; set; }
 
-        [RegularExpression(@"^\d{9}$", ErrorMessage = "Phone number must be exactly 9 digits.")]
+        [RegularExpression(@"^\+?\d{7,15}$", ErrorMessage = "Phone number must be 7 to 15 digits and can start with +")]
         public string? Phone { get; set; }
 
         public string? Address { get; set; }
