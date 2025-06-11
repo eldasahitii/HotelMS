@@ -9,10 +9,12 @@ const ReviewDashboard = () => {
   const [replyText, setReplyText] = useState("");
   const [deletingImageId, setDeletingImageId] = useState(null);
 
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [minRating, setMinRating] = useState('');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [minRating, setMinRating] = useState("");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [categories, setCategories] = useState([]);
+  const [selectedReview, setSelectedReview] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetchReviews();
@@ -262,14 +264,27 @@ const ReviewDashboard = () => {
                         </button>
                       )}
                     </td>
-                    <td>
-                      <button
-                        className="btn btn-outline-danger btn-sm"
-                        onClick={() => handleDeleteReview(review.reviewID)}
-                      >
-                        Delete
-                      </button>
-                    </td>
+              <td>
+  <div className="d-flex flex-wrap gap-2">
+    <button
+      className="btn btn-sm btn-outline-primary px-3"
+      onClick={() => {
+        setSelectedReview(review);
+        setShowModal(true);
+      }}
+    >
+      <i className="bi bi-eye me-1"></i> View
+    </button>
+    <button
+      className="btn btn-sm btn-outline-danger px-3"
+      onClick={() => handleDeleteReview(review.reviewID)}
+    >
+      <i className="bi bi-trash me-1"></i> Delete
+    </button>
+  </div>
+</td>
+
+
                   </tr>
                 ))}
                 {sortedReviews.length === 0 && (
@@ -356,13 +371,58 @@ const ReviewDashboard = () => {
             </table>
           </div>
         </div>
+       {/* Modal for viewing details */}
+{selectedReview && (
+  <div className={`modal fade ${showModal ? "show d-block" : ""}`} tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+    <div className="modal-dialog modal-lg">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Review Details</h5>
+          <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+        </div>
+        <div className="modal-body">
+          <p><strong>User:</strong> {selectedReview.user?.firstName} {selectedReview.user?.lastName}</p>
+          <p><strong>Category:</strong> {selectedReview.category?.categoryName}</p>
+          <p><strong>Rating:</strong>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <i key={star} className={`bi ${selectedReview.rating >= star ? "bi-star-fill" : "bi-star"} text-warning me-1`} />
+            ))}
+          </p>
+          <p><strong>Comment:</strong> {selectedReview.comment}</p>
+
+          {selectedReview.images && selectedReview.images.length > 0 && (
+            <>
+              <strong>Images:</strong>
+              <div className="d-flex flex-wrap gap-2 mt-2">
+                {selectedReview.images.map((img) => (
+                  <img key={img.reviewImageID} src={img.imageUrl} alt="Review" className="img-thumbnail" style={{ width: "100px", height: "100px", objectFit: "cover" }} />
+                ))}
+              </div>
+            </>
+          )}
+
+          {selectedReview.managerReply && (
+            <div className="mt-3">
+              <strong>Manager Reply:</strong>
+              <p>{selectedReview.managerReply}</p>
+              <small className="text-muted">{new Date(selectedReview.replyDate).toLocaleDateString()}</small>
+            </div>
+          )}
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
       </main>
     </div>
   );
 };
 
 export default ReviewDashboard;
-
 
 
 
