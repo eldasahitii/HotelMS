@@ -159,7 +159,7 @@ public class Seed
         new ManagerType() { Name = "Cleaning Manager" },
         new ManagerType() { Name = "Restaurant Manager" },
         new ManagerType() { Name = "Services Manager" },
-      
+        
     };
 
             dataContext.ManagerTypes.AddRange(managerTypes);
@@ -314,6 +314,7 @@ public class Seed
             dataContext.SaveChanges();
         }
 
+        
         var requiredRoomTypes = new[]
         {
     new RoomType { Name = "Junior Room", Capacity = "1-2 PERSONS", Size = "22M2", Description = "Auto-added fallback", Price = 120 },
@@ -438,32 +439,6 @@ public class Seed
         }
 
 
-
-
-        //if (!dataContext.RoomReservations.Any())
-        //{
-        //    var availableRoomID = dataContext.Rooms.First(r => r.Title == "Single Room").RoomID;
-        //    var customerID = dataContext.Users.First(u => u.Email == "velsa@gmail.com").UserID;
-        //    var reservationStatusID = dataContext.ReservationStatuses.First(rs => rs.ReservationStatusName == "Pending").ReservationStatusID;
-
-        //    var reservations = new List<RoomReservation>
-        //    {
-        //        new RoomReservation()
-        //        {
-        //            RoomID = availableRoomID,
-        //            UserID = customerID,
-        //            CheckInDate = DateTime.Now.AddDays(1),
-        //            CheckOutDate = DateTime.Now.AddDays(5),
-        //            ReservationStatusID = reservationStatusID,
-        //            CreatedAt = DateTime.Now
-
-        //        }
-        //    };
-
-        //    dataContext.RoomReservations.AddRange(reservations);
-        //    dataContext.SaveChanges();
-        //}
-
         // Seed ReviewCategories
         if (!dataContext.ReviewCategories.Any())
         {
@@ -507,9 +482,9 @@ public class Seed
                 };
 
                 dataContext.Reviews.AddRange(review1, review2);
-                dataContext.SaveChanges(); // needed to get ReviewIDs
+                dataContext.SaveChanges(); 
 
-                // Seed ReviewImage for review1
+                
                 var reviewImage = new ReviewImage
                 {
                     ReviewID = review1.ReviewID,
@@ -724,7 +699,7 @@ public class Seed
         // Seed ServiceRecepsionists
         if (!dataContext.ServiceRecepsionists.Any())
         {
-            // Example: find a user by email to seed as recepsionist
+          
             var recepsionistUser = dataContext.Users.FirstOrDefault(u => u.Email == "erblina@gmail.com");
             var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "rona@gmail.com");
 
@@ -735,8 +710,8 @@ public class Seed
                     FirstName = "Erblina",          
                     LastName = "Service",
                     Email = recepsionistUser.Email, 
-                    Phone = "123-456-7890",       
-                                               
+                    Phone = "123-456-7890",         
+                                                    
                 };
 
                 dataContext.ServiceRecepsionists.Add(serviceRecepsionist);

@@ -13,7 +13,7 @@ export default function AdminRoomReservationStatus() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch all reservation statuses
+
   const fetchStatuses = async () => {
     setLoading(true);
     setError("");
@@ -31,19 +31,17 @@ export default function AdminRoomReservationStatus() {
     fetchStatuses();
   }, []);
 
-  // Handle input changes
+  
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // Clear form and editing state
   const clearForm = () => {
     setForm({ reservationStatusName: "" });
     setEditingId(null);
     setError("");
   };
 
-  // Submit add or update
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");

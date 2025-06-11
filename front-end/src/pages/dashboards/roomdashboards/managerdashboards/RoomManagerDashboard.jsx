@@ -234,54 +234,6 @@ const handleDeleteRoom = async (roomID) => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: "#f2f6fc" }}>
-      {/* <aside
-        className="text-white p-4"
-        style={{ width: "240px", backgroundColor: "#324b6b" }}
-      >
-        <h4 className="fw-bold mb-4">
-          <i className="bi bi-building"></i> HotelMS
-        </h4>
-        <ul className="nav flex-column">
-          <li className="nav-item text-white mb-3">
-            <i className="bi bi-building me-2"></i> Room Manager Dashboard
-          </li>
-
-          <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/room-manager-receptionist-management")}
-          >
-            <i className="bi bi-person-lines-fill me-2"></i> Receptionist
-            Management
-          </button>
-
-          <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/admin/reservation-dashboard")}
-          >
-            <i className="bi bi-journal-check me-2"></i> Room Reservation List
-          </button>
-          <button
-          className="btn btn-outline-light w-100 mb-3"
-          onClick={() => navigate("/room-manager/review-dashboard")}
-           >
-          <i className="bi bi-chat-left-text me-2"></i> Review Dashboard
-          </button>
-
-
-          
-
-
-          <button
-            className="btn btn-outline-light w-100 mt-2"
-            onClick={() => {
-              localStorage.removeItem("token");
-              navigate("/login");
-            }}
-          >
-            <i className="bi bi-box-arrow-right me-2"></i> Logout
-          </button>
-        </ul>
-      </aside> */}
 
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
@@ -357,7 +309,7 @@ const handleDeleteRoom = async (roomID) => {
 >
   <option value="">Select Status</option>
   {roomStatuses
-    .filter(rs => rs.roomStatusName !== "Cleaning")  // <-- filter out Cleaning here
+    .filter(rs => rs.roomStatusName !== "Cleaning") 
     .map((rs) => (
       <option key={rs.roomStatusID} value={rs.roomStatusID}>
         {rs.roomStatusName}

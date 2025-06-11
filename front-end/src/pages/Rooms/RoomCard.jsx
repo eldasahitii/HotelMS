@@ -16,9 +16,8 @@ const RoomCard = ({
   reverse = false,
   price,
 }) => {
-  // Prepend backend URL to images
   const imagesWithFullUrls = images.map((img) => {
-    if (img.startsWith("http")) return img; // Already a full URL
+    if (img.startsWith("http")) return img; 
     return `${BACKEND_BASE_URL}/${img}`;
   });
 

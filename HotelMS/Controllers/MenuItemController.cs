@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HotelMS.Controllers
 {
-    //[Authorize(Roles = "RestaurantManager,Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class MenuItemController : ControllerBase

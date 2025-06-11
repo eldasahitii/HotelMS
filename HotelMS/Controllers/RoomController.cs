@@ -32,7 +32,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetRoom")]
-        //[Authorize(Roles = "Admin,RoomManager,RoomRecepsionist")]
+      
         public async Task<IActionResult> GetRoom(int id)
         {
             try
@@ -49,7 +49,6 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("GetAllRooms")]
-        //[Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,CleaningManager")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -135,22 +134,7 @@ namespace HotelMS.Controllers
             }
         }
 
-        //[HttpGet("GetRoomAvailability")]
-        //public async Task<ActionResult<IEnumerable<RoomAvailabilityDTO>>> GetRoomAvailability([FromQuery] DateTime? checkIn, [FromQuery] DateTime? checkOut)
-        //{
-        //    if (!checkIn.HasValue || !checkOut.HasValue)
-        //    {
-        //        return BadRequest("Please provide both checkIn and checkOut query parameters.");
-        //    }
-
-        //    if (checkOut <= checkIn)
-        //    {
-        //        return BadRequest("Check-out date must be after check-in date.");
-        //    }
-
-        //    var availability = await _service.GetRoomAvailability(checkIn.Value, checkOut.Value);
-        //    return Ok(availability);
-        //}
+       
 
 
     }

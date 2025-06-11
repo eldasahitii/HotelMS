@@ -70,7 +70,7 @@ namespace HotelMS.Services
                 UserID = actualUserID,
                 CheckInDate = request.CheckInDate.Date,
                 CheckOutDate = request.CheckOutDate.Date,
-                ReservationStatusID = 1, // Pending
+                ReservationStatusID = 1, 
                 SpecialRequests = request.SpecialRequests,
                 CreatedAt = DateTime.Now,
                 CreatedByReceptionistID = receptionistID
@@ -168,7 +168,7 @@ namespace HotelMS.Services
             if (reservation == null)
                 return "Reservation not found";
 
-            // NEW: Block updates if status is Completed or Cancelled
+          
             if (reservation.ReservationStatus.ReservationStatusName == "Completed" ||
                 reservation.ReservationStatus.ReservationStatusName == "Cancelled")
             {

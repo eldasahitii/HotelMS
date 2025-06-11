@@ -34,19 +34,6 @@ namespace HotelMS.Services
         }
 
 
-        //public async Task<IEnumerable<User>> GetAll()
-        //{
-        //    try
-        //    {
-        //        var result = await _dbContext.Users.ToListAsync();
-        //        return result;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        throw new Exception("An error occured");
-        //    }
-        //}
         public async Task<IEnumerable<UserDTO>> GetAll()
         {
             try
