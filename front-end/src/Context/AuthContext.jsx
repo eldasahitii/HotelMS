@@ -9,12 +9,28 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const res = await axios.get("https://localhost:7117/api/Auth/me", {
+      const res = await axios.get("http://localhost:7117/api/Auth/me", {
         withCredentials: true,
       });
       setUserRole(res.data.role);
-    } catch {
-      setUserRole(null);
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        try {
+          await axios.post("http://localhost:7117/api/Auth/refresh", null, {
+            withCredentials: true,
+          });
+          const retry = await axios.get("http://localhost:7117/api/Auth/me", {
+            withCredentials: true,
+          });
+          setUserRole(retry.data.role);
+        } catch (refreshErr) {
+          console.log("Refresh failed:", refreshErr);
+          setUserRole(null);
+        }
+      } else {
+        console.log("Auth error:", err);
+        setUserRole(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -26,7 +42,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ userRole, setUserRole, fetchUser, loading }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
