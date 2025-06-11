@@ -43,7 +43,7 @@ namespace HotelMS.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Optionally track status (pending, confirmed, canceled)
+        
         public int? ReservationStatusID { get; set; }
 
         [ForeignKey("ReservationStatusID")]

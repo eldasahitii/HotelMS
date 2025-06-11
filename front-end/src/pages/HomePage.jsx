@@ -32,7 +32,7 @@ const MiddleSection = () => {
   const navigate = useNavigate();
 
   const handlePool = () => {
-    navigate("/about");
+    navigate("/services/pool-spa");
   };
 
 
@@ -94,6 +94,8 @@ const MiddleSection = () => {
         </div>
 
       </div>
+      
+      
 
 
       <div className="container my-5 mt-7">

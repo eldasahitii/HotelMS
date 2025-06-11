@@ -34,7 +34,8 @@ import HomePage from './pages/HomePage';
 import CleaningReviewDashboard from './pages/dashboards/cleaningdashboards/CleaningReviewDashboard';
 import RestaurantReviewDashboard from './pages/dashboards/restaurantdashboards/managerdashboards/RestaurantReviewDashboard';
 import AdminCleaningStaffDashboard from './pages/dashboards/admindashboard/AdminCleaningStaffDashboard';
-
+import AddServices from './pages/dashboards/admindashboard/ServiceAdmin/AddServices.jsx';
+import ServiceReservations from './pages/dashboards/admindashboard/ServiceAdmin/ServiceReservations.jsx';
 import ServiceMain from './pages/Services/ServiceMain';
 import PoolSpaPage from './pages/Services/PoolSpaPage';
 import EventsPage from './pages/Services/EventsPage';
@@ -104,6 +105,10 @@ function App() {
               <Route path="/room-manager/review-dashboard" element={<ReviewDashboard />} />
               <Route path="/cleaning-manager/review-dashboard" element={<CleaningReviewDashboard />} />
               <Route path="/restaurant-manager/review-dashboard" element={<RestaurantReviewDashboard />} />
+              <Route path="/services" element={<ServiceMain />} />
+             <Route path="/services/pool-spa" element={<PoolSpaPage />} />
+             <Route path="/services/event-page" element={<EventsPage />} />
+
 
               <Route path="/restaurant">
                 <Route index element={<RestaurantHomePage />} />
@@ -318,11 +323,22 @@ function App() {
               </ProtectedRoute>
                } /> 
 
-               <Route path="/service/Receptionist-Dashboard" element={
+               <Route path="/manager/service-recepcionist" element={
               <ProtectedRoute allowedRoles={['ServiceRecepsionist']}>
               <ServiceReceptionistDashboard />
               </ProtectedRoute>
                } />
+
+               <Route path="/admin/service-add" element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <AddServices />
+                </ProtectedRoute>
+              } />
+                <Route path="/admin/service-reservations" element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <ServiceReservations />
+                </ProtectedRoute>
+              } />
 
 
 

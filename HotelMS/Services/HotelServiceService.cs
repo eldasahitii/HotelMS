@@ -17,7 +17,7 @@ namespace HotelMS.Services
 
         }
 
-        // Hero Image methods
+        
         public async Task<HotelService> AddHeroImageAsync(int serviceId, string imageUrl)
         {
             var service = await _context.HotelServices.FindAsync(serviceId);
@@ -44,7 +44,7 @@ namespace HotelMS.Services
             return service?.HeroImage;
         }
 
-        // Hero Title methods
+        
         public async Task<HotelService> AddHeroTitleAsync(int serviceId, string title)
         {
             var service = await _context.HotelServices.FindAsync(serviceId);
@@ -71,7 +71,7 @@ namespace HotelMS.Services
             return service?.HeroTitle;
         }
 
-        // Hero Description methods
+       
         public async Task<HotelService> AddHeroDescriptionAsync(int serviceId, string description)
         {
             var service = await _context.HotelServices.FindAsync(serviceId);

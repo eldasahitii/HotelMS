@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using HotelMS.DTO; // or HotelMS.DTOs, depending on your folder's namespace
+using HotelMS.DTO; 
 
 
 namespace HotelMS.Controllers
@@ -20,8 +20,7 @@ namespace HotelMS.Controllers
             _context = context;
         }
 
-        // GET: api/reviews
-        // GET: api/reviews/GetAll
+     
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews(
      [FromQuery] int? categoryId,
@@ -50,14 +49,14 @@ namespace HotelMS.Controllers
 
 
 
-        // GET: api/reviews/{id}
+     
         [HttpGet("{id}")]
         public async Task<ActionResult<Review>> GetReviewById(int id)
         {
             var review = await _context.Reviews.Include(r => r.User).FirstOrDefaultAsync(r => r.ReviewID == id);
             if (review == null)
             {
-                return NotFound(); // 404 if not found
+                return NotFound(); 
             }
 
             return Ok(review);
@@ -65,7 +64,7 @@ namespace HotelMS.Controllers
 
 
 
-        // POST: api/reviews
+      
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<Review>> PostReview([FromBody] ReviewWithImageDTO dto)
@@ -108,20 +107,20 @@ namespace HotelMS.Controllers
 
 
 
-        // DELETE: api/reviews/{id}
+     
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReview(int id)
         {
             var review = await _context.Reviews.FindAsync(id);
             if (review == null)
             {
-                return NotFound(); // 404
+                return NotFound(); 
             }
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
 
-            return NoContent(); // 204
+            return NoContent();
         }
         [Authorize]
         [HttpPut("updatereview")]
@@ -133,7 +132,7 @@ namespace HotelMS.Controllers
                 return Unauthorized("User ID not found in token.");
             }
 
-            //int userId = int.Parse(userIdClaim.Value);
+          
             if (!int.TryParse(userIdClaim.Value, out int userId))
                 return Unauthorized("Invalid user ID in token.");
 
@@ -148,7 +147,7 @@ namespace HotelMS.Controllers
 
             if (review.UserID != userId)
             {
-                return Forbid(); // ❗Don't pass a string here
+                return Forbid(); 
             }
 
             review.Comment = updatedReview.Comment;
@@ -186,7 +185,7 @@ namespace HotelMS.Controllers
             return Ok(review);
         }
 
-        // Example in ReviewsController.cs
+     
         [HttpDelete("deleteimage/{imageId}")]
         public async Task<IActionResult> DeleteImage(int imageId)
         {
