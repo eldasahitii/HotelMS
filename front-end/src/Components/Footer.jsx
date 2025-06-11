@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Footer = () => {
+   const location = useLocation();
   const hideFooterPaths = ['/login'];
 
   if (hideFooterPaths.includes(location.pathname)) return null;
@@ -11,7 +12,6 @@ const Footer = () => {
     <footer className="bg-light text-dark border-top mt-5 pt-4 pb-2">
       <div className="container text-center text-md-start">
         <div className="row">
-
           <div className="col-md-4 mb-3">
             <h5 className="fw-bold">Hotel Amé</h5>
             <p className="text-muted small">
@@ -25,7 +25,6 @@ const Footer = () => {
               <li><Link to="/about" className="text-decoration-none text-secondary">About Us</Link></li>
               <li><Link to="/restaurant" className="text-decoration-none text-secondary">Restaurant</Link></li>
               <li><Link to="/services" className="text-decoration-none text-secondary">Pool & Spa</Link></li>
-              <li><Link to="/book" className="text-decoration-none text-secondary">Book Now</Link></li>
             </ul>
           </div>
           <div className="col-md-4 mb-3">
