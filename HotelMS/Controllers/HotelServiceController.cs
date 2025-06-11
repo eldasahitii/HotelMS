@@ -20,7 +20,7 @@ namespace HotelMS.Controllers
             _service = service;
         }
 
-        // GET Hero Image
+        
         [HttpGet("{id}/hero-image")]
         public async Task<ActionResult<string>> GetHeroImage(int id)
         {
@@ -29,7 +29,7 @@ namespace HotelMS.Controllers
             return Ok(result);
         }
 
-        // POST Hero Image (Create)
+        
         [HttpPost("{id}/hero-image")]
         public async Task<ActionResult<HotelService>> AddHeroImage(int id, [FromBody] string imageUrl)
         {
@@ -38,7 +38,7 @@ namespace HotelMS.Controllers
             return CreatedAtAction(nameof(GetHeroImage), new { id = result.Id }, result);
         }
 
-        // PUT Hero Image (Update)
+        
         [HttpPut("{id}/hero-image")]
         public async Task<ActionResult<HotelService>> UpdateHeroImage(int id, [FromBody] string imageUrl)
         {
@@ -47,7 +47,7 @@ namespace HotelMS.Controllers
             return Ok(result);
         }
 
-        // GET Hero Title
+        
         [HttpGet("{id}/hero-title")]
         public async Task<ActionResult<string>> GetHeroTitle(int id)
         {
@@ -56,7 +56,7 @@ namespace HotelMS.Controllers
             return Ok(result);
         }
 
-        // POST Hero Title
+        
         [HttpPost("{id}/hero-title")]
         public async Task<ActionResult<HotelService>> AddHeroTitle(int id, [FromBody] string title)
         {
@@ -65,7 +65,7 @@ namespace HotelMS.Controllers
             return CreatedAtAction(nameof(GetHeroTitle), new { id = result.Id }, result);
         }
 
-        // PUT Hero Title
+       
         [HttpPut("{id}/hero-title")]
         public async Task<ActionResult<HotelService>> UpdateHeroTitle(int id, [FromBody] string title)
         {
@@ -74,7 +74,7 @@ namespace HotelMS.Controllers
             return Ok(result);
         }
 
-        // GET Hero Description
+        
         [HttpGet("{id}/hero-description")]
         public async Task<ActionResult<string>> GetHeroDescription(int id)
         {
@@ -83,7 +83,7 @@ namespace HotelMS.Controllers
             return Ok(result);
         }
 
-        // POST Hero Description
+      
         [HttpPost("{id}/hero-description")]
         public async Task<ActionResult<HotelService>> AddHeroDescription(int id, [FromBody] string description)
         {
@@ -92,7 +92,7 @@ namespace HotelMS.Controllers
             return CreatedAtAction(nameof(GetHeroDescription), new { id = result.Id }, result);
         }
 
-        // PUT Hero Description
+        
         [HttpPut("{id}/hero-description")]
         public async Task<ActionResult<HotelService>> UpdateHeroDescription(int id, [FromBody] string description)
         {

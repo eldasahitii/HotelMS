@@ -11,11 +11,11 @@ namespace HotelMS.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        //[Required]
+        
         public required string DetailImage { get; set; }
-        //[Required]
+        
         public required string DetailTitle { get; set; }
-        //[Required]
+        
         public required string DetailDescription { get; set; }
 
         public required string Price { get; set; } = "€25 per person";

@@ -37,11 +37,18 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost("CreateReservation")]
-        [Authorize(Roles = "Admin,ServiceRecepsionist,Customer")]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> CreateReservation([FromBody] HotelServiceReservationDTO reservationDto)
         {
-            int newId = await _reservationService.CreateReservationAsync(reservationDto);
-            return Ok(new { success = true, reservationId = newId });
+            try
+            {
+                var newId = await _reservationService.CreateReservationAsync(reservationDto);
+                return Ok(new { success = true, reservationId = newId });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { success = false, message = ex.Message });
+            }
         }
 
         [HttpPut("UpdateReservation")]

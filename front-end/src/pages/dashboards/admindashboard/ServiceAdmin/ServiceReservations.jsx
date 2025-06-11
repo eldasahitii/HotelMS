@@ -5,7 +5,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const ServiceReservation = () => {
+const ServiceReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
   const [services, setServices] = useState([]);
@@ -85,7 +85,7 @@ const ServiceReservation = () => {
     try {
       await axios.post('https://localhost:7117/api/Auth/logout', null, { withCredentials: true });
     } catch {
-      // silently fail
+      
     }
     navigate('/login');
   };
@@ -172,4 +172,4 @@ const ServiceReservation = () => {
   );
 };
 
-export default ServiceReservation;
+export default ServiceReservations;

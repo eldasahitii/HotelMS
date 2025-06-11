@@ -146,30 +146,19 @@ const Events = () => {
     }, 100);
   };
 
-  const framedImageStyle = {
-    border: '10px solid #ffffff',
-    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
-    padding: '4px',
-    backgroundColor: '#ffffff',
-    borderRadius: '4px'
-  };
-
   return (
-    <div style={{ backgroundColor: '#ffffff' }}>
+    <div className="bg-white">
       <div
+        className="d-flex align-items-center justify-content-center text-white text-center"
         style={{
           backgroundImage: `url('https://localhost:7117/Images/Services/${ImageUrl}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           height: '70vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#fff',
-          textAlign: 'center'
+          position: 'relative'
         }}
       >
-        <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: '2rem' }}>
+        <div className="bg-dark bg-opacity-50 p-4 w-100">
           <h1 className="display-4 fw-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
             {Title || "Loading..."}
           </h1>
@@ -184,16 +173,16 @@ const Events = () => {
             className={`row align-items-center mb-5 ${idx % 2 !== 0 ? 'flex-md-row-reverse' : ''}`}
           >
             <div className="col-md-6 mb-4 mb-md-0">
-              <div style={framedImageStyle}>
+              <div className="border border-4 border-white shadow-sm p-1 rounded bg-white">
                 <img
                   src={`https://localhost:7117/Images/Services/${section.detailImage}`}
                   alt={section.detailTitle}
-                  className="img-fluid"
+                  className="img-fluid rounded"
                 />
               </div>
             </div>
             <div className="col-md-6" ref={el => formRefs.current[idx] = el}>
-              <h3 style={{ color: '#333' }}>{section.detailTitle}</h3>
+              <h3 className="text-dark">{section.detailTitle}</h3>
               <p className="text-muted">{section.detailDescription}</p>
               <p className="fw-semibold mt-2">
                 Price: <span className="text-primary">{section.price}</span>

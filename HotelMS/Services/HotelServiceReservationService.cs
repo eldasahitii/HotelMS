@@ -23,6 +23,7 @@ namespace HotelMS.Services
             var reservations = await _context.HotelServiceReservations
                 .Include(r => r.HotelServiceDetail)
                 .Include(r => r.ServiceRecepsionist)
+                .Include(r => r.ReservationStatus) 
                 .ToListAsync();
 
             return reservations.Select(r => new HotelServiceReservationDTO
@@ -37,7 +38,7 @@ namespace HotelMS.Services
                 HotelServiceDetailID = r.HotelServiceDetailID,
                 HotelServiceName = r.HotelServiceDetail?.DetailTitle,
                 ReservationStatusID = r.ReservationStatusID,
-                ReservationStatusName = r.ReservationStatusID.HasValue ? r.ReservationStatusID.Value.ToString() : null,
+                ReservationStatusName = r.ReservationStatus?.ReservationStatusName, 
                 CreatedAt = r.CreatedAt,
                 ServiceRecepsionistId = r.ServiceRecepsionistId,
                 ReceptionistFirstName = r.ServiceRecepsionist?.FirstName,
@@ -51,6 +52,7 @@ namespace HotelMS.Services
             var r = await _context.HotelServiceReservations
                 .Include(h => h.HotelServiceDetail)
                 .Include(h => h.ServiceRecepsionist)
+                .Include(h => h.ReservationStatus) 
                 .FirstOrDefaultAsync(h => h.ReservationID == reservationId);
 
             if (r == null) return null;
@@ -67,7 +69,7 @@ namespace HotelMS.Services
                 HotelServiceDetailID = r.HotelServiceDetailID,
                 HotelServiceName = r.HotelServiceDetail?.DetailTitle,
                 ReservationStatusID = r.ReservationStatusID,
-                ReservationStatusName = r.ReservationStatusID.HasValue ? r.ReservationStatusID.Value.ToString() : null,
+                ReservationStatusName = r.ReservationStatus?.ReservationStatusName, 
                 CreatedAt = r.CreatedAt,
                 ServiceRecepsionistId = r.ServiceRecepsionistId,
                 ReceptionistFirstName = r.ServiceRecepsionist?.FirstName,
@@ -78,6 +80,17 @@ namespace HotelMS.Services
 
         public async Task<int> CreateReservationAsync(HotelServiceReservationDTO dto)
         {
+            bool exists = await _context.HotelServiceReservations.AnyAsync(r =>
+                r.ReservationDate == dto.ReservationDate &&
+                r.TimeSlot == dto.TimeSlot &&
+                r.HotelServiceDetailID == dto.HotelServiceDetailID
+            );
+
+            if (exists)
+            {
+                throw new InvalidOperationException("This timeslot is already reserved.");
+            }
+
             var reservation = new HotelServiceReservation
             {
                 FirstName = dto.FirstName,
