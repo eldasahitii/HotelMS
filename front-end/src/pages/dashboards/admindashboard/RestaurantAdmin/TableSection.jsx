@@ -28,7 +28,7 @@ export default function TableSection() {
         <select className="form-select w-auto" value={tableStatusFilter} onChange={(e) => setTableStatusFilter(e.target.value)}>
           <option value="All">All</option>
           <option value="Available">Available</option>
-          <option value="Booked">Booked</option>
+          <option value="Occupied">Occupied</option>
         </select>
       </div>
 
@@ -44,7 +44,7 @@ export default function TableSection() {
                 <tr key={t.restaurantTableID}>
                   <td>{i + 1}</td>
                   <td>{t.tableNumber}</td>
-                  <td className={t.status === "Booked" ? "text-danger" : "text-success"}>{t.status}</td>
+                  <td className={t.status === "Occupied" ? "text-danger" : "text-success"}>{t.status}</td>
                   <td>{t.capacity}</td>
                 </tr>
               ))}

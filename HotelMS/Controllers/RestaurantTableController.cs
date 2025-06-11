@@ -1,12 +1,13 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
 using HotelMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Controllers
 {
-
+    [Authorize(Roles = "RestaurantManager,Admin, RestaurantHost")]
     [Route("api/[controller]")]
     [ApiController]
     public class RestaurantTableController : ControllerBase
@@ -67,18 +68,7 @@ namespace HotelMS.Controllers
             });
         }
 
-        //public async Task<IActionResult> GetAllTables()
-        //{
-        //    try
-        //    {
-        //        var result = await _service.GetAllTables();
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+     
 
         [HttpDelete("deleteTable")]
         public async Task<IActionResult> DeleteTable(int id)

@@ -131,7 +131,6 @@ namespace HotelMS.Controllers
             if (result == "Reservation marked as completed")
                 return Ok(new { message = result });
 
-            // fallback
             return BadRequest(new { error = result });
         }
 

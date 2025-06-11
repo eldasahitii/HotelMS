@@ -99,14 +99,6 @@ if (typeof errorData === 'string') {
            filter: 'blur(4px) brightness(0.6)',
            zIndex: 1,
           }}
-          // className="position-absolute top-0 start-0 w-100 h-100"
-          // style={{
-          //   backgroundImage: `url(${restaurantImg})`,
-          //   backgroundSize: 'cover',
-          //   backgroundPosition: 'center',
-          //   filter: 'blur(4px) brightness(0.6)',
-          //   zIndex: 1,
-          // }}
         />
 
   
@@ -122,11 +114,6 @@ if (typeof errorData === 'string') {
 
             <h1 className="display-4 fw-bold">{settings?.welcomeTitle}</h1>
             <p className="lead mx-auto">{settings?.welcomeMessage}</p>
-            {/* <h1 className="display-4 fw-bold">Welcome to Rolve Restaurant</h1>
-            <p className="lead mx-auto" style={{ maxWidth: '700px' }}>
-              Discover the essence of fine dining at Rolve Restaurant, where every dish is crafted with
-              organic ingredients, timeless flavors, and a passion for culinary excellence.
-            </p> */}
           </div>
         </div>
       </section>
@@ -140,12 +127,6 @@ if (typeof errorData === 'string') {
               alt="Terrace"
               className="img-fluid rounded shadow w-50"
               />
-              {/* <img
-                src={restaurantTerrace}
-                alt="Inside Rolve Restaurant"
-                className="img-fluid rounded shadow w-50"
-              /> */}
-              {/* <img src={restaurantInterior} alt="restaurant interior"  className="img-fluid rounded shadow w-50" /> */}
               <img
               src={settings?.aboutImageUrl2}
               alt="Interior"
@@ -156,13 +137,6 @@ if (typeof errorData === 'string') {
 
               <h2 className="mb-4">{settings?.aboutTitle}</h2>
               <p className="lead">{settings?.aboutMessage}</p>
-              {/* <h2 className="mb-4">About Rolve Restaurant</h2>
-              <p className="lead">
-                At Rolve Restaurant, we believe food should not only taste amazing but also be nourishing.
-                Our chefs blend tradition with creativity, using locally sourced organic ingredients to bring
-                every dish to life. From our vibrant kitchen to your table, we serve with passion, purpose,
-                and a deep respect for nature.
-              </p> */}
             </div>
           </div>
         </div>
@@ -197,49 +171,6 @@ if (typeof errorData === 'string') {
 </section>
 
 
-      {/* <section className="py-5 bg-white">
-        <div className="container text-center">
-          <h2 className="mb-4 fw-bold">Chef's Selections</h2>
-          <p className="mb-5 lead">A taste of our favorites, hand-picked by our head chef.</p>
-
-          <div className="row justify-content-center g-4 menu-card">
-            <div className="col-sm-6 col-md-4 col-1g-3">
-              <div className="card shadow-sm">
-                <img src={pasta} className="card-img-top" alt="Truffle pasta" style={{ height: '200px', objectFit: 'cover' }}/>
-                <div className="card-body">
-                  <h5 className="card-title fw-bold">Truffle Tagliatelle</h5>
-                  <p className="card-text small">Fresh pasta with black truffle cream and parmesan.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-sm-6 col-md-4 col-1g-3 menu-card">
-              <div className="card shadow-sm">
-                <img src={steak}  className="card-img-top" alt="steak" style={{ height: '200px', objectFit: 'cover' }}/>
-                <div className="card-body">
-                  <h5 className="card-title fw-bold">Herb-Crusted Filet</h5>
-                  <p className="card-text small">Tender beef filet served with seasonal vegetables.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-sm-6 col-md-4 col-1g-3  menu-card">
-              <div className="card shadow-sm">
-                <img src={risotto} className="card-img-top" alt="risotto" style={{ height: '200px', objectFit: 'cover' }} />
-                <div className="card-body">
-                  <h5 className="card-title fw-bold">Wild Mushroom Risotto</h5>
-                  <p className="card-text small">Creamy risotto with porcini mushrooms and thyme.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <Link to="/restaurant/menu" className="btn btn-dark btn-1g">View Full Menu</Link>
-          </div>
-        </div>
-
-      </section> */}
 
       <section className="py-5 bg-light">
         <div className="container">

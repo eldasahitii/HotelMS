@@ -154,20 +154,26 @@ namespace HotelMS.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<RoomAvailabilityDTO>> GetRoomAvailability()
-        {
-            var availabilityData = await _dbContext.Rooms
-                .GroupBy(r => r.RoomTypeID)
-                .Select(g => new RoomAvailabilityDTO
-                {
-                    RoomTypeID = g.Key,
-                    TotalRooms = g.Count(),
-                    AvailableRooms = g.Count(r => r.RoomStatusID == 1) 
-                })
-                .ToListAsync();
+        //public async Task<List<Room>> GetRoomAvailability(DateTime checkIn, DateTime checkOut)
+        //{
+        //    if (checkIn >= checkOut)
+        //        throw new ArgumentException("Check-out date must be after check-in date.");
 
-            return availabilityData;
-        }
+        //    var availableRooms = await _dbContext.Rooms
+        //        .Where(room => !_dbContext.RoomReservations
+        //            .Any(res =>
+        //                res.RoomID == room.RoomID &&
+        //                res.CheckInDate < checkOut &&
+        //                res.CheckOutDate > checkIn))
+        //        .ToListAsync();
+
+        //    return availableRooms;
+        //}
+
+
+
+
+
 
 
 

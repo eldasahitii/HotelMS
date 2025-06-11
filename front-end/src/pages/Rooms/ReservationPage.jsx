@@ -62,7 +62,7 @@ const ReservationPage = () => {
       });
   }, [userID]);
 
-  const phoneRegex = /^\d{9}$/;
+  const phoneRegex = /^\+?\d{7,15}$/;
 
   const getFriendlyMessage = (serverMessage) => {
     if (!serverMessage) return "Something went wrong. Please try again.";
@@ -106,7 +106,7 @@ const ReservationPage = () => {
     }
 
     if (phone && !phoneRegex.test(phone)) {
-      setErrorMessage("Phone number must be exactly 9 digits.");
+      setErrorMessage("Phone number must start with +383 followed by 8 digits.");
       return;
     }
 
@@ -141,13 +141,15 @@ const ReservationPage = () => {
       );
 
       if (response.data.success) {
-      setSuccessMessage("Reservation successful! You can view your reservation in your profile !");
-      setTimeout(() => {
-        navigate("/rooms");
-      }, 5000); 
-    } else {
-      setErrorMessage(getFriendlyMessage(response.data.message));
-    }
+        setSuccessMessage(
+          "Reservation successful! You can view your reservation in your profile !"
+        );
+        setTimeout(() => {
+          navigate("/rooms");
+        }, 5000);
+      } else {
+        setErrorMessage(getFriendlyMessage(response.data.message));
+      }
     } catch (error) {
       console.error(
         "Reservation error response:",
@@ -255,7 +257,8 @@ const ReservationPage = () => {
               className="form-control shadow-sm"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="044111111"
+              placeholder="e.g. +3834567890"
+              required
             />
           </div>
         </section>
@@ -306,10 +309,10 @@ const ReservationPage = () => {
           </div>
         )}
         {successMessage && (
-  <div className="alert alert-success mt-3" role="alert">
-    {successMessage}
-  </div>
-)}
+          <div className="alert alert-success mt-3" role="alert">
+            {successMessage}
+          </div>
+        )}
 
         <div className="d-grid mt-4">
           <button

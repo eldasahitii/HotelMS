@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Models
 {
@@ -23,6 +24,7 @@ namespace HotelMS.Models
         public string Description { get; set; }   
 
         [Required]
+        [Precision(18, 2)]
         public decimal Price { get; set; }
 
         public ICollection<Room> Rooms { get; set; }

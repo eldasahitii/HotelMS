@@ -135,8 +135,13 @@ namespace HotelMS.Services
                 .FirstOrDefaultAsync(r => r.ReservationID == reservationID);
 
             if (reservation == null) return "Reservation not found";
+
             if (reservation.ReservationStatus.ReservationStatusName == "Completed")
                 return "Cannot cancel a reservation that is already completed.";
+
+            if (reservation.ReservationStatus.ReservationStatusName == "Cancelled")
+                return "Reservation is already cancelled.";
+
             if (!isAdminOrStaff && reservation.UserID != userID)
                 return "You are not authorized to cancel this reservation";
 
@@ -152,6 +157,7 @@ namespace HotelMS.Services
             return "Reservation cancelled successfully";
         }
 
+
         public async Task<string> UpdateReservation(int reservationID, RoomReservationUpdateDTO request, int userID, List<string> roles)
         {
             var reservation = await _context.RoomReservations
@@ -161,6 +167,13 @@ namespace HotelMS.Services
 
             if (reservation == null)
                 return "Reservation not found";
+
+            // NEW: Block updates if status is Completed or Cancelled
+            if (reservation.ReservationStatus.ReservationStatusName == "Completed" ||
+                reservation.ReservationStatus.ReservationStatusName == "Cancelled")
+            {
+                return "Cannot update a reservation that is completed or cancelled.";
+            }
 
             bool isAdminOrReceptionist = roles.Contains("Admin") || roles.Contains("RoomRecepsionist");
             if (!isAdminOrReceptionist && reservation.UserID != userID)
@@ -194,6 +207,7 @@ namespace HotelMS.Services
 
             return "Reservation updated successfully";
         }
+
 
         public async Task<string> UpdateReservationStatus(int reservationID, int statusID)
         {
