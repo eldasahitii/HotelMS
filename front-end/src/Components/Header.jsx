@@ -10,8 +10,10 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
-
   const { userRole, setUserRole, loading } = useAuth(); 
+
+  const hideHeaderPaths = ['/login'];
+  if (hideHeaderPaths.includes(location.pathname)) return null;
 
   const logout = async () => {
     try {
