@@ -340,7 +340,11 @@ function App() {
                 </ProtectedRoute>
               } />
 
-
+                <Route path="/admin/cleaning-dashboard" element={
+                   <ProtectedRoute allowedRoles={['Admin']}>
+                  <AdminCleaningStaffDashboard />
+                </ProtectedRoute>
+                }/>
 
               <Route path="/restaurant-manager/dashboard" element={<Navigate to="/manager/restaurant-hosts" />} />
               <Route path="*" element={<div>Page Not Found</div>} />

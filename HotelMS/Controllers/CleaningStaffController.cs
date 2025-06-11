@@ -1,5 +1,6 @@
 ﻿using HotelMS.Data.DTO;
 using HotelMS.Data.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,7 @@ namespace HotelMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+   
     public class CleaningStaffController : ControllerBase
     {
         private readonly ICleaningStaffService _service;
@@ -16,6 +18,7 @@ namespace HotelMS.Controllers
             _service = service;
         }
         [HttpPost("addCleaningStaff")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> AddCleaningStaff([FromBody] CleaningStaffDTO dto)
         {
             if (!ModelState.IsValid)
@@ -33,6 +36,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getCleaningStaff")]
+        [Authorize(Roles = "Admin,CleaningManager,CleaningStaff")]
         public async Task<IActionResult> GetCleaningStaff(int id)
         {
             try
@@ -50,6 +54,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAllCleaningStaff")]
+        [Authorize(Roles = "Admin,CleaningManager,CleaningStaff")]
         public async Task<IActionResult> GetAllCleaningStaff()
         {
             try
@@ -64,6 +69,7 @@ namespace HotelMS.Controllers
 
         }
         [HttpPut("updateCleaningStaff")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> UpdateCleaningStaff(int id, [FromBody] CleaningStaffDTO request)
         {
             try
@@ -81,6 +87,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpDelete("deleteCleaningStaff")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> DeleteCleaningStaff(int id)
         {
             try
@@ -96,12 +103,14 @@ namespace HotelMS.Controllers
 
         }
         [HttpGet("getAllActive")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> GetAllActive()
         {
             var result = await _service.GetAllActive();
             return Ok(result);
         }
         [HttpPut("changeShift")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> ChangeShift(int id, [FromQuery] string newShift)
         {
             var result = await _service.ChangeShift(id, newShift);

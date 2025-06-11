@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react'; // Shto useEffect
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,7 +13,7 @@ const Login = () => {
   const [formErrors, setFormErrors] = useState({});
 
   const navigate = useNavigate();
-  const { fetchUser } = useAuth();
+  const { fetchUser, userRole } = useAuth(); // Marrim userRole këtu
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,29 +36,7 @@ const Login = () => {
       );
 
       if (loginRes.data.isLoggedIn) {
-        await fetchUser(); 
-
-        const meRes = await axios.get('https://localhost:7117/api/Auth/me', {
-          withCredentials: true,
-        });
-
-        const { role } = meRes.data;
-
-        switch (role) {
-          case 'Customer': navigate('/homepage'); break;
-          case 'Admin': navigate('/admin/room-types'); break;
-          case 'RoomManager': navigate('/manager/room-dashboard'); break;
-          case 'RoomRecepsionist': navigate('/recepsionist-dashboard'); break;
-          case 'CleaningManager': navigate('/manager/cleaning-staff'); break;
-          case 'CleaningStaff': navigate('/cleaningstaff/dashboard'); break;
-          case 'RestaurantManager': navigate('/restaurant-manager/dashboard'); break;
-          case 'RestaurantHost': navigate('/host/dashboard'); break;
-          case 'ServiceManager': navigate('/manager/service-manager'); break;
-          case 'ServiceRecepsionist': navigate ('/manager/service-recepcionist'); break;
-          default:
-            setError('Unknown role. Access denied.');
-            break;
-        }
+        await fetchUser(); // userRole do përditësohet, useEffect do reagojë
       }
     } catch (err) {
       const message = err.response?.data?.message || err.message;
@@ -75,6 +53,27 @@ const Login = () => {
       }
     }
   };
+
+  // ✅ Kjo reagon pasi userRole vendoset
+  useEffect(() => {
+    if (userRole) {
+      switch (userRole) {
+        case 'Customer': navigate('/homepage'); break;
+        case 'Admin': navigate('/admin/room-types'); break;
+        case 'RoomManager': navigate('/manager/room-dashboard'); break;
+        case 'RoomRecepsionist': navigate('/recepsionist-dashboard'); break;
+        case 'CleaningManager': navigate('/manager/cleaning-staff'); break;
+        case 'CleaningStaff': navigate('/cleaningstaff/dashboard'); break;
+        case 'RestaurantManager': navigate('/restaurant-manager/dashboard'); break;
+        case 'RestaurantHost': navigate('/host/dashboard'); break;
+        case 'ServiceManager': navigate('/manager/service-manager'); break;
+        case 'ServiceRecepsionist': navigate('/manager/service-recepcionist'); break;
+        default:
+          setError('Unknown role. Access denied.');
+          break;
+      }
+    }
+  }, [userRole, navigate]); // 🔁 reagon kur ndryshon roli
 
   return (
     <div
