@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMS.Controllers
 {
-    [Authorize(Roles = "RestaurantManager,Admin")]
+    [Authorize(Roles = "RestaurantManager,Admin, RestaurantHost")]
     [Route("api/[controller]")]
     [ApiController]
     public class RestaurantTableController : ControllerBase

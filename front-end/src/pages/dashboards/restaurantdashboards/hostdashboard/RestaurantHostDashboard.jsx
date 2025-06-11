@@ -135,7 +135,7 @@ const handleUserEmailReservation = async () => {
     !userReservation.dateTime ||
     !tableID
   ) {
-    toast.warning("Email, date/time and table are required.");
+    toast.warning("Please fill in all fields before submitting.");
     return;
   }
 
