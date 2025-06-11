@@ -328,7 +328,7 @@ function App() {
               </ProtectedRoute>
                } /> 
 
-               <Route path="/service/Receptionist-Dashboard" element={
+               <Route path="/manager/service-recepcionist" element={
               <ProtectedRoute allowedRoles={['ServiceRecepsionist']}>
               <ServiceReceptionistDashboard />
               </ProtectedRoute>
