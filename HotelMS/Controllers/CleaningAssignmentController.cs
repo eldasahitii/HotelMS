@@ -8,7 +8,7 @@ namespace HotelMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,CleaningManager, CleaningStaff")]
+  
     public class CleaningAssignmentController : ControllerBase
     {
         private readonly ICleaningAssignmentService _service;
@@ -19,6 +19,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost("addAssignment")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> AddAssignment([FromBody] CleaningAssignmentDTO request)
         {
             try
@@ -34,6 +35,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAllAssignments")]
+        [Authorize(Roles = "Admin,CleaningManager, CleaningStaff")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetAllAssignments();
@@ -41,6 +43,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPut("updateAssignment")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> Update(int id, [FromBody] CleaningAssignmentDTO request)
         {
             if (!ModelState.IsValid)
@@ -56,6 +59,7 @@ namespace HotelMS.Controllers
 
 
         [HttpDelete("deleteAssignment")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAssignment(id);
@@ -63,6 +67,7 @@ namespace HotelMS.Controllers
         }
      
         [HttpPut("startAssignment")]
+        [Authorize(Roles = "CleaningStaff")]
         public async Task<IActionResult> StartAssignment([FromQuery] int id)
         {
             var success = await _service.StartAssignment(id);
@@ -73,6 +78,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPut("markAssignmentCompleted")]
+        [Authorize(Roles = "CleaningStaff")]
         public async Task<IActionResult> MarkCompleted([FromQuery] int id)
         {
             var result = await _service.MarkAssignmentCompleted(id);
@@ -80,6 +86,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPut("cancelAssignment")]
+        [Authorize(Roles = "Admin,CleaningManager")]
         public async Task<IActionResult> CancelAssignment(int id)
         {
             try
@@ -96,6 +103,7 @@ namespace HotelMS.Controllers
             }
         }
         [HttpGet("getAssignmentsByStaffName")]
+        [Authorize(Roles = "Admin,CleaningManager, CleaningStaff")]
         public async Task<IActionResult> GetAssignmentsByStaffName([FromQuery] string name)
         {
             var result = await _service.GetAssignmentsByStaffName(name);

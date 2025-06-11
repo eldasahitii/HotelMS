@@ -167,8 +167,7 @@ export default function AssignmentsDashboard() {
       </div>
     );
   }
-
-  return (
+ return (
     <div>
       <main className="p-3" style={{ backgroundColor: '#f2f6fc', minHeight: '100vh' }}>
         <h2 className="fw-bold text-primary mb-4">

@@ -33,9 +33,6 @@ const Header = () => {
         : "text-secondary"
     }`;
 
-  // if (location.pathname === "/login") return null;
-
-
   const dashboardLinks = {
     CleaningManager: [
       { path: "/manager/cleaning-staff", label: "Cleaning Staff" },
@@ -104,7 +101,7 @@ const Header = () => {
     <header className="bg-white shadow-sm border-bottom py-2">
       <nav className="navbar navbar-expand-lg navbar-light container">
         <Link to="/" className="navbar-brand d-flex align-items-center">
-          <img src={logo} alt="Hotel Logo" style={{ height: "120px" }} className="img-fluid" />
+          <img src={logo} alt="Hotel Logo" style={{ height: "90px" }} className="img-fluid" />
         </Link>
 
         <button
