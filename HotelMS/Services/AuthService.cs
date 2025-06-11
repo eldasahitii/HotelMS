@@ -76,7 +76,7 @@ namespace HotelMS.Services
 
             string refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddSeconds(20);
             await _context.SaveChangesAsync();
 
             var accessToken = await CreateToken(user);
@@ -139,7 +139,8 @@ namespace HotelMS.Services
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(1),
+                //expires: DateTime.UtcNow.AddMinutes(1),
+                expires: DateTime.UtcNow.AddSeconds(10),//testim
                 signingCredentials: credentials
             );
 
@@ -172,7 +173,7 @@ namespace HotelMS.Services
 
             var newRefreshToken = GenerateRefreshToken();
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(3);
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(1);//testim
 
             var newAccessToken = await CreateToken(user);
 

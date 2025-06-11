@@ -10,8 +10,9 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
-  const { userRole, setUserRole, loading } = useAuth(); 
-
+  const { userRole, setUserRole, loading,authChecked } = useAuth(); 
+  
+  if (loading) return null; 
   const hideHeaderPaths = ['/login'];
   if (hideHeaderPaths.includes(location.pathname)) return null;
 
@@ -32,8 +33,8 @@ const Header = () => {
         : "text-secondary"
     }`;
 
-  if (location.pathname === "/login") return null;
-  if (loading) return null; 
+  // if (location.pathname === "/login") return null;
+
 
   const dashboardLinks = {
     CleaningManager: [
