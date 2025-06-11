@@ -144,8 +144,8 @@ export default function CleaningManagerDashboard() {
     }
   };
 
-  return (
-    <main className="p-3" style={{ backgroundColor: '#f2f6fc', minHeight: '100vh' }}>
+ return (
+    <main className="p-3" style={{ backgroundColor: '#f2f6fc', minHeight: '100dvh',paddingTop: '380px' }}>
       <h2 className="fw-bold text-primary mb-4"><i className="bi bi-people-fill me-2"></i>Cleaning Manager</h2>
 
       <div className="card mb-4">
@@ -204,14 +204,26 @@ export default function CleaningManagerDashboard() {
       <div className="card mb-4">
         <div className="card-body">
           <div className="row g-2 mb-2">
-            <div className="col-md-9">
-              <input
-                className="form-control"
-                placeholder="Filter by shift..."
-                value={shiftFilter}
-                onChange={e => setShiftFilter(e.target.value)}
-              />
-            </div>
+       <div className="col-md-9">
+  <Select
+    className="basic-single"
+    classNamePrefix="select"
+    value={
+      shiftFilter
+        ? { value: shiftFilter, label: shiftFilter }
+        : null
+    }
+    isClearable
+    placeholder="Filter by Shifts"
+    onChange={(selected) => setShiftFilter(selected ? selected.value : "")}
+    options={[
+      { value: "Morning", label: "Morning" },
+      { value: "Afternoon", label: "Afternoon" },
+      { value: "Night", label: "Night" },
+    ]}
+  />
+</div>
+
             <div className="col-md-3">
               <button className="btn btn-outline-primary w-100" onClick={handleGetByShift}>
                 <i className="bi bi-filter me-2"></i>Filter

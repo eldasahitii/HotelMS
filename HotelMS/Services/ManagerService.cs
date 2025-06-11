@@ -35,7 +35,7 @@ namespace HotelMS.Services
             if (user != null)
             {
                 if (request.ManagerTypeID == 1)
-                    user.RoleID = 2; // 
+                    user.RoleID = 2; // RoomManager
                 else if (request.ManagerTypeID == 2)
                     user.RoleID = 4; // CleaningManager
                 else if (request.ManagerTypeID == 3)

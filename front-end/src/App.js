@@ -28,7 +28,6 @@ import EventsPage from './pages/Services/EventsPage';
 import ServiceReservation from './pages/dashboards/servicesdashboard/managerdashboard/servicereservation';
 import ServiceAddRecepcionist from './pages/dashboards/servicesdashboard/managerdashboard/serviceaddrecepcionist';
 import Reservations from './pages/dashboards/servicesdashboard/servicerecepcionist/reservations.jsx';
-//import ServiceReceptionistDashboard from './pages/dashboards/servicesdashboard/servicerecepcionist/ServiceReceptionistDashboard.jsx';
 
 
 const UserRoomReservations = lazy(() => import(  './pages/dashboards/userdashboard/UserRoomReservations'));
@@ -115,7 +114,7 @@ function App() {
                 <Route path="menu" element={<RestaurantMenuPage />} />
               </Route>
 
-              {/* Room Reservation route */}
+             
               <Route path="/reserve" element={
                 <ProtectedRoute allowedRoles={['Admin', 'RoomManager', 'RoomRecepsionist', 'Customer']}>
                   <ReservationPage />
@@ -340,7 +339,11 @@ function App() {
                 </ProtectedRoute>
               } />
 
-
+                <Route path="/admin/cleaning-dashboard" element={
+                   <ProtectedRoute allowedRoles={['Admin']}>
+                  <AdminCleaningStaffDashboard />
+                </ProtectedRoute>
+                }/>
 
               <Route path="/restaurant-manager/dashboard" element={<Navigate to="/manager/restaurant-hosts" />} />
               <Route path="*" element={<div>Page Not Found</div>} />

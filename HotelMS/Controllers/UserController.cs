@@ -27,7 +27,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager,Customer")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,CleaningManager, RestaurantManager,Customer")]
 
         public async Task<IActionResult> GetUser(int id)
         {
@@ -52,7 +52,7 @@ namespace HotelMS.Controllers
         [HttpGet("getAll")]
 
 
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, CleaningManager, RestaurantManager,Customer")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,CleaningManager, RestaurantManager,Customer")]
 
         public async Task<IActionResult> GetAll()
         {
@@ -98,7 +98,7 @@ namespace HotelMS.Controllers
             }
         }
         [HttpGet("GetAllCustomers")]
-        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist, RestaurantManager,Customer")]
+        [Authorize(Roles = "Admin,RoomManager,RoomRecepsionist,CleaningManager,RestaurantManager,Customer")]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllCustomers()
         {
             try

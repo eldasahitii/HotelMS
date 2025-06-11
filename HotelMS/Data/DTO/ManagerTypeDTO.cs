@@ -1,5 +1,4 @@
-﻿// File: Data/DTO/ManagerTypeDTO.cs
-namespace HotelMS.Data.DTO
+﻿namespace HotelMS.Data.DTO
 {
     public class ManagerTypeDTO
     {

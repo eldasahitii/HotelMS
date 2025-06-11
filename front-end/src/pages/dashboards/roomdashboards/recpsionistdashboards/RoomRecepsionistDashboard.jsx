@@ -58,34 +58,7 @@ const RoomReceptionistDashboard = () => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      {/* <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
-        <h4 className="fw-bold mb-4">
-          <i className="bi bi-building"></i> HotelMS
-        </h4>
-        <ul className="nav flex-column mb-4">
-          <li className="nav-item mb-2">
-          </li>
-          <li className="nav-item mb-2">
-            <button
-              className="btn btn-outline-light w-100 text-start"
-              onClick={() => navigate('/recepsionist-reservations')}
-            >
-              <i className="bi bi-calendar-check me-2"></i> Reservations
-            </button>
-          </li>
-        </ul>
-         <button
-          className="btn btn-outline-light w-100 text-start"
-          onClick={() => {
-          localStorage.removeItem("token");
-          navigate("/login");
-         }}>
-          
-  <i className="bi bi-box-arrow-right me-2"></i> Logout
-</button>
-
-      </aside> */}
-
+    
       {/* Main content */}
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">

@@ -97,31 +97,7 @@ const ReservationDashboard = () => {
 
   return (
     <div className="d-flex min-vh-100" style={{ backgroundColor: '#f2f6fc' }}>
-      {/* <aside className="text-white p-4" style={{ width: '240px', backgroundColor: '#324b6b' }}>
-        <h4 className="fw-bold mb-4">
-          <i className="bi bi-building"></i> HotelMS
-        </h4>
-        <ul className="nav flex-column">
-          <li className="nav-item">
-            <i className="bi bi-house-door me-2"></i> Reservation Managing
-          </li>
-          <button
-            className="btn btn-outline-light w-100 mt-3 mb-3"
-            onClick={() => navigate('/manager/room-dashboard')}
-          >
-            <i className="bi bi-bookmark-plus me-2"></i> Room Managing
-          </button>
-          <button
-            className="btn btn-outline-light w-100 mb-3"
-            onClick={() => navigate("/room-manager-receptionist-management")}
-          >
-            <i className="bi bi-person-lines-fill me-2"></i> Receptionist Management
-          </button>
-          <button className="btn btn-outline-light w-100 mt-2" onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right me-2"></i> Logout
-          </button>
-        </ul>
-      </aside> */}
+     
 
       <main className="flex-grow-1 p-4">
         <h2 className="fw-bold text-primary mb-4">
