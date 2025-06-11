@@ -16,7 +16,7 @@ namespace HotelMS.Controllers
             _context = context;
         }
 
-        // GET: api/reviewcategories
+       
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ReviewCategory>>> GetReviewCategories()
         {

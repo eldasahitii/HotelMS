@@ -18,6 +18,9 @@ export default function AboutUs() {
   const [editingReview, setEditingReview] = useState(null);
   const [base64Image, setBase64Image] = useState(null);
   const [editBase64Image, setEditBase64Image] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [minRating, setMinRating] = useState('');
+  const [searchText, setSearchText] = useState('');
 
 
 
@@ -146,6 +149,13 @@ const fetchReviews = async () => {
       console.error("Error deleting image:", err);
     }
   };
+
+  const filteredReviews = reviews.filter((review) => {
+  const matchesCategory = selectedCategory === '' || review.reviewCategoryID === parseInt(selectedCategory);
+  const matchesRating = minRating === '' || review.rating >= parseInt(minRating);
+  const matchesSearch = searchText === '' || review.comment.toLowerCase().includes(searchText.toLowerCase());
+  return matchesCategory && matchesRating && matchesSearch;
+});
 
   return (
     <div style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -391,9 +401,60 @@ const fetchReviews = async () => {
 <div className="mt-5">
   <h3 className="fw-bold mb-3">All Reviews</h3>
 
+  {/* ✅ Filter UI Section */}
+  <div className="bg-light p-3 rounded mb-4">
+    <h5 className="fw-bold">Filter Reviews</h5>
+    <div className="row g-3 mt-2">
+      <div className="col-md-4">
+        <label className="form-label">Category</label>
+        <select
+          className="form-select"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="">All</option>
+          {categories.map((c) => (
+            <option key={c.reviewCategoryID} value={c.reviewCategoryID}>
+              {c.categoryName}
+            </option>
+          ))}
+        </select>
+      </div>
 
+      <div className="col-md-4">
+        <label className="form-label">Minimum Rating</label>
+        <select
+          className="form-select"
+          value={minRating}
+          onChange={(e) => setMinRating(e.target.value)}
+        >
+          <option value="">Any</option>
+          {[1, 2, 3, 4, 5].map((r) => (
+            <option key={r} value={r}>{r} & up</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="col-md-4">
+        <label className="form-label">Search Comment</label>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="e.g. excellent"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+      </div>
+    </div>
+  </div>
+
+  <p className="text-muted mb-4">
+    Showing {filteredReviews.length} of {reviews.length} reviews
+  </p>
+
+  {/* ✅ Review Cards */}
   <div className="row g-4">
-    {reviews.map((review) => (
+    {filteredReviews.map((review) => (
       <div className="col-md-6" key={review.reviewID}>
         <div className="card shadow-sm border">
           <div className="card-body d-flex">

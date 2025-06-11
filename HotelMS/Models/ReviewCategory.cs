@@ -8,7 +8,7 @@ namespace HotelMS.Models
         public int ReviewCategoryID { get; set; }
 
         [Required]
-        public string CategoryName { get; set; }  // Example: "Room", "Restaurant", etc.
+        public string CategoryName { get; set; }  
 
         public ICollection<Review> Reviews { get; set; }
     }

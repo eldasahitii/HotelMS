@@ -2,9 +2,12 @@
 using HotelMS.Data.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace HotelMS.Controllers
 {
+    //[Authorize(Roles = "RestaurantManager,Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class MenuItemController : ControllerBase
@@ -16,6 +19,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPost("addMenuItem")]
+        [Authorize(Roles = "RestaurantManager,Admin")]
         public async Task<IActionResult> AddMenuItem(MenuItemCreateDTO request)
         {
             try
@@ -30,6 +34,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getMenuItem")]
+        [Authorize(Roles = "RestaurantManager,Admin")]
         public async Task<IActionResult> GetMenuItem(int id)
         {
             try
@@ -44,6 +49,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpGet("getAllMenuItems")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllMenuItems()
         {
             try
@@ -58,6 +64,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpPut("updateMenuItem")]
+        [Authorize(Roles = "RestaurantManager,Admin")]
         public async Task<IActionResult> UpdateMenuItem(int id, [FromBody] MenuItemCreateDTO request)
         {
             try
@@ -73,6 +80,7 @@ namespace HotelMS.Controllers
         }
 
         [HttpDelete("deleteMenuItem")]
+        [Authorize(Roles = "RestaurantManager,Admin")]
 
         public async Task<IActionResult> DeleteMenuItem(int id)
         {

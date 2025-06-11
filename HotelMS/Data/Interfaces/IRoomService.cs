@@ -1,4 +1,5 @@
 ﻿using HotelMS.Data.DTO;
+using HotelMS.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,6 +14,6 @@ namespace HotelMS.Data.Interfaces
         Task<RoomDTO> UpdateRoom(int id, RoomDTO request);
         Task<RoomDetailsDTO> GetRoomDetails(int id);
         Task BulkCreateRoomsAsync(BulkRoomCreateDTO dto);
-        Task<IEnumerable<RoomAvailabilityDTO>> GetRoomAvailability();
+        //Task<List<Room>> GetRoomAvailability(DateTime checkIn, DateTime checkOut);
     }
 }

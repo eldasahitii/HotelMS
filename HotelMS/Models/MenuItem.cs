@@ -18,7 +18,6 @@ namespace HotelMS.Models
 
         public double Price { get; set; }
 
-        //public string Category { get; set; }
 
         public string? image_url { get; set; }
 

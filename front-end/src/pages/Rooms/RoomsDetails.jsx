@@ -5,7 +5,6 @@ import { useParams, useNavigate } from "react-router-dom";
 export default function RoomsDetails() {
   const { roomId } = useParams();
   const [room, setRoom] = useState(null);
-  const [isAvailable, setIsAvailable] = useState(null);
   const [error, setError] = useState(null);
   const backendBaseUrl = "https://localhost:7117/";
   const navigate = useNavigate();
@@ -39,30 +38,7 @@ export default function RoomsDetails() {
       }
     };
 
-    const fetchAvailability = async () => {
-      try {
-        const res = await axios.get(`${backendBaseUrl}api/Room/GetRoomAvailability`, {
-          withCredentials: true,
-        });
-
-        const availabilityArray = res.data;
-        const roomAvailability = availabilityArray.find(
-          (item) => item.roomTypeID.toString() === roomId.toString()
-        );
-
-        if (roomAvailability) {
-          setIsAvailable(roomAvailability.availableRooms > 0);
-        } else {
-          setIsAvailable(false);
-        }
-      } catch (err) {
-        console.error("Failed to fetch availability:", err);
-        setIsAvailable(false);
-      }
-    };
-
     fetchRoomDetails();
-    fetchAvailability();
   }, [roomId]);
 
   const handleBookNow = async () => {
@@ -88,13 +64,12 @@ export default function RoomsDetails() {
   };
 
   if (error) return <div className="alert alert-danger m-3">{error}</div>;
-  if (!room || isAvailable === null) return <div className="m-3">Loading room details...</div>;
+  if (!room) return <div className="m-3">Loading room details...</div>;
 
   const selectedImages = room.images.slice(-3);
   const customFontFamily = "'Crimson Text', serif";
   const keywordsToBold = ["pool", "breakfast", "wifi", "room service"];
 
-  // Styles
   const capSizeStyle = {
     fontSize: "1.25rem",
     lineHeight: 1.3,
@@ -193,33 +168,24 @@ export default function RoomsDetails() {
           )}
         </p>
 
-        {!isAvailable && (
-<div className="alert alert-danger text-center fw-semibold fs-5 mx-auto" style={{ maxWidth: 400 }}>
-  Sorry, this room is currently <strong>unavailable</strong>.
-</div>
-
-        )}
-
         <div className="text-center mt-4">
           <button
             onClick={handleBookNow}
             className="btn btn-lg px-5"
             style={{
-              backgroundColor: isAvailable ? "#28a745" : "#6c757d",
+              backgroundColor: "#28a745",
               color: "white",
               borderRadius: "30px",
               fontWeight: "600",
               letterSpacing: "0.05em",
               transition: "background-color 0.3s ease",
               border: "none",
-              cursor: isAvailable ? "pointer" : "not-allowed",
             }}
-            disabled={!isAvailable}
             onMouseEnter={(e) => {
-              if (isAvailable) e.currentTarget.style.backgroundColor = "#1e7e34";
+              e.currentTarget.style.backgroundColor = "#1e7e34";
             }}
             onMouseLeave={(e) => {
-              if (isAvailable) e.currentTarget.style.backgroundColor = "#28a745";
+              e.currentTarget.style.backgroundColor = "#28a745";
             }}
           >
             Book Now

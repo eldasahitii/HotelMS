@@ -3,30 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import {useState} from 'react';
-// import restaurantImg from '../../Assets/images/restaurant.jpg';
-import AvocadoToast from '../../Assets/images/AvocadoToast.png';
-import FluffyPancakes from '../../Assets/images/FluffyPancakes.png';
-import SalmonBagel from '../../Assets/images/SalmonBagel.png';
-import RestaurantHomePage from './RestaurantHomePage.css';
-import frenchtoast from '../../Assets/images/frenchtoast.jpg';
-import waffles from '../../Assets/images/waffles.jpg';
-import eggsBenedict from '../../Assets/images/eggsBenedict.jpg';
-import gyoza from '../../Assets/images/gyoza.jpg';
-import bruschetta from '../../Assets/images/bruschetta.jpg';
-import pasta from '../../Assets/images/pasta.jpg';
-import shrimptacos from '../../Assets/images/shrimptacos.jpg';
-import chickenrice from '../../Assets/images/chickenrice.jpg';
-import ceasersalad from '../../Assets/images/ceasersalad.jpg';
-import steak from '../../Assets/images/steak.jpg';
-import sushi from '../../Assets/images/sushi.jpg';
-import seafoodpasta from '../../Assets/images/seafoodpasta.jpg';
-import mushroomrisotto from '../../Assets/images/mushroomrisotto.jpg';
-import lobster from '../../Assets/images/lobster.jpg';
-import salmon from '../../Assets/images/salmon.jpg';
-import tiramisu from '../../Assets/images/tiramisu.jpg';
-import applecrumble from '../../Assets/images/applecrumble.jpg';
-import chocolate from '../../Assets/images/chocolate.jpg';
-// import YoughurtBowl from '../../Asstes/images/YoughurtBowl.png';
 
 
 const RestaurantMenuPage = () => {
@@ -66,6 +42,7 @@ const RestaurantMenuPage = () => {
        
       
           <div className="container text-center px-3">
+            <br />
             <h1 className="display-4 fw-bold">Our Menu</h1>
             <p className="lead mx-auto" style={{ maxWidth: '700px' }}>
                Explore our thoughtfully curated menu, crafted with passion and the finest organic ingredients.
