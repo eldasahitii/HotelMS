@@ -21,10 +21,10 @@ namespace HotelMS.Models
         public User? User { get; set; }
 
         [Required]
-        public int ReviewCategoryID { get; set; } // New
+        public int ReviewCategoryID { get; set; } 
 
         [ForeignKey("ReviewCategoryID")]
-        public ReviewCategory? Category { get; set; } // Make this optional
+        public ReviewCategory? Category { get; set; } 
 
 
         [Range(1, 5)]
