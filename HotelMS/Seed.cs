@@ -214,25 +214,25 @@ public class Seed
 
 
         //Seed CleaningStaff
-        if (!dataContext.CleaningStaff.Any())
-        {
-            var cleaningStaffUser = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
-            var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com");
+        //if (!dataContext.CleaningStaff.Any())
+        //{
+        //    var cleaningStaffUser = dataContext.Users.FirstOrDefault(u => u.Email == "orgesa@gmail.com");
+        //    var assignedByUser = dataContext.Users.FirstOrDefault(u => u.Email == "ruvejda@gmail.com");
 
-            if (cleaningStaffUser != null && assignedByUser != null)
-            {
-                var cleaningStaff = new CleaningStaff
-                {
-                    UserID = cleaningStaffUser.UserID,
-                    IsActive = true,
-                    Shift = "Morning",
-                    AssignedByUserID = assignedByUser.UserID
-                };
+        //    if (cleaningStaffUser != null && assignedByUser != null)
+        //    {
+        //        var cleaningStaff = new CleaningStaff
+        //        {
+        //            UserID = cleaningStaffUser.UserID,
+        //            IsActive = true,
+        //            Shift = "Morning",
+        //            AssignedByUserID = assignedByUser.UserID
+        //        };
 
-                dataContext.CleaningStaff.Add(cleaningStaff);
-                dataContext.SaveChanges();
-            }
-        }
+        //        dataContext.CleaningStaff.Add(cleaningStaff);
+        //        dataContext.SaveChanges();
+        //    }
+        //}
 
         // Seed RoomStatuses
         if (!dataContext.RoomStatuses.Any())
@@ -488,7 +488,7 @@ public class Seed
                 var reviewImage = new ReviewImage
                 {
                     ReviewID = review1.ReviewID,
-                    ImageUrl = "/Images/reviewimages/sample-review.png"  // ✅ relative path
+                    ImageUrl = "/Images/reviewimages/sample-review.png" 
                 };
 
                 dataContext.ReviewImages.Add(reviewImage);

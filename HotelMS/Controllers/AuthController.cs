@@ -66,7 +66,7 @@ namespace HotelMS.Controllers
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.None,
-                    Expires = DateTime.UtcNow.AddHours(2)
+                    Expires = DateTime.UtcNow.AddMinutes(30)
                 });
 
                 Response.Cookies.Append("refresh", refreshToken, new CookieOptions
@@ -175,7 +175,7 @@ namespace HotelMS.Controllers
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddHours(2)
+                Expires = DateTime.UtcNow.AddMinutes(30)
             });
 
             Response.Cookies.Append("refresh", newRefreshToken, new CookieOptions

@@ -10,8 +10,11 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
-
-  const { userRole, setUserRole, loading } = useAuth(); 
+  const { userRole, setUserRole, loading,authChecked } = useAuth(); 
+  
+  if (loading) return null; 
+  const hideHeaderPaths = ['/login'];
+  if (hideHeaderPaths.includes(location.pathname)) return null;
 
   const logout = async () => {
     try {
@@ -29,9 +32,6 @@ const Header = () => {
         ? "text-dark border-bottom border-2 border-dark"
         : "text-secondary"
     }`;
-
-  if (location.pathname === "/login") return null;
-  if (loading) return null; 
 
   const dashboardLinks = {
     CleaningManager: [
@@ -101,7 +101,7 @@ const Header = () => {
     <header className="bg-white shadow-sm border-bottom py-2">
       <nav className="navbar navbar-expand-lg navbar-light container">
         <Link to="/" className="navbar-brand d-flex align-items-center">
-          <img src={logo} alt="Hotel Logo" style={{ height: "120px" }} className="img-fluid" />
+          <img src={logo} alt="Hotel Logo" style={{ height: "90px" }} className="img-fluid" />
         </Link>
 
         <button
@@ -134,10 +134,6 @@ const Header = () => {
             <li className="nav-item">
               <Link to="/services" className={navLinkStyle("/services")}>AMENITIES</Link>
             </li>
-            <li className="nav-item">
-              <Link to="/book" className={navLinkStyle("/book")}>BOOK NOW</Link>
-            </li>
-
             {!userRole && (
               <li className="nav-item dropdown position-relative">
                 <button
